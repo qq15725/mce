@@ -1,0 +1,75 @@
+{
+  "name": "starter-ts",
+  "type": "module",
+  "version": "0.0.0",
+  "packageManager": "pnpm@9.15.1",
+  "description": "Starter template for TypeScript library",
+  "author": "wxm",
+  "license": "MIT",
+  "homepage": "https://github.com/qq15725/starter-ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qq15725/starter-ts.git"
+  },
+  "bugs": {
+    "url": "https://github.com/qq15725/starter-ts/issues"
+  },
+  "keywords": [
+    "starter",
+    "template",
+    "typescript"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "browser": "./dist/index.js",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./dist/*",
+        "./dist/index.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build && unbuild",
+    "dev": "vite docs",
+    "lint": "eslint .",
+    "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
+    "release": "bumpp package.json --commit \"release: v%s\" --push --all --tag",
+    "start": "esno src/index.ts",
+    "test": "vitest",
+    "typecheck": "tsc --noEmit",
+    "prepare": "simple-git-hooks"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^4.16.2",
+    "@types/node": "^24.0.10",
+    "bumpp": "^10.2.0",
+    "conventional-changelog-cli": "^5.0.0",
+    "eslint": "^9.30.1",
+    "lint-staged": "^16.1.2",
+    "simple-git-hooks": "^2.13.0",
+    "typescript": "^5.8.3",
+    "unbuild": "^3.5.0",
+    "vite": "^7.0.2",
+    "vitest": "^3.2.4"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm lint-staged"
+  },
+  "lint-staged": {
+    "*": "eslint --fix"
+  }
+}
