@@ -1,20 +1,61 @@
-import { basename, resolve } from 'node:path'
+import type { UserConfig } from 'vite'
+import path from 'node:path'
+import vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vite'
-import { browser, name } from './package.json'
 
-const resolvePath = (str: string) => resolve(__dirname, str)
-
-export default defineConfig({
-  build: {
-    lib: {
-      formats: ['umd'],
-      fileName: (format) => {
-        if (format === 'umd')
-          return basename(browser)
-        return `${name}.${format}`
+const commonConfig = defineConfig({
+  plugins: [
+    vue({
+      template: {
+        compilerOptions: {
+          isCustomElement: (tag: string) => tag === 'text-editor',
+        },
       },
-      entry: resolvePath('./src/index.ts'),
-      name: name.replace(/-(\w)/g, (_, v) => v.toUpperCase()),
+    }),
+  ],
+  define: {
+    __VUE_OPTIONS_API__: false,
+  },
+})
+
+const libConfig = defineConfig({
+  ...commonConfig,
+  build: {
+    minify: true,
+    lib: {
+      entry: path.resolve(__dirname, 'src/index.ts'),
+      name: 'MCE',
+      fileName: format => `index.${format}.js`,
+    },
+    rollupOptions: {
+      external: ['vue'],
+      output: {
+        globals: {
+          vue: 'Vue',
+        },
+        assetFileNames: () => {
+          return 'index.css'
+        },
+      },
     },
   },
+})
+
+const playgroundConfig = defineConfig({
+  ...commonConfig,
+  root: './playground',
+})
+
+export default defineConfig(({ command }): UserConfig => {
+  const executionMode: 'lib' | 'playground'
+    // eslint-disable-next-line node/prefer-global/process
+    = (process.env.MODE as 'lib' | 'playground') || 'lib'
+
+  const mode = command === 'build' ? 'production' : 'development'
+
+  if (executionMode === 'playground') {
+    return { ...playgroundConfig, mode }
+  }
+
+  return { ...libConfig, mode }
 })
