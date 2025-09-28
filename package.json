@@ -54,7 +54,7 @@
     "build:code": "MODE=lib vite build",
     "build:tsc": "NODE_ENV=production tsc --emitDeclarationOnly --project tsconfig.build.json",
     "dev": "MODE=playground vite",
-    "lint": "eslint .",
+    "lint": "eslint src",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
     "release": "bumpp package.json --commit \"release: v%s\" --push --all --tag",
     "test": "vitest",
@@ -132,6 +132,6 @@
     "pre-commit": "pnpm lint-staged"
   },
   "lint-staged": {
-    "*": "eslint --fix"
+    "*": "eslint src --fix"
   }
 }

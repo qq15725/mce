@@ -60,14 +60,8 @@ type AppendDefault<T extends ComponentObjectPropsOptions, D extends PartialKeys<
   [P in keyof T]-?: unknown extends D[P]
     ? T[P]
     : T[P] extends Record<string, unknown>
-    ? Omit<T[P], 'type' | 'default'> & {
-        type: PropType<MergeTypeDefault<T[P], D[P]>>
-        default: MergeDefault<T[P], D[P]>
-      }
-      : {
-          type: PropType<MergeTypeDefault<T[P], D[P]>>
-          default: MergeDefault<T[P], D[P]>
-        }
+      ? Omit<T[P], 'type' | 'default'> & { type: PropType<MergeTypeDefault<T[P], D[P]>>, default: MergeDefault<T[P], D[P]> }
+      : { type: PropType<MergeTypeDefault<T[P], D[P]>>, default: MergeDefault<T[P], D[P]> }
 }
 
 type MergeTypeDefault<T, D, P = InferPropType<T>> = unknown extends D
