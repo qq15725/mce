@@ -3,7 +3,7 @@
   "type": "module",
   "version": "0.0.0",
   "packageManager": "pnpm@9.15.1",
-  "description": "Canvas editor, modern-canvas as the core",
+  "description": "Vue canvas editor, modern-canvas as the core",
   "author": "wxm",
   "license": "MIT",
   "homepage": "https://github.com/qq15725/modern-canvas-editor",
