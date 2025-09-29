@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { computed, useTemplateRef } from 'vue'
 import { makeMceOverlayProps } from '../../composables'
 import Overlay from './Overlay.vue'
 

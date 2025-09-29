@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Drawboard, useEditor } from '../../src'
+import { Drawboard, useEditor } from '../..'
 
 const editor = useEditor()
 

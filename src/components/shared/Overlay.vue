@@ -57,7 +57,7 @@ const style = computed(() => {
 
 const activatorProps = computed(() => {
   return {
-    ref: el => activatorEl.value = el,
+    ref: (el: any) => activatorEl.value = el,
   }
 })
 

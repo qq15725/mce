@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { watch } from 'vue'
+import { useTemplateRef, watch } from 'vue'
 import { useEditor } from '../composables/editor'
 import { makeMceOverlayProps } from '../composables/overlay'
 import Overlay from './shared/Overlay.vue'

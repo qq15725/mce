@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, getCurrentInstance, onMounted, ref, useModel, useTemplateRef } from 'vue'
+import { computed, getCurrentInstance, nextTick, onMounted, ref, useModel } from 'vue'
 import Tooltip from './Tooltip.vue'
 
 interface AxisAlignedBoundingBox {
@@ -177,7 +177,7 @@ const computedHandles = computed<HandleObject[]>(() => {
       return anchor
     }) as HandleObject[]
 })
-const handlesRef = useTemplateRef('handlesTplRef')
+const handlesRef = ref<HTMLElement[]>()
 const sizeStyle = computed(() => {
   const { width = 0, height = 0 } = model.value
   return {
@@ -195,7 +195,7 @@ const style = computed(() => {
     transform: `matrix(${cos}, ${sin}, ${-sin}, ${cos}, ${left}, ${top})`,
   }
 })
-const tipTarget = ref<string>()
+const tipTarget = ref<any>()
 const tipText = ref<string>()
 const isAutoVisibilityTransforming = computed(() => props.visibility === 'auto' && transforming.value)
 
@@ -595,7 +595,7 @@ defineExpose({
           </template>
 
           <rect
-            ref="handlesTplRef"
+            ref="handlesRef"
             :x="handle.x"
             :y="handle.y"
             :width="handle.width"

@@ -20,6 +20,11 @@ const emit = defineEmits<{
   'click:item': [item: MenuItem, event: MouseEvent]
 }>()
 
+defineSlots<{
+  title?: (props: { item: MenuItem }) => any
+  activator?: (props: any) => any
+}>()
+
 export interface MenuItem {
   key: string
   handle?: (event: MouseEvent) => void
@@ -78,7 +83,7 @@ function updateLocation() {
   overlay.value?.updateLocation()
 }
 
-function onClickItem(item: MenuItem, index, e: MouseEvent) {
+function onClickItem(item: MenuItem, index: number, e: MouseEvent) {
   if (item.children?.length) {
     opened.value = index
   }

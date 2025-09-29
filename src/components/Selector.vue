@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { OrientedBoundingBox } from '../types'
+import type { AxisAlignedBoundingBox, OrientedBoundingBox } from '../types'
 import { Element2D } from 'modern-canvas'
 import { computed, onBeforeMount, onBeforeUnmount, useTemplateRef } from 'vue'
 import { useEditor } from '../composables/editor'

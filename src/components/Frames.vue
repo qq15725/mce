@@ -9,8 +9,7 @@ const {
 
 <template>
   <template
-    v-for="(frame, key) in frames"
-    :key="key"
+    v-for="(frame, key) in frames" :key="key"
   >
     <Frame :model-value="frame" />
   </template>

@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import type { Element2D } from 'modern-canvas'
 import { nextTick, ref, useTemplateRef } from 'vue'
+import { useEditor } from '../composables'
 import { boundingBoxToStyle } from '../utils/box'
 
 const frame = defineModel<Element2D>({ required: true })

@@ -3,7 +3,7 @@
   "type": "module",
   "version": "0.0.1",
   "packageManager": "pnpm@9.15.1",
-  "description": "Vue canvas editor, modern-canvas as the core",
+  "description": "Vue 2D WebGL editor, based modern-canvas. only the ESM.",
   "author": "wxm",
   "license": "MIT",
   "homepage": "https://github.com/qq15725/modern-canvas-editor",
@@ -15,6 +15,8 @@
     "url": "https://github.com/qq15725/modern-canvas-editor/issues"
   },
   "keywords": [
+    "vue",
+    "webgl",
     "modern",
     "canvas",
     "editor",
@@ -25,14 +27,14 @@
   "exports": {
     ".": {
       "types": "./dist/types/index.d.ts",
-      "import": "./dist/index.es.js",
-      "require": "./dist/index.umd.js"
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
     },
     "./*.mjs": "./*.js",
     "./*": "./*"
   },
-  "main": "./dist/index.umd.js",
-  "module": "./dist/index.es.js",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
   "browser": "./dist/index.js",
   "typings": "dist/types/index.d.ts",
   "types": "dist/types/index.d.ts",
@@ -52,13 +54,13 @@
   "scripts": {
     "build": "pnpm build:code && pnpm build:tsc",
     "build:code": "MODE=lib vite build",
-    "build:tsc": "NODE_ENV=production tsc --emitDeclarationOnly --project tsconfig.build.json",
+    "build:tsc": "NODE_ENV=production vue-tsc --emitDeclarationOnly --project tsconfig.build.json",
     "dev": "MODE=playground vite",
     "lint": "eslint src",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
     "release": "bumpp package.json --commit \"release: v%s\" --push --all --tag",
     "test": "vitest",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "vue-tsc --noEmit",
     "prepare": "simple-git-hooks"
   },
   "peerDependencies": {
@@ -126,7 +128,8 @@
     "typescript": "^5.9.2",
     "vite": "^7.1.7",
     "vitest": "^3.2.4",
-    "vue": "^3.5.22"
+    "vue": "^3.5.22",
+    "vue-tsc": "^3.1.0"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint-staged"

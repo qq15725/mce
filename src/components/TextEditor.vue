@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, nextTick, onBeforeMount, onBeforeUnmount, useTemplateRef } from 'vue'
+import { computed, nextTick, onBeforeMount, onBeforeUnmount, ref } from 'vue'
 import { useEditor } from '../composables/editor'
 import { boundingBoxToStyle } from '../utils/box'
 
@@ -14,7 +14,7 @@ const {
   camera,
 } = useEditor()
 
-const textEditor = useTemplateRef('textEditorRef')
+const textEditor = ref<any>()
 
 const mainStyleWithScale = computed(() => {
   const { zoom, position } = camera.value
@@ -45,7 +45,7 @@ function onUpdateTextSelection(e: CustomEvent): void {
 function onUpdate(): void {
   const element = activeElement.value!
   const shape = element.shape
-  if (!shape.enabled || !shape._path2DSet.paths.length) {
+  if (!shape.enabled || !(shape as any)._path2DSet.paths.length) {
     textToFit(element)
   }
 }
@@ -84,7 +84,7 @@ defineExpose({
     }"
   >
     <text-editor
-      ref="textEditorRef"
+      ref="textEditor"
       class="mce-text-editor__editor"
       :style="{
         ...textEditorStyle,
