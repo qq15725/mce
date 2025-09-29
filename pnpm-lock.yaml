@@ -72,6 +72,9 @@ importers:
       eslint:
         specifier: ^9.36.0
         version: 9.36.0(jiti@2.6.0)
+      jiti:
+        specifier: ^2.6.0
+        version: 2.6.0
       lint-staged:
         specifier: ^16.2.2
         version: 16.2.2
@@ -108,6 +111,12 @@ importers:
       vue-tsc:
         specifier: ^3.1.0
         version: 3.1.0(typescript@5.9.2)
+
+  playground:
+    dependencies:
+      modern-canvas-editor:
+        specifier: workspace:*
+        version: link:..
 
 packages:
 

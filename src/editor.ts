@@ -5,7 +5,7 @@ import { merge } from 'lodash-es'
 import { EventEmitter } from 'modern-idoc'
 import { ref } from 'vue'
 import TextPlugin from './plugins/text'
-import { presetProviders } from './providers'
+import { presetProviders } from './preset-providers'
 
 type DeepPartial<T> = T extends object
   ? { [P in keyof T]?: DeepPartial<T[P]> }

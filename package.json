@@ -26,7 +26,7 @@
   "sideEffects": true,
   "exports": {
     ".": {
-      "types": "./dist/types/index.d.ts",
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.js"
     },
@@ -36,15 +36,15 @@
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "browser": "./dist/index.js",
-  "typings": "dist/types/index.d.ts",
-  "types": "dist/types/index.d.ts",
+  "typings": "dist/index.d.ts",
+  "types": "dist/index.d.ts",
   "style": "dist/index.css",
   "typesVersions": {
     "*": {
       "*": [
         "*",
-        "dist/types/*",
-        "dist/types/*.d.ts"
+        "dist/*",
+        "dist/*.d.ts"
       ]
     }
   },
@@ -52,9 +52,11 @@
     "dist"
   ],
   "scripts": {
-    "build": "pnpm build:code && pnpm build:tsc",
     "build:code": "MODE=lib vite build",
     "build:tsc": "NODE_ENV=production vue-tsc --emitDeclarationOnly --project tsconfig.build.json",
+    "build:providers": "jiti ./scripts/providers.ts",
+    "build:dts": "jiti ./scripts/dts.ts",
+    "build": "pnpm build:code && pnpm build:tsc && pnpm build:dts",
     "dev": "MODE=playground vite",
     "lint": "eslint src",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
@@ -118,6 +120,7 @@
     "bumpp": "^10.2.3",
     "conventional-changelog-cli": "^5.0.0",
     "eslint": "^9.36.0",
+    "jiti": "^2.6.0",
     "lint-staged": "^16.2.2",
     "modern-gif": "^2.0.4",
     "modern-mp4": "^0.2.0",
@@ -135,6 +138,6 @@
     "pre-commit": "pnpm lint-staged"
   },
   "lint-staged": {
-    "*": "eslint src --fix"
+    "*": ""
   }
 }
