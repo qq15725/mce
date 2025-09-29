@@ -30,6 +30,9 @@
       "import": "./dist/index.js",
       "require": "./dist/index.js"
     },
+    "./styles": {
+      "default": "./dist/index.css"
+    },
     "./*.mjs": "./*.js",
     "./*": "./*"
   },
@@ -38,7 +41,7 @@
   "browser": "./dist/index.js",
   "typings": "dist/index.d.ts",
   "types": "dist/index.d.ts",
-  "style": "dist/index.css",
+  "styles": "dist/index.css",
   "typesVersions": {
     "*": {
       "*": [
@@ -52,12 +55,12 @@
     "dist"
   ],
   "scripts": {
-    "build:code": "MODE=lib vite build",
+    "build:code": "vite build",
     "build:tsc": "NODE_ENV=production vue-tsc --emitDeclarationOnly --project tsconfig.build.json",
     "build:providers": "jiti ./scripts/providers.ts",
     "build:dts": "jiti ./scripts/dts.ts",
     "build": "pnpm build:code && pnpm build:tsc && pnpm build:dts",
-    "dev": "MODE=playground vite",
+    "dev": "MODE=local vite playground",
     "lint": "eslint src",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
     "release": "bumpp package.json --commit \"release: v%s\" --push --all --tag",

@@ -193,6 +193,7 @@ defineExpose({
 .mce-select-range-box {
   position: absolute;
   border-width: 2px;
+  border-style: solid;
   color: rgba(var(--mce-theme-primary), 1);
   background-color: rgba(var(--mce-theme-primary), .1);
 }
@@ -205,6 +206,7 @@ defineExpose({
 .mce-selected-element-box {
   position: absolute;
   border-width: 2px;
+  border-style: solid;
   color: rgba(var(--mce-theme-primary), 1);
 }
 </style>

@@ -28,6 +28,7 @@ const hoverElementObb = computed(() => getObbInDrawboard(hoverElement.value))
 <style lang="scss">
 .mce-hover {
   position: absolute;
+  border-style: solid;
   border-width: 2px;
   color: rgba(var(--mce-theme-primary), 1);
 }
