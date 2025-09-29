@@ -487,6 +487,10 @@ function onScroll() {
   color: rgba(var(--mce-theme-on-surface), 1);
   overflow: hidden;
 
+  * {
+    box-sizing: border-box;
+  }
+
   &--edgeless {
     --mce-grid-opacity: 0.5;
     background-image: radial-gradient(rgba(var(--mce-theme-on-surface), var(--mce-grid-opacity)) 1px, rgba(var(--mce-theme-surface), var(--mce-grid-opacity)) 1px);
