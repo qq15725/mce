@@ -1,7 +1,7 @@
 {
   "name": "modern-canvas-editor",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "packageManager": "pnpm@9.15.1",
   "description": "Vue 2D WebGL editor, based modern-canvas. only the ESM.",
   "author": "wxm",
