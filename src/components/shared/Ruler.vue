@@ -293,6 +293,7 @@ function startDrag(e: MouseEvent, index: number) {
 .mce-ruler-refline {
   position: absolute;
   border-style: dashed;
+  border-width: 0;
   border-color: rgba(var(--mce-theme-primary), 1);
   pointer-events: auto !important;
 
