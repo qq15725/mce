@@ -1,3 +1,13 @@
+## [0.0.5](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.4...v0.0.5) (2025-09-29)
+
+
+### Bug Fixes
+
+* ruler style ([3054f37](https://github.com/qq15725/modern-canvas-editor/commit/3054f37b7b78c2ee80ce79d982a11070dd40a912))
+* style ([eace4e9](https://github.com/qq15725/modern-canvas-editor/commit/eace4e9343c013022644ad9697aa7caaaaf22c11))
+
+
+
 ## [0.0.4](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.3...v0.0.4) (2025-09-29)
 
 
