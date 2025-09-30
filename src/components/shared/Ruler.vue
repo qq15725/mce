@@ -302,6 +302,7 @@ function startDrag(e: MouseEvent, index: number) {
   top: 0;
 
   &__canvas {
+    display: block;
     pointer-events: auto;
     cursor: pointer;
     background-color: rgba(var(--mce-theme-surface), 1);
