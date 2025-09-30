@@ -37,10 +37,10 @@ export default definePlugin((editor) => {
     registerHotkey,
     registerCommand,
     camera,
-    log,
     drawboardAabb,
     viewAabb,
     config,
+    currentAabb,
     registerConfig,
   } = editor
 
@@ -60,7 +60,6 @@ export default definePlugin((editor) => {
     { key: 'zoomOut', accelerator: 'CmdOrCtrl+-' },
     { key: 'zoomTo100', accelerator: 'Alt+º' },
     { key: 'zoomToFit', accelerator: 'Alt+¡' },
-    { key: 'zoomToCover', accelerator: 'Alt+™' },
     { key: 'zoomToSelection', accelerator: 'Alt+™' },
   ])
 
@@ -76,13 +75,31 @@ export default definePlugin((editor) => {
     camera.value.setZoom(1)
   }
 
-  function _zoomToFit(mode: 'contain' | 'cover' = 'contain'): void {
-    // TODO 可能转移至实例
-    const offset = config.value.zoomToFitOffset
-    const tw = drawboardAabb.value.width - offset
-    const th = drawboardAabb.value.height - offset
-    const sw = viewAabb.value.width
-    const sh = viewAabb.value.height
+  // TODO 可能转移至实例
+  function _zoomToFit(
+    mode: 'contain' | 'cover',
+    selection = false,
+  ): void {
+    const targetAabb = selection
+      ? currentAabb.value
+      : viewAabb.value
+    const offset = { x: 0, y: 0 }
+    offset.x += config.value.zoomToFitOffset
+    offset.y += config.value.zoomToFitOffset
+    if (config.value.scrollbar) {
+      offset.x += 16
+      offset.y += 16
+    }
+    if (config.value.ruler) {
+      offset.x += 16
+      offset.y += 16
+    }
+    const tw = drawboardAabb.value.width - offset.x
+    const th = drawboardAabb.value.height - offset.y
+    const sx = targetAabb.left
+    const sy = targetAabb.top
+    const sw = targetAabb.width
+    const sh = targetAabb.height
     if (sw && sh) {
       const zw = tw / sw
       const zh = th / sh
@@ -92,8 +109,8 @@ export default definePlugin((editor) => {
           : Math.max(zw, zh),
       )
       const zoom = camera.value.zoom.x
-      let x = offset / 2
-      let y = offset / 2
+      let x = offset.x / 2
+      let y = offset.y / 2
       if (zw < zh) {
         y += (th - sh * zoom) / 2
       }
@@ -101,14 +118,14 @@ export default definePlugin((editor) => {
         x += (tw - sw * zoom) / 2
       }
       camera.value.position.set(
-        -viewAabb.value.left * zoom + x,
-        -viewAabb.value.top * zoom + y,
+        (-sx * zoom + x),
+        (-sy * zoom + y),
       )
     }
   }
 
   function zoomToFit(): void {
-    _zoomToFit()
+    _zoomToFit('contain')
   }
 
   function zoomToCover(): void {
@@ -116,7 +133,7 @@ export default definePlugin((editor) => {
   }
 
   function zoomToSelection(): void {
-    log('TODO zoomToSelection')
+    _zoomToFit('contain', true)
   }
 
   return () => {

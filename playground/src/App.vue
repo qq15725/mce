@@ -22,13 +22,12 @@ const editor = new Editor({
   defaultFont: { family: 'SourceHanSansCN-Normal', src: '/SourceHanSansCN-Normal.woff' },
   doc: {
     children: [
-      { foreground: '/example.png', text: 'I\'m PNG', style: { left: 10, top: 10, width: 100, height: 100 } },
-      { foreground: '/example.jpg', text: 'I\'m JPEG', style: { left: 120, top: 10, width: 100, height: 100 } },
-      { foreground: '/example.gif', text: 'I\'m GIF', style: { left: 230, top: 10, width: 100, height: 100 } },
-      { foreground: '/example.mp4', text: 'I\'m MP4', style: { left: 340, top: 10, width: 100, height: 100 } },
-      { text: 'test', style: { rotate: 40, left: 100, top: 100, width: 60, height: 40, fontSize: 20, color: '#FF00FF' } },
+      { foreground: '/example.png', text: 'I\'m PNG', style: { left: 10, top: 10, width: 500, height: 500 } },
+      { foreground: '/example.jpg', text: 'I\'m JPEG', style: { left: 520, top: 10, width: 500, height: 500 } },
+      { foreground: '/example.gif', text: 'I\'m GIF', style: { left: 1030, top: 10, width: 500, height: 500 } },
+      { text: 'test', style: { rotate: 40, left: 100, top: 500, width: 60, height: 40, fontSize: 20, color: '#FF00FF' } },
       {
-        style: { left: 200, top: 100, width: 100, height: 100, fontSize: 22 },
+        style: { left: 200, top: 500, width: 100, height: 100, fontSize: 22 },
         text: [
           {
             letterSpacing: 3,

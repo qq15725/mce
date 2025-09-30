@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      modern-canvas-editor:
-        specifier: ^0.0.3
-        version: 0.0.3(typescript@5.9.2)(vue@3.5.22(typescript@5.9.2))
       vue:
         specifier: ^3.5.22
         version: 3.5.22(typescript@5.9.2)
@@ -341,18 +338,6 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@floating-ui/core@1.7.3':
-    resolution: {integrity: sha512-sGnvb5dmrJaKEZ+LDIpguvdX3bDlEllmv4/ClQ9awcmCZrlx5jQyyMWFM5kBI+EyNOCDDiKk8il0zeuX3Zlg/w==}
-
-  '@floating-ui/dom@1.7.4':
-    resolution: {integrity: sha512-OOchDgh4F2CchOX94cRVqhvy7b3AFb+/rQXyswmzmGakRfkMgoWVjfnLWkRirfLEfuD4ysVW16eXzwt3jHIzKA==}
-
-  '@floating-ui/utils@0.2.10':
-    resolution: {integrity: sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==}
-
-  '@floating-ui/vue@1.1.9':
-    resolution: {integrity: sha512-BfNqNW6KA83Nexspgb9DZuz578R7HT8MZw1CfK9I6Ah4QReNWEJsXWHN+SdmOVLNGmTPDi+fDT535Df5PzMLbQ==}
-
   '@jridgewell/gen-mapping@0.3.13':
     resolution: {integrity: sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==}
 
@@ -501,9 +486,6 @@ packages:
   '@types/node@24.5.2':
     resolution: {integrity: sha512-FYxk1I7wPv3K2XBaoyH2cTnocQEu8AOZ60hPbsyukMPLv5/5qr7V1i8PLHdl6Zf87I+xZXFvPCXYjiTFq+YSDQ==}
 
-  '@types/web-bluetooth@0.0.21':
-    resolution: {integrity: sha512-oIQLCGWtcFZy2JW77j9k8nHzAOpqMHLQejDA48XXMWH6tjCQHz5RCFz1bzsmROyL6PUm+LLnUiI4BCn221inxA==}
-
   '@vitejs/plugin-vue@6.0.1':
     resolution: {integrity: sha512-+MaE752hU0wfPFJEUAIxqw18+20euHHdxVtMvbFcOEpjEyfqXH/5DCoTHiVJ0J29EhTJdoTkjEv5YBKU9dnoTw==}
     engines: {node: ^20.19.0 || >=22.12.0}
@@ -595,24 +577,6 @@ packages:
       vue:
         optional: true
 
-  '@vueuse/components@13.9.0':
-    resolution: {integrity: sha512-0DDFpjG3hEEK+3YgSzE/OzOGqpo/KmxcXWzW2YdmgahZvaoUdegn68GmbdcHRJE7CH55dDj13Cz47iN8QoI3jQ==}
-    peerDependencies:
-      vue: ^3.5.0
-
-  '@vueuse/core@13.9.0':
-    resolution: {integrity: sha512-ts3regBQyURfCE2BcytLqzm8+MmLlo5Ln/KLoxDVcsZ2gzIwVNnQpQOL/UKV8alUqjSZOlpFZcRNsLRqj+OzyA==}
-    peerDependencies:
-      vue: ^3.5.0
-
-  '@vueuse/metadata@13.9.0':
-    resolution: {integrity: sha512-1AFRvuiGphfF7yWixZa0KwjYH8ulyjDCC0aFgrGRz8+P4kvDFSdXLVfTk5xAN9wEuD1J6z4/myMoYbnHoX07zg==}
-
-  '@vueuse/shared@13.9.0':
-    resolution: {integrity: sha512-e89uuTLMh0U5cZ9iDpEI2senqPGfbPRTHM/0AaQkcxnpqjkZqDYP8rpfm7edOz8s+pOCOROEy1PIveSW8+fL5g==}
-    peerDependencies:
-      vue: ^3.5.0
-
   alien-signals@3.0.0:
     resolution: {integrity: sha512-JHoRJf18Y6HN4/KZALr3iU+0vW9LKG+8FMThQlbn4+gv8utsLIkwpomjElGPccGeNwh0FI2HN6BLnyFLo6OyLQ==}
 
@@ -642,9 +606,6 @@ packages:
 
   caniuse-lite@1.0.30001745:
     resolution: {integrity: sha512-ywt6i8FzvdgrrrGbr1jZVObnVv6adj+0if2/omv9cmR2oiZs30zL4DIyaptKcbOrBdOIc74QTMoJvSE2QHh5UQ==}
-
-  colord@2.9.3:
-    resolution: {integrity: sha512-jeC1axXpnb0/2nn/Y1LPuLdgXBLH7aDcHu4KEKfqw3CUhX7ZpfBSlPKyqXE6btIgEzfWtrX3/tyBCaCvXvMkOw==}
 
   convert-source-map@2.0.0:
     resolution: {integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==}
@@ -681,13 +642,6 @@ packages:
     resolution: {integrity: sha512-N+MeXYoqr3pOgn8xfyRPREN7gHakLYjhsHhWGT3fWAiL4IkAt0iDw14QiiEm2bE30c5XX5q0FtAA3CK5f9/BUg==}
     engines: {node: '>=12'}
 
-  diff@8.0.2:
-    resolution: {integrity: sha512-sSuxWU5j5SR9QQji/o2qMvqRNYRDOcBTgsJ/DeCf4iSN4gW+gNMXM7wFIP+fdXZxoNiAnHUTGjCr+TSWXdRDKg==}
-    engines: {node: '>=0.3.1'}
-
-  earcut@3.0.2:
-    resolution: {integrity: sha512-X7hshQbLyMJ/3RPhyObLARM2sNxxmRALLKx1+NVFFnQ9gKzmCrxm9+uLIAdBcvc8FNLpctqlQ2V6AE92Ol9UDQ==}
-
   electron-to-chromium@1.5.227:
     resolution: {integrity: sha512-ITxuoPfJu3lsNWUi2lBM2PaBPYgH3uqmxut5vmBxgYvyI4AlJ6P3Cai1O76mOrkJCBzq0IxWg/NtqOrpu/0gKA==}
 
@@ -723,15 +677,9 @@ packages:
       picomatch:
         optional: true
 
-  fflate@0.8.2:
-    resolution: {integrity: sha512-cPJU47OaAoCbg0pBvzsgpTPhmhqI5eJjh/JIu8tPj5q+T7iLvW/JAYUqmE7KOB4R1ZyEhzBaIQpQpardBF5z8A==}
-
   figures@6.1.0:
     resolution: {integrity: sha512-d+l3qxjSesT4V7v2fh+QnmFnUWv9lSpjarhShNTgBOfA0ttejbQUAlHLitbjkoRiDulW0OPoQPYIGhIC8ohejg==}
     engines: {node: '>=18'}
-
-  file-saver@2.0.5:
-    resolution: {integrity: sha512-P9bmyZ3h/PRG+Nzga+rbdI4OEpNDzAVyy74uVO9ATgzLK6VtAsYybF/+TOCvrc0MO793d6+42lLyZTw7/ArVzA==}
 
   fsevents@2.3.3:
     resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
@@ -790,9 +738,6 @@ packages:
     resolution: {integrity: sha512-LpB/54B+/2J5hqQ7imZHfdU31OlgQqx7ZicVlkm9kzg9/w8GKLEcFfJl/t7DCEDueOyBAD6zCCwTO6Fzs0NoEQ==}
     engines: {node: '>=16'}
 
-  isomorphic.js@0.2.5:
-    resolution: {integrity: sha512-PIeMbHqMt4DnUP3MA/Flc0HElYjMXArsw1qwJZcm9sqR8mq3l8NYizFMty0pWwE/tzIGH3EKK5+jes5mAr85yw==}
-
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
 
@@ -813,14 +758,6 @@ packages:
   kolorist@1.8.0:
     resolution: {integrity: sha512-Y+60/zizpJ3HRH8DCss+q95yr6145JXZo46OTpFvDZWLfRCE4qChOyk1b26nMaNpfHHgxagk9dXT5OP0Tfe+dQ==}
 
-  lib0@0.2.114:
-    resolution: {integrity: sha512-gcxmNFzA4hv8UYi8j43uPlQ7CGcyMJ2KQb5kZASw6SnAKAf10hK12i2fjrS3Cl/ugZa5Ui6WwIu1/6MIXiHttQ==}
-    engines: {node: '>=16'}
-    hasBin: true
-
-  lodash-es@4.17.21:
-    resolution: {integrity: sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==}
-
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
 
@@ -833,59 +770,6 @@ packages:
 
   mitt@3.0.1:
     resolution: {integrity: sha512-vKivATfr97l2/QBCYAkXYDbrIWPM2IIKEl7YPhjCvKlG3kE2gm+uBo6nEXK3M5/Ffh/FLpKExzOQ3JJoJGFKBw==}
-
-  modern-canvas-editor@0.0.3:
-    resolution: {integrity: sha512-AxRPcaRIzIUG6yfWHrDEjW+w5NAMaJ3waInHEcl5tXlqi6RyMOdQh2qz4KJUPQjLjFSQOFSnm5Iwkwl45Go1vg==}
-    peerDependencies:
-      lottie-web: ^5
-      modern-gif: ^2
-      modern-mp4: ^0
-      modern-openxml: ^1
-      modern-pdf: ^1
-      typescript: '>=4.7'
-      vue: ^3.5.0
-      yoga-layout: ^3
-    peerDependenciesMeta:
-      lottie-web:
-        optional: true
-      modern-gif:
-        optional: true
-      modern-mp4:
-        optional: true
-      modern-openxml:
-        optional: true
-      modern-pdf:
-        optional: true
-      typescript:
-        optional: true
-      yoga-layout:
-        optional: true
-
-  modern-canvas@0.9.6:
-    resolution: {integrity: sha512-xGotDQmTZHed4bLeoc8+/zQAXGoOBdEn9A7b7muTl7O7Xk8LpYx07MO6/8DcnF+WTKYVY4uY7AcXtLOQ1H3+ow==}
-    peerDependencies:
-      lottie-web: ^5
-      modern-gif: ^2
-      yoga-layout: ^3
-    peerDependenciesMeta:
-      lottie-web:
-        optional: true
-      modern-gif:
-        optional: true
-      yoga-layout:
-        optional: true
-
-  modern-font@0.4.4:
-    resolution: {integrity: sha512-Jsv8PQndQkwnRARMc+DauIHojqGSTP5pXZNeUsrnkGCxE1HNjFRux8wwufAPUYNht6s9iM1c1lrSRXuizfZ4eA==}
-
-  modern-idoc@0.9.11:
-    resolution: {integrity: sha512-9mEbErEzDyqq/vIZgpP8gEqTfY7VJWiDqlViEKUgS2sYDO8d83PSq182G1Lz2iwz7azRAZfYb0MArR0V6iLKGQ==}
-
-  modern-path2d@1.4.10:
-    resolution: {integrity: sha512-D9CI0rjmN7T4+yfchJ7HU7SqEjrdKyQHoFu7vilOePPyZcCuzdvyY+4jZo+ohfFASTAfSxUPs8SlxN6RI+OTRQ==}
-
-  modern-text@1.8.3:
-    resolution: {integrity: sha512-zN4G7QFy+MjD5Zpklty+wb40p0v8svqgSIOKV3o7iDgJOPv+cBG3NO+0OeEaUUhjS6pqUsMZ9CvWdFDTJg9E5A==}
 
   mrmime@2.0.1:
     resolution: {integrity: sha512-Y3wQdFg2Va6etvQ5I82yUhGdsKrcYox6p7FfL1LbK2J4V01F9TGlepTIhnK24t7koZibmg82KGglhA1XK5IsLQ==}
@@ -1131,17 +1015,6 @@ packages:
   vscode-uri@3.1.0:
     resolution: {integrity: sha512-/BpdSx+yCQGnCvecbyXdxHDkuk55/G3xwnC0GqY4gmQ3j+A+g8kzzgB4Nk/SINjqn6+waqw3EgbVF2QKExkRxQ==}
 
-  vue-demi@0.14.10:
-    resolution: {integrity: sha512-nMZBOwuzabUO0nLgIcc6rycZEebF6eeUfaiQx9+WSk8e29IbLvPU9feI6tqW4kTo3hvoYAJkMh8n8D0fuISphg==}
-    engines: {node: '>=12'}
-    hasBin: true
-    peerDependencies:
-      '@vue/composition-api': ^1.0.0-rc.1
-      vue: ^3.0.0-0 || ^2.6.0
-    peerDependenciesMeta:
-      '@vue/composition-api':
-        optional: true
-
   vue-tsc@3.1.0:
     resolution: {integrity: sha512-fbMynMG7kXSnqZTRBSCh9ROYaVpXfCZbEO0gY3lqOjLbp361uuS88n6BDajiUriDIF+SGLWoinjvf6stS2J3Gg==}
     hasBin: true
@@ -1172,10 +1045,6 @@ packages:
 
   yallist@3.1.1:
     resolution: {integrity: sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g==}
-
-  yjs@13.6.27:
-    resolution: {integrity: sha512-OIDwaflOaq4wC6YlPBy2L6ceKeKuF7DeTxx+jPzv1FHn9tCZ0ZwSRnUBxD05E3yed46fv/FWJbvR+Ud7x0L7zw==}
-    engines: {node: '>=16.0.0', npm: '>=8.0.0'}
 
   yoctocolors@2.1.2:
     resolution: {integrity: sha512-CzhO+pFNo8ajLM2d2IW/R93ipy99LWjtwblvC1RsoSUMZgyLbYFr221TnSNT7GjGdYui6P459mw9JH/g/zW2ug==}
@@ -1452,26 +1321,6 @@ snapshots:
   '@esbuild/win32-x64@0.25.10':
     optional: true
 
-  '@floating-ui/core@1.7.3':
-    dependencies:
-      '@floating-ui/utils': 0.2.10
-
-  '@floating-ui/dom@1.7.4':
-    dependencies:
-      '@floating-ui/core': 1.7.3
-      '@floating-ui/utils': 0.2.10
-
-  '@floating-ui/utils@0.2.10': {}
-
-  '@floating-ui/vue@1.1.9(vue@3.5.22(typescript@5.9.2))':
-    dependencies:
-      '@floating-ui/dom': 1.7.4
-      '@floating-ui/utils': 0.2.10
-      vue-demi: 0.14.10(vue@3.5.22(typescript@5.9.2))
-    transitivePeerDependencies:
-      - '@vue/composition-api'
-      - vue
-
   '@jridgewell/gen-mapping@0.3.13':
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
@@ -1572,8 +1421,6 @@ snapshots:
   '@types/node@24.5.2':
     dependencies:
       undici-types: 7.12.0
-
-  '@types/web-bluetooth@0.0.21': {}
 
   '@vitejs/plugin-vue@6.0.1(vite@7.1.7(@types/node@24.5.2))(vue@3.5.22(typescript@5.9.2))':
     dependencies:
@@ -1719,25 +1566,6 @@ snapshots:
       typescript: 5.9.2
       vue: 3.5.22(typescript@5.9.2)
 
-  '@vueuse/components@13.9.0(vue@3.5.22(typescript@5.9.2))':
-    dependencies:
-      '@vueuse/core': 13.9.0(vue@3.5.22(typescript@5.9.2))
-      '@vueuse/shared': 13.9.0(vue@3.5.22(typescript@5.9.2))
-      vue: 3.5.22(typescript@5.9.2)
-
-  '@vueuse/core@13.9.0(vue@3.5.22(typescript@5.9.2))':
-    dependencies:
-      '@types/web-bluetooth': 0.0.21
-      '@vueuse/metadata': 13.9.0
-      '@vueuse/shared': 13.9.0(vue@3.5.22(typescript@5.9.2))
-      vue: 3.5.22(typescript@5.9.2)
-
-  '@vueuse/metadata@13.9.0': {}
-
-  '@vueuse/shared@13.9.0(vue@3.5.22(typescript@5.9.2))':
-    dependencies:
-      vue: 3.5.22(typescript@5.9.2)
-
   alien-signals@3.0.0: {}
 
   ansi-styles@6.2.3: {}
@@ -1761,8 +1589,6 @@ snapshots:
       run-applescript: 7.1.0
 
   caniuse-lite@1.0.30001745: {}
-
-  colord@2.9.3: {}
 
   convert-source-map@2.0.0: {}
 
@@ -1790,10 +1616,6 @@ snapshots:
       default-browser-id: 5.0.0
 
   define-lazy-prop@3.0.0: {}
-
-  diff@8.0.2: {}
-
-  earcut@3.0.2: {}
 
   electron-to-chromium@1.5.227: {}
 
@@ -1853,13 +1675,9 @@ snapshots:
     optionalDependencies:
       picomatch: 4.0.3
 
-  fflate@0.8.2: {}
-
   figures@6.1.0:
     dependencies:
       is-unicode-supported: 2.1.0
-
-  file-saver@2.0.5: {}
 
   fsevents@2.3.3:
     optional: true
@@ -1897,8 +1715,6 @@ snapshots:
 
   isexe@3.1.1: {}
 
-  isomorphic.js@0.2.5: {}
-
   js-tokens@4.0.0: {}
 
   jsesc@3.1.0: {}
@@ -1908,12 +1724,6 @@ snapshots:
   json5@2.2.3: {}
 
   kolorist@1.8.0: {}
-
-  lib0@0.2.114:
-    dependencies:
-      isomorphic.js: 0.2.5
-
-  lodash-es@4.17.21: {}
 
   lru-cache@5.1.1:
     dependencies:
@@ -1926,54 +1736,6 @@ snapshots:
   memorystream@0.3.1: {}
 
   mitt@3.0.1: {}
-
-  modern-canvas-editor@0.0.3(typescript@5.9.2)(vue@3.5.22(typescript@5.9.2)):
-    dependencies:
-      '@floating-ui/vue': 1.1.9(vue@3.5.22(typescript@5.9.2))
-      '@vueuse/components': 13.9.0(vue@3.5.22(typescript@5.9.2))
-      '@vueuse/core': 13.9.0(vue@3.5.22(typescript@5.9.2))
-      diff: 8.0.2
-      file-saver: 2.0.5
-      lodash-es: 4.17.21
-      modern-canvas: 0.9.6
-      modern-font: 0.4.4
-      modern-idoc: 0.9.11
-      modern-text: 1.8.3
-      vue: 3.5.22(typescript@5.9.2)
-      yjs: 13.6.27
-    optionalDependencies:
-      typescript: 5.9.2
-    transitivePeerDependencies:
-      - '@vue/composition-api'
-
-  modern-canvas@0.9.6:
-    dependencies:
-      colord: 2.9.3
-      earcut: 3.0.2
-      modern-font: 0.4.4
-      modern-idoc: 0.9.11
-      modern-path2d: 1.4.10
-      modern-text: 1.8.3
-
-  modern-font@0.4.4:
-    dependencies:
-      fflate: 0.8.2
-
-  modern-idoc@0.9.11:
-    dependencies:
-      colord: 2.9.3
-      nanoid: 5.1.6
-
-  modern-path2d@1.4.10:
-    dependencies:
-      earcut: 3.0.2
-
-  modern-text@1.8.3:
-    dependencies:
-      diff: 8.0.2
-      modern-font: 0.4.4
-      modern-idoc: 0.9.11
-      modern-path2d: 1.4.10
 
   mrmime@2.0.1: {}
 
@@ -2200,10 +1962,6 @@ snapshots:
 
   vscode-uri@3.1.0: {}
 
-  vue-demi@0.14.10(vue@3.5.22(typescript@5.9.2)):
-    dependencies:
-      vue: 3.5.22(typescript@5.9.2)
-
   vue-tsc@3.1.0(typescript@5.9.2):
     dependencies:
       '@volar/typescript': 2.4.23
@@ -2233,9 +1991,5 @@ snapshots:
       is-wsl: 3.1.0
 
   yallist@3.1.1: {}
-
-  yjs@13.6.27:
-    dependencies:
-      lib0: 0.2.114
 
   yoctocolors@2.1.2: {}

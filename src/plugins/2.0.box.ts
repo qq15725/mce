@@ -16,6 +16,7 @@ declare global {
       getAabb: (node: Node | Node[] | undefined, inTarget?: 'drawboard' | 'frame') => AxisAlignedBoundingBox
       getAabbInDrawboard: (node?: Node | Node[]) => AxisAlignedBoundingBox
       rootAabb: ComputedRef<AxisAlignedBoundingBox>
+      currentAabb: ComputedRef<AxisAlignedBoundingBox>
     }
   }
 }
@@ -25,6 +26,7 @@ export default definePlugin((editor) => {
     provideProperties,
     camera,
     root,
+    currentElements,
     getAncestorFrame,
   } = editor
 
@@ -223,6 +225,7 @@ export default definePlugin((editor) => {
   }
 
   const rootAabb = computed(() => getAabb(root.value?.children ?? []))
+  const currentAabb = computed(() => getAabb(currentElements.value))
 
   provideProperties({
     obbToFit,
@@ -231,5 +234,6 @@ export default definePlugin((editor) => {
     getAabb,
     getAabbInDrawboard,
     rootAabb,
+    currentAabb,
   })
 })

@@ -123,7 +123,7 @@ export default definePlugin((editor) => {
         { key: 'zoomOut' },
         { key: 'zoomTo100' },
         { key: 'zoomToFit' },
-        { key: 'zoomToSelection' },
+        { key: 'zoomToSelection', disabled: !hasSelected.value },
       ],
     },
   ])
@@ -198,6 +198,8 @@ export default definePlugin((editor) => {
           { type: 'divider' },
           ...selectMenus.value,
           { type: 'divider' },
+          ...viewMenus.value,
+          { type: 'divider' },
           ...exportMenus.value,
         ]
       }
@@ -212,6 +214,8 @@ export default definePlugin((editor) => {
         { type: 'divider' },
         ...selectMenus.value,
         { type: 'divider' },
+        ...viewMenus.value,
+        { type: 'divider' },
         ...exportMenus.value,
       ]
     }
@@ -222,6 +226,8 @@ export default definePlugin((editor) => {
         ...editMenus2.value,
         { type: 'divider' },
         ...selectMenus.value,
+        { type: 'divider' },
+        ...viewMenus.value,
         { type: 'divider' },
         { key: 'new' },
         { key: 'open' },

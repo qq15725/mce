@@ -12,7 +12,6 @@
     "type-check": "vue-tsc --build"
   },
   "dependencies": {
-    "modern-canvas-editor": "^0.0.3",
     "vue": "^3.5.22"
   },
   "devDependencies": {

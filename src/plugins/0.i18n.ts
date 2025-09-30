@@ -19,7 +19,7 @@ export default definePlugin((editor) => {
         .replace(/\/([a-z])/g, (raw, matched) => {
           return raw.replace(matched, matched.toUpperCase())
         })
-        .replace(/([a-z])([A-Z])/g, '$1 $2')
+        .replace(/([a-z])([0-9A-Z])/g, '$1 $2')
         .replace(/:/g, ' ')
         .trim()
 
