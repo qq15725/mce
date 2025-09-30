@@ -221,11 +221,14 @@ export default definePlugin((editor) => {
         { type: 'divider' },
         ...editMenus2.value,
         { type: 'divider' },
-        ...layerMenus1.value,
-        { type: 'divider' },
         ...selectMenus.value,
         { type: 'divider' },
+        { key: 'new' },
+        { key: 'open' },
+        { type: 'divider' },
+        { key: 'import' },
         ...exportMenus.value,
+        { type: 'divider' },
         { key: 'preferences' },
       ]
     }

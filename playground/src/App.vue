@@ -22,7 +22,8 @@ const editor = new Editor({
   defaultFont: { family: 'SourceHanSansCN-Normal', src: '/SourceHanSansCN-Normal.woff' },
   doc: {
     children: [
-      { foreground: '/example.png', style: { rotate: 60, left: 200, top: 10, width: 50, height: 50 } },
+      { foreground: '/example.png', style: { rotate: 60, left: 100, top: 10, width: 50, height: 50 } },
+      { foreground: '/example.jpg', style: { left: 200, top: 10, width: 50, height: 50 } },
       { text: 'test', style: { rotate: 40, left: 100, top: 100, width: 60, height: 40, fontSize: 20, color: '#FF00FF' } },
       {
         style: { left: 200, top: 100, width: 100, height: 100, fontSize: 22 },
