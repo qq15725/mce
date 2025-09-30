@@ -1,3 +1,17 @@
+## [0.0.6](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.5...v0.0.6) (2025-09-30)
+
+
+### Bug Fixes
+
+* style ([85fa17c](https://github.com/qq15725/modern-canvas-editor/commit/85fa17c79e208fcc94eb5b6a81674a95f4298122))
+
+
+### Features
+
+* update ([657d606](https://github.com/qq15725/modern-canvas-editor/commit/657d6069aa96a08ccfb8a1617b128dd99dbd9d30))
+
+
+
 ## [0.0.5](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.4...v0.0.5) (2025-09-29)
 
 
