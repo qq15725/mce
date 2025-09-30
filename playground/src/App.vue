@@ -1,15 +1,11 @@
 <script setup lang="ts">
 // import { Drawboard, Editor } from 'modern-canvas-editor'
-import { onBeforeMount } from 'vue'
 import { Drawboard, Editor } from '../../src'
 // import 'modern-canvas-editor/styles'
 
 const editor = new Editor({
-  fallbackFont: { family: 'SourceHanSansCN-Normal', src: '/SourceHanSansCN-Normal.woff' },
-})
-
-onBeforeMount(async () => {
-  editor.setDoc({
+  defaultFont: { family: 'SourceHanSansCN-Normal', src: '/SourceHanSansCN-Normal.woff' },
+  doc: {
     children: [
       {
         style: { rotate: 60, left: 200, top: 10, width: 50, height: 50 },
@@ -34,7 +30,7 @@ onBeforeMount(async () => {
         ],
       },
     ],
-  })
+  },
 })
 </script>
 

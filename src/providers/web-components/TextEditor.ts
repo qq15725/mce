@@ -266,6 +266,7 @@ export class TextEditor extends HTMLElement implements PropertyAccessor {
     padding: 0;
     border: 0;
     white-space: pre;
+    resize: none;
   }
 
   .selection {

@@ -1,5 +1,6 @@
 import type { RemovableRef } from '@vueuse/core'
 import type { FontSource } from 'modern-font'
+import type { Document } from 'modern-idoc'
 import type { App, InjectionKey } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
 import { merge } from 'lodash-es'
@@ -16,7 +17,8 @@ export interface EditorOptions {
   providers?: EditorProvider[]
   configCacheInLocal?: boolean
   config?: DeepPartial<Mce.Config>
-  fallbackFont?: FontSource
+  defaultFont?: FontSource
+  doc?: Document
 }
 
 export interface Editor extends Mce.Editor {
@@ -47,8 +49,11 @@ export class Editor extends EventEmitter<Mce.Events> {
 
     this._setupEventEmitter()
     this._setupOptions(options)
-    if (options.fallbackFont) {
-      this.setFallbackFont(options.fallbackFont)
+    if (options.defaultFont) {
+      this.setFallbackFont(options.defaultFont)
+    }
+    if (options.doc) {
+      this.setDoc(options.doc)
     }
   }
 
