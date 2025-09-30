@@ -170,7 +170,7 @@ defineExpose({
     </template>
   </Transformable>
 
-  <template v-if="$slots.default">
+  <template v-if="currentObb.width && currentObb.height && $slots.default">
     <div
       style="position: absolute;"
       :style="boundingBoxToStyle(currentObb)"
