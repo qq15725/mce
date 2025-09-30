@@ -1,4 +1,4 @@
-import type { AlignedPlacement, Side } from '@floating-ui/vue'
+import type { AlignedPlacement, ReferenceElement, Side } from '@floating-ui/vue'
 import type { ComputedRef, InjectionKey, PropType } from 'vue'
 import { computed, getCurrentInstance, inject, onScopeDispose, provide, ref } from 'vue'
 import { propsFactory } from '../utils/propsFactory'
@@ -22,7 +22,7 @@ export const MceOverlaySymbol: InjectionKey<MceOverlayProvide> = Symbol.for('Mce
 export const makeMceOverlayProps = propsFactory({
   location: String as PropType<Side | AlignedPlacement>,
   offset: Number,
-  target: Object as PropType<any>,
+  target: Object as PropType<{ x: number, y: number } | ReferenceElement>,
   attach: {
     type: [String, Boolean, Object] as PropType<string | boolean | Element | null | undefined>,
     default: undefined,

@@ -1,21 +1,22 @@
 import type { RemovableRef } from '@vueuse/core'
+import type { FontSource } from 'modern-font'
 import type { App, InjectionKey } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
 import { merge } from 'lodash-es'
 import { EventEmitter } from 'modern-idoc'
 import { ref } from 'vue'
-import TextPlugin from './plugins/text'
 import { presetProviders } from './preset-providers'
 
 type DeepPartial<T> = T extends object
   ? { [P in keyof T]?: DeepPartial<T[P]> }
   : T
 
-export interface EditorOptions extends Partial<Omit<Editor, 'config' | 'debug'>> {
+export interface EditorOptions {
   debug?: boolean
   providers?: EditorProvider[]
   configCacheInLocal?: boolean
   config?: DeepPartial<Mce.Config>
+  fallbackFont?: FontSource
 }
 
 export interface Editor extends Mce.Editor {
@@ -35,17 +36,20 @@ export class Editor extends EventEmitter<Mce.Events> {
     }
   }
 
-  constructor(options?: EditorOptions) {
+  constructor(options: EditorOptions = {}) {
     super()
 
-    this.debug.value = options?.debug || false
+    this.debug.value = options.debug || false
     const defaultConfig = { version: '0.0.0' } as Mce.Config
-    this.config = options?.configCacheInLocal
-      ? useLocalStorage<Mce.Config>('config:dev:v9', () => defaultConfig)
+    this.config = options.configCacheInLocal
+      ? useLocalStorage<Mce.Config>('config', () => defaultConfig)
       : ref(defaultConfig)
 
     this._setupEventEmitter()
     this._setupOptions(options)
+    if (options.fallbackFont) {
+      this.setFallbackFont(options.fallbackFont)
+    }
   }
 
   protected _setupEventEmitter(): void {
@@ -121,8 +125,6 @@ export class Editor extends EventEmitter<Mce.Events> {
 
   install = (app: App): void => {
     app.provide(Editor.injectionKey, this)
-
-    app.use(TextPlugin)
   }
 }
 

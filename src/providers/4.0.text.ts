@@ -1,6 +1,7 @@
 import { Element2D } from 'modern-canvas'
 import { measureText } from 'modern-text'
 import { defineProvider } from '../editor'
+import { TextEditor } from './web-components/TextEditor'
 
 declare global {
   namespace Mce {
@@ -143,4 +144,8 @@ export default defineProvider((editor) => {
     textFontSizeToFit,
     textToFit,
   })
+
+  return () => {
+    TextEditor.register()
+  }
 })

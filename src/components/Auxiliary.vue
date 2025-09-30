@@ -5,7 +5,7 @@ const { auxiliaryLines } = useEditor()
 </script>
 
 <template>
-  <div class="mce-auxiliary" data-title="辅助线">
+  <div class="mce-auxiliary">
     <div
       v-for="(item, key) in auxiliaryLines"
       :key="key"

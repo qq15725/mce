@@ -27,7 +27,6 @@ function onMousedown(e: MouseEvent) {
   <div
     v-if="status === 'drawing'"
     class="mce-drawing"
-    data-title="绘制中"
     :style="{
       left: `${x}px`,
       top: `${y}px`,

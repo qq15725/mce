@@ -41,22 +41,6 @@ onBeforeUnmount(() => {
   drawboardDom.value?.removeEventListener('contextmenu', onContextmenu)
 })
 
-const virtualEl = {
-  getBoundingClientRect() {
-    const { x, y } = position.value
-    return {
-      x,
-      y,
-      left: x,
-      top: y,
-      bottom: 0,
-      right: 0,
-      width: 0,
-      height: 0,
-    }
-  },
-}
-
 function onClickItem(item: any) {
   const key = item.key
   const [name, ...params] = key.split(':')
@@ -74,9 +58,8 @@ defineExpose({
     v-model="model"
     :offset="10"
     class="mce-context-menu"
-    :target="virtualEl"
+    :target="position"
     location="bottom-start"
-    data-title="上下文菜单"
     :items="contextMenus"
     @click:item="onClickItem"
   >

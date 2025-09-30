@@ -36,7 +36,6 @@ defineExpose({
   <Overlay
     ref="overlayTplRef"
     class="mce-floatbar"
-    data-title="浮动工具条"
     :location="props.location"
     :offset="props.offset"
     :target="props.target"

@@ -34,7 +34,32 @@ const isActive = computed({
   set: val => emit('update:modelValue', val),
 })
 const activatorEl = ref<any>()
-const target = computed(() => props.target ?? activatorEl.value)
+const virtualElement = {
+  getBoundingClientRect() {
+    const { x = 0, y = 0 } = props.target as any
+    return {
+      x,
+      y,
+      left: x,
+      top: y,
+      bottom: 0,
+      right: 0,
+      width: 0,
+      height: 0,
+    }
+  },
+}
+const target = computed(() => {
+  if (
+    typeof props.target === 'object'
+    && !(props.target instanceof Element)
+    && 'x' in props.target
+    && 'y' in props.target
+  ) {
+    return virtualElement
+  }
+  return props.target ?? activatorEl.value
+})
 const contentEl = useTemplateRef('contentElTpl')
 const attach = computed(() => props.attach ?? overlayItem.attach?.value ?? 'body')
 

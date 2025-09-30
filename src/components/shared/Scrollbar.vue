@@ -130,7 +130,6 @@ onBeforeUnmount(() => {
   <div
     v-resize-observer="resize"
     v-on-long-press="[startAmount, { delay: AMOUNT_REPEAR_DELAY, onMouseUp: stopAmount }]"
-    data-title="滚动条"
     class="mce-scrollbar"
     :class="{
       'mce-scrollbar--vertical': props.vertical,

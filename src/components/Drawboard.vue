@@ -8,6 +8,7 @@ import {
   onBeforeMount,
   onBeforeUnmount,
   onMounted,
+  provide,
   ref,
   useTemplateRef,
 } from 'vue'
@@ -19,6 +20,7 @@ import {
   defaultResizeStrategy,
   makeMceStrategyProps,
 } from '../composables/strategy'
+import { Editor } from '../editor'
 import { boundingBoxToStyle, isPointInsideAabb } from '../utils/box'
 import { easeInOut } from '../utils/easing'
 import Auxiliary from './Auxiliary.vue'
@@ -41,11 +43,21 @@ const props = defineProps({
     activeStrategy: defaultActiveStrategy,
     hoverStrategy: defaultHoverStrategy,
   }),
+  editor: Editor,
 })
 
 const emit = defineEmits<{
   'dblclick:drawboard': [event: Event]
 }>()
+
+let editor
+if (props.editor) {
+  provide(Editor.injectionKey, props.editor)
+  editor = props.editor
+}
+else {
+  editor = useEditor()
+}
 
 const {
   config,
@@ -68,7 +80,7 @@ const {
   selectedElements,
   getAabbInDrawboard,
   drawboardAabb,
-} = useEditor()
+} = editor
 
 const overlayContainer = useTemplateRef('overlayContainerTpl')
 const canvas = useTemplateRef('canvasRef')
@@ -384,7 +396,6 @@ function onScroll() {
     >
       <canvas
         ref="canvasRef"
-        data-title="渲染"
         class="mce-drawboard__canvas"
       />
 
@@ -408,8 +419,7 @@ function onScroll() {
             name="active-element-teleport"
             :active-element="activeElement"
             :props="{
-              'data-title': '元素工具',
-              'style': {
+              style: {
                 position: 'absolute',
                 pointerEvents: 'none',
                 ...boundingBoxToStyle(obb),

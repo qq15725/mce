@@ -77,7 +77,6 @@ defineExpose({
 <template>
   <div
     v-show="activeElement && status === 'typing'"
-    data-title="文字内容编辑器"
     class="mce-text-editor"
     :style="{
       ...mainStyleWithScale,

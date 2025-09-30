@@ -2,7 +2,7 @@ import type {
   NormalizedFragment,
   NormalizedParagraph,
   NormalizedTextContent,
-  PropertyAccessor
+  PropertyAccessor,
 } from 'modern-idoc'
 import type { Character } from 'modern-text'
 import { diffChars } from 'diff'
@@ -73,13 +73,17 @@ export class TextEditor extends HTMLElement implements PropertyAccessor {
   @property({ fallback: () => ([] as IndexCharacter[]) }) declare chars: IndexCharacter[]
   @property({ fallback: () => ([] as IndexCharacter[]) }) declare selectedChars: IndexCharacter[]
   @property() declare cursorPosition?: { left: number, top: number, width: number, height: number, color: string }
-  @property({ fallback: false  }) declare showCursor: boolean
+  @property({ fallback: false }) declare showCursor: boolean
 
   prevSelection = [0, 0]
   composition = false
 
+  protected static _defined = false
   static register(): void {
-    customElements.define('text-editor', this)
+    if (!this._defined) {
+      this._defined = true
+      customElements.define('text-editor', this)
+    }
   }
 
   protected _text = new Text()
@@ -682,7 +686,8 @@ export class TextEditor extends HTMLElement implements PropertyAccessor {
         if (!boxes) {
           deleted.push(element)
           continue
-        } else if (!element) {
+        }
+        else if (!element) {
           element = document.createElement('div')
           this.$selection.append(element)
         }
@@ -716,7 +721,8 @@ export class TextEditor extends HTMLElement implements PropertyAccessor {
       this.$cursor.style.top = `${cursorPosition.top - this.text.glyphBox.top}px`
       this.$cursor.style.height = this.text.isVertical ? '1px' : `${cursorPosition.height}px`
       this.$cursor.style.width = this.text.isVertical ? `${cursorPosition.width}px` : '1px'
-    } else {
+    }
+    else {
       this.$cursor.style.display = 'none'
     }
     this.$cursor.classList.remove('blink')

@@ -3,6 +3,7 @@ import type { AxisAlignedBoundingBox } from '../../types'
 import { vResizeObserver } from '@vueuse/components'
 import { useDebounceFn } from '@vueuse/core'
 import { computed, onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from 'vue'
+import Tooltip from './Tooltip.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -12,17 +13,21 @@ const props = withDefaults(
     offset?: number
     color?: string
     aabb?: AxisAlignedBoundingBox
+    pixelRatio?: number
   }>(),
   {
     size: 20,
     zoom: 1,
     offset: 0,
     color: '#aaa6',
+    pixelRatio: window.devicePixelRatio || 1,
   },
 )
 
-const pixelRatio = ref(window.devicePixelRatio || 1)
-const canvas = useTemplateRef('canvasTplRef')
+const pixelRatio = computed(() => props.pixelRatio)
+const tipText = ref<string>()
+const tipPos = ref({ x: 0, y: 0 })
+const canvas = useTemplateRef('canvasTpl')
 const offscreenCanvas = 'OffscreenCanvas' in window
   ? new OffscreenCanvas(props.size, props.size)
   : document.createElement('canvas')
@@ -197,12 +202,18 @@ function getTick(e: MouseEvent) {
   )
 }
 
-function onMove(e: MouseEvent) {
-  tempLine.value = getTick(e)
+function onMove(e: MouseEvent, temp = false) {
+  const tick = getTick(e)
+  if (temp) {
+    tempLine.value = tick
+  }
+  tipText.value = `${tick}px`
+  tipPos.value = { x: e.clientX, y: e.clientY }
 }
 
 function onLeave() {
   tempLine.value = undefined
+  tipText.value = undefined
 }
 
 function onClick(e: MouseEvent) {
@@ -236,8 +247,6 @@ function startDrag(e: MouseEvent, index: number) {
 <template>
   <div
     v-for="(item, index) in lines" :key="index"
-    data-title="参考线"
-    :data-tip="`${item}px`"
     class="mce-ruler-refline"
     :class="{
       'mce-ruler-refline--vertical': props.vertical,
@@ -245,20 +254,19 @@ function startDrag(e: MouseEvent, index: number) {
       'mce-ruler-refline--temp': item === tempLine,
     }"
     :style="{
-      [props.vertical ? 'height' : 'width']: '1px',
+      [props.vertical ? 'height' : 'width']: '0',
       [props.vertical ? 'width' : 'height']: '100%',
       [props.vertical ? 'top' : 'left']: `${logic2ui(item)}px`,
       [props.vertical ? 'left' : 'top']: 0,
     }"
     @dblclick="onDblclick(index)"
     @mousedown.stop="startDrag($event, index)"
+    @mousemove="onMove"
+    @mouseleave="onLeave"
   />
 
   <div
     v-resize-observer="resize"
-    data-title="标尺"
-    :data-tip="tempLine !== undefined ? `${tempLine}px` : undefined"
-    data-tip-target="cursor"
     class="mce-ruler"
     :style="{
       width: props.vertical ? `${props.size}px` : '100%',
@@ -266,15 +274,25 @@ function startDrag(e: MouseEvent, index: number) {
     }"
   >
     <canvas
-      ref="canvasTplRef"
+      ref="canvasTpl"
       class="mce-ruler__canvas"
       :width="props.size"
       :height="props.size"
-      @mousemove="onMove"
+      @mousemove="onMove($event, true)"
       @mouseleave="onLeave"
       @click="onClick"
     />
   </div>
+
+  <Tooltip
+    :model-value="!!tipText"
+    :target="tipPos"
+    :offset="24"
+  >
+    <div style="font-size: 12px; text-wrap: nowrap">
+      {{ tipText }}
+    </div>
+  </Tooltip>
 </template>
 
 <style lang="scss">

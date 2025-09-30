@@ -16,7 +16,6 @@ const hoverElementObb = computed(() => getObbInDrawboard(hoverElement.value))
   <div
     v-if="hoverElement && !hoverElement.equal(activeElement)"
     class="mce-hover"
-    data-title="悬停元素盒"
     :data-name="hoverElement.name"
     :style="{
       borderColor: 'currentcolor',

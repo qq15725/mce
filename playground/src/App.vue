@@ -1,15 +1,14 @@
 <script setup lang="ts">
-import { Drawboard, useEditor } from 'modern-canvas-editor'
+// import { Drawboard, Editor } from 'modern-canvas-editor'
 import { onBeforeMount } from 'vue'
+import { Drawboard, Editor } from '../../src'
+// import 'modern-canvas-editor/styles'
 
-const editor = useEditor()
+const editor = new Editor({
+  fallbackFont: { family: 'SourceHanSansCN-Normal', src: '/SourceHanSansCN-Normal.woff' },
+})
 
 onBeforeMount(async () => {
-  await editor.setFallbackFont({
-    family: 'SourceHanSansCN-Normal',
-    src: '/SourceHanSansCN-Normal.woff',
-  })
-
   editor.setDoc({
     children: [
       {
@@ -26,25 +25,12 @@ onBeforeMount(async () => {
           {
             letterSpacing: 3,
             fragments: [
-              {
-                content: 'He',
-                color: '#00FF00',
-                fontSize: 12,
-              },
-              {
-                content: 'llo',
-                color: '#000000',
-              },
+              { content: 'He', color: '#00FF00', fontSize: 12 },
+              { content: 'llo', color: '#000000' },
             ],
           },
-          {
-            content: ', ',
-            color: '#FF0000',
-          },
-          {
-            content: 'World!',
-            color: '#0000FF',
-          },
+          { content: ', ', color: '#FF0000' },
+          { content: 'World!', color: '#0000FF' },
         ],
       },
     ],
@@ -54,6 +40,6 @@ onBeforeMount(async () => {
 
 <template>
   <div style="width: 100vw; height: 100vh">
-    <Drawboard />
+    <Drawboard :editor="editor" />
   </div>
 </template>

@@ -123,7 +123,6 @@ defineExpose({
 <template>
   <div
     v-for="(obb, index) in parentObbs" :key="index"
-    data-title="所有父元素盒"
     class="mce-parent-element-box"
     :style="{
       borderColor: 'currentColor',
@@ -134,7 +133,6 @@ defineExpose({
   <div
     v-if="status === 'selecting'"
     class="mce-select-range-box"
-    data-title="多选框选盒"
     :style="{
       borderColor: 'currentcolor',
       ...boundingBoxToStyle(props.selectedArea),
@@ -146,7 +144,6 @@ defineExpose({
       v-for="(item, index) in selectedElementBoxes"
       :key="index"
       class="mce-selected-element-box"
-      data-title="多选元素盒"
       :data-name="item.name"
       :style="{
         borderColor: 'currentcolor',
@@ -162,8 +159,6 @@ defineExpose({
     :moveable="activeElement && !isLockedElement(activeElement)"
     :resize-strategy="props.resizeStrategy"
     handle-strategy="point"
-    data-title="激活元素盒"
-    :data-name="activeElement?.name"
     class="mce-element-box"
     :border-style="selectedElements.length ? 'dashed' : 'solid'"
     :get-tip-text="getTipText"

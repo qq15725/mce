@@ -10,7 +10,7 @@ const props = defineProps({
   }),
 })
 
-const model = defineModel<boolean>()
+const isActive = defineModel<boolean>()
 const overlay = useTemplateRef('overlayTpl')
 
 function updateLocation() {
@@ -25,14 +25,18 @@ defineExpose({
 <template>
   <Overlay
     ref="overlayTpl"
+    v-model="isActive"
     class="mce-tooltip"
     :location="props.location"
     :offset="props.offset"
     :target="props.target"
     :attach="props.attach"
-    model-value
   >
-    <template v-if="model">
+    <template v-if="$slots.activator" #activator="activatorProps">
+      <slot name="activator" v-bind="activatorProps" />
+    </template>
+
+    <template v-if="isActive">
       <slot />
     </template>
   </Overlay>
