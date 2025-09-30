@@ -35,6 +35,7 @@ export default definePlugin((editor) => {
     setActiveFrame,
     setState,
     to,
+    waitUntilFontLoad,
   } = editor
 
   function getDoc(): NormalizedDocument {
@@ -43,8 +44,11 @@ export default definePlugin((editor) => {
 
   async function setDoc(doc: Document): Promise<DocModel | undefined> {
     setState('loading')
+
     const mDoc = new DocModel({ id: doc.id || idGenerator() }, editor)
+
     try {
+      await waitUntilFontLoad()
       const model = mDoc
       clearDoc()
       await model.load(() => {
