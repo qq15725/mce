@@ -15,6 +15,7 @@ export default definePlugin((editor) => {
   const {
     registerExporter,
     to,
+    fonts,
   } = editor
 
   registerExporter('jpeg', createImageExporter('jpeg'))
@@ -27,6 +28,7 @@ export default definePlugin((editor) => {
 
       const canvas = await render({
         data: doc,
+        fonts,
         width: (doc as any).style!.width,
         height: (doc as any).style!.height,
       })

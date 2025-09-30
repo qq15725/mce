@@ -26,7 +26,7 @@ export default definePlugin((editor) => {
     registerHotkey,
     registerCommand,
     setSelectedElements,
-    activeFrame,
+    root,
     setActiveElement,
     activeElement,
   } = editor
@@ -48,7 +48,7 @@ export default definePlugin((editor) => {
   ])
 
   function selectAll(): void {
-    setSelectedElements([...activeFrame.value?.children ?? []] as Element2D[])
+    setSelectedElements([...root.value?.children ?? []] as Element2D[])
   }
 
   function deselectAll() {
