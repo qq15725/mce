@@ -1,5 +1,5 @@
 import './typed-global.d.ts'
-import './typed-providers.d.ts'
+import './typed-plugins.d.ts'
 
 export { default as Drawboard } from './components/Drawboard.vue'
 export * from './composables'

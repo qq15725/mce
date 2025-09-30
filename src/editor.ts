@@ -6,7 +6,7 @@ import { useLocalStorage } from '@vueuse/core'
 import { merge } from 'lodash-es'
 import { EventEmitter } from 'modern-idoc'
 import { ref } from 'vue'
-import { presetProviders } from './preset-providers'
+import { presetPlugins } from './preset-plugins'
 
 type DeepPartial<T> = T extends object
   ? { [P in keyof T]?: DeepPartial<T[P]> }
@@ -14,7 +14,7 @@ type DeepPartial<T> = T extends object
 
 export interface EditorOptions {
   debug?: boolean
-  providers?: EditorProvider[]
+  plugins?: EditorPlugin[]
   configCacheInLocal?: boolean
   config?: DeepPartial<Mce.Config>
   defaultFont?: FontSource
@@ -76,7 +76,7 @@ export class Editor extends EventEmitter<Mce.Events> {
 
   protected _setupOptions(options: EditorOptions = {}): void {
     const {
-      providers = [],
+      plugins = [],
       config,
       ...properties
     } = options
@@ -85,15 +85,15 @@ export class Editor extends EventEmitter<Mce.Events> {
 
     this.provideProperties(properties as any)
 
-    const allProviders = [
-      ...presetProviders,
-      ...providers,
+    const allPlugins = [
+      ...presetPlugins,
+      ...plugins,
     ]
 
     const installs: any[] = []
 
-    const use = (provider: EditorProvider): void => {
-      const result = provider(this)
+    const use = (plugin: EditorPlugin): void => {
+      const result = plugin(this)
       switch (typeof result) {
         case 'object':
           if (Array.isArray(result)) {
@@ -110,10 +110,8 @@ export class Editor extends EventEmitter<Mce.Events> {
       }
     }
 
-    // Use providers
-    allProviders.map(use)
+    allPlugins.map(use)
 
-    // Install providers
     installs.forEach(install => (install as any)?.(this))
   }
 
@@ -133,9 +131,9 @@ export class Editor extends EventEmitter<Mce.Events> {
   }
 }
 
-export type EditorProvider = (editor: Editor) =>
+export type EditorPlugin = (editor: Editor) =>
   | ((editor: Editor) => void)
-  | EditorProvider[]
+  | EditorPlugin[]
   | Record<string, any>
   | undefined
   | void
@@ -144,6 +142,6 @@ export function createEditor(options?: EditorOptions): Editor {
   return new Editor(options)
 }
 
-export function defineProvider(cb: EditorProvider): EditorProvider {
+export function definePlugin(cb: EditorPlugin): EditorPlugin {
   return cb
 }
