@@ -8,15 +8,10 @@ import { EventEmitter } from 'modern-idoc'
 import { ref } from 'vue'
 import { presetPlugins } from './preset-plugins'
 
-type DeepPartial<T> = T extends object
-  ? { [P in keyof T]?: DeepPartial<T[P]> }
-  : T
-
-export interface EditorOptions {
+export interface EditorOptions extends Partial<Mce.Config> {
   debug?: boolean
   plugins?: EditorPlugin[]
   configCacheInLocal?: boolean
-  config?: DeepPartial<Mce.Config>
   defaultFont?: FontSource
   doc?: Document
 }
@@ -26,35 +21,17 @@ export interface Editor extends Mce.Editor {
 }
 
 export class Editor extends EventEmitter<Mce.Events> {
-  debug = ref(false)
-  config: RemovableRef<Mce.Config>
-  onEmit?: <K extends keyof Mce.Events>(event: K, ...args: Mce.Events[K]) => void
-
   static injectionKey: InjectionKey<Editor> = Symbol.for('EditorKey')
 
-  log = (...args: any[]): void => {
-    if (this.debug.value) {
-      console.warn(`[mce][${new Date().toLocaleTimeString()}]`, ...args)
-    }
-  }
+  debug = ref(false)
+  declare config: RemovableRef<Mce.Config>
+  onEmit?: <K extends keyof Mce.Events>(event: K, ...args: Mce.Events[K]) => void
 
   constructor(options: EditorOptions = {}) {
     super()
 
-    this.debug.value = options.debug || false
-    const defaultConfig = { version: '0.0.0' } as Mce.Config
-    this.config = options.configCacheInLocal
-      ? useLocalStorage<Mce.Config>('config', () => defaultConfig)
-      : ref(defaultConfig)
-
     this._setupEventEmitter()
     this._setupOptions(options)
-    if (options.defaultFont) {
-      this.setFallbackFont(options.defaultFont)
-    }
-    if (options.doc) {
-      this.setDoc(options.doc)
-    }
   }
 
   protected _setupEventEmitter(): void {
@@ -69,27 +46,49 @@ export class Editor extends EventEmitter<Mce.Events> {
     this.emit = this.emit.bind(this)
   }
 
-  emit<K extends keyof Mce.Events>(event: K, ...args: Mce.Events[K]): void {
+  log = (...args: any[]): void => {
+    if (this.debug.value) {
+      console.warn(`[mce][${new Date().toLocaleTimeString()}]`, ...args)
+    }
+  }
+
+  emit = <K extends keyof Mce.Events>(event: K, ...args: Mce.Events[K]): void => {
     this.onEmit?.(event, ...args)
     super.emit(event, ...args)
   }
 
   protected _setupOptions(options: EditorOptions = {}): void {
     const {
+      debug = false,
       plugins = [],
-      config,
-      ...properties
+      configCacheInLocal,
+      defaultFont,
+      doc,
+      ...config
     } = options
+
+    this.debug.value = debug
+    this.config = configCacheInLocal
+      ? useLocalStorage<Mce.Config>('config', () => ({} as any))
+      : ref({} as any)
 
     merge(this.config.value, config)
 
-    this.provideProperties(properties as any)
-
-    const allPlugins = [
+    this._setupPlugins([
       ...presetPlugins,
       ...plugins,
-    ]
+    ])
 
+    if (defaultFont) {
+      this.setFallbackFont(defaultFont)
+    }
+
+    if (doc) {
+      this.setDoc(doc)
+    }
+  }
+
+  protected _setupPlugins(plugins: EditorPlugin[]): void {
     const installs: any[] = []
 
     const use = (plugin: EditorPlugin): void => {
@@ -110,7 +109,7 @@ export class Editor extends EventEmitter<Mce.Events> {
       }
     }
 
-    allPlugins.map(use)
+    plugins.map(use)
 
     installs.forEach(install => (install as any)?.(this))
   }
@@ -131,16 +130,16 @@ export class Editor extends EventEmitter<Mce.Events> {
   }
 }
 
+export function createEditor(options?: EditorOptions): Editor {
+  return new Editor(options)
+}
+
 export type EditorPlugin = (editor: Editor) =>
   | ((editor: Editor) => void)
   | EditorPlugin[]
   | Record<string, any>
   | undefined
   | void
-
-export function createEditor(options?: EditorOptions): Editor {
-  return new Editor(options)
-}
 
 export function definePlugin(cb: EditorPlugin): EditorPlugin {
   return cb

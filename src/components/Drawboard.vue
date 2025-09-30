@@ -67,8 +67,8 @@ const {
   bindRenderCanvas,
   activeElement,
   hoverElement,
-  status,
-  setStatus,
+  state,
+  setState,
   setCursor,
   setActiveElement,
   setSelectedElements,
@@ -167,7 +167,7 @@ function onPointerdown(event: PointerInputEvent): void {
   let isUp = false
   let activated: Element2D | undefined
   let selected: Element2D[] = []
-  let ctxStatus: Mce.Status | undefined
+  let ctxState: Mce.State | undefined
   const inSelected = isPointInsideAabb({
     x: start.x + -drawboardAabb.value.left,
     y: start.y + -drawboardAabb.value.top,
@@ -210,8 +210,8 @@ function onPointerdown(event: PointerInputEvent): void {
   }
 
   function onSelectArea(): void {
-    if (status.value !== 'selecting') {
-      setStatus('selecting')
+    if (state.value !== 'selecting') {
+      setState('selecting')
     }
     activated = undefined
     setActiveElement(activated)
@@ -235,7 +235,7 @@ function onPointerdown(event: PointerInputEvent): void {
     let _element: Element2D | undefined
     if (result && !(result instanceof Element2D)) {
       _element = result.element
-      ctxStatus = result.status
+      ctxState = result.state
     }
     else {
       _element = result
@@ -290,8 +290,8 @@ function onPointerdown(event: PointerInputEvent): void {
   }
 
   async function onUp(_event: PointerEvent) {
-    if (status.value) {
-      setStatus(undefined)
+    if (state.value) {
+      setState(undefined)
     }
 
     if (!dragging) {
@@ -307,9 +307,9 @@ function onPointerdown(event: PointerInputEvent): void {
       setActiveElement(activated)
       setSelectedElements(selected)
 
-      if (ctxStatus) {
+      if (ctxState) {
         if (activated && !isLockedElement(activated)) {
-          switch (ctxStatus) {
+          switch (ctxState) {
             case 'typing': {
               await exec('startTyping', _event)
               break
@@ -335,7 +335,7 @@ function onPointermove(event: PointerInputEvent): void {
     event.srcElement !== drawboardDom.value
     || camera.value.grabbing
     || event.button === 1
-    || (status.value && status.value !== 'typing')
+    || (state.value && state.value !== 'typing')
   ) {
     return
   }
@@ -436,7 +436,7 @@ function onScroll() {
       <Floatbar
         v-if="$slots.floatbar"
         v-slot="slotProps"
-        :target="status === 'typing'
+        :target="state === 'typing'
           ? textEditor?.textEditor
           : selector?.transformable?.$el"
         :attach="false"

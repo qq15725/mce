@@ -19,7 +19,7 @@ export type ResizeStrategy = (element: Element2D) =>
 export type ActiveStrategy = (context: ActiveStrategyContext) =>
   | {
     element: Element2D | undefined
-    status: Mce.Status | undefined
+    state: Mce.State | undefined
   }
   | Element2D
   | undefined
@@ -55,7 +55,7 @@ export const defaultActiveStrategy: ActiveStrategy = (context) => {
       if (element.text.canDraw()) {
         return {
           element,
-          status: 'typing' as const,
+          state: 'typing' as const,
         }
       }
     }

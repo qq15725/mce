@@ -12,7 +12,7 @@ declare global {
 export default definePlugin((editor) => {
   const {
     registerCommand,
-    setStatus,
+    setState,
     exec,
   } = editor
 
@@ -20,7 +20,7 @@ export default definePlugin((editor) => {
     {
       key: 'insertImage',
       handle: () => {
-        setStatus('drawing', {
+        setState('drawing', {
           content: 'image',
           callback: (pos: Vector2Data) => {
             exec('import', pos)

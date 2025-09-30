@@ -88,7 +88,7 @@ export default definePlugin((editor) => {
     activeFrame,
     activeElement,
     activeElementParent,
-    status,
+    state,
     getObbInDrawboard,
   } = editor
 
@@ -349,7 +349,7 @@ export default definePlugin((editor) => {
   const scaled = (v: number) => v
 
   const auxiliaryLines = computed(() => {
-    if (status.value !== 'transforming')
+    if (state.value !== 'transforming')
       return []
     const offset = { left: 0, top: 0 }
     return linePairs.value.map((linePair) => {

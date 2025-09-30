@@ -11,7 +11,7 @@ const {
   getObbInDrawboard,
   hoverElement,
   setActiveElement,
-  status,
+  state,
   config,
   exec,
 } = useEditor()
@@ -47,8 +47,8 @@ async function onPointerdown(ev: PointerEvent) {
       class="mce-frame__name"
       @dblclick="onDblclick"
       @pointerdown="onPointerdown"
-      @pointerenter="!status && (hoverElement = frame)"
-      @pointerleave="!status && (hoverElement = undefined)"
+      @pointerenter="!state && (hoverElement = frame)"
+      @pointerleave="!state && (hoverElement = undefined)"
     >
       <div>{{ frame.name }}</div>
       <input

@@ -18,9 +18,9 @@ const props = withDefaults(defineProps<{
 })
 
 const {
-  status,
+  state,
   resizeElement,
-  setStatus,
+  setState,
   selectedElements,
   camera,
   activeElement,
@@ -131,7 +131,7 @@ defineExpose({
   />
 
   <div
-    v-if="status === 'selecting'"
+    v-if="state === 'selecting'"
     class="mce-select-range-box"
     :style="{
       borderColor: 'currentcolor',
@@ -139,7 +139,7 @@ defineExpose({
     }"
   />
 
-  <template v-if="!status || status === 'selecting'">
+  <template v-if="!state || state === 'selecting'">
     <div
       v-for="(item, index) in selectedElementBoxes"
       :key="index"
@@ -155,15 +155,15 @@ defineExpose({
   <Transformable
     ref="transformableRef"
     v-model="activeObb"
-    :visibility="status !== 'selecting' ? 'auto' : 'none'"
+    :visibility="state !== 'selecting' ? 'auto' : 'none'"
     :moveable="activeElement && !isLockedElement(activeElement)"
     :resize-strategy="props.resizeStrategy"
     handle-strategy="point"
     class="mce-element-box"
     :border-style="selectedElements.length ? 'dashed' : 'solid'"
     :get-tip-text="getTipText"
-    @move="() => !status && setStatus('transforming')"
-    @end="() => status === 'transforming' && setStatus(undefined)"
+    @move="() => !state && setState('transforming')"
+    @end="() => state === 'transforming' && setState(undefined)"
   >
     <template #svg="slotProps">
       <slot name="transformable-svg" v-bind="slotProps" />

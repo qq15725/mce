@@ -29,7 +29,7 @@ export default definePlugin((editor) => {
     emit,
     setActiveElement,
     setActiveFrame,
-    setStatus,
+    setState,
     frames,
     config,
     to,
@@ -40,7 +40,7 @@ export default definePlugin((editor) => {
   }
 
   async function setDoc(doc: Document): Promise<DocModel | undefined> {
-    setStatus('loading')
+    setState('loading')
     const mDoc = new DocModel({ id: doc.id || idGenerator() }, editor)
     try {
       const model = mDoc
@@ -64,7 +64,7 @@ export default definePlugin((editor) => {
       emit('setDoc', model)
     }
     finally {
-      setStatus(undefined)
+      setState(undefined)
     }
 
     if (!frames.value.length || frames.value.length > 1) {

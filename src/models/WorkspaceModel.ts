@@ -10,10 +10,6 @@ export interface WorkspaceEntity {
   updated_at: number
 }
 
-/**
- * - 在线人数 Awareness
- * - 管理 Blob
- */
 export class WorkspaceModel {
   protected _entity: WorkspaceEntity
 

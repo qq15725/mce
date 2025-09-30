@@ -3,8 +3,8 @@ import { useMouse } from '@vueuse/core'
 import { useEditor } from '../composables/editor'
 
 const {
-  status,
-  statusContext,
+  state,
+  stateContext,
   t,
   camera,
   drawboardAabb,
@@ -18,14 +18,14 @@ function onMousedown(e: MouseEvent) {
     x: e.clientX - drawboardAabb.value.left,
     y: e.clientY - drawboardAabb.value.top,
   })
-  statusContext.value?.callback?.(pos)
+  stateContext.value?.callback?.(pos)
   setCursor(undefined)
 }
 </script>
 
 <template>
   <div
-    v-if="status === 'drawing'"
+    v-if="state === 'drawing'"
     class="mce-drawing"
     :style="{
       left: `${x}px`,
@@ -33,8 +33,8 @@ function onMousedown(e: MouseEvent) {
     }"
     @mousedown="onMousedown"
   >
-    <div v-if="statusContext?.content" class="mce-drawing__content">
-      {{ t(statusContext.content) }}
+    <div v-if="stateContext?.content" class="mce-drawing__content">
+      {{ t(stateContext.content) }}
     </div>
   </div>
 </template>

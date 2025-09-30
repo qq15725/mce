@@ -14,14 +14,6 @@ interface AddElementOptions {
   regenerateId?: boolean
 }
 
-export type YRoot = Y.Map<unknown> & {
-  get: ((prop: 'id') => string)
-    & ((prop: 'name') => string)
-    & ((prop: 'meta') => Record<string, any>)
-    & ((prop: 'childrenIds') => Y.Array<string>)
-    & (<T = unknown>(prop: string) => T)
-}
-
 export type YElement = Y.Map<unknown> & {
   get: ((prop: 'id') => string)
     & ((prop: 'name') => string)

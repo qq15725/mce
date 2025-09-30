@@ -1,6 +1,14 @@
 declare global {
   namespace Mce {
-    type Status
+    interface Editor {}
+    interface EditorOptions {}
+    interface Events {}
+    interface Hotkeys {}
+    interface Commands {}
+    interface Exporters {}
+    interface Config {}
+
+    type State
       = | 'loading'
         | 'drawing'
         | 'selecting'
@@ -11,16 +19,7 @@ declare global {
         | 'shapeReplacing'
         | undefined
 
-    type StatusContext = Record<string, any>
-
-    interface Editor {}
-    interface Events {}
-    interface Hotkeys {}
-    interface Commands {}
-    interface Exporters {}
-    interface Config {
-      version: string
-    }
+    type StateContext = Record<string, any>
   }
 }
 

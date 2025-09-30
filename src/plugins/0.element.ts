@@ -64,7 +64,7 @@ export default definePlugin((editor) => {
 
   return () => {
     const {
-      status,
+      state,
     } = editor
 
     watch(activeElement, (value) => {
@@ -72,7 +72,7 @@ export default definePlugin((editor) => {
       ;(window as any).$$0 = value
     })
 
-    watch(status, () => {
+    watch(state, () => {
       textSelection.value = undefined
       hoverElement.value = undefined
     })

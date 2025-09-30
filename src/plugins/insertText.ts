@@ -13,7 +13,7 @@ declare global {
 export default definePlugin((editor) => {
   const {
     registerCommand,
-    setStatus,
+    setState,
     addElement,
   } = editor
 
@@ -21,7 +21,7 @@ export default definePlugin((editor) => {
     {
       key: 'insertText',
       handle: (content = '点击编辑文本', style: Record<string, any> = {}) => {
-        setStatus('drawing', {
+        setState('drawing', {
           content: 'text',
           callback: (pos: Vector2Data) => {
             const box = measureText({ style, content }).boundingBox

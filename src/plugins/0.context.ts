@@ -20,13 +20,13 @@ declare global {
       root: ComputedRef<Node | undefined>
       docMeta: ComputedRef<{ title: string }>
       docModel: Ref<DocModel | undefined>
-      status: Ref<Status | undefined>
-      setStatus: (status: Status, context?: StatusContext) => void
-      statusContext: Ref<StatusContext | undefined>
+      state: Ref<State | undefined>
+      setState: (state: State, context?: StateContext) => void
+      stateContext: Ref<StateContext | undefined>
     }
 
     interface Events {
-      setStatus: [status: Status]
+      setState: [state: State]
     }
   }
 }
@@ -56,18 +56,18 @@ export default definePlugin((editor) => {
   const docModel = ref<DocModel>()
   const root = computed(() => docModel.value?.root)
   const docMeta = computed(() => root.value?.meta ?? {})
-  const status = ref<Mce.Status>()
-  const statusContext = ref<Mce.StatusContext>()
+  const state = ref<Mce.State>()
+  const stateContext = ref<Mce.StateContext>()
 
-  function setStatus(value: Mce.Status, context?: Mce.StatusContext): void {
-    status.value = value
-    statusContext.value = context
+  function setState(value: Mce.State, context?: Mce.StateContext): void {
+    state.value = value
+    stateContext.value = context
     switch (value) {
       case 'drawing':
         setCursor('crosshair')
         break
     }
-    emit('setStatus', value)
+    emit('setState', value)
   }
 
   function setCursor(mode: Cursor | undefined): void {
@@ -84,9 +84,9 @@ export default definePlugin((editor) => {
     workspace,
     docMeta,
     docModel,
-    status,
-    statusContext,
-    setStatus,
+    state,
+    stateContext,
+    setState,
     setCursor,
   })
 })

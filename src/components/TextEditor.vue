@@ -5,7 +5,7 @@ import { boundingBoxToStyle } from '../utils/box'
 
 const {
   activeElement,
-  status,
+  state,
   textSelection,
   textToFit,
   getObb,
@@ -59,7 +59,7 @@ async function startTyping(e?: PointerEvent): Promise<boolean> {
     element.text.setContent(' ')
   }
   element.text.updateMeasure()
-  status.value = 'typing'
+  state.value = 'typing'
   const editor = textEditor.value as any
   editor.text = element.text.base
   await nextTick()
@@ -76,7 +76,7 @@ defineExpose({
 
 <template>
   <div
-    v-show="activeElement && status === 'typing'"
+    v-show="activeElement && state === 'typing'"
     class="mce-text-editor"
     :style="{
       ...mainStyleWithScale,

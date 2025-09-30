@@ -27,7 +27,7 @@ declare global {
 export default definePlugin((editor) => {
   const {
     provideProperties,
-    setStatus,
+    setState,
   } = editor
 
   const loaders = ref(new Map<string, Mce.Loader>())
@@ -46,7 +46,7 @@ export default definePlugin((editor) => {
   }
 
   const load: Mce.Editor['load'] = async (source) => {
-    setStatus('loading')
+    setState('loading')
     let result: any | undefined
     try {
       for (const loader of loaders.value.values()) {
@@ -57,7 +57,7 @@ export default definePlugin((editor) => {
       }
     }
     finally {
-      setStatus(undefined)
+      setState(undefined)
     }
     if (result === undefined) {
       throw new Error(`Failed to load source "${source}"`)
