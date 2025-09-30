@@ -33,6 +33,21 @@ npm i modern-canvas-editor
   import 'modern-canvas-editor/styles'
 
   const editor = new Editor({
+    // default
+    theme: 'system',
+    language: 'en',
+    viewMode: 'edgeless',
+    camera: false,
+    ruler: false,
+    scrollbar: false,
+    bottombar: false,
+    statusbar: false,
+    wheelZoom: false,
+    frameGap: 48,
+    typographyStrategy: 'autoHeight',
+    handleShape: 'rect',
+    localDb: false,
+    // custom
     defaultFont: { family: 'SourceHanSansCN-Normal', src: '/SourceHanSansCN-Normal.woff' },
     doc: {
       children: [
@@ -60,20 +75,20 @@ npm i modern-canvas-editor
 <template>
   <div style="width: 100vw; height: 100vh">
     <Drawboard :editor="editor">
-      <template #selector>
-        Selector Slot
+      <template #selector="{ box }">
+        Selector
       </template>
 
-      <template #transformer>
-        <text>Transformer Slot</text>
+      <template #transformer="{ box }">
+        <text>Transformer(in SVG)</text>
       </template>
 
       <template #floatbar>
-        Floatbar Slot
+        Floatbar
       </template>
 
       <template #bottombar>
-        Bottombar Slot
+        Bottombar
       </template>
     </Drawboard>
   </div>

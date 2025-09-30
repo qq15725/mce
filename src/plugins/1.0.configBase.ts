@@ -3,6 +3,10 @@ import { definePlugin } from '../editor'
 
 declare global {
   namespace Mce {
+    interface EditorOptions extends Partial<Config> {
+      //
+    }
+
     type Theme = 'system' | 'light' | 'dark'
     type Language = string
     type ViewMode = 'frame' | 'edgeless'
@@ -35,30 +39,38 @@ export default definePlugin((editor) => {
 
   // UI
   registerConfig('theme', 'system')
-  registerConfig('language', 'zh-CN')
+  registerConfig('language', 'en')
   // Editor
-  registerConfig('viewMode', 'frame')
-  registerConfig('camera', true)
-  registerConfig('ruler', true)
-  registerConfig('scrollbar', true)
-  registerConfig('bottombar', true)
-  registerConfig('statusbar', true)
+  registerConfig('viewMode', 'edgeless')
+  registerConfig('camera', false)
+  registerConfig('ruler', false)
+  registerConfig('scrollbar', false)
+  registerConfig('bottombar', false)
+  registerConfig('statusbar', false)
   registerConfig('wheelZoom', false)
   registerConfig('frameGap', 48)
   registerConfig('typographyStrategy', 'autoHeight')
   registerConfig('handleShape', 'rect')
   // DB
-  registerConfig('localDb', true)
+  registerConfig('localDb', false)
 
-  return () => {
+  return (editor, options) => {
     const {
       camera,
     } = editor
 
-    watch(() => config.value.camera, (enable) => {
-      camera.value.inputMode = enable ? 'inherit' : 'disabled'
-    }, {
-      immediate: true,
+    Object.keys(config.value).forEach((key) => {
+      if (key in options) {
+        ;(config.value as any)[key] = (options as any)[key]
+      }
     })
+
+    watch(
+      () => config.value.camera,
+      (enable) => {
+        camera.value.inputMode = enable ? 'inherit' : 'disabled'
+      },
+      { immediate: true },
+    )
   }
 })

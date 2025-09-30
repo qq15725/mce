@@ -52,8 +52,8 @@ const emit = defineEmits<{
 }>()
 
 defineSlots<{
-  selector?: (box: OrientedBoundingBox) => void
-  transformer?: (box: Partial<OrientedBoundingBox>) => void
+  selector?: (props: { box: OrientedBoundingBox }) => void
+  transformer?: (props: { box: Partial<OrientedBoundingBox> }) => void
   floatbar?: () => void
   bottombar?: () => void
   default?: () => void

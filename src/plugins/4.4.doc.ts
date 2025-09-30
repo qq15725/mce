@@ -34,8 +34,6 @@ export default definePlugin((editor) => {
     setActiveElement,
     setActiveFrame,
     setState,
-    frames,
-    config,
     to,
   } = editor
 
@@ -69,11 +67,6 @@ export default definePlugin((editor) => {
     }
     finally {
       setState(undefined)
-    }
-
-    if (!frames.value.length || frames.value.length > 1) {
-      config.value.viewMode = 'edgeless'
-      config.value.camera = true
     }
 
     return mDoc

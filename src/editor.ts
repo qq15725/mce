@@ -1,7 +1,6 @@
 import type { RemovableRef } from '@vueuse/core'
 import type { App, InjectionKey } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
-import { merge } from 'lodash-es'
 import { EventEmitter } from 'modern-idoc'
 import { ref } from 'vue'
 import { presetPlugins } from './preset-plugins'
@@ -58,15 +57,12 @@ export class Editor extends EventEmitter<Mce.Events> {
       debug = false,
       plugins = [],
       configCacheInLocal,
-      ...config
     } = options
 
     this.debug.value = debug
     this.config = configCacheInLocal
       ? useLocalStorage<Mce.Config>('config', () => ({} as any))
       : ref({} as any)
-
-    merge(this.config.value, config)
 
     this._setupPlugins([
       ...presetPlugins,
