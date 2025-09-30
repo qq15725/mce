@@ -18,7 +18,6 @@
   </a>
 </p>
 
-
 ## 📦 Install
 
 ```shell
@@ -94,3 +93,7 @@ npm i modern-canvas-editor
   </div>
 </template>
 ```
+
+## Related
+
+- [CodeSandbox Playground](https://codesandbox.io/p/devbox/thirsty-dawn-t2h69m)
