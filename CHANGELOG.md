@@ -1,3 +1,23 @@
+## [0.0.8](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.7...v0.0.8) (2025-09-30)
+
+
+### Bug Fixes
+
+* fonts ([e110d03](https://github.com/qq15725/modern-canvas-editor/commit/e110d03077a251248762669eed74fe821f872b06))
+* i18n ([133ae78](https://github.com/qq15725/modern-canvas-editor/commit/133ae78bbe63ef1246d6ccedfa9aa73092e4d803))
+* selector ([c8b8a95](https://github.com/qq15725/modern-canvas-editor/commit/c8b8a95ad2b22f2bd99448ee07886b466daf0f57))
+
+
+### Features
+
+* config ([45022a2](https://github.com/qq15725/modern-canvas-editor/commit/45022a270c2df895942f470f802ac107ee46913d))
+* context menu ([27b634d](https://github.com/qq15725/modern-canvas-editor/commit/27b634dfdba555fd12da57f0244a22d2a0263184))
+* rename provider to plugin ([c8d94d7](https://github.com/qq15725/modern-canvas-editor/commit/c8d94d78a41f03d3a216079653130bf0f3f19607))
+* rename status to state ([2cd63da](https://github.com/qq15725/modern-canvas-editor/commit/2cd63da90ec5589cededfa0a0fb47852488fe4d3))
+* slots ([553c786](https://github.com/qq15725/modern-canvas-editor/commit/553c78612a45d0205e2bb64b36fa4b507c15e51b))
+
+
+
 ## [0.0.7](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.6...v0.0.7) (2025-09-30)
 
 
