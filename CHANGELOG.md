@@ -1,3 +1,12 @@
+## [0.0.9](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.8...v0.0.9) (2025-09-30)
+
+
+### Bug Fixes
+
+* setDoc ([3009723](https://github.com/qq15725/modern-canvas-editor/commit/3009723c9887a4b054f19277aee49392203bd832))
+
+
+
 ## [0.0.8](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.7...v0.0.8) (2025-09-30)
 
 
