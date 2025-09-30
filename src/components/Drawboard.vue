@@ -486,6 +486,7 @@ function onScroll() {
   background-color: rgba(var(--mce-theme-surface), 1);
   color: rgba(var(--mce-theme-on-surface), 1);
   overflow: hidden;
+  user-select: none;
 
   * {
     box-sizing: border-box;

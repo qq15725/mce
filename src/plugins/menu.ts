@@ -229,6 +229,8 @@ export default definePlugin((editor) => {
         { type: 'divider' },
         ...viewMenus.value,
         { type: 'divider' },
+        ...insertMenus.value,
+        { type: 'divider' },
         { key: 'new' },
         { key: 'open' },
         { type: 'divider' },
