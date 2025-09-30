@@ -20,6 +20,7 @@ export default definePlugin((editor) => {
           return raw.replace(matched, matched.toUpperCase())
         })
         .replace(/([a-z])([A-Z])/g, '$1 $2')
+        .replace(/:/g, ' ')
         .trim()
 
       fallback = fallback.charAt(0).toUpperCase() + fallback.slice(1)
