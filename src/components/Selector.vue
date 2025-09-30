@@ -44,7 +44,7 @@ onBeforeUnmount(() => {
   unregisterCommand('startTransform')
 })
 
-const _activeObb = computed(() => getObbInDrawboard(activeElement.value ?? selectedElements.value))
+const _currentObb = computed(() => getObbInDrawboard(activeElement.value ?? selectedElements.value))
 const parentObbs = computed(() => {
   const obbs: OrientedBoundingBox[] = []
   activeElement.value?.forEachAncestor((ancestor) => {
@@ -62,10 +62,10 @@ const selectedElementBoxes = computed(() => {
     }
   })
 })
-const activeObb = computed({
-  get: () => _activeObb.value,
+const currentObb = computed({
+  get: () => _currentObb.value,
   set: (val: OrientedBoundingBox) => {
-    const oldBox = _activeObb.value
+    const oldBox = _currentObb.value
     const offsetBox = {
       left: (val.left - oldBox.left),
       top: (val.top - oldBox.top),
@@ -154,24 +154,29 @@ defineExpose({
 
   <Transformable
     ref="transformableRef"
-    v-model="activeObb"
+    v-model="currentObb"
     :visibility="state !== 'selecting' ? 'auto' : 'none'"
     :moveable="activeElement && !isLockedElement(activeElement)"
     :resize-strategy="props.resizeStrategy"
     handle-strategy="point"
-    class="mce-element-box"
+    class="mce-current-box"
     :border-style="selectedElements.length ? 'dashed' : 'solid'"
     :get-tip-text="getTipText"
     @move="() => !state && setState('transforming')"
     @end="() => state === 'transforming' && setState(undefined)"
   >
-    <template #svg="slotProps">
-      <slot name="transformable-svg" v-bind="slotProps" />
+    <template v-if="$slots.transformable" #svg="slotProps">
+      <slot name="transformable" v-bind="slotProps" />
     </template>
   </Transformable>
 
-  <template v-if="activeElement">
-    <slot :obb="activeObb" />
+  <template v-if="$slots.default">
+    <div
+      style="position: absolute;"
+      :style="boundingBoxToStyle(currentObb)"
+    >
+      <slot :box="currentObb" />
+    </div>
   </template>
 </template>
 
@@ -193,7 +198,7 @@ defineExpose({
   background-color: rgba(var(--mce-theme-primary), .1);
 }
 
-.mce-element-box {
+.mce-current-box {
   position: absolute;
   color: rgba(var(--mce-theme-primary), 1);
 }

@@ -1,15 +1,7 @@
 <script setup lang="ts">
+import type { OrientedBoundingBox } from '../../types'
 import { computed, getCurrentInstance, nextTick, onMounted, ref, useModel } from 'vue'
 import Tooltip from './Tooltip.vue'
-
-interface AxisAlignedBoundingBox {
-  left: number
-  top: number
-  width?: number
-  height?: number
-}
-
-type OrientedBoundingBox = AxisAlignedBoundingBox & { rotate?: number }
 
 interface Point {
   x: number
@@ -614,16 +606,15 @@ defineExpose({
         </template>
       </g>
 
-      <g pointer-events="all">
+      <g
+        pointer-events="all"
+        :style="isAutoVisibilityTransforming
+          ? { opacity: '.4', strokeWidth: '0.5px' }
+          : undefined"
+      >
         <slot
           name="svg"
-          :value="model"
-          :style="isAutoVisibilityTransforming
-            ? {
-              opacity: '.4',
-              strokeWidth: '0.5px',
-            }
-            : undefined"
+          :box="model"
         />
       </g>
     </svg>

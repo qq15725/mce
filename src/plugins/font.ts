@@ -4,14 +4,18 @@ import { definePlugin } from '../editor'
 
 declare global {
   namespace Mce {
-    interface Events {
-      loadFont: [font: FontLoadedResult]
-    }
-
     interface Editor {
       loadFont: (source: FontSource, options?: FontLoadOptions) => Promise<FontLoadedResult>
-      setFallbackFont: (source: FontSource, options?: FontLoadOptions) => Promise<void>
+      setDefaultFont: (source: FontSource, options?: FontLoadOptions) => Promise<void>
       waitUntilFontLoad: () => Promise<void>
+    }
+
+    interface EditorOptions {
+      defaultFont?: FontSource
+    }
+
+    interface Events {
+      loadFont: [font: FontLoadedResult]
     }
   }
 }
@@ -23,7 +27,7 @@ export default definePlugin((editor) => {
     fonts,
   } = editor
 
-  const fallbackFontLoading = ref(false)
+  const loading = ref(false)
 
   async function loadFont(source: FontSource, options?: FontLoadOptions): Promise<FontLoadedResult> {
     const res = await fonts.load(source, options)
@@ -31,18 +35,18 @@ export default definePlugin((editor) => {
     return res
   }
 
-  async function setFallbackFont(source: FontSource, options?: FontLoadOptions): Promise<void> {
-    fallbackFontLoading.value = true
+  async function setDefaultFont(source: FontSource, options?: FontLoadOptions): Promise<void> {
+    loading.value = true
     try {
       fonts.fallbackFont = await loadFont(source, options)
     }
     finally {
-      fallbackFontLoading.value = false
+      loading.value = false
     }
   }
 
   async function waitUntilFontLoad(): Promise<void> {
-    while (fallbackFontLoading.value) {
+    while (loading.value) {
       await new Promise(resolve => setTimeout(resolve, 100))
     }
     return await fonts.waitUntilLoad()
@@ -51,7 +55,17 @@ export default definePlugin((editor) => {
   provideProperties({
     fonts,
     loadFont,
-    setFallbackFont,
+    setDefaultFont,
     waitUntilFontLoad,
   })
+
+  return (_, options) => {
+    const {
+      defaultFont,
+    } = options
+
+    if (defaultFont) {
+      setDefaultFont(defaultFont)
+    }
+  }
 })

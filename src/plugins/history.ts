@@ -4,19 +4,19 @@ import { definePlugin } from '../editor'
 
 declare global {
   namespace Mce {
+    interface Editor {
+      canUndo: Ref<boolean>
+      canRedo: Ref<boolean>
+      undo: () => void
+      redo: () => void
+    }
+
     interface Hotkeys {
       undo: [event: KeyboardEvent]
       redo: [event: KeyboardEvent]
     }
 
     interface Commands {
-      undo: () => void
-      redo: () => void
-    }
-
-    interface Editor {
-      canUndo: Ref<boolean>
-      canRedo: Ref<boolean>
       undo: () => void
       redo: () => void
     }
@@ -27,7 +27,6 @@ export default definePlugin((editor) => {
   const {
     provideProperties,
     docModel,
-    log,
     registerHotkey,
     registerCommand,
   } = editor
@@ -46,13 +45,11 @@ export default definePlugin((editor) => {
   const canRedo = ref(false)
 
   function redo(): void {
-    const res = docModel.value?.undoManager.redo()
-    log('redo', res)
+    docModel.value?.undoManager.redo()
   }
 
   function undo(): void {
-    const res = docModel.value?.undoManager.undo()
-    log('undo', res)
+    docModel.value?.undoManager.undo()
   }
 
   provideProperties({
@@ -63,7 +60,11 @@ export default definePlugin((editor) => {
   })
 
   return () => {
-    editor.on('setDoc', (doc) => {
+    const {
+      on,
+    } = editor
+
+    on('setDoc', (doc) => {
       doc.on('history', (um) => {
         canUndo.value = um.canUndo()
         canRedo.value = um.canRedo()

@@ -12,6 +12,10 @@ declare global {
       clearDoc: () => void
     }
 
+    interface EditorOptions {
+      doc?: Document
+    }
+
     interface Events {
       setDoc: [doc: DocModel]
       clearDoc: []
@@ -88,4 +92,14 @@ export default definePlugin((editor) => {
     setDoc,
     clearDoc,
   })
+
+  return (_, options) => {
+    const {
+      doc,
+    } = options
+
+    if (doc) {
+      setDoc(doc)
+    }
+  }
 })

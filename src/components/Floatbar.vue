@@ -12,15 +12,16 @@ const props = defineProps({
 })
 
 const {
-  textSelection,
   getAabbInDrawboard,
   currentElements,
+  activeElement,
+  isFrame,
 } = useEditor()
 
-const overlayRef = useTemplateRef('overlayTplRef')
+const overlay = useTemplateRef('overlayTpl')
 
 function updateLocation() {
-  overlayRef.value?.updateLocation()
+  overlay.value?.updateLocation()
 }
 
 watch(() => getAabbInDrawboard(currentElements.value), updateLocation, {
@@ -34,19 +35,16 @@ defineExpose({
 
 <template>
   <Overlay
-    ref="overlayTplRef"
+    ref="overlayTpl"
     class="mce-floatbar"
     :location="props.location"
-    :offset="props.offset"
+    :offset="activeElement && isFrame(activeElement) ? 32 : 8"
     :target="props.target"
-    :attach="props.attach"
+    :attach="false"
     :model-value="true"
   >
     <template v-if="currentElements.length > 0">
-      <slot
-        :elements="currentElements"
-        :text-selection="textSelection"
-      />
+      <slot />
     </template>
   </Overlay>
 </template>

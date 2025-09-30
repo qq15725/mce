@@ -1,6 +1,4 @@
 import type { RemovableRef } from '@vueuse/core'
-import type { FontSource } from 'modern-font'
-import type { Document } from 'modern-idoc'
 import type { App, InjectionKey } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
 import { merge } from 'lodash-es'
@@ -8,12 +6,10 @@ import { EventEmitter } from 'modern-idoc'
 import { ref } from 'vue'
 import { presetPlugins } from './preset-plugins'
 
-export interface EditorOptions extends Partial<Mce.Config> {
+export interface EditorOptions extends Mce.EditorOptions {
   debug?: boolean
   plugins?: EditorPlugin[]
   configCacheInLocal?: boolean
-  defaultFont?: FontSource
-  doc?: Document
 }
 
 export interface Editor extends Mce.Editor {
@@ -57,13 +53,11 @@ export class Editor extends EventEmitter<Mce.Events> {
     super.emit(event, ...args)
   }
 
-  protected _setupOptions(options: EditorOptions = {}): void {
+  protected _setupOptions(options: EditorOptions): void {
     const {
       debug = false,
       plugins = [],
       configCacheInLocal,
-      defaultFont,
-      doc,
       ...config
     } = options
 
@@ -77,22 +71,14 @@ export class Editor extends EventEmitter<Mce.Events> {
     this._setupPlugins([
       ...presetPlugins,
       ...plugins,
-    ])
-
-    if (defaultFont) {
-      this.setFallbackFont(defaultFont)
-    }
-
-    if (doc) {
-      this.setDoc(doc)
-    }
+    ], options)
   }
 
-  protected _setupPlugins(plugins: EditorPlugin[]): void {
+  protected _setupPlugins(plugins: EditorPlugin[], options: EditorOptions): void {
     const installs: any[] = []
 
     const use = (plugin: EditorPlugin): void => {
-      const result = plugin(this)
+      const result = plugin(this, options)
       switch (typeof result) {
         case 'object':
           if (Array.isArray(result)) {
@@ -111,7 +97,7 @@ export class Editor extends EventEmitter<Mce.Events> {
 
     plugins.map(use)
 
-    installs.forEach(install => (install as any)?.(this))
+    installs.forEach(install => (install as any)?.(this, options))
   }
 
   provideProperties = <K extends keyof Editor>(
@@ -134,8 +120,8 @@ export function createEditor(options?: EditorOptions): Editor {
   return new Editor(options)
 }
 
-export type EditorPlugin = (editor: Editor) =>
-  | ((editor: Editor) => void)
+export type EditorPlugin = (editor: Editor, options: EditorOptions) =>
+  | ((editor: Editor, options: EditorOptions) => void)
   | EditorPlugin[]
   | Record<string, any>
   | undefined
