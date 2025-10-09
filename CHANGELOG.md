@@ -1,3 +1,18 @@
+## [0.0.10](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.9...v0.0.10) (2025-10-09)
+
+
+### Bug Fixes
+
+* zoomToSelection ([5ec3624](https://github.com/qq15725/modern-canvas-editor/commit/5ec3624d33ae293b6d25b99dcb7e4ac0ad3d6277))
+
+
+### Features
+
+* add insert menu ([d84b3c7](https://github.com/qq15725/modern-canvas-editor/commit/d84b3c77ca0e31a9f13b250ec857d98f0f82b7d6))
+* up deps ([6dafbad](https://github.com/qq15725/modern-canvas-editor/commit/6dafbad24ac03802d7e504c2251992f46368abb8))
+
+
+
 ## [0.0.9](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.8...v0.0.9) (2025-09-30)
 
 
