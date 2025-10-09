@@ -15,11 +15,11 @@ declare global {
 export default definePlugin((editor) => {
   const {
     provideProperties,
-    docModel,
+    doc,
   } = editor
 
   const upload: Mce.Upload = async (file) => {
-    const indexeddb = docModel.value?.indexeddb
+    const indexeddb = doc.value?.indexeddb
     if (indexeddb) {
       const id = idGenerator()
       await indexeddb.set(`file:${id}`, file)

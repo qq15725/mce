@@ -26,7 +26,7 @@ declare global {
 export default definePlugin((editor) => {
   const {
     provideProperties,
-    docModel,
+    doc,
     registerHotkey,
     registerCommand,
   } = editor
@@ -45,11 +45,11 @@ export default definePlugin((editor) => {
   const canRedo = ref(false)
 
   function redo(): void {
-    docModel.value?.undoManager.redo()
+    doc.value?.undoManager.redo()
   }
 
   function undo(): void {
-    docModel.value?.undoManager.undo()
+    doc.value?.undoManager.undo()
   }
 
   provideProperties({

@@ -1,12 +1,14 @@
 import type { CoreObject } from 'modern-canvas'
-import type { Element, NormalizedElement, ObservableEvents } from 'modern-idoc'
+import type { Document, Element, NormalizedElement } from 'modern-idoc'
 import type { Transaction, YArrayEvent, YMapEvent } from 'yjs'
 import type { Editor } from '../editor'
+import type { ModelEvents } from './Model'
 import { Element2D, Node } from 'modern-canvas'
-import { normalizeElement, Observable, property } from 'modern-idoc'
+import { normalizeElement } from 'modern-idoc'
 import { markRaw, nextTick, reactive } from 'vue'
 import * as Y from 'yjs'
 import { IndexeddbProvider } from '../indexeddb'
+import { Model } from './Model'
 
 interface AddElementOptions {
   parentId?: string
@@ -14,8 +16,24 @@ interface AddElementOptions {
   regenerateId?: boolean
 }
 
-export type YElement = Y.Map<unknown> & {
-  get: ((prop: 'id') => string)
+export interface DocMeta {
+  [key: string]: any
+  workspaceId: string
+  createdAt: number
+  updatedAt: number
+}
+
+export type DocPropsYMap = Y.Map<unknown> & {
+  get:
+    & ((prop: 'id') => string)
+    & ((prop: 'name') => string)
+    & ((prop: 'meta') => DocMeta)
+    & (<T = unknown>(prop: string) => T)
+}
+
+export type ElementYMap = Y.Map<unknown> & {
+  get:
+    & ((prop: 'id') => string)
     & ((prop: 'name') => string)
     & ((prop: 'parentId') => string)
     & ((prop: 'style') => Y.Map<unknown>)
@@ -33,7 +51,7 @@ export type YElement = Y.Map<unknown> & {
 
 export interface YElementResult {
   id: string
-  element: YElement
+  element: ElementYMap
 }
 
 function initYElement(
@@ -87,7 +105,7 @@ export function iElementToYElements(
   regenerateId = false,
 ): YElementResult[] {
   const results: YElementResult[] = []
-  const yElement = new Y.Map<unknown>() as YElement
+  const yElement = new Y.Map<unknown>() as ElementYMap
   const { normalized, yChildrenIds } = initYElement(yElement, element, parentId, regenerateId)
   const id = normalized.id
   results.push({ id, element: yElement })
@@ -99,48 +117,43 @@ export function iElementToYElements(
   return results
 }
 
-export interface DocEntity {
-  id: string
-}
-
-export interface DocModelEvents extends ObservableEvents {
-  update: [arg0: Uint8Array, arg1: any, arg2: Y.Doc, arg3: Transaction]
+export interface DocEvents extends ModelEvents {
   history: [arg0: Y.UndoManager]
 }
 
-export class DocModel extends Observable<DocModelEvents> {
-  protected _entity: DocEntity
+export interface Doc {
+  on: <K extends keyof DocEvents & string>(event: K, listener: (...args: DocEvents[K]) => void) => this
+  once: <K extends keyof DocEvents & string>(event: K, listener: (...args: DocEvents[K]) => void) => this
+  off: <K extends keyof DocEvents & string>(event: K, listener: (...args: DocEvents[K]) => void) => this
+  emit: <K extends keyof DocEvents & string>(event: K, ...args: DocEvents[K]) => this
+}
 
-  @property({ alias: '_entity.id' }) declare id: DocEntity['id']
-
-  readonly doc: Y.Doc
+export class Doc extends Model {
+  readonly props: DocPropsYMap
+  readonly children: Y.Map<ElementYMap>
   readonly childrenIds: Y.Array<string>
-  readonly children: Y.Map<YElement>
+
   readonly root = reactive(new Node({ name: 'doc' })) as Node
-  nodes = new Map<string, Node>()
+  nodeMap = new Map<string, Node>()
   protected _ready = false
 
   declare undoManager: Y.UndoManager
-
   indexeddb?: IndexeddbProvider
 
   constructor(
-    entity: DocEntity,
+    id: string,
     public editor: Editor,
   ) {
-    super()
-    this._entity = entity
-    this.doc = markRaw(new Y.Doc({ guid: this.id }))
-    this.childrenIds = markRaw(this.doc.getArray('childrenIds') as Y.Array<string>)
+    super(id)
+    this.props = markRaw(this.doc.getMap('props') as DocPropsYMap)
     this.children = markRaw(this.doc.getMap('children'))
-    this.doc.on('update', (...args) => {
-      this.emit('update', ...args)
-    })
+    this.childrenIds = markRaw(this.doc.getArray('childrenIds') as Y.Array<string>)
     this._setupUndoManager()
   }
 
   protected _setupUndoManager(): void {
     const um = markRaw(new Y.UndoManager([
+      this.props,
       this.children,
       this.childrenIds,
     ], {
@@ -178,7 +191,8 @@ export class DocModel extends Observable<DocModelEvents> {
         this.init()
         await nextTick()
       }
-      this._proxyChildren(this.root as Node, this.childrenIds)
+      this._proxyProps(this.root, this.props)
+      this._proxyChildren(this.root, this.childrenIds)
       this.childrenIds.forEach((id) => {
         const yNode = this.children.get(id)
         if (yNode) {
@@ -216,17 +230,18 @@ export class DocModel extends Observable<DocModelEvents> {
           }
           break
         case 'delete':
-          this.nodes.get(key)?.remove()
-          this.nodes.delete(key)
+          this.nodeMap.get(key)?.remove()
+          this.nodeMap.delete(key)
           break
       }
     })
   }
 
   reset(): void {
+    this.props.clear()
     this.children.clear()
     this.childrenIds.delete(0, this.childrenIds.length)
-    this.nodes.clear()
+    this.nodeMap.clear()
   }
 
   init(): void {
@@ -252,8 +267,8 @@ export class DocModel extends Observable<DocModelEvents> {
     yNodes.forEach((result) => {
       this.children.set(result.id, result.element)
     })
-    const nodes = yNodes.map(result => this._getOrCreateNode(result.element))
-    const root = nodes[0]
+    const nodeMap = yNodes.map(result => this._getOrCreateNode(result.element))
+    const root = nodeMap[0]
     const childrenIds = parentId
       ? this.children.get(parentId)?.get('childrenIds')
       : this.childrenIds
@@ -270,6 +285,29 @@ export class DocModel extends Observable<DocModelEvents> {
 
   addElement(element: Element, options?: AddElementOptions): Node {
     return this.transact(() => this._addElement(element, options))
+  }
+
+  addElements(elements: Element[], options?: AddElementOptions): Node[] {
+    return this.transact(() => {
+      return elements.map(element => this._addElement(element, options))
+    })
+  }
+
+  setProps(props: Record<string, any>): this {
+    this.transact(() => {
+      for (const [key, value] of Object.entries(props)) {
+        this.props.set(key, value)
+      }
+    })
+    return this
+  }
+
+  set(source: Document): this {
+    const { children = [], ...props } = source
+    this.reset()
+    this.addElements(children)
+    this.setProps(props)
+    return this
   }
 
   protected _deleteElement(id: string): void {
@@ -309,33 +347,6 @@ export class DocModel extends Observable<DocModelEvents> {
     childrenIds.insert(toIndex, [id])
   }
 
-  protected _transacting: boolean | undefined = undefined
-
-  transact<T>(fn: () => T, should = true): T {
-    if (this._transacting !== undefined) {
-      return fn()
-    }
-    this._transacting = should
-    let result = undefined as T
-    const doc = this.doc
-    doc.transact(
-      () => {
-        try {
-          result = fn()
-        }
-        catch (e) {
-          console.error(
-            `An error occurred while Y.doc ${doc.guid} transacting:`,
-          )
-          console.error(e)
-        }
-      },
-      should ? doc.clientID : null,
-    )
-    this._transacting = undefined
-    return result!
-  }
-
   protected _proxyProps(obj: CoreObject, yMap: Y.Map<any>): void {
     obj.setPropertyAccessor({
       getProperty: key => yMap.doc ? yMap.get(key) : undefined,
@@ -343,9 +354,7 @@ export class DocModel extends Observable<DocModelEvents> {
         if (this._transacting === false) {
           return
         }
-        this.transact(() => {
-          yMap.set(key, value)
-        })
+        this.transact(() => yMap.set(key, value))
       },
     })
 
@@ -405,7 +414,7 @@ export class DocModel extends Observable<DocModelEvents> {
         if (action.insert) {
           const ids = Array.isArray(action.insert) ? action.insert : [action.insert]
           ids.forEach((id, index) => {
-            let child = this.nodes.get(id)
+            let child = this.nodeMap.get(id)
             const cb = (child: Node): void => {
               node.moveChild(child, retain + index)
             }
@@ -414,7 +423,7 @@ export class DocModel extends Observable<DocModelEvents> {
             }
             else {
               setTimeout(() => {
-                child = this.nodes.get(id)
+                child = this.nodeMap.get(id)
                 child && cb(child)
               }, 0)
             }
@@ -428,7 +437,7 @@ export class DocModel extends Observable<DocModelEvents> {
     childrenIds.observe(observeFn)
   }
 
-  protected _proxyNode(node: Node, yEle: YElement): void {
+  protected _proxyNode(node: Node, yEle: ElementYMap): void {
     this._proxyProps(node, yEle)
 
     if (node instanceof Element2D) {
@@ -453,9 +462,9 @@ export class DocModel extends Observable<DocModelEvents> {
     this._proxyChildren(node, yEle.get('childrenIds'))
   }
 
-  protected _getOrCreateNode(yNode: YElement): Node {
+  protected _getOrCreateNode(yNode: ElementYMap): Node {
     const id = yNode.get('id')
-    let node = this.nodes.get(id)
+    let node = this.nodeMap.get(id)
     if (!node) {
       this.undoManager.addToScope(yNode)
       node = reactive(
@@ -466,7 +475,7 @@ export class DocModel extends Observable<DocModelEvents> {
         }),
       ) as Node
       this._proxyNode(node, yNode)
-      this.nodes.set(id, node)
+      this.nodeMap.set(id, node)
     }
     return node
   }

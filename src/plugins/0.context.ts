@@ -1,6 +1,6 @@
 import type { Cursor, Node } from 'modern-canvas'
 import type { ComputedRef, Ref } from 'vue'
-import type { DocModel, WorkspaceModel } from '../models'
+import type { Doc, Workspace } from '../models'
 import type { AxisAlignedBoundingBox } from '../types'
 import { Camera2D, Engine } from 'modern-canvas'
 import { Fonts } from 'modern-font'
@@ -16,10 +16,10 @@ declare global {
       setCursor: (mode: Cursor | undefined) => void
       drawboardDom: Ref<HTMLElement | undefined>
       drawboardAabb: Ref<AxisAlignedBoundingBox>
-      workspace: Ref<WorkspaceModel | undefined>
+      workspace: Ref<Workspace | undefined>
       root: ComputedRef<Node | undefined>
       docMeta: ComputedRef<{ title: string }>
-      docModel: Ref<DocModel | undefined>
+      doc: Ref<Doc | undefined>
       state: Ref<State | undefined>
       setState: (state: State, context?: StateContext) => void
       stateContext: Ref<StateContext | undefined>
@@ -52,9 +52,9 @@ export default definePlugin((editor) => {
 
   const drawboardDom = ref<HTMLElement>()
   const drawboardAabb = ref({ left: 0, top: 0, width: 0, height: 0 })
-  const workspace = ref<WorkspaceModel>()
-  const docModel = ref<DocModel>()
-  const root = computed(() => docModel.value?.root)
+  const workspace = ref<Workspace>()
+  const doc = ref<Doc>()
+  const root = computed(() => doc.value?.root)
   const docMeta = computed(() => root.value?.meta ?? {})
   const state = ref<Mce.State>()
   const stateContext = ref<Mce.StateContext>()
@@ -83,7 +83,7 @@ export default definePlugin((editor) => {
     drawboardAabb,
     workspace,
     docMeta,
-    docModel,
+    doc,
     state,
     stateContext,
     setState,

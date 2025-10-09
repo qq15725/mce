@@ -25,7 +25,7 @@ declare global {
 export default definePlugin((editor) => {
   const {
     provideProperties,
-    docModel,
+    doc,
     root,
     rootAabb,
     activeFrameIndex,
@@ -58,7 +58,7 @@ export default definePlugin((editor) => {
         ? activeFrameIndex.value + 1
         : frames.value.length - 1
     )
-    docModel.value?.addElement(element, { index })
+    doc.value?.addElement(element, { index })
     setActiveFrame(index)
     emit('addFrame', index)
   }
@@ -67,7 +67,7 @@ export default definePlugin((editor) => {
     const page = root.value?.children[index]
     if (!page)
       return
-    docModel.value?.addElement(page.toJSON(), {
+    doc.value?.addElement(page.toJSON(), {
       index: index + 1,
       regenerateId: true,
     })
@@ -78,7 +78,7 @@ export default definePlugin((editor) => {
     const id = root.value?.children[fromIndex]?.id
     if (!id)
       return
-    docModel.value?.moveElement(id, toIndex)
+    doc.value?.moveElement(id, toIndex)
     frameThumbs.value.splice(
       toIndex,
       0,
@@ -95,7 +95,7 @@ export default definePlugin((editor) => {
     const id = root.value.children[index]?.id
     if (!id)
       return
-    docModel.value?.deleteElement(id)
+    doc.value?.deleteElement(id)
     frameThumbs.value.splice(index, 1)
     setActiveFrame(index)
     emit('deleteFrame', index)

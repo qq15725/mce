@@ -1,2 +1,3 @@
-export * from './DocModel'
-export * from './WorkspaceModel'
+export * from './Doc'
+export * from './Model'
+export * from './Workspace'

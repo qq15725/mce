@@ -54,7 +54,7 @@ export default definePlugin((editor) => {
     provideProperties,
     registerHotkey,
     registerCommand,
-    docModel,
+    doc,
     rootAabb,
     activeFrame,
     activeElement,
@@ -116,12 +116,12 @@ export default definePlugin((editor) => {
     let top = rootAabb.value.top
     const left = rootAabb.value.left + rootAabb.value.width + config.value.frameGap
 
-    const elements = docModel.value!.transact(() => {
+    const elements = doc.value!.transact(() => {
       const values = isArray ? value : [value]
       return values.map((_element) => {
         const element = normalizeElement(_element)
 
-        const el = docModel.value!.addElement(element, {
+        const el = doc.value!.addElement(element, {
           parentId: frame?.id,
         }) as Element2D
 
@@ -165,7 +165,7 @@ export default definePlugin((editor) => {
     if (id === activeElement.value?.id) {
       setActiveElement(undefined)
     }
-    docModel.value?.deleteElement(id)
+    doc.value?.deleteElement(id)
   }
 
   function updateElement(id: string, properties: Record<string, any>): void {
@@ -173,7 +173,7 @@ export default definePlugin((editor) => {
   }
 
   function getElement(id: string): Element2D | undefined {
-    return docModel.value?.nodes?.get(id) as Element2D | undefined
+    return doc.value?.nodeMap?.get(id) as Element2D | undefined
   }
 
   function resizeElement(element: Element2D, width: number, height: number, bevel = false): void {

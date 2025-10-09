@@ -15,7 +15,7 @@ export default definePlugin((editor) => {
   const {
     registerExporter,
     getAabb,
-    docModel,
+    doc,
     rootAabb,
     fonts,
     currentElements,
@@ -66,7 +66,7 @@ export default definePlugin((editor) => {
             ...rootAabb.value,
           },
           fonts,
-          children: docModel.value!.children.toJSON(),
+          children: doc.value!.children.toJSON(),
           meta: {},
         } as FlatDocument),
       )

@@ -2,22 +2,22 @@ import type { Document, NormalizedDocument } from 'modern-idoc'
 import { throttle } from 'lodash-es'
 import { idGenerator } from 'modern-idoc'
 import { definePlugin } from '../editor'
-import { DocModel } from '../models'
+import { Doc } from '../models'
 
 declare global {
   namespace Mce {
     interface Editor {
       getDoc: () => NormalizedDocument
-      setDoc: (doc: Document) => Promise<DocModel | undefined>
+      setDoc: (doc: Document | string) => Promise<Doc | undefined>
       clearDoc: () => void
     }
 
     interface Options {
-      doc?: Document
+      doc?: Document | string
     }
 
     interface Events {
-      setDoc: [doc: DocModel]
+      setDoc: [doc: Doc]
       clearDoc: []
       updateDoc: [update: Uint8Array, origin: any]
     }
@@ -28,7 +28,7 @@ export default definePlugin((editor) => {
   const {
     provideProperties,
     workspace,
-    docModel,
+    doc,
     renderEngine,
     emit,
     setActiveElement,
@@ -42,44 +42,42 @@ export default definePlugin((editor) => {
     return to('json')
   }
 
-  async function setDoc(doc: Document): Promise<DocModel | undefined> {
+  async function setDoc(source: Document | string): Promise<Doc | undefined> {
     setState('loading')
 
-    const mDoc = new DocModel({ id: doc.id || idGenerator() }, editor)
+    const _doc = new Doc(
+      (typeof source === 'string' ? source : source.id) || idGenerator(),
+      editor,
+    )
 
     try {
       await waitUntilFontLoad()
-      const model = mDoc
       clearDoc()
-      await model.load(() => {
-        model.reset()
-        doc.children?.forEach((child) => {
-          model.addElement(child)
-        })
-        renderEngine.value.timeline.endTime = doc.meta?.endTime || 0
-        renderEngine.value.timeline.loop = true
+      await _doc.load(() => {
+        if (typeof source !== 'string') {
+          _doc.set(source)
+        }
       })
-      model.on(
-        'update',
-        throttle((update, origin) => emit('updateDoc', update, origin), 200),
-      )
-      workspace.value?.addDoc(model)
-      docModel.value?.destroy()
-      docModel.value = model
+      _doc.on('update', throttle((update, origin) => emit('updateDoc', update, origin), 200))
+      workspace.value?.addDoc(_doc)
+      doc.value?.destroy()
+      doc.value = _doc
+      renderEngine.value.timeline.endTime = _doc.props.get('meta')?.endTime || 0
+      renderEngine.value.timeline.loop = true
       setActiveFrame(0)
-      emit('setDoc', model)
+      emit('setDoc', _doc)
     }
     finally {
       setState(undefined)
     }
 
-    return mDoc
+    return _doc
   }
 
   function clearDoc(): void {
     renderEngine.value.root.removeChildren()
     renderEngine.value.root.children.length = 0 // TODO
-    docModel.value = undefined
+    doc.value = undefined
     setActiveElement(undefined)
     emit('clearDoc')
   }
