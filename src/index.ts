@@ -2,6 +2,7 @@ import './typed-global.d.ts'
 import './typed-plugins.d.ts'
 
 export { default as Drawboard } from './components/Drawboard.vue'
+export { default as Transformable } from './components/shared/Transformable.vue'
 export * from './composables'
 export * from './editor'
 export * from './models'
