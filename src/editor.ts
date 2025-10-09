@@ -1,13 +1,14 @@
 import type { RemovableRef } from '@vueuse/core'
+import type { ObservableEvents } from 'modern-idoc'
 import type { App, InjectionKey } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
-import { EventEmitter } from 'modern-idoc'
+import { Observable } from 'modern-idoc'
 import { ref } from 'vue'
 import { presetPlugins } from './preset-plugins'
 
-export interface EditorOptions extends Mce.EditorOptions {
+export interface Options extends Mce.Options {
   debug?: boolean
-  plugins?: EditorPlugin[]
+  plugins?: Plugin[]
   configCacheInLocal?: boolean
 }
 
@@ -15,26 +16,25 @@ export interface Editor extends Mce.Editor {
   //
 }
 
-export class Editor extends EventEmitter<Mce.Events> {
+export interface Events extends Mce.Events, ObservableEvents {
+  //
+}
+
+export class Editor extends Observable<Events> {
   static injectionKey: InjectionKey<Editor> = Symbol.for('EditorKey')
 
   debug = ref(false)
   declare config: RemovableRef<Mce.Config>
-  onEmit?: <K extends keyof Mce.Events>(event: K, ...args: Mce.Events[K]) => void
+  onEmit?: <K extends keyof Events & string>(event: K, ...args: Events[K]) => void
 
-  constructor(options: EditorOptions = {}) {
+  constructor(options: Options = {}) {
     super()
 
-    this._setupEventEmitter()
+    this._setupObservable()
     this._setupOptions(options)
   }
 
-  protected _setupEventEmitter(): void {
-    this.addEventListener = this.addEventListener.bind(this)
-    this.removeEventListener = this.removeEventListener.bind(this)
-    this.removeAllListeners = this.removeAllListeners.bind(this)
-    this.hasEventListener = this.hasEventListener.bind(this)
-    this.dispatchEvent = this.dispatchEvent.bind(this)
+  protected _setupObservable(): void {
     this.on = this.on.bind(this)
     this.once = this.once.bind(this)
     this.off = this.off.bind(this)
@@ -47,12 +47,12 @@ export class Editor extends EventEmitter<Mce.Events> {
     }
   }
 
-  emit = <K extends keyof Mce.Events>(event: K, ...args: Mce.Events[K]): void => {
+  emit = <K extends keyof Events & string>(event: K, ...args: Events[K]): this => {
     this.onEmit?.(event, ...args)
-    super.emit(event, ...args)
+    return super.emit(event, ...args)
   }
 
-  protected _setupOptions(options: EditorOptions): void {
+  protected _setupOptions(options: Options): void {
     const {
       debug = false,
       plugins = [],
@@ -70,10 +70,10 @@ export class Editor extends EventEmitter<Mce.Events> {
     ], options)
   }
 
-  protected _setupPlugins(plugins: EditorPlugin[], options: EditorOptions): void {
+  protected _setupPlugins(plugins: Plugin[], options: Options): void {
     const installs: any[] = []
 
-    const use = (plugin: EditorPlugin): void => {
+    const use = (plugin: Plugin): void => {
       const result = plugin(this, options)
       switch (typeof result) {
         case 'object':
@@ -112,17 +112,17 @@ export class Editor extends EventEmitter<Mce.Events> {
   }
 }
 
-export function createEditor(options?: EditorOptions): Editor {
+export function createEditor(options?: Options): Editor {
   return new Editor(options)
 }
 
-export type EditorPlugin = (editor: Editor, options: EditorOptions) =>
-  | ((editor: Editor, options: EditorOptions) => void)
-  | EditorPlugin[]
+export type Plugin = (editor: Editor, options: Options) =>
+  | ((editor: Editor, options: Options) => void)
+  | Plugin[]
   | Record<string, any>
   | undefined
   | void
 
-export function definePlugin(cb: EditorPlugin): EditorPlugin {
+export function definePlugin(cb: Plugin): Plugin {
   return cb
 }

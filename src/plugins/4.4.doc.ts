@@ -12,7 +12,7 @@ declare global {
       clearDoc: () => void
     }
 
-    interface EditorOptions {
+    interface Options {
       doc?: Document
     }
 

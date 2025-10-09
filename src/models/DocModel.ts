@@ -104,8 +104,8 @@ export interface DocEntity {
 }
 
 export interface DocModelEvents extends ObservableEvents {
-  update: (arg0: Uint8Array, arg1: any, arg2: Y.Doc, arg3: Transaction) => void
-  history: (arg0: Y.UndoManager) => void
+  update: [arg0: Uint8Array, arg1: any, arg2: Y.Doc, arg3: Transaction]
+  history: [arg0: Y.UndoManager]
 }
 
 export class DocModel extends Observable<DocModelEvents> {

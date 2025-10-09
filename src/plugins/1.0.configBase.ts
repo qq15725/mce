@@ -3,7 +3,7 @@ import { definePlugin } from '../editor'
 
 declare global {
   namespace Mce {
-    interface EditorOptions extends Partial<Config> {
+    interface Options extends Partial<Config> {
       //
     }
 

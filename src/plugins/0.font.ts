@@ -10,7 +10,7 @@ declare global {
       waitUntilFontLoad: () => Promise<void>
     }
 
-    interface EditorOptions {
+    interface Options {
       defaultFont?: FontSource
     }
 

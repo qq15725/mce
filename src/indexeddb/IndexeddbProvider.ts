@@ -59,7 +59,7 @@ export function storeState(
 export const clearDocument = (name: string): Promise<void> => idb.deleteDB(name)
 
 interface IndexeddbProviderEvents extends ObservableEvents {
-  synced: (db: IndexeddbProvider) => void
+  synced: [db: IndexeddbProvider]
 }
 
 export class IndexeddbProvider extends Observable<IndexeddbProviderEvents> {

@@ -1,7 +1,7 @@
 declare global {
   namespace Mce {
     interface Editor {}
-    interface EditorOptions {}
+    interface Options {}
     interface Events {}
     interface Hotkeys {}
     interface Commands {}
