@@ -171,6 +171,14 @@ export class Doc extends Model {
     this.undoManager = um
   }
 
+  undo(): any {
+    return this.undoManager.undo()
+  }
+
+  redo(): any {
+    return this.undoManager.redo()
+  }
+
   async load(initFn?: () => void): Promise<this> {
     if (this._ready) {
       return this
@@ -471,5 +479,12 @@ export class Doc extends Model {
       this.nodeMap.set(id, node)
     }
     return node
+  }
+
+  toJSON(): Record<string, any> {
+    return {
+      ...this._yProps.toJSON(),
+      children: this._yChildren.toJSON(),
+    }
   }
 }

@@ -60,14 +60,15 @@ export default definePlugin((editor) => {
       } as any
     }
     else {
+      const props = doc.value?.toJSON() ?? {}
       _doc = normalizeDocument(
         flatDocumentToDocument({
+          ...props,
           style: {
+            ...props.style,
             ...rootAabb.value,
           },
           fonts,
-          children: doc.value!.children.toJSON(),
-          meta: {},
         } as FlatDocument),
       )
     }

@@ -45,11 +45,11 @@ export default definePlugin((editor) => {
   const canRedo = ref(false)
 
   function redo(): void {
-    doc.value?.undoManager.redo()
+    doc.value?.redo()
   }
 
   function undo(): void {
-    doc.value?.undoManager.undo()
+    doc.value?.undo()
   }
 
   provideProperties({
