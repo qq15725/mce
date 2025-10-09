@@ -1,3 +1,12 @@
+## [0.0.11](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.10...v0.0.11) (2025-10-09)
+
+
+### Features
+
+* export Transformable ([590c5a0](https://github.com/qq15725/modern-canvas-editor/commit/590c5a0311fb52ffa6de93912fefacaa2b150d98))
+
+
+
 ## [0.0.10](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.9...v0.0.10) (2025-10-09)
 
 
