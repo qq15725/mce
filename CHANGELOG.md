@@ -1,3 +1,12 @@
+## [0.0.13](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.12...v0.0.13) (2025-10-09)
+
+
+### Features
+
+* yjs ([641f7a2](https://github.com/qq15725/modern-canvas-editor/commit/641f7a266de34e75fea334fb8c0c0f4d426336d6))
+
+
+
 ## [0.0.12](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.11...v0.0.12) (2025-10-09)
 
 
