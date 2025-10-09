@@ -2,9 +2,9 @@ import type { CoreObject } from 'modern-canvas'
 import type { Document, Element, NormalizedElement } from 'modern-idoc'
 import type { Transaction, YArrayEvent, YMapEvent } from 'yjs'
 import type { Editor } from '../editor'
-import type { ModelEvents } from './Model'
+import type { ModelEvents, ModelProps } from './Model'
 import { Element2D, Node } from 'modern-canvas'
-import { normalizeElement } from 'modern-idoc'
+import { normalizeElement, property } from 'modern-idoc'
 import { markRaw, nextTick, reactive } from 'vue'
 import * as Y from 'yjs'
 import { IndexeddbProvider } from '../indexeddb'
@@ -16,22 +16,7 @@ interface AddElementOptions {
   regenerateId?: boolean
 }
 
-export interface DocMeta {
-  [key: string]: any
-  workspaceId: string
-  createdAt: number
-  updatedAt: number
-}
-
-export type DocPropsYMap = Y.Map<unknown> & {
-  get:
-    & ((prop: 'id') => string)
-    & ((prop: 'name') => string)
-    & ((prop: 'meta') => DocMeta)
-    & (<T = unknown>(prop: string) => T)
-}
-
-export type ElementYMap = Y.Map<unknown> & {
+export type YElement = Y.Map<unknown> & {
   get:
     & ((prop: 'id') => string)
     & ((prop: 'name') => string)
@@ -51,7 +36,7 @@ export type ElementYMap = Y.Map<unknown> & {
 
 export interface YElementResult {
   id: string
-  element: ElementYMap
+  element: YElement
 }
 
 function initYElement(
@@ -105,7 +90,7 @@ export function iElementToYElements(
   regenerateId = false,
 ): YElementResult[] {
   const results: YElementResult[] = []
-  const yElement = new Y.Map<unknown>() as ElementYMap
+  const yElement = new Y.Map<unknown>() as YElement
   const { normalized, yChildrenIds } = initYElement(yElement, element, parentId, regenerateId)
   const id = normalized.id
   results.push({ id, element: yElement })
@@ -115,6 +100,16 @@ export function iElementToYElements(
     results.push(...result)
   })
   return results
+}
+
+export interface DocProps extends ModelProps {
+  name: string
+  meta: Partial<{
+    [key: string]: any
+    workspaceId: string
+    createdAt: number
+    updatedAt: number
+  }>
 }
 
 export interface DocEvents extends ModelEvents {
@@ -129,11 +124,18 @@ export interface Doc {
 }
 
 export class Doc extends Model {
-  readonly props: DocPropsYMap
-  readonly children: Y.Map<ElementYMap>
-  readonly childrenIds: Y.Array<string>
+  protected _yChildren: Y.Map<YElement>
+  protected _yChildrenIds: Y.Array<string>
 
-  readonly root = reactive(new Node({ name: 'doc' })) as Node
+  @property({ default: 'doc' }) declare name: string
+  @property({ default: () => ({}) }) declare meta: {
+    [key: string]: any
+    workspaceId: string
+    createdAt: number
+    updatedAt: number
+  }
+
+  readonly root = reactive(new Node()) as Node
   nodeMap = new Map<string, Node>()
   protected _ready = false
 
@@ -141,23 +143,22 @@ export class Doc extends Model {
   indexeddb?: IndexeddbProvider
 
   constructor(
-    id: string,
+    options: Partial<DocProps> = {},
     public editor: Editor,
   ) {
-    super(id)
-    this.props = markRaw(this.doc.getMap('props') as DocPropsYMap)
-    this.children = markRaw(this.doc.getMap('children'))
-    this.childrenIds = markRaw(this.doc.getArray('childrenIds') as Y.Array<string>)
+    super(options)
+    this._yChildren = markRaw(this._yDoc.getMap('children'))
+    this._yChildrenIds = markRaw(this._yDoc.getArray('childrenIds') as Y.Array<string>)
     this._setupUndoManager()
   }
 
   protected _setupUndoManager(): void {
     const um = markRaw(new Y.UndoManager([
-      this.props,
-      this.children,
-      this.childrenIds,
+      this._yProps,
+      this._yChildren,
+      this._yChildrenIds,
     ], {
-      trackedOrigins: new Set([this.doc.clientID]),
+      trackedOrigins: new Set([this._yDoc.clientID]),
     }))
     um.trackedOrigins.add(um)
     const onHistory = (): void => {
@@ -176,7 +177,7 @@ export class Doc extends Model {
     }
     this._ready = true
     await this.transact(async () => {
-      this.doc.load()
+      this._yDoc.load()
       const { config, renderEngine } = this.editor
       if (config.value.localDb) {
         try {
@@ -187,27 +188,27 @@ export class Doc extends Model {
         }
       }
       await initFn?.()
-      if (!this.children.size) {
+      if (!this._yChildren.size) {
         this.init()
         await nextTick()
       }
-      this._proxyProps(this.root, this.props)
-      this._proxyChildren(this.root, this.childrenIds)
-      this.childrenIds.forEach((id) => {
-        const yNode = this.children.get(id)
+      this._proxyProps(this.root, this._yProps)
+      this._proxyChildren(this.root, this._yChildrenIds)
+      this._yChildrenIds.forEach((id) => {
+        const yNode = this._yChildren.get(id)
         if (yNode) {
           this._getOrCreateNode(yNode)
         }
       })
       renderEngine.value.root.appendChild(this.root)
     }, false)
-    this.children.observe(this._onChildrenChange.bind(this) as any)
+    this._yChildren.observe(this._onChildrenChange.bind(this) as any)
     this.undoManager.clear()
     return this
   }
 
   async loadIndexeddb(): Promise<void> {
-    const indexeddb = new IndexeddbProvider(this.doc.guid, this.doc)
+    const indexeddb = new IndexeddbProvider(this._yDoc.guid, this._yDoc)
     await indexeddb.whenSynced
     this.indexeddb = indexeddb
     console.info('loaded data from indexed db')
@@ -222,7 +223,7 @@ export class Doc extends Model {
     keysChanged.forEach((key) => {
       const change = changes.keys.get(key)
       // const oldValue = change?.oldValue
-      const yNode = this.children.get(key)
+      const yNode = this._yChildren.get(key)
       switch (change?.action) {
         case 'add':
           if (yNode) {
@@ -237,11 +238,12 @@ export class Doc extends Model {
     })
   }
 
-  reset(): void {
-    this.props.clear()
-    this.children.clear()
-    this.childrenIds.delete(0, this.childrenIds.length)
+  override reset(): this {
+    super.reset()
+    this._yChildren.clear()
+    this._yChildrenIds.delete(0, this._yChildrenIds.length)
     this.nodeMap.clear()
+    return this
   }
 
   init(): void {
@@ -265,13 +267,13 @@ export class Doc extends Model {
     const { parentId, index, regenerateId } = options
     const yNodes = iElementToYElements(element, parentId, regenerateId)
     yNodes.forEach((result) => {
-      this.children.set(result.id, result.element)
+      this._yChildren.set(result.id, result.element)
     })
     const nodeMap = yNodes.map(result => this._getOrCreateNode(result.element))
     const root = nodeMap[0]
     const childrenIds = parentId
-      ? this.children.get(parentId)?.get('childrenIds')
-      : this.childrenIds
+      ? this._yChildren.get(parentId)?.get('childrenIds')
+      : this._yChildrenIds
     if (childrenIds) {
       if (index === undefined) {
         childrenIds.push([root.id])
@@ -293,32 +295,23 @@ export class Doc extends Model {
     })
   }
 
-  setProps(props: Record<string, any>): this {
-    this.transact(() => {
-      for (const [key, value] of Object.entries(props)) {
-        this.props.set(key, value)
-      }
-    })
-    return this
-  }
-
-  set(source: Document): this {
+  setDoc(source: Document): this {
     const { children = [], ...props } = source
     this.reset()
     this.addElements(children)
-    this.setProps(props)
+    this.setProperties(props)
     return this
   }
 
   protected _deleteElement(id: string): void {
-    const yNode = this.children.get(id)
+    const yNode = this._yChildren.get(id)
     if (!yNode) {
       return
     }
     const parentId = yNode.get('parentId')
     const parentChildrenIds = parentId
-      ? this.children.get(parentId)?.get('childrenIds')
-      : this.childrenIds
+      ? this._yChildren.get(parentId)?.get('childrenIds')
+      : this._yChildrenIds
     if (parentChildrenIds) {
       const index = parentChildrenIds.toJSON().indexOf(id)
       if (index > -1) {
@@ -326,7 +319,7 @@ export class Doc extends Model {
       }
     }
     yNode.get('childrenIds').forEach(id => this._deleteElement(id))
-    this.children.delete(id)
+    this._yChildren.delete(id)
   }
 
   deleteElement(id: string): void {
@@ -334,11 +327,11 @@ export class Doc extends Model {
   }
 
   moveElement(id: string, toIndex: number): void {
-    const yNode = this.children.get(id)
+    const yNode = this._yChildren.get(id)
     const parentId = yNode?.get('parentId')
     const childrenIds = parentId
-      ? this.children.get(parentId)?.get('childrenIds')
-      : this.childrenIds
+      ? this._yChildren.get(parentId)?.get('childrenIds')
+      : this._yChildrenIds
     if (!childrenIds) {
       return
     }
@@ -393,7 +386,7 @@ export class Doc extends Model {
 
   protected _proxyChildren(node: Node, childrenIds: Y.Array<string>): void {
     childrenIds.forEach((id) => {
-      const child = this.children.get(id)
+      const child = this._yChildren.get(id)
       if (child) {
         node.appendChild(this._getOrCreateNode(child))
       }
@@ -437,7 +430,7 @@ export class Doc extends Model {
     childrenIds.observe(observeFn)
   }
 
-  protected _proxyNode(node: Node, yEle: ElementYMap): void {
+  protected _proxyNode(node: Node, yEle: YElement): void {
     this._proxyProps(node, yEle)
 
     if (node instanceof Element2D) {
@@ -462,7 +455,7 @@ export class Doc extends Model {
     this._proxyChildren(node, yEle.get('childrenIds'))
   }
 
-  protected _getOrCreateNode(yNode: ElementYMap): Node {
+  protected _getOrCreateNode(yNode: YElement): Node {
     const id = yNode.get('id')
     let node = this.nodeMap.get(id)
     if (!node) {
@@ -478,9 +471,5 @@ export class Doc extends Model {
       this.nodeMap.set(id, node)
     }
     return node
-  }
-
-  override destroy(): void {
-    super.destroy()
   }
 }

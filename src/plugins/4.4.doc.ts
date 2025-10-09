@@ -1,6 +1,5 @@
 import type { Document, NormalizedDocument } from 'modern-idoc'
 import { throttle } from 'lodash-es'
-import { idGenerator } from 'modern-idoc'
 import { definePlugin } from '../editor'
 import { Doc } from '../models'
 
@@ -46,7 +45,7 @@ export default definePlugin((editor) => {
     setState('loading')
 
     const _doc = new Doc(
-      (typeof source === 'string' ? source : source.id) || idGenerator(),
+      typeof source === 'string' ? { id: source } : source,
       editor,
     )
 
@@ -55,14 +54,14 @@ export default definePlugin((editor) => {
       clearDoc()
       await _doc.load(() => {
         if (typeof source !== 'string') {
-          _doc.set(source)
+          _doc.setDoc(source)
         }
       })
       _doc.on('update', throttle((update, origin) => emit('updateDoc', update, origin), 200))
       workspace.value?.addDoc(_doc)
       doc.value?.destroy()
       doc.value = _doc
-      renderEngine.value.timeline.endTime = _doc.props.get('meta')?.endTime || 0
+      renderEngine.value.timeline.endTime = _doc.meta.endTime || 0
       renderEngine.value.timeline.loop = true
       setActiveFrame(0)
       emit('setDoc', _doc)

@@ -1,41 +1,32 @@
-import type * as Y from 'yjs'
 import type { Doc } from './Doc'
-import { markRaw } from 'vue'
+import type { ModelProps } from './Model'
+import { property } from 'modern-idoc'
 import { Model } from './Model'
 
-export type WorkspacePropsYMap = Y.Map<unknown> & {
-  get:
-    & ((prop: 'id') => string)
-    & ((prop: 'name') => string)
-    & ((prop: 'type') => 'local' | 'cloud')
-    & ((prop: 'createdAt') => number)
-    & ((prop: 'updatedAt') => number)
-    & (<T = unknown>(prop: string) => T)
+export interface WorkspaceProps extends ModelProps {
+  name: string
+  type: 'local' | 'cloud'
+  createdAt: number
+  updatedAt: number
 }
 
 export class Workspace extends Model {
-  readonly props: WorkspacePropsYMap
-  readonly docMap = new Map<string, Doc>()
+  readonly docs = new Map<string, Doc>()
 
-  constructor(id: string) {
-    super(id)
-    this.props = markRaw(this.doc.getMap('props') as WorkspacePropsYMap)
-  }
+  @property() declare name: string
+  @property() declare type: 'local' | 'cloud'
+  @property() declare createdAt: string
+  @property() declare updatedAt: string
 
-  setProps(props: Record<string, any>): this {
-    this.transact(() => {
-      for (const [key, value] of Object.entries(props)) {
-        this.props.set(key, value)
-      }
-    })
-    return this
+  constructor(options: Partial<WorkspaceProps> = {}) {
+    super(options)
   }
 
   addDoc(doc: Doc): Doc {
-    if (this.docMap.has(doc.id)) {
+    if (this.docs.has(doc.id)) {
       throw new Error('doc already exists')
     }
-    this.docMap.set(doc.id, doc)
+    this.docs.set(doc.id, doc)
     return doc
   }
 }

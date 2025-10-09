@@ -1,6 +1,6 @@
 import type { ReactivableEvents } from 'modern-idoc'
 import type { Transaction } from 'yjs'
-import { property, Reactivable } from 'modern-idoc'
+import { idGenerator, property, Reactivable } from 'modern-idoc'
 import { markRaw } from 'vue'
 import * as Y from 'yjs'
 
@@ -15,16 +15,30 @@ export interface Model {
   emit: <K extends keyof ModelEvents & string>(event: K, ...args: ModelEvents[K]) => this
 }
 
+export interface ModelProps {
+  id: string
+}
+
 export class Model extends Reactivable {
   protected _transacting: boolean | undefined = undefined
-  doc: Y.Doc
+  protected _yDoc: Y.Doc
+  protected _yProps: Y.Map<unknown>
 
-  @property({ alias: 'doc.guid' }) declare id: string
+  @property({ alias: '_yDoc.guid' }) declare id: string
 
-  constructor(id: string) {
+  constructor(options: Partial<ModelProps> = {}) {
     super()
-    this.doc = markRaw(new Y.Doc({ guid: id }))
-    this.doc.on('update', (...args) => this.emit('update', ...args))
+    const { id = idGenerator(), ...props } = options
+    this._yDoc = markRaw(new Y.Doc({ guid: id }))
+    this._yDoc.on('update', (...args) => this.emit('update', ...args))
+    this._yProps = this._yDoc.getMap('props')
+    this._propertyAccessor = {
+      getProperty: key => this._yProps.doc ? this._yProps.get(key) : undefined,
+      setProperty: (key, value) => {
+        this.transact(() => this._yProps.set(key, value))
+      },
+    }
+    this.setProperties(props)
   }
 
   transact<T>(fn: () => T, should = true): T {
@@ -33,7 +47,7 @@ export class Model extends Reactivable {
     }
     this._transacting = should
     let result = undefined as T
-    const doc = this.doc
+    const doc = this._yDoc
     doc.transact(
       () => {
         try {
@@ -50,5 +64,10 @@ export class Model extends Reactivable {
     )
     this._transacting = undefined
     return result!
+  }
+
+  reset(): this {
+    this._yProps.clear()
+    return this
   }
 }
