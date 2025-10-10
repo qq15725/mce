@@ -1,8 +1,9 @@
 import type { ReactivableEvents } from 'modern-idoc'
 import type { Transaction } from 'yjs'
-import { idGenerator, property, Reactivable } from 'modern-idoc'
+import { idGenerator, Reactivable } from 'modern-idoc'
 import { markRaw } from 'vue'
 import * as Y from 'yjs'
+import { IndexeddbProvider } from '../indexeddb'
 
 export interface ModelEvents extends ReactivableEvents {
   update: [arg0: Uint8Array, arg1: any, arg2: Y.Doc, arg3: Transaction]
@@ -15,21 +16,19 @@ export interface Model {
   emit: <K extends keyof ModelEvents & string>(event: K, ...args: ModelEvents[K]) => this
 }
 
-export interface ModelProps {
-  id: string
-}
-
 export class Model extends Reactivable {
   _transacting: boolean | undefined = undefined
   _yDoc: Y.Doc
   _yProps: Y.Map<unknown>
+  indexeddb?: IndexeddbProvider
+  declare undoManager: Y.UndoManager
+  protected _ready = false
 
-  @property({ alias: '_yDoc.guid' }) declare id: string
-
-  constructor(options: Partial<ModelProps> = {}) {
+  constructor(
+    public id = idGenerator(),
+  ) {
     super()
-    const { id = idGenerator(), ...props } = options
-    this._yDoc = markRaw(new Y.Doc({ guid: id }))
+    this._yDoc = markRaw(new Y.Doc({ guid: this.id }))
     this._yDoc.on('update', (...args) => this.emit('update', ...args))
     this._yProps = markRaw(this._yDoc.getMap('props'))
     this._propertyAccessor = {
@@ -38,7 +37,39 @@ export class Model extends Reactivable {
         this.transact(() => this._yProps.set(key, value))
       },
     }
-    this.setProperties(props)
+  }
+
+  protected _setupUndoManager(typeScope: any[] = []): void {
+    const um = markRaw(new Y.UndoManager([
+      this._yProps,
+      ...typeScope,
+    ], {
+      trackedOrigins: new Set([this._yDoc.clientID]),
+    }))
+    um.trackedOrigins.add(um)
+    const onHistory = (): void => {
+      this.emit('history', um)
+    }
+    um.on('stack-item-added', onHistory)
+    um.on('stack-item-updated', onHistory)
+    um.on('stack-item-popped', onHistory)
+    um.on('stack-cleared', onHistory)
+    this.undoManager = um
+  }
+
+  undo(): any {
+    return this.undoManager.undo()
+  }
+
+  redo(): any {
+    return this.undoManager.redo()
+  }
+
+  async loadIndexeddb(): Promise<void> {
+    const indexeddb = new IndexeddbProvider(this._yDoc.guid, this._yDoc)
+    await indexeddb.whenSynced
+    this.indexeddb = indexeddb
+    console.info('loaded data from indexed db')
   }
 
   transact<T>(fn: () => T, should = true): T {
@@ -66,8 +97,28 @@ export class Model extends Reactivable {
     return result!
   }
 
+  async load(initFn?: () => void | Promise<void>): Promise<this> {
+    if (this._ready) {
+      return this
+    }
+    this._ready = true
+    await this.transact(async () => {
+      this._yDoc.load()
+      await initFn?.()
+    }, false)
+    this.undoManager.clear()
+    return this
+  }
+
   reset(): this {
     this._yProps.clear()
     return this
+  }
+
+  toJSON(): Record<string, any> {
+    return {
+      id: this.id,
+      ...this._yProps.toJSON(),
+    }
   }
 }

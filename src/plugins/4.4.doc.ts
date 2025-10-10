@@ -35,6 +35,7 @@ export default definePlugin((editor) => {
     setState,
     to,
     waitUntilFontLoad,
+    config,
   } = editor
 
   function getDoc(): NormalizedDocument {
@@ -44,23 +45,29 @@ export default definePlugin((editor) => {
   async function setDoc(source: Document | string): Promise<Doc | undefined> {
     setState('loading')
 
-    const _doc = new Doc(
-      typeof source === 'string' ? { id: source } : source,
-      editor,
-    )
+    const _doc = new Doc(typeof source === 'string' ? source : source.id)
 
     try {
       await waitUntilFontLoad()
       clearDoc()
-      await _doc.load(() => {
+      await _doc.load(async () => {
+        if (config.value.localDb) {
+          try {
+            await _doc.loadIndexeddb()
+          }
+          catch (e) {
+            console.error(e)
+          }
+        }
         if (typeof source !== 'string') {
-          _doc.setDoc(source)
+          _doc.set(source)
         }
       })
       _doc.on('update', throttle((update, origin) => emit('updateDoc', update, origin), 200))
       workspace.value?.addDoc(_doc)
       doc.value?.destroy()
       doc.value = _doc
+      renderEngine.value.root.appendChild(_doc.root)
       renderEngine.value.timeline.endTime = _doc.root.meta.endTime || 0
       renderEngine.value.timeline.loop = true
       setActiveFrame(0)

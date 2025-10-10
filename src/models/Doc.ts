@@ -1,13 +1,11 @@
 import type { CoreObject } from 'modern-canvas'
 import type { Document, Element, NormalizedElement, PropertyAccessor } from 'modern-idoc'
 import type { Transaction, YArrayEvent, YMapEvent } from 'yjs'
-import type { Editor } from '../editor'
-import type { ModelEvents, ModelProps } from './Model'
+import type { ModelEvents } from './Model'
 import { Element2D, Node } from 'modern-canvas'
 import { normalizeElement, property } from 'modern-idoc'
 import { markRaw, nextTick, reactive } from 'vue'
 import * as Y from 'yjs'
-import { IndexeddbProvider } from '../indexeddb'
 import { Model } from './Model'
 
 interface AddElementOptions {
@@ -102,16 +100,6 @@ export function iElementToYElements(
   return results
 }
 
-export interface DocProps extends ModelProps {
-  name: string
-  meta: Partial<{
-    [key: string]: any
-    workspaceId: string
-    createdAt: number
-    updatedAt: number
-  }>
-}
-
 export interface DocEvents extends ModelEvents {
   history: [arg0: Y.UndoManager]
 }
@@ -131,22 +119,18 @@ export class Doc extends Model {
 
   readonly root = reactive(new Node()) as Node
   nodeMap = new Map<string, Node>()
-  protected _ready = false
-
-  declare undoManager: Y.UndoManager
-  indexeddb?: IndexeddbProvider
 
   get meta() { return this.root.meta }
   set meta(val) { this.root.meta = val }
 
-  constructor(
-    options: Partial<DocProps> = {},
-    public editor: Editor,
-  ) {
-    super(options)
+  constructor(id?: string) {
+    super(id)
     this._yChildren = markRaw(this._yDoc.getMap('children'))
     this._yChildrenIds = markRaw(this._yDoc.getArray('childrenIds') as Y.Array<string>)
-    this._setupUndoManager()
+    this._setupUndoManager([
+      this._yChildren,
+      this._yChildrenIds,
+    ])
   }
 
   override setProperties(properties?: Record<string, any>): this {
@@ -165,49 +149,8 @@ export class Doc extends Model {
     return this
   }
 
-  protected _setupUndoManager(): void {
-    const um = markRaw(new Y.UndoManager([
-      this._yProps,
-      this._yChildren,
-      this._yChildrenIds,
-    ], {
-      trackedOrigins: new Set([this._yDoc.clientID]),
-    }))
-    um.trackedOrigins.add(um)
-    const onHistory = (): void => {
-      this.emit('history', um)
-    }
-    um.on('stack-item-added', onHistory)
-    um.on('stack-item-updated', onHistory)
-    um.on('stack-item-popped', onHistory)
-    um.on('stack-cleared', onHistory)
-    this.undoManager = um
-  }
-
-  undo(): any {
-    return this.undoManager.undo()
-  }
-
-  redo(): any {
-    return this.undoManager.redo()
-  }
-
-  async load(initFn?: () => void): Promise<this> {
-    if (this._ready) {
-      return this
-    }
-    this._ready = true
-    await this.transact(async () => {
-      this._yDoc.load()
-      const { config, renderEngine } = this.editor
-      if (config.value.localDb) {
-        try {
-          await this.loadIndexeddb()
-        }
-        catch (e) {
-          console.error(e)
-        }
-      }
+  override async load(initFn?: () => void | Promise<void>): Promise<this> {
+    return super.load(async () => {
       await initFn?.()
       if (!this._yChildren.size) {
         this.init()
@@ -225,18 +168,8 @@ export class Doc extends Model {
           this._getOrCreateNode(yNode)
         }
       })
-      renderEngine.value.root.appendChild(this.root)
-    }, false)
-    this._yChildren.observe(this._onChildrenChange.bind(this) as any)
-    this.undoManager.clear()
-    return this
-  }
-
-  async loadIndexeddb(): Promise<void> {
-    const indexeddb = new IndexeddbProvider(this._yDoc.guid, this._yDoc)
-    await indexeddb.whenSynced
-    this.indexeddb = indexeddb
-    console.info('loaded data from indexed db')
+      this._yChildren.observe(this._onChildrenChange.bind(this) as any)
+    })
   }
 
   protected _onChildrenChange(
@@ -320,7 +253,7 @@ export class Doc extends Model {
     })
   }
 
-  setDoc(source: Document): this {
+  set(source: Document): this {
     const { children = [], meta = {}, ...props } = source
     this.reset()
     this.addElements(children)
@@ -525,7 +458,7 @@ export class Doc extends Model {
 
   toJSON(): Record<string, any> {
     return {
-      ...this._yProps.toJSON(),
+      ...super.toJSON(),
       children: this._yChildren.toJSON(),
     }
   }

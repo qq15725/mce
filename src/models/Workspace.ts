@@ -1,9 +1,8 @@
 import type { Doc } from './Doc'
-import type { ModelProps } from './Model'
 import { property } from 'modern-idoc'
 import { Model } from './Model'
 
-export interface WorkspaceProps extends ModelProps {
+export interface WorkspaceProps {
   name: string
   type: 'local' | 'cloud'
   createdAt: number
@@ -18,8 +17,10 @@ export class Workspace extends Model {
   @property() declare createdAt: string
   @property() declare updatedAt: string
 
-  constructor(options: Partial<WorkspaceProps> = {}) {
-    super(options)
+  set(source: Partial<WorkspaceProps> = {}): this {
+    super.reset()
+    this.setProperties(source)
+    return this
   }
 
   addDoc(doc: Doc): Doc {
