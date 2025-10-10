@@ -1,3 +1,12 @@
+## [0.0.17](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.16...v0.0.17) (2025-10-10)
+
+
+### Bug Fixes
+
+* model ([baff75c](https://github.com/qq15725/modern-canvas-editor/commit/baff75c8251944a28d25a7e7b6119429ae3406bf))
+
+
+
 ## [0.0.16](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.15...v0.0.16) (2025-10-10)
 
 
