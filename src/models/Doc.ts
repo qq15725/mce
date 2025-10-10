@@ -136,6 +136,9 @@ export class Doc extends Model {
   declare undoManager: Y.UndoManager
   indexeddb?: IndexeddbProvider
 
+  get meta() { return this.root.meta }
+  set meta(val) { this.root.meta = val }
+
   constructor(
     options: Partial<DocProps> = {},
     public editor: Editor,
@@ -144,6 +147,22 @@ export class Doc extends Model {
     this._yChildren = markRaw(this._yDoc.getMap('children'))
     this._yChildrenIds = markRaw(this._yDoc.getArray('childrenIds') as Y.Array<string>)
     this._setupUndoManager()
+  }
+
+  override setProperties(properties?: Record<string, any>): this {
+    if (properties) {
+      const {
+        meta,
+        ...restProperties
+      } = properties
+
+      if (meta) {
+        this.meta = meta
+      }
+
+      super.setProperties(restProperties)
+    }
+    return this
   }
 
   protected _setupUndoManager(): void {
