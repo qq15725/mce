@@ -61,7 +61,7 @@ export default definePlugin((editor) => {
       workspace.value?.addDoc(_doc)
       doc.value?.destroy()
       doc.value = _doc
-      renderEngine.value.timeline.endTime = _doc.meta.endTime || 0
+      renderEngine.value.timeline.endTime = _doc.root.meta.endTime || 0
       renderEngine.value.timeline.loop = true
       setActiveFrame(0)
       emit('setDoc', _doc)

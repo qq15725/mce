@@ -1,5 +1,5 @@
 import type { CoreObject } from 'modern-canvas'
-import type { Document, Element, NormalizedElement } from 'modern-idoc'
+import type { Document, Element, NormalizedElement, PropertyAccessor } from 'modern-idoc'
 import type { Transaction, YArrayEvent, YMapEvent } from 'yjs'
 import type { Editor } from '../editor'
 import type { ModelEvents, ModelProps } from './Model'
@@ -29,7 +29,7 @@ export type YElement = Y.Map<unknown> & {
     & ((prop: 'text') => Y.Map<unknown>)
     & ((prop: 'foreground') => Y.Map<unknown>)
     & ((prop: 'shadow') => Y.Map<unknown>)
-    & ((prop: 'meta') => Record<string, any>)
+    & ((prop: 'meta') => Y.Map<unknown>)
     & ((prop: 'childrenIds') => Y.Array<string>)
     & (<T = unknown>(prop: string) => T)
 }
@@ -64,7 +64,7 @@ function initYElement(
   yMap.set('parentId', parentId)
   yMap.set('name', normalized.name ?? id)
   yMap.set('childrenIds', yChildrenIds)
-  yMap.set('meta', normalized.meta ?? {})
+  yMap.set('meta', new Y.Map(Object.entries(normalized.meta ?? {})))
 
   // Element2d
   if (normalized?.meta?.inCanvasIs === 'Element2D') {
@@ -124,16 +124,10 @@ export interface Doc {
 }
 
 export class Doc extends Model {
-  protected _yChildren: Y.Map<YElement>
-  protected _yChildrenIds: Y.Array<string>
+  _yChildren: Y.Map<YElement>
+  _yChildrenIds: Y.Array<string>
 
   @property({ default: 'doc' }) declare name: string
-  @property({ default: () => ({}) }) declare meta: {
-    [key: string]: any
-    workspaceId: string
-    createdAt: number
-    updatedAt: number
-  }
 
   readonly root = reactive(new Node()) as Node
   nodeMap = new Map<string, Node>()
@@ -201,6 +195,10 @@ export class Doc extends Model {
         await nextTick()
       }
       this._proxyProps(this.root, this._yProps)
+      const meta = this._yProps.get('meta') as any
+      if (meta) {
+        this._proxyProps(this.root.meta, meta, true)
+      }
       this._proxyChildren(this.root, this._yChildrenIds)
       this._yChildrenIds.forEach((id) => {
         const yNode = this._yChildren.get(id)
@@ -304,10 +302,11 @@ export class Doc extends Model {
   }
 
   setDoc(source: Document): this {
-    const { children = [], ...props } = source
+    const { children = [], meta = {}, ...props } = source
     this.reset()
     this.addElements(children)
     this.setProperties(props)
+    this._yProps.set('meta', new Y.Map(Object.entries(meta)))
     return this
   }
 
@@ -348,8 +347,8 @@ export class Doc extends Model {
     childrenIds.insert(toIndex, [id])
   }
 
-  protected _proxyProps(obj: CoreObject, yMap: Y.Map<any>): void {
-    obj.setPropertyAccessor({
+  protected _proxyProps(obj: CoreObject, yMap: Y.Map<any>, isMeta = false): void {
+    const accessor: PropertyAccessor = {
       getProperty: key => yMap.doc ? yMap.get(key) : undefined,
       setProperty: (key, value) => {
         if (this._transacting === false) {
@@ -357,7 +356,26 @@ export class Doc extends Model {
         }
         this.transact(() => yMap.set(key, value))
       },
-    })
+    }
+
+    if (isMeta) {
+      ;(obj as any)._propertyAccessor = undefined
+      const oldValues: Record<string, any> = {}
+      yMap.forEach((_value, key) => {
+        oldValues[key] = obj.getProperty(key)
+      })
+      ;(obj as any)._propertyAccessor = accessor
+      yMap.forEach((_value, key) => {
+        const newValue = obj.getProperty(key)
+        const oldValue = oldValues[key]
+        if (newValue !== undefined && !Object.is(newValue, oldValue)) {
+          obj.setProperty(key, newValue)
+          obj.requestUpdate(key, newValue, oldValue)
+        }
+      })
+    }
+
+    obj.setPropertyAccessor(accessor)
 
     const observeFn = (event: YMapEvent<any>, _transaction: Transaction): void => {
       if (event.transaction.origin !== this.undoManager) {
@@ -441,6 +459,11 @@ export class Doc extends Model {
   protected _proxyNode(node: Node, yEle: YElement): void {
     this._proxyProps(node, yEle)
 
+    const meta = yEle.get('meta')
+    if (meta) {
+      this._proxyProps(node.meta, meta, true)
+    }
+
     if (node instanceof Element2D) {
       ;[
         'style',
@@ -471,7 +494,7 @@ export class Doc extends Model {
       node = reactive(
         Node.parse({
           meta: {
-            inCanvasIs: yNode.get('meta')?.inCanvasIs,
+            inCanvasIs: yNode.get('meta')?.get('inCanvasIs'),
           },
         }),
       ) as Node

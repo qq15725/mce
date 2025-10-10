@@ -20,9 +20,9 @@ export interface ModelProps {
 }
 
 export class Model extends Reactivable {
-  protected _transacting: boolean | undefined = undefined
-  protected _yDoc: Y.Doc
-  protected _yProps: Y.Map<unknown>
+  _transacting: boolean | undefined = undefined
+  _yDoc: Y.Doc
+  _yProps: Y.Map<unknown>
 
   @property({ alias: '_yDoc.guid' }) declare id: string
 
@@ -31,7 +31,7 @@ export class Model extends Reactivable {
     const { id = idGenerator(), ...props } = options
     this._yDoc = markRaw(new Y.Doc({ guid: id }))
     this._yDoc.on('update', (...args) => this.emit('update', ...args))
-    this._yProps = this._yDoc.getMap('props')
+    this._yProps = markRaw(this._yDoc.getMap('props'))
     this._propertyAccessor = {
       getProperty: key => this._yProps.doc ? this._yProps.get(key) : undefined,
       setProperty: (key, value) => {

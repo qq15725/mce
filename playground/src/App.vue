@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { onBeforeMount } from 'vue'
 // import { Drawboard, Editor } from 'modern-canvas-editor'
 // import 'modern-canvas-editor/styles'
 import { Drawboard, Editor } from '../../src'
@@ -17,10 +18,11 @@ const editor = new Editor({
   frameGap: 48,
   typographyStrategy: 'autoHeight',
   handleShape: 'rect',
-  localDb: false,
+  localDb: true,
   // custom
   defaultFont: { family: 'SourceHanSansCN-Normal', src: '/SourceHanSansCN-Normal.woff' },
   doc: {
+    id: 'test',
     children: [
       { foreground: '/example.png', text: 'I\'m PNG', style: { left: 10, top: 10, width: 500, height: 500 } },
       { foreground: '/example.jpg', text: 'I\'m JPEG', style: { left: 520, top: 10, width: 500, height: 500 } },
@@ -42,6 +44,11 @@ const editor = new Editor({
       },
     ],
   },
+})
+
+onBeforeMount(async () => {
+  // await editor.setDoc('test')
+  window.doc = editor.doc
 })
 </script>
 
