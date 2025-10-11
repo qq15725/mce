@@ -15,8 +15,6 @@ declare global {
 }
 
 export default definePlugin((editor, options) => {
-  const oldT = options.t
-
   editor.t = (key: string, fallback?: string) => {
     if (fallback === undefined) {
       fallback = key
@@ -30,6 +28,6 @@ export default definePlugin((editor, options) => {
       fallback = fallback.charAt(0).toUpperCase() + fallback.slice(1)
     }
 
-    return oldT?.(key, fallback) ?? fallback
+    return options.t?.(key, fallback) ?? fallback
   }
 })
