@@ -3,6 +3,16 @@ import { definePlugin } from '../editor'
 
 declare global {
   namespace Mce {
+    interface Commands {
+      'lock': () => void
+      'unlock': () => void
+      'lock/unlock': () => void
+    }
+
+    interface Hotkeys {
+      'lock/unlock': [event: KeyboardEvent]
+    }
+
     interface Editor {
       isLocked: (element: Element2D) => boolean
       lock: (element: Element2D) => void
