@@ -1,3 +1,23 @@
+## [0.0.20](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.19...v0.0.20) (2025-10-11)
+
+
+### Bug Fixes
+
+* flip ([8716e41](https://github.com/qq15725/modern-canvas-editor/commit/8716e415ac9509b40585927fe36398e145f918f8))
+* frame/unframe group/ungroup ([f694eb4](https://github.com/qq15725/modern-canvas-editor/commit/f694eb4b02fb3f649b318a91d23dec5b1016c0a6))
+* lock ([1c1ca25](https://github.com/qq15725/modern-canvas-editor/commit/1c1ca256d20cebb96087818b54b751b74b01ea93))
+* lock ([bf30c71](https://github.com/qq15725/modern-canvas-editor/commit/bf30c712d0a6fa23fd5dd20ea3f534f9c794a83c))
+* lock ([2375a3d](https://github.com/qq15725/modern-canvas-editor/commit/2375a3d60e2d4b12d2590ebb8011780e906a546a))
+
+
+### Features
+
+* change addElement options default value ([d986b8e](https://github.com/qq15725/modern-canvas-editor/commit/d986b8e82e217eb05edc3c496375211982e3ddb1))
+* frame/unframe ([6815a2d](https://github.com/qq15725/modern-canvas-editor/commit/6815a2db457a2c56b34f7ad329be2aa7071b4c38))
+* plugin sort ([e4ce322](https://github.com/qq15725/modern-canvas-editor/commit/e4ce322731947ec92360f8c164ea57020f7ab49f))
+
+
+
 ## [0.0.19](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.18...v0.0.19) (2025-10-11)
 
 
