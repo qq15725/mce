@@ -20,6 +20,7 @@ export default definePlugin((editor) => {
     registerCommand,
     deleteElement,
     setActiveElement,
+    getAabb,
     getObb,
     activeElement,
     selectedElements,
@@ -38,27 +39,28 @@ export default definePlugin((editor) => {
     { key: 'frame/unframe', accelerator: 'CmdOrCtrl+f', editable: false },
   ])
 
+  function rmId(el: Record<string, any>): void {
+    delete el.id
+    el.children?.forEach((child: Record<string, any>) => rmId(child))
+  }
+
   function frame(): void {
     const elements = selectedElements.value
     if (elements.length === 0) {
       return
     }
-    const children = elements.map(v => v.toJSON())
-    const obb = getObb(elements, 'frame')
+    const aabb = getAabb(elements, 'frame')
+    const children = elements.map((v) => {
+      const cloned = v.toJSON()
+      rmId(cloned)
+      cloned.style.left -= aabb.left
+      cloned.style.top -= aabb.top
+      return cloned
+    })
     setActiveElement(
       addElement({
-        style: {
-          left: obb.left,
-          top: obb.top,
-          width: obb.width,
-          height: obb.height,
-        },
-        children: children.map((el) => {
-          delete el.id
-          el.style.left -= obb.left
-          el.style.top -= obb.top
-          return el
-        }),
+        style: { ...aabb },
+        children,
         meta: {
           inEditorIs: 'Frame',
         },
@@ -72,21 +74,15 @@ export default definePlugin((editor) => {
     if (!element)
       return
     const items = element.children.map((el) => {
-      return {
-        obb: getObb(el),
-        element: el.toJSON(),
-      }
+      const obb = getObb(el)
+      const cloned = el.toJSON()
+      rmId(cloned)
+      cloned.style.left = obb.left
+      cloned.style.top = obb.top
+      return cloned
     })
     deleteElement(element.id)
-    setSelectedElements(
-      items.map((item) => {
-        const { obb, element } = item
-        delete element.id
-        element.style.left = obb.left
-        element.style.top = obb.top
-        return addElement(element)
-      }),
-    )
+    setSelectedElements(items.map(el => addElement(el)))
   }
 
   function frameOrUnframe() {

@@ -10,7 +10,7 @@ declare global {
 
     interface ExporterOptions {
       scale?: number
-      selected?: boolean | (Element2D[])
+      selected?: boolean | Element2D[]
       onProgress?: ExporterProgress
     }
 

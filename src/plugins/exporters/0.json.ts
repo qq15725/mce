@@ -38,7 +38,7 @@ export default definePlugin((editor) => {
     }
 
     if (elements.length) {
-      const box = getAabb(elements)
+      const box = getAabb(elements, 'frame')
       _doc = {
         style: {
           width: box.width,

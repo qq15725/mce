@@ -17,6 +17,7 @@ declare global {
 export default definePlugin((editor) => {
   const {
     getObb,
+    getAabb,
     selectedElements,
     activeElement,
     setActiveElement,
@@ -37,24 +38,28 @@ export default definePlugin((editor) => {
     { key: 'group/ungroup', accelerator: 'CmdOrCtrl+g', editable: false },
   ])
 
+  function rmId(el: Record<string, any>): void {
+    delete el.id
+    el.children?.forEach((child: Record<string, any>) => rmId(child))
+  }
+
   function group(): void {
     const elements = selectedElements.value
-    const items = elements.map(v => v.toJSON())
-    const obb = getObb(elements, 'frame')
+    if (elements.length === 0) {
+      return
+    }
+    const aabb = getAabb(elements, 'frame')
+    const children = elements.map((v) => {
+      const cloned = v.toJSON()
+      rmId(cloned)
+      cloned.style.left -= aabb.left
+      cloned.style.top -= aabb.top
+      return cloned
+    })
     setActiveElement(
       addElement({
-        style: {
-          left: obb.left,
-          top: obb.top,
-          width: obb.width,
-          height: obb.height,
-        },
-        children: items.map((el) => {
-          delete el.id
-          el.style.left -= obb.left
-          el.style.top -= obb.top
-          return el
-        }),
+        style: { ...aabb },
+        children,
         meta: {
           inPptIs: 'GroupShape',
         },
@@ -64,23 +69,25 @@ export default definePlugin((editor) => {
   }
 
   function ungroup() {
-    if (!activeElement.value)
+    const element = activeElement.value
+    if (!element)
       return
-    const oldElement = activeElement.value
-    const elements = oldElement.children.map((child) => {
+    const items = element.children.map((child) => {
       const obb = getObb(child, 'frame')
-      const element = child.toJSON()
-      delete element.id
-      element.style.left = obb.left
-      element.style.top = obb.top
-      return addElement(element)
+      const cloned = child.toJSON()
+      rmId(cloned)
+      cloned.style.left = obb.left
+      cloned.style.top = obb.top
+      return cloned
     })
-    deleteElement(oldElement.id)
-    setSelectedElements(elements)
+    setSelectedElements(
+      items.map(el => addElement(el)),
+    )
+    deleteElement(element.id)
   }
 
   function groupOrUngroup() {
-    if (activeElement.value?.meta.inPptIs === 'GroupShape') {
+    if (activeElement.value?.children.length) {
       ungroup()
     }
     else {

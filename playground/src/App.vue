@@ -27,14 +27,14 @@ const editor = new Editor({
       {
         style: { left: 10, top: 10, width: 500, height: 500 },
         children: [
-          { foreground: '/example.png', text: 'I\'m PNG', style: { width: 500, height: 500 } },
+          { foreground: '/example.png', style: { width: 500, height: 500 } },
         ],
         meta: {
           inEditorIs: 'Frame',
         },
       },
-      { foreground: '/example.jpg', text: 'I\'m JPEG', style: { left: 520, top: 10, width: 500, height: 500 } },
-      { foreground: '/example.gif', text: 'I\'m GIF', style: { left: 1030, top: 10, width: 500, height: 500 } },
+      { foreground: '/example.jpg', style: { left: 520, top: 10, width: 500, height: 500 } },
+      { foreground: '/example.gif', style: { left: 1030, top: 10, width: 500, height: 500 } },
       { text: 'test', style: { rotate: 40, left: 100, top: 500, width: 60, height: 40, fontSize: 20, color: '#FF00FF' } },
       {
         style: { left: 200, top: 500, width: 100, height: 100, fontSize: 22 },
