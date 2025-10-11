@@ -33,8 +33,8 @@ declare global {
         | 'reverse'
         // -----
         | 'flip'
-        | 'horizontal'
-        | 'vertical'
+        | 'flipX'
+        | 'flipY'
         // -----
         | 'align'
         | 'alignLeft'
@@ -106,8 +106,8 @@ export default definePlugin((editor) => {
     {
       key: 'flip',
       children: [
-        { key: 'horizontal' },
-        { key: 'vertical' },
+        { key: 'flipX' },
+        { key: 'flipY' },
       ],
     },
     {

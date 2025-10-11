@@ -46,6 +46,7 @@ export default definePlugin((editor) => {
     const box = activeElement.value
       ? activeFrameAabb.value
       : getAabb(selectedElements.value)
+
     currentElements.value.forEach((el) => {
       switch (direction) {
         case 'left':
