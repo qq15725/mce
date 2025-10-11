@@ -17,8 +17,8 @@ import _2_exporter from './plugins/2.exporter'
 import _2_loader from './plugins/2.loader'
 import _3_view from './plugins/3.view'
 import _4_0_text from './plugins/4.0.text'
+import _4_1_lock from './plugins/4.1.lock'
 import _4_2_element from './plugins/4.2.element'
-import _4_2_lock from './plugins/4.2.lock'
 import _4_3_frame from './plugins/4.3.frame'
 import _4_4_doc from './plugins/4.4.doc'
 import _align from './plugins/align'
@@ -61,8 +61,8 @@ export const presetPlugins = [
   _2_loader,
   _3_view,
   _4_0_text,
+  _4_1_lock,
   _4_2_element,
-  _4_2_lock,
   _4_3_frame,
   _4_4_doc,
   _align,

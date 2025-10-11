@@ -65,6 +65,7 @@ export default definePlugin((editor) => {
     log,
     root,
     isFrame,
+    isLocked,
     getObbInDrawboard,
     config,
     getAncestorFrame,
@@ -290,6 +291,7 @@ export default definePlugin((editor) => {
         return 'isVisibleInTree' in node
           && node.isVisibleInTree()
           && isOverlappingObb(areaInDrawboard, getObbInDrawboard(node))
+          && !isLocked(node)
       }) ?? []
     setSelectedElements(selected)
     return selected
