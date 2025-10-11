@@ -1,3 +1,12 @@
+## [0.0.18](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.17...v0.0.18) (2025-10-11)
+
+
+### Features
+
+* editor.loadDoc ([3342e20](https://github.com/qq15725/modern-canvas-editor/commit/3342e20ad559f303f66c33e468b28ea9865e98e8))
+
+
+
 ## [0.0.17](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.16...v0.0.17) (2025-10-10)
 
 
