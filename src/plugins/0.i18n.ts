@@ -7,11 +7,15 @@ declare global {
     interface Editor {
       t: Translation
     }
+
+    interface Options {
+      t?: Translation
+    }
   }
 }
 
-export default definePlugin((editor) => {
-  const oldT = editor.t
+export default definePlugin((editor, options) => {
+  const oldT = options.t
 
   editor.t = (key: string, fallback?: string) => {
     if (fallback === undefined) {

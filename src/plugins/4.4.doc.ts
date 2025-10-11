@@ -7,8 +7,8 @@ declare global {
   namespace Mce {
     interface Editor {
       getDoc: () => NormalizedDocument
-      setDoc: (doc: Document | string) => Promise<Doc | undefined>
-      loadDoc: (source: any) => Promise<Doc | undefined>
+      setDoc: (doc: Document | string) => Promise<Doc>
+      loadDoc: (source: any) => Promise<Doc>
       clearDoc: () => void
     }
 
@@ -18,6 +18,7 @@ declare global {
 
     interface Events {
       setDoc: [doc: Doc]
+      loadDoc: [doc: Doc, source: any]
       clearDoc: []
       updateDoc: [update: Uint8Array, origin: any]
     }
@@ -44,7 +45,7 @@ export default definePlugin((editor) => {
     return to('json')
   }
 
-  async function setDoc(source: Document | string): Promise<Doc | undefined> {
+  async function setDoc(source: Document | string): Promise<Doc> {
     setState('loading')
 
     const _doc = new Doc(typeof source === 'string' ? source : source.id)
@@ -82,8 +83,10 @@ export default definePlugin((editor) => {
     return _doc
   }
 
-  async function loadDoc(source: any): Promise<Doc | undefined> {
-    return await setDoc(await load(source))
+  async function loadDoc(source: any): Promise<Doc> {
+    const _doc = await setDoc(await load(source))
+    emit('loadDoc', _doc, source)
+    return _doc
   }
 
   function clearDoc(): void {
