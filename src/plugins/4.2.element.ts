@@ -8,9 +8,15 @@ import { isOverlappingObb } from '../utils'
 declare global {
   namespace Mce {
     interface AddElementOptions {
-      fitPosition?: boolean
-      fitSize?: boolean
+      positionToFit?: boolean
+      sizeToFit?: boolean
       frame?: Element2D
+    }
+
+    interface ResizeElementOptions {
+      deep?: boolean
+      textToFit?: boolean
+      textFontSizeToFit?: boolean
     }
 
     interface Editor {
@@ -21,7 +27,12 @@ declare global {
       deleteElement: (id: string) => void
       updateElement: (id: string, properties: Record<string, any>) => void
       getElement: (id: string) => Element2D | undefined
-      resizeElement: (element: Element2D, width: number, height: number, bevel?: boolean) => void
+      resizeElement: (
+        element: Element2D,
+        width: number,
+        height: number,
+        options?: ResizeElementOptions,
+      ) => void
       getActiveElement: () => Element2D | undefined
       setActiveElement: (id: string | Element2D | undefined) => void
       pointerActivateElement: (
@@ -84,18 +95,13 @@ export default definePlugin((editor) => {
 
   function addElement(
     value: Element | Element[],
-    options?: Mce.AddElementOptions,
+    options: Mce.AddElementOptions = {},
   ): Element2D | Element2D[] {
-    let {
-      fitSize = true,
-      fitPosition = true,
-      frame,
-    } = options ?? {}
-
     const isArray = Array.isArray(value)
 
-    log('addElement', value)
+    log('addElement', value, options)
 
+    let { frame } = options
     if (!frame) {
       if (config.value.viewMode === 'frame') {
         frame = activeFrame.value
@@ -133,19 +139,22 @@ export default definePlugin((editor) => {
             el.style.width = halfWidth
           if (!el.style.height)
             el.style.height = halfHeight
-          if (fitSize) {
+          if (options.sizeToFit) {
             const aspectRatio = el.style.width / el.style.height
             const newWidth = aspectRatio > 1 ? halfWidth : halfHeight * aspectRatio
             const newHeight = aspectRatio > 1 ? halfWidth / aspectRatio : halfHeight
-            resizeElement(el, newWidth, newHeight, true)
+            resizeElement(el, newWidth, newHeight, {
+              deep: true,
+              textFontSizeToFit: true,
+            })
           }
-          if (fitPosition) {
+          if (options.positionToFit) {
             el.style.left = (width - el.style.width) / 2
             el.style.top = (height - el.style.height) / 2
           }
         }
         else {
-          if (fitPosition) {
+          if (options.positionToFit) {
             el.style.top = top
             el.style.left = left
             top += el.style.height + config.value.frameGap
@@ -176,32 +185,38 @@ export default definePlugin((editor) => {
     return doc.value?.nodeMap?.get(id) as Element2D | undefined
   }
 
-  function resizeElement(element: Element2D, width: number, height: number, bevel = false): void {
+  function resizeElement(
+    element: Element2D,
+    width: number,
+    height: number,
+    options: Mce.ResizeElementOptions = {},
+  ): void {
     const scale = {
       x: width / (element.style.width ?? 0),
       y: height / (element.style.height ?? 0),
     }
 
-    function _handleDeep(element: Element2D): void {
+    function handle(element: Element2D) {
       const style = element.style
       style.left *= scale.x
       style.top *= scale.y
       style.width *= scale.x
       style.height *= scale.y
-      element.children?.forEach((child) => {
-        _handleDeep(child as any)
-      })
       element?.requestRedraw?.() // TODO
     }
 
-    _handleDeep(element)
+    handle(element)
 
-    if (bevel) {
-      textFontSizeToFit(element)
+    function deepHandle(element: Element2D): void {
+      handle(element)
+      element.children?.forEach((child) => {
+        deepHandle(child as any)
+      })
     }
-    else {
-      textToFit(element)
-    }
+
+    options.deep && deepHandle(element)
+    options.textToFit && textToFit(element)
+    options.textFontSizeToFit && textFontSizeToFit(element)
   }
 
   function getActiveElement(): Element2D | undefined {

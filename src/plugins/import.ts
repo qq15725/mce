@@ -58,8 +58,8 @@ export default definePlugin((editor) => {
         addElement(
           elements,
           pos
-            ? { fitSize: false, fitPosition: false }
-            : undefined,
+            ? undefined
+            : { sizeToFit: true, positionToFit: true },
         )
       }
     }))

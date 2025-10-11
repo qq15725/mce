@@ -70,13 +70,7 @@ export default definePlugin((editor) => {
         el.style.left += 10
         el.style.top += 10
         setActiveElement(
-          addElement(
-            cloneDeep(el),
-            {
-              fitSize: false,
-              fitPosition: false,
-            },
-          ),
+          addElement(cloneDeep(el)),
         )
       })
     }

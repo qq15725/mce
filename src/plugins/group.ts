@@ -58,9 +58,6 @@ export default definePlugin((editor) => {
         meta: {
           inPptIs: 'GroupShape',
         },
-      }, {
-        fitSize: false,
-        fitPosition: false,
       }),
     )
     elements.forEach(v => deleteElement(v.id))
@@ -76,10 +73,7 @@ export default definePlugin((editor) => {
       delete element.id
       element.style.left = obb.left
       element.style.top = obb.top
-      return addElement(element, {
-        fitSize: false,
-        fitPosition: false,
-      })
+      return addElement(element)
     })
     deleteElement(oldElement.id)
     setSelectedElements(elements)

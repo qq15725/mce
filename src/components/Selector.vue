@@ -86,7 +86,16 @@ const currentObb = computed({
       }
       if (!handle.startsWith('rotate')) {
         if (handle.startsWith('resize')) {
-          resizeElement(element, box.width, box.height, handle.split('-').length > 2)
+          resizeElement(
+            element,
+            box.width,
+            box.height,
+            isFrame(element)
+              ? undefined
+              : handle.split('-').length > 2
+                ? { deep: true, textFontSizeToFit: true }
+                : { deep: true, textToFit: true },
+          )
           box.width = element.style.width
           box.height = element.style.height
         }

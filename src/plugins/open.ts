@@ -43,20 +43,12 @@ export default definePlugin((editor) => {
           res.style!.height ??= 1080
           setDoc({
             name: 'doc',
-            style: {
-              width: 1920,
-              height: 1080,
-            },
+            style: { width: 1920, height: 1080 },
             children: [
               {
                 name: 'page',
-                style: {
-                  width: 1920,
-                  height: 1080,
-                },
-                children: [
-                  res,
-                ],
+                style: { width: 1920, height: 1080 },
+                children: [res],
               },
             ],
           })

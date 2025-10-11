@@ -40,9 +40,6 @@ export default definePlugin((editor) => {
               meta: {
                 inPptIs: 'Shape',
               },
-            }, {
-              fitPosition: false,
-              fitSize: false,
             })
           },
         })
