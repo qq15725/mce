@@ -18,7 +18,7 @@ import _2_2_exporter from './plugins/2.2.exporter'
 import _3_view from './plugins/3.view'
 import _4_0_text from './plugins/4.0.text'
 import _4_2_element from './plugins/4.2.element'
-import _4_2_elementLock from './plugins/4.2.elementLock'
+import _4_2_lock from './plugins/4.2.lock'
 import _4_3_frame from './plugins/4.3.frame'
 import _4_4_doc from './plugins/4.4.doc'
 import _align from './plugins/align'
@@ -32,7 +32,6 @@ import _history from './plugins/history'
 import _import from './plugins/import'
 import _insertImage from './plugins/insertImage'
 import _insertText from './plugins/insertText'
-import _lock from './plugins/lock'
 import _menu from './plugins/menu'
 import _move from './plugins/move'
 import _new from './plugins/new'
@@ -63,7 +62,7 @@ export const presetPlugins = [
   _3_view,
   _4_0_text,
   _4_2_element,
-  _4_2_elementLock,
+  _4_2_lock,
   _4_3_frame,
   _4_4_doc,
   _align,
@@ -77,7 +76,6 @@ export const presetPlugins = [
   _import,
   _insertImage,
   _insertText,
-  _lock,
   _menu,
   _move,
   _new,

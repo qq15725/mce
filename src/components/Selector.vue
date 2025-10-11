@@ -30,7 +30,7 @@ const {
   registerCommand,
   unregisterCommand,
   isFrame,
-  isLockedElement,
+  isLocked,
   currentElements,
 } = useEditor()
 
@@ -157,7 +157,7 @@ defineExpose({
     ref="transformableRef"
     v-model="currentObb"
     :visibility="state !== 'selecting' ? 'auto' : 'none'"
-    :moveable="activeElement && !isLockedElement(activeElement)"
+    :moveable="activeElement && !isLocked(activeElement)"
     :resize-strategy="props.resizeStrategy"
     handle-strategy="point"
     class="mce-current-box"
