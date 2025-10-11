@@ -15,7 +15,6 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    provideProperties,
     renderEngine,
     rootAabb,
     activeFrameAabb,
@@ -61,7 +60,7 @@ export default definePlugin((editor) => {
     return unbind
   }
 
-  provideProperties({
+  Object.assign(editor, {
     viewAabb,
     bindRenderCanvas,
   })

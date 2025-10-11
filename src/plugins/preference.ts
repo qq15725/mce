@@ -20,7 +20,6 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    provideProperties,
     registerCommand,
     registerHotkey,
   } = editor
@@ -39,7 +38,7 @@ export default definePlugin((editor) => {
     preferencesVisible.value = !preferencesVisible.value
   }
 
-  provideProperties({
+  Object.assign(editor, {
     preferencesVisible,
   })
 })

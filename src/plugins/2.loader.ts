@@ -26,7 +26,6 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    provideProperties,
     setState,
   } = editor
 
@@ -88,7 +87,7 @@ export default definePlugin((editor) => {
     })
   }
 
-  provideProperties({
+  Object.assign(editor, {
     loaders,
     registerLoader,
     unregisterLoader,

@@ -67,7 +67,6 @@ function isInputEvent(event?: KeyboardEvent): boolean {
 
 export default definePlugin((editor) => {
   const {
-    provideProperties,
     registerConfig,
     commands,
   } = editor
@@ -157,7 +156,7 @@ export default definePlugin((editor) => {
     }).join(' ')
   }
 
-  provideProperties({
+  Object.assign(editor, {
     hotkeys,
     hotkeysData,
     registerHotkey,

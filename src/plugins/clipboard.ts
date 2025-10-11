@@ -27,7 +27,6 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    provideProperties,
     activeElement,
     selectedElements,
     addElement,
@@ -88,7 +87,7 @@ export default definePlugin((editor) => {
     paste()
   }
 
-  provideProperties({
+  Object.assign(editor, {
     copiedData,
   })
 })

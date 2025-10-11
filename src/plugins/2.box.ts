@@ -23,7 +23,6 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    provideProperties,
     camera,
     root,
     currentElements,
@@ -227,7 +226,7 @@ export default definePlugin((editor) => {
   const rootAabb = computed(() => getAabb(root.value?.children ?? []))
   const currentAabb = computed(() => getAabb(currentElements.value))
 
-  provideProperties({
+  Object.assign(editor, {
     obbToFit,
     getObb,
     getObbInDrawboard,

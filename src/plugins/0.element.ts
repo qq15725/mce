@@ -20,10 +20,6 @@ declare global {
 }
 
 export default definePlugin((editor) => {
-  const {
-    provideProperties,
-  } = editor
-
   const activeElement = ref<Element2D>()
   const activeElementMeta = computed<Record<string, any>>(() => activeElement.value?.meta ?? {})
   const activeElementParent = computed(() => {
@@ -50,7 +46,7 @@ export default definePlugin((editor) => {
   const hoverElement = ref<Element2D>()
   const textSelection = ref<any[]>()
 
-  provideProperties({
+  Object.assign(editor, {
     activeElement,
     activeElementMeta,
     activeElementParent,

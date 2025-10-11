@@ -27,7 +27,6 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    provideProperties,
     workspace,
     doc,
     renderEngine,
@@ -97,7 +96,7 @@ export default definePlugin((editor) => {
     emit('clearDoc')
   }
 
-  provideProperties({
+  Object.assign(editor, {
     getDoc,
     setDoc,
     loadDoc,

@@ -23,7 +23,6 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    provideProperties,
     registerCommand,
     registerHotkey,
     currentElements,
@@ -51,7 +50,7 @@ export default definePlugin((editor) => {
     element.meta.locked = false
   }
 
-  provideProperties({
+  Object.assign(editor, {
     isLocked,
     lock,
     unlock,

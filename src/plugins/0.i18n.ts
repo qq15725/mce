@@ -15,7 +15,7 @@ declare global {
 }
 
 export default definePlugin((editor, options) => {
-  editor.t = (key: string, fallback?: string) => {
+  function t(key: string, fallback?: string): string | undefined {
     if (fallback === undefined) {
       fallback = key
         .replace(/\/([a-z])/g, (raw, matched) => {
@@ -30,4 +30,8 @@ export default definePlugin((editor, options) => {
 
     return options.t?.(key, fallback) ?? fallback
   }
+
+  Object.assign(editor, {
+    t,
+  })
 })

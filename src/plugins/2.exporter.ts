@@ -29,10 +29,6 @@ declare global {
 }
 
 export default definePlugin((editor) => {
-  const {
-    provideProperties,
-  } = editor
-
   const exporters: Mce.Editor['exporters'] = ref(new Map<string, Mce.Exporter>())
 
   const registerExporter: Mce.Editor['registerExporter'] = (...args: any[]) => {
@@ -52,7 +48,7 @@ export default definePlugin((editor) => {
     return await exporters.value.get(key)?.(options)
   }
 
-  provideProperties({
+  Object.assign(editor, {
     exporters,
     registerExporter,
     unregisterExporter,

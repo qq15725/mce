@@ -27,7 +27,6 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    provideProperties,
     root,
     getAncestor,
   } = editor
@@ -51,7 +50,7 @@ export default definePlugin((editor) => {
     return ancestor && isFrame(ancestor) ? ancestor : undefined
   }
 
-  provideProperties({
+  Object.assign(editor, {
     frames,
     frameThumbs,
     activeFrameIndex,

@@ -84,7 +84,6 @@ function isLeftTopLine(line: Line) {
 
 export default definePlugin((editor) => {
   const {
-    provideProperties,
     activeFrame,
     activeElement,
     activeElementParent,
@@ -481,7 +480,7 @@ export default definePlugin((editor) => {
     return { x, y }
   }
 
-  provideProperties({
+  Object.assign(editor, {
     auxiliaryLines,
     getAdsorptionPoints,
   })

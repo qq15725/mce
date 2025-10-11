@@ -96,17 +96,6 @@ export class Editor extends Observable<Events> {
     installs.forEach(install => (install as any)?.(this, options))
   }
 
-  provideProperties = <K extends keyof Editor>(
-    properties: Record<K, Editor[K]>,
-    override?: boolean,
-  ): void => {
-    for (const key in properties) {
-      if (override || (this as any)[key] === undefined) {
-        (this as any)[key] = properties[key]
-      }
-    }
-  }
-
   install = (app: App): void => {
     app.provide(Editor.injectionKey, this)
   }

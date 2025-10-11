@@ -14,7 +14,6 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    provideProperties,
     doc,
   } = editor
 
@@ -32,7 +31,7 @@ export default definePlugin((editor) => {
     return url
   }
 
-  provideProperties({
+  Object.assign(editor, {
     upload,
   })
 })

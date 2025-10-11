@@ -51,7 +51,6 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    provideProperties,
     registerHotkey,
     registerCommand,
     doc,
@@ -296,7 +295,7 @@ export default definePlugin((editor) => {
     return selected
   }
 
-  provideProperties({
+  Object.assign(editor, {
     addElement,
     deleteElement,
     updateElement,

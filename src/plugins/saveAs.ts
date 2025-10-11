@@ -21,7 +21,6 @@ export default definePlugin((editor) => {
   const {
     to,
     registerCommand,
-    provideProperties,
   } = editor
 
   async function saveAs(key: keyof Mce.Exporters, options: Mce.SaveAsOptions = {}): Promise<void> {
@@ -46,7 +45,7 @@ export default definePlugin((editor) => {
     { key: 'saveAs', handle: (type, options) => saveAs(type, options) },
   ])
 
-  provideProperties({
+  Object.assign(editor, {
     saveAs,
   })
 })

@@ -20,7 +20,6 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    provideProperties,
     renderEngine,
     frames,
     activeFrameAabb,
@@ -102,7 +101,7 @@ export default definePlugin((editor) => {
     )
   }
 
-  provideProperties({
+  Object.assign(editor, {
     snapshot,
     captureElementScreenshot,
     captureFrameScreenshot,

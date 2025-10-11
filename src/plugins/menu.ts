@@ -48,7 +48,6 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    provideProperties,
     copiedData,
     activeElement,
     selectedElements,
@@ -277,7 +276,7 @@ export default definePlugin((editor) => {
     }
   })
 
-  provideProperties({
+  Object.assign(editor, {
     systemMenus,
     contextMenus,
   })

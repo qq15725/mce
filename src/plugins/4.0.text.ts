@@ -14,7 +14,6 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    provideProperties,
     config,
   } = editor
 
@@ -140,7 +139,7 @@ export default definePlugin((editor) => {
     })
   }
 
-  provideProperties({
+  Object.assign(editor, {
     textFontSizeToFit,
     textToFit,
   })

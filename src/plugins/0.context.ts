@@ -33,7 +33,6 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    provideProperties,
     emit,
   } = editor
 
@@ -74,7 +73,7 @@ export default definePlugin((editor) => {
     renderEngine.value.input.setCursor(mode)
   }
 
-  provideProperties({
+  Object.assign(editor, {
     fonts,
     renderEngine,
     camera,

@@ -22,7 +22,6 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    provideProperties,
     emit,
     fonts,
   } = editor
@@ -52,7 +51,7 @@ export default definePlugin((editor) => {
     return await fonts.waitUntilLoad()
   }
 
-  provideProperties({
+  Object.assign(editor, {
     fonts,
     loadFont,
     setDefaultFont,

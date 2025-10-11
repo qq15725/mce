@@ -24,7 +24,6 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    provideProperties,
     doc,
     root,
     rootAabb,
@@ -115,7 +114,7 @@ export default definePlugin((editor) => {
     emit('setActiveFrame', index, oldIndex)
   }
 
-  provideProperties({
+  Object.assign(editor, {
     addFrame,
     duplicateFrame,
     moveFrame,
