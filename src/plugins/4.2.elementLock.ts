@@ -12,36 +12,14 @@ declare global {
       unlockCurrentElements: () => void
       lockOrUnlockCurrentElements: () => void
     }
-
-    interface Hotkeys {
-      'lock/unlock': [event: KeyboardEvent]
-    }
-
-    interface Commands {
-      'lock/unlock': () => void
-      'lock': () => void
-      'unlock': () => void
-    }
   }
 }
 
 export default definePlugin((editor) => {
   const {
     provideProperties,
-    registerHotkey,
-    registerCommand,
     currentElements,
   } = editor
-
-  registerCommand([
-    { key: 'lock/unlock', handle: lockOrUnlockCurrentElements },
-    { key: 'lock', handle: lockCurrentElements },
-    { key: 'unlock', handle: unlockCurrentElements },
-  ])
-
-  registerHotkey([
-    { key: 'lock/unlock', accelerator: 'CmdOrCtrl+l' },
-  ])
 
   function isLockedElement(element: Element2D): boolean {
     return Boolean(element.meta.locked)

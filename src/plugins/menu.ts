@@ -8,6 +8,41 @@ declare global {
       systemMenus: ComputedRef<any[]>
       contextMenus: ComputedRef<any[]>
     }
+
+    type MenuKey
+      = | 'edit'
+        | 'undo'
+        | 'redo'
+        | 'cut'
+        | 'copy'
+        | 'paste'
+        | 'duplicate'
+        | 'delete'
+        // ------
+        | 'layer'
+        | 'frame/unframe'
+        | 'group/ungroup'
+        | 'hide/show'
+        | 'lock/unlock'
+        // -----
+        | 'arrange'
+        | 'raiseToFront'
+        | 'raise'
+        | 'lower'
+        | 'lowerToBack'
+        | 'reverse'
+        // -----
+        | 'flip'
+        | 'horizontal'
+        | 'vertical'
+        // -----
+        | 'align'
+        | 'alignLeft'
+        | 'alignHorizontalCenter'
+        | 'alignRight'
+        | 'alignTop'
+        | 'alignVerticalCenter'
+        | 'alignBottom'
   }
 }
 
@@ -51,8 +86,8 @@ export default definePlugin((editor) => {
   ])
 
   const layerMenus1 = computed(() => [
-    { key: 'group', disabled: !hasSelected.value },
-    { key: 'ungroup', disabled: !hasSelected.value },
+    { key: 'frame/unframe', disabled: !hasSelected.value },
+    { key: 'group/ungroup', disabled: !hasSelected.value },
     { type: 'divider' },
     { key: 'hide/show', disabled: !hasSelected.value },
     { key: 'lock/unlock', disabled: !hasSelected.value },

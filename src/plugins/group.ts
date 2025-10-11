@@ -3,13 +3,13 @@ import { definePlugin } from '../editor'
 declare global {
   namespace Mce {
     interface Commands {
-      group: () => void
-      ungroup: () => void
+      'group': () => void
+      'ungroup': () => void
+      'group/ungroup': () => void
     }
 
     interface Hotkeys {
-      group: [event: KeyboardEvent]
-      ungroup: [event: KeyboardEvent]
+      'group/ungroup': [event: KeyboardEvent]
     }
   }
 }
@@ -30,11 +30,11 @@ export default definePlugin((editor) => {
   registerCommand([
     { key: 'group', handle: group },
     { key: 'ungroup', handle: ungroup },
+    { key: 'group/ungroup', handle: groupOrUngroup },
   ])
 
   registerHotkey([
-    { key: 'group', accelerator: 'CmdOrCtrl+g', editable: false },
-    { key: 'ungroup', accelerator: 'Shift+CmdOrCtrl+g', editable: false },
+    { key: 'group/ungroup', accelerator: 'CmdOrCtrl+g', editable: false },
   ])
 
   function group(): void {
@@ -83,5 +83,14 @@ export default definePlugin((editor) => {
     })
     deleteElement(oldElement.id)
     setSelectedElements(elements)
+  }
+
+  function groupOrUngroup() {
+    if (activeElement.value?.meta.inPptIs === 'GroupShape') {
+      ungroup()
+    }
+    else {
+      group()
+    }
   }
 })

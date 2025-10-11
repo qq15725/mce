@@ -61,21 +61,10 @@ window.doc = editor.doc
 <template>
   <div style="width: 100vw; height: 100vh">
     <Drawboard :editor="editor">
-      <template #selector="{ box }">
-        Selector
-      </template>
-
-      <template #transformer="{ box }">
-        <text>Transformer(in SVG)</text>
-      </template>
-
-      <template #floatbar>
-        Floatbar
-      </template>
-
-      <template #bottombar>
-        Bottombar
-      </template>
+      <template #selector="{ box }" />
+      <template #transformer="{ box }" />
+      <template #floatbar />
+      <template #bottombar />
     </Drawboard>
   </div>
 </template>

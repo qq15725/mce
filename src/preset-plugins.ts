@@ -26,11 +26,13 @@ import _arrange from './plugins/arrange'
 import _auxiliary from './plugins/auxiliary'
 import _clipboard from './plugins/clipboard'
 import _flip from './plugins/flip'
+import _frame from './plugins/frame'
 import _group from './plugins/group'
 import _history from './plugins/history'
 import _import from './plugins/import'
 import _insertImage from './plugins/insertImage'
 import _insertText from './plugins/insertText'
+import _lock from './plugins/lock'
 import _menu from './plugins/menu'
 import _move from './plugins/move'
 import _new from './plugins/new'
@@ -41,7 +43,7 @@ import _select from './plugins/select'
 import _snapshot from './plugins/snapshot'
 import _theme from './plugins/theme'
 import _ui from './plugins/ui'
-import _visible from './plugins/visible'
+import _visibility from './plugins/visibility'
 import _zoom from './plugins/zoom'
 
 export const presetPlugins = [
@@ -69,11 +71,13 @@ export const presetPlugins = [
   _auxiliary,
   _clipboard,
   _flip,
+  _frame,
   _group,
   _history,
   _import,
   _insertImage,
   _insertText,
+  _lock,
   _menu,
   _move,
   _new,
@@ -84,6 +88,6 @@ export const presetPlugins = [
   _snapshot,
   _theme,
   _ui,
-  _visible,
+  _visibility,
   _zoom,
 ]

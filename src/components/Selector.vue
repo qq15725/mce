@@ -153,6 +153,7 @@ defineExpose({
   </template>
 
   <Transformable
+    v-if="currentObb.width && currentObb.height"
     ref="transformableRef"
     v-model="currentObb"
     :visibility="state !== 'selecting' ? 'auto' : 'none'"
