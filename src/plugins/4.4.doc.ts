@@ -8,6 +8,7 @@ declare global {
     interface Editor {
       getDoc: () => NormalizedDocument
       setDoc: (doc: Document | string) => Promise<Doc | undefined>
+      loadDoc: (source: any) => Promise<Doc | undefined>
       clearDoc: () => void
     }
 
@@ -36,6 +37,7 @@ export default definePlugin((editor) => {
     to,
     waitUntilFontLoad,
     config,
+    load,
   } = editor
 
   function getDoc(): NormalizedDocument {
@@ -80,6 +82,10 @@ export default definePlugin((editor) => {
     return _doc
   }
 
+  async function loadDoc(source: any): Promise<Doc | undefined> {
+    return await setDoc(await load(source))
+  }
+
   function clearDoc(): void {
     renderEngine.value.root.removeChildren()
     renderEngine.value.root.children.length = 0 // TODO
@@ -91,6 +97,7 @@ export default definePlugin((editor) => {
   provideProperties({
     getDoc,
     setDoc,
+    loadDoc,
     clearDoc,
   })
 

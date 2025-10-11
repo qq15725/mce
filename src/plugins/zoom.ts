@@ -141,10 +141,18 @@ export default definePlugin((editor) => {
       drawboardDom,
       on,
       config,
+      currentElements,
     } = editor
 
     on('setDoc', zoomToFit)
-    on('setActiveFrame', zoomToFit)
+    on('setActiveFrame', () => {
+      if (currentElements.value.length) {
+        zoomToSelection()
+      }
+      else {
+        zoomToFit()
+      }
+    })
     watch(() => config.value.viewMode, zoomToFit)
 
     useResizeObserver(drawboardDom, (entries) => {
