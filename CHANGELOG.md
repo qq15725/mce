@@ -1,3 +1,14 @@
+## [0.0.23](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.22...v0.0.23) (2025-10-13)
+
+
+### Features
+
+* clipboard ([81cc638](https://github.com/qq15725/modern-canvas-editor/commit/81cc638c280a27df585380cf89e949f0c087a9de))
+* clipboard ([d3c847c](https://github.com/qq15725/modern-canvas-editor/commit/d3c847cd423a4adec5ae44846aed03a3468b4118))
+* clipboard ([d3ed6e4](https://github.com/qq15725/modern-canvas-editor/commit/d3ed6e4c92bfbdf1af8727cc9420a2e478922a79))
+
+
+
 ## [0.0.22](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.21...v0.0.22) (2025-10-13)
 
 
