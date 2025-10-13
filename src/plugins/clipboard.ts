@@ -86,18 +86,13 @@ export default definePlugin((editor) => {
         for (const type of item.types) {
           const blob = await item.getType(type)
           if (blob.type.startsWith('image/')) {
-            exec(
-              'insertImage',
-              await upload(new File([blob], 'pasted')),
-            )
+            const image = await upload(new File([blob], 'pasted'))
+            exec('insertImage', image)
           }
           else {
             switch (blob.type) {
               case 'text/plain':
-                exec(
-                  'insertText',
-                  await blob.text(),
-                )
+                exec('insertText', await blob.text())
                 break
               case 'text/html': {
                 const dom = new DOMParser().parseFromString(await blob.text(), 'text/html')
