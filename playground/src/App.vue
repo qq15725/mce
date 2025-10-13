@@ -4,7 +4,6 @@
 import { Drawboard, Editor } from '../../src'
 
 const editor = new Editor({
-  // default
   theme: 'system',
   language: 'en',
   viewMode: 'edgeless',
@@ -18,7 +17,6 @@ const editor = new Editor({
   typographyStrategy: 'autoHeight',
   handleShape: 'rect',
   localDb: true,
-  // custom
   defaultFont: { family: 'SourceHanSansCN-Normal', src: '/SourceHanSansCN-Normal.woff' },
   // doc: 'test',
   doc: {

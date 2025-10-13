@@ -26,7 +26,7 @@ npm i modern-canvas-editor
 
 ## 🦄 Usage
 
-```html
+```vue
 <script setup lang="ts">
   import { Drawboard, Editor } from 'modern-canvas-editor'
   import 'modern-canvas-editor/styles'
@@ -88,6 +88,21 @@ npm i modern-canvas-editor
         Bottombar
       </template>
     </Drawboard>
+  </div>
+</template>
+```
+
+slot sub component
+
+```vue
+<script setup lang="ts">
+  import { useEditor } from 'modern-canvas-editor'
+  const { activeElement } = useEditor()
+</script>
+
+<template>
+  <div>
+    {{ activeElement }}
   </div>
 </template>
 ```
