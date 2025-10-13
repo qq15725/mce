@@ -2,7 +2,6 @@ import type { Element2D } from 'modern-canvas'
 import type { Ref } from 'vue'
 import { ref } from 'vue'
 import { definePlugin } from '../editor'
-import { presetExporters } from './exporters'
 
 declare global {
   namespace Mce {
@@ -54,6 +53,4 @@ export default definePlugin((editor) => {
     unregisterExporter,
     to,
   })
-
-  return presetExporters
 })

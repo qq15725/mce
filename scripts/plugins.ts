@@ -6,17 +6,27 @@ export interface ImportedPlugin {
   path: string
 }
 
+function readdirSync(root: string): string[] {
+  return fs.readdirSync(root).flatMap((filename) => {
+    if (filename.endsWith('.ts')) {
+      return [filename]
+    }
+    else {
+      return fs.readdirSync(path.resolve(root, filename)).map(v => `${filename}/${v}`)
+    }
+  })
+}
+
 export function getPlugins(): ImportedPlugin[] {
-  const pluginsDir = path.resolve(__dirname, '../src/plugins')
-  const files = fs
-    .readdirSync(pluginsDir)
-    .filter(fn => fn.endsWith('.ts') && !fn.endsWith('.d.ts'))
+  const files = readdirSync(
+    path.resolve(__dirname, '../src/plugins'),
+  )
   files.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
   const plugins: ImportedPlugin[] = []
   for (const file of files) {
-    const name = path.basename(file, '.ts')
+    const name = file.replace('.ts', '')
     plugins.push({
-      name: `_${name.replace(/\./g, '_').replace(/-/g, '_')}`,
+      name: `_${name.replace(/\./g, '_').replace(/[-/]/g, '_')}`,
       path: `./plugins/${name}`,
     })
   }

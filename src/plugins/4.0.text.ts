@@ -1,7 +1,7 @@
 import { Element2D } from 'modern-canvas'
 import { measureText } from 'modern-text'
 import { definePlugin } from '../editor'
-import { TextEditor } from './web-components/TextEditor'
+import { TextEditor } from '../web-components/TextEditor'
 
 declare global {
   namespace Mce {

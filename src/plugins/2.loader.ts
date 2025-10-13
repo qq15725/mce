@@ -3,7 +3,6 @@ import type { Ref } from 'vue'
 import { useFileDialog } from '@vueuse/core'
 import { ref } from 'vue'
 import { definePlugin } from '../editor'
-import { presetLoaders } from './loaders'
 
 declare global {
   namespace Mce {
@@ -94,6 +93,4 @@ export default definePlugin((editor) => {
     load,
     openFileDialog,
   })
-
-  return presetLoaders
 })
