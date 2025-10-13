@@ -30,7 +30,6 @@ declare global {
         | 'raise'
         | 'lower'
         | 'lowerToBack'
-        | 'reverse'
         // -----
         | 'flip'
         | 'flipX'
@@ -100,7 +99,6 @@ export default definePlugin((editor) => {
         { key: 'raise' },
         { key: 'lower' },
         { key: 'lowerToBack' },
-        { key: 'reverse' },
       ],
     },
     {
