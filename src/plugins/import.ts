@@ -4,7 +4,7 @@ import { definePlugin } from '../editor'
 declare global {
   namespace Mce {
     interface Commands {
-      import: (pos: Vector2Data) => Promise<void>
+      import: (pos?: Vector2Data) => Promise<void>
     }
 
     interface Hotkeys {

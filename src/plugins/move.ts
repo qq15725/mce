@@ -25,8 +25,7 @@ export default definePlugin((editor) => {
   const {
     registerCommand,
     registerHotkey,
-    activeElement,
-    selectedElements,
+    currentElements,
   } = editor
 
   registerCommand([
@@ -38,7 +37,7 @@ export default definePlugin((editor) => {
   ])
 
   function condition(): boolean {
-    return !!activeElement.value || selectedElements.value.length > 0
+    return currentElements.value.length > 0
   }
 
   registerHotkey([
@@ -63,8 +62,7 @@ export default definePlugin((editor) => {
         prop = 'left'
         break
     }
-    const elements = activeElement.value ? [activeElement.value] : selectedElements.value
-    elements.forEach((element) => {
+    currentElements.value.forEach((element) => {
       (element.style as any)[prop] += distance
     })
   }

@@ -32,7 +32,6 @@ npm i modern-canvas-editor
   import 'modern-canvas-editor/styles'
 
   const editor = new Editor({
-    // default
     theme: 'system',
     language: 'en',
     viewMode: 'edgeless',
@@ -46,7 +45,6 @@ npm i modern-canvas-editor
     typographyStrategy: 'autoHeight',
     handleShape: 'rect',
     localDb: false,
-    // custom
     defaultFont: { family: 'SourceHanSansCN-Normal', src: '/SourceHanSansCN-Normal.woff' },
     doc: {
       children: [
