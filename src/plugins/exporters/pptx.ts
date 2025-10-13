@@ -12,6 +12,7 @@ export default definePlugin((editor) => {
   const {
     registerExporter,
     to,
+    fonts,
   } = editor
 
   registerExporter('pptx', async (options) => {
@@ -19,7 +20,14 @@ export default definePlugin((editor) => {
 
     const doc = await to('json', options)
 
-    return new Blob([(await idocToPptx(doc as any)) as any], {
+    return new Blob([
+      (
+        await idocToPptx({
+          ...doc as any,
+          fonts,
+        })
+      ) as any,
+    ], {
       type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
     })
   })

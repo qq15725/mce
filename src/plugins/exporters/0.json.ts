@@ -17,7 +17,6 @@ export default definePlugin((editor) => {
     getAabb,
     doc,
     rootAabb,
-    fonts,
     currentElements,
   } = editor
 
@@ -44,11 +43,14 @@ export default definePlugin((editor) => {
           width: box.width,
           height: box.height,
         },
-        fonts,
         children: elements.map((el) => {
           const json = el.toJSON()
-          json.style.left -= box.left
-          json.style.top -= box.top
+          if (box.left) {
+            json.style.left = (json.style.left ?? 0) - box.left
+          }
+          if (box.top) {
+            json.style.top = (json.style.top ?? 0) - box.top
+          }
           json.meta ??= {}
           json.meta.inPptIs = 'Slide'
           return json
@@ -68,7 +70,6 @@ export default definePlugin((editor) => {
             ...props.style,
             ...rootAabb.value,
           },
-          fonts,
         } as FlatDocument),
       )
     }

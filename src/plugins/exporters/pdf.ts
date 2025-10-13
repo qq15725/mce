@@ -12,6 +12,7 @@ export default definePlugin((editor) => {
   const {
     registerExporter,
     to,
+    fonts,
   } = editor
 
   registerExporter('pdf', async (options) => {
@@ -19,6 +20,9 @@ export default definePlugin((editor) => {
 
     const doc = await to('json', options)
 
-    return await new Pdf(doc).toBlob()
+    return await new Pdf({
+      ...doc,
+      fonts,
+    }).toBlob()
   })
 })
