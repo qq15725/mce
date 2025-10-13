@@ -1,3 +1,13 @@
+## [0.0.21](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.20...v0.0.21) (2025-10-13)
+
+
+### Features
+
+* arrange ([206af10](https://github.com/qq15725/modern-canvas-editor/commit/206af10d44a7b0d7f51a808fc539f10adf5f02a6))
+* GoBackSelectedArea ([34ba478](https://github.com/qq15725/modern-canvas-editor/commit/34ba4785fa2085271c38b8ae0ffded3be7c4fc1f))
+
+
+
 ## [0.0.20](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.19...v0.0.20) (2025-10-11)
 
 
