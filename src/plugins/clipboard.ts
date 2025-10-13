@@ -14,10 +14,10 @@ declare global {
     }
 
     interface Commands {
-      copy: () => void
-      cut: () => void
+      copy: () => Promise<void>
+      cut: () => Promise<void>
       paste: () => Promise<void>
-      duplicate: () => void
+      duplicate: () => Promise<void>
     }
 
     interface Editor {
@@ -36,6 +36,7 @@ export default definePlugin((editor) => {
     registerCommand,
     deleteCurrentElements,
     upload,
+    exec,
   } = editor
 
   registerCommand([
@@ -54,19 +55,77 @@ export default definePlugin((editor) => {
 
   const copiedData = ref<any>()
 
-  function copy(): void {
-    copiedData.value = activeElement.value
+  async function copy(): Promise<void> {
+    const data = activeElement.value
       ? [activeElement.value.toJSON()]
       : selectedElements.value.map(v => v.toJSON())
+    if (SUPPORTS_CLIPBOARD) {
+      const type = 'text/html'
+      await navigator!.clipboard.write([
+        new ClipboardItem({
+          [type]: new Blob([
+            `<mce-clipboard>${JSON.stringify(data)}</mce-clipboard>`,
+          ], { type }),
+        }),
+      ])
+    }
+    else {
+      copiedData.value = data
+    }
   }
 
-  function cut(): void {
-    copy()
+  async function cut(): Promise<void> {
+    await copy()
     deleteCurrentElements()
   }
 
   async function paste(): Promise<void> {
-    if (copiedData.value) {
+    if (SUPPORTS_CLIPBOARD) {
+      const items: ClipboardItems = await navigator!.clipboard.read()
+      for (const item of items) {
+        for (const type of item.types) {
+          const blob = await item.getType(type)
+          if (blob.type.startsWith('image/')) {
+            exec(
+              'insertImage',
+              await upload(new File([blob], 'pasted')),
+            )
+          }
+          else {
+            switch (blob.type) {
+              case 'text/plain':
+                exec(
+                  'insertText',
+                  await blob.text(),
+                )
+                break
+              case 'text/html': {
+                const dom = new DOMParser().parseFromString(await blob.text(), 'text/html')
+                const mceClipboard = dom.querySelector('mce-clipboard')
+                if (mceClipboard) {
+                  const els = JSON.parse(mceClipboard.textContent)
+                  if (Array.isArray(els)) {
+                    els.forEach((el) => {
+                      delete el.id
+                      el.style.left += 10
+                      el.style.top += 10
+                      setActiveElement(
+                        addElement(cloneDeep(el)),
+                      )
+                    })
+                  }
+                }
+                break
+              }
+              default:
+                console.warn(`Unhandled clipboard ${blob.type}`, await blob.text())
+                break
+            }
+          }
+        }
+      }
+    }
+    else if (copiedData.value) {
       if (Array.isArray(copiedData.value)) {
         copiedData.value?.forEach((el) => {
           delete el.id
@@ -78,44 +137,11 @@ export default definePlugin((editor) => {
         })
       }
     }
-    else {
-      if (SUPPORTS_CLIPBOARD) {
-        const text: string = await navigator!.clipboard.readText()
-        const items: ClipboardItems = await navigator!.clipboard.read()
-        if (items.length) {
-          for (const item of items) {
-            for (const type of item.types) {
-              const blob = await item.getType(type)
-              switch (blob.type) {
-                case 'text/plain':
-                  await blob.text()
-                  // TODO insertText
-                  break
-                case 'text/html':
-                  // TODO
-                  break
-                default:
-                  if (blob.type.startsWith('image/')) {
-                    await upload(new File([blob], 'pasted'))
-                    // TODO insertImage
-                  }
-                  else if (blob.type.startsWith('application/')) {
-                    // TODO
-                  }
-              }
-            }
-          }
-        }
-        else if (text) {
-          // TODO insertText
-        }
-      }
-    }
   }
 
-  function duplicate(): void {
-    copy()
-    paste()
+  async function duplicate(): Promise<void> {
+    await copy()
+    await paste()
   }
 
   Object.assign(editor, {

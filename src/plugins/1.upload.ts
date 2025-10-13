@@ -1,5 +1,3 @@
-import { useObjectUrl } from '@vueuse/core'
-import { idGenerator } from 'modern-idoc'
 import { definePlugin } from '../editor'
 
 declare global {
@@ -13,22 +11,18 @@ declare global {
 }
 
 export default definePlugin((editor) => {
-  const {
-    doc,
-  } = editor
+  // const {
+  //   doc,
+  // } = editor
 
   const upload: Mce.Upload = async (file) => {
-    const indexeddb = doc.value?.indexeddb
-    if (indexeddb) {
-      const id = idGenerator()
-      await indexeddb.set(`file:${id}`, file)
-      return `/~files/${indexeddb.name}/${id}`
-    }
-    const url = useObjectUrl(file).value
-    if (!url) {
-      throw new Error(`Failed to upload file: ${file.name}`)
-    }
-    return url
+    // const indexeddb = doc.value?.indexeddb
+    // if (indexeddb) {
+    //   const id = idGenerator()
+    //   await indexeddb.set(`file:${id}`, file)
+    //   return `/~files/${indexeddb.name}/${id}`
+    // }
+    return URL.createObjectURL(file)
   }
 
   Object.assign(editor, {
