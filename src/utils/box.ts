@@ -28,15 +28,18 @@ export function isPointInsideAabb(point: Vector2Data, box: AxisAlignedBoundingBo
 export function isOverlappingAabb(
   aabb1: AxisAlignedBoundingBox,
   aabb2: AxisAlignedBoundingBox,
-  axis: 'vertical' | 'horizontal' = 'horizontal',
-) {
-  if (axis === 'horizontal') {
-    return aabb1.left + aabb1.width >= aabb2.left
-      && aabb2.left + aabb2.width >= aabb1.left
-  }
-  else {
-    return aabb1.top + aabb1.height >= aabb2.top
-      && aabb2.top + aabb2.height >= aabb1.top
+  axis?: 'vertical' | 'horizontal',
+): boolean {
+  switch (axis) {
+    case 'horizontal':
+      return aabb1.left + aabb1.width >= aabb2.left
+        && aabb2.left + aabb2.width >= aabb1.left
+    case 'vertical':
+      return aabb1.top + aabb1.height >= aabb2.top
+        && aabb2.top + aabb2.height >= aabb1.top
+    default:
+      return isOverlappingAabb(aabb1, aabb2, 'horizontal')
+        && isOverlappingAabb(aabb1, aabb2, 'vertical')
   }
 }
 
@@ -44,10 +47,7 @@ type Vector = [number, number]
 
 export function isOverlappingObb(box1: OrientedBoundingBox, box2: OrientedBoundingBox) {
   if (!box1.rotate && !box2.rotate) {
-    return (
-      isOverlappingAabb(box1, box2, 'horizontal')
-      && isOverlappingAabb(box1, box2, 'vertical')
-    )
+    return isOverlappingAabb(box1, box2)
   }
   else {
     // Separating Axis Theorem

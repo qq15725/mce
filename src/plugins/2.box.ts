@@ -15,6 +15,7 @@ declare global {
       getObbInDrawboard: (node?: Node | Node[]) => OrientedBoundingBox
       getAabb: (node: Node | Node[] | undefined, inTarget?: 'drawboard' | 'frame') => AxisAlignedBoundingBox
       getAabbInDrawboard: (node?: Node | Node[]) => AxisAlignedBoundingBox
+      aabbToDrawboardAabb: (aabb: AxisAlignedBoundingBox) => AxisAlignedBoundingBox
       rootAabb: ComputedRef<AxisAlignedBoundingBox>
       currentAabb: ComputedRef<AxisAlignedBoundingBox>
     }
@@ -197,14 +198,7 @@ export default definePlugin((editor) => {
       aabb = { left: 0, top: 0, width: 0, height: 0 }
     }
     if (inTarget === 'drawboard') {
-      const zoom = camera.value.zoom
-      const position = camera.value.position
-      aabb.left *= zoom.x
-      aabb.top *= zoom.y
-      aabb.width *= zoom.x
-      aabb.height *= zoom.y
-      aabb.left += position.x
-      aabb.top += position.y
+      aabb = aabbToDrawboardAabb(aabb)
     }
     else if (inTarget === 'frame') {
       const first = Array.isArray(node) ? node[0] : node
@@ -223,6 +217,19 @@ export default definePlugin((editor) => {
     return getAabb(node, 'drawboard')
   }
 
+  function aabbToDrawboardAabb(aabb: AxisAlignedBoundingBox): AxisAlignedBoundingBox {
+    const _aabb = { ...aabb }
+    const zoom = camera.value.zoom
+    const position = camera.value.position
+    _aabb.left *= zoom.x
+    _aabb.top *= zoom.y
+    _aabb.width *= zoom.x
+    _aabb.height *= zoom.y
+    _aabb.left += position.x
+    _aabb.top += position.y
+    return _aabb
+  }
+
   const rootAabb = computed(() => getAabb(root.value?.children ?? []))
   const currentAabb = computed(() => getAabb(currentElements.value))
 
@@ -232,6 +239,7 @@ export default definePlugin((editor) => {
     getObbInDrawboard,
     getAabb,
     getAabbInDrawboard,
+    aabbToDrawboardAabb,
     rootAabb,
     currentAabb,
   })

@@ -30,6 +30,7 @@ import ContextMenu from './ContextMenu.vue'
 import Drawing from './Drawing.vue'
 import Floatbar from './Floatbar.vue'
 import Frames from './Frames.vue'
+import GoBackSelectedArea from './GoBackSelectedArea.vue'
 import Hover from './Hover.vue'
 import RulerXy from './RulerXy.vue'
 import ScrollbarXy from './ScrollbarXy.vue'
@@ -357,12 +358,6 @@ function onPointerover(): void {
   setCursor(undefined)
 }
 
-// TODO 判断选中区域是否处于视口外
-const isActivatedBoxOutsideViewport = computed(() => false)
-function gotoActivatedBox() {
-  // TODO 返回选中区域
-}
-
 const drawboardStyle = computed(() => {
   if (config.value.viewMode === 'edgeless') {
     const { position, zoom } = camera.value
@@ -438,14 +433,7 @@ function onScroll() {
       <Bottombar v-if="config.bottombar">
         <slot name="bottombar" />
       </Bottombar>
-      <div
-        v-if="isActivatedBoxOutsideViewport"
-        class="absolute left-1/2 bottom-10 px-2 py-1 flex items-center gap-1 text-sm bg-on-surface/60 text-surface rounded cursor-pointer"
-        @click="gotoActivatedBox"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 256 256"><path fill="currentColor" d="M232 120h-8.34A96.14 96.14 0 0 0 136 32.34V24a8 8 0 0 0-16 0v8.34A96.14 96.14 0 0 0 32.34 120H24a8 8 0 0 0 0 16h8.34A96.14 96.14 0 0 0 120 223.66V232a8 8 0 0 0 16 0v-8.34A96.14 96.14 0 0 0 223.66 136H232a8 8 0 0 0 0-16m-96 87.6V200a8 8 0 0 0-16 0v7.6A80.15 80.15 0 0 1 48.4 136H56a8 8 0 0 0 0-16h-7.6A80.15 80.15 0 0 1 120 48.4V56a8 8 0 0 0 16 0v-7.6a80.15 80.15 0 0 1 71.6 71.6H200a8 8 0 0 0 0 16h7.6a80.15 80.15 0 0 1-71.6 71.6M128 88a40 40 0 1 0 40 40a40 40 0 0 0-40-40m0 64a24 24 0 1 1 24-24a24 24 0 0 1-24 24" /></svg>
-        <span>返回选中区域</span>
-      </div>
+      <GoBackSelectedArea />
       <Starter v-if="false" />
       <slot />
     </div>
