@@ -114,6 +114,14 @@ export default definePlugin((editor) => {
       regenId,
     } = options
 
+    if (!position && inPointerPosition) {
+      position = getGlobalPointer()
+    }
+
+    if (position) {
+      positionToFit = false
+    }
+
     if (!frame) {
       if (config.value.viewMode === 'frame') {
         frame = activeFrame.value
@@ -175,20 +183,14 @@ export default definePlugin((editor) => {
 
       const aabb = getAabb(elements)
 
-      if (!position) {
-        if (inPointerPosition) {
-          position = getGlobalPointer()
-        }
+      if (position) {
+        const diff = { x: position.x - aabb.left, y: position.y - aabb.top }
+
+        elements.forEach((el) => {
+          el.style.left += diff.x
+          el.style.top += diff.y
+        })
       }
-
-      const diff = position
-        ? { x: position.x - aabb.left, y: position.y - aabb.top }
-        : { x: 0, y: 0 }
-
-      elements.forEach((el) => {
-        el.style.left += diff.x
-        el.style.top += diff.y
-      })
 
       return elements
     })

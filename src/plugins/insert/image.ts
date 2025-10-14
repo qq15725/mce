@@ -39,6 +39,10 @@ export default definePlugin((editor) => {
       },
       foreground: { image: url },
       meta: { inPptIs: 'Picture' },
-    }, options)
+    }, {
+      sizeToFit: true,
+      positionToFit: true,
+      ...options,
+    })
   })
 })

@@ -35,7 +35,11 @@ export default definePlugin((editor) => {
       },
       text: { content },
       meta: { inPptIs: 'Shape' },
-    }, restOptions)
+    }, {
+      sizeToFit: true,
+      positionToFit: true,
+      ...restOptions,
+    })
   })
 
   registerCommand('drawText', (content, options) => {
