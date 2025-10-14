@@ -8,41 +8,49 @@ export default definePlugin((editor) => {
     upload,
   } = editor
 
-  const RE = /\.(?:jpg|jpeg|png|webp)$/i
+  const map = {
+    'image/jpeg': ['.jpg', '.jpeg'],
+    'image/png': ['.png'],
+    'image/gif': ['.gif'],
+    'image/svg+xml': ['.svg'],
+    'image/tiff': ['.tif', '.tiff'],
+    'image/bmp': ['.bmp'],
+    'image/x-ms-bmp': ['.bmp'],
+    'image/vnd.microsoft.icon': ['.ico'],
+    'image/webp': ['.webp'],
+    'image/heif': ['.heif'],
+    'image/heic': ['.heic'],
+    'image/avif': ['.avif'],
+  }
+  const exts = Object.values(map).flat()
+  const RE = new RegExp(`\\.(?:${exts.map(v => v.substring(1)).join('|')})$`, 'i')
 
   registerLoader({
     name: 'image',
-    accept: '.jpg,.jpeg,.png,.webp',
-    test: (file) => {
-      if (file instanceof Blob) {
-        if (
-          file.type.startsWith('image/jpeg')
-          || file.type.startsWith('image/png')
-          || file.type.startsWith('image/webp')
-        ) {
+    accept: exts.join(','),
+    test: (source) => {
+      if (source instanceof Blob) {
+        if (source.type.startsWith('image/')) {
           return true
         }
       }
-      if (file instanceof File) {
-        if (RE.test(file.name)) {
+      if (source instanceof File) {
+        if (RE.test(source.name)) {
           return true
         }
       }
       return false
     },
-    load: async (file: File) => {
-      const image = await upload(file)
+    load: async (source: File | Blob) => {
+      const image = await upload(source)
+
       return {
         id: idGenerator(),
         style: {
           ...await getImageSizeFromUrl(image),
         },
-        foreground: {
-          image,
-        },
-        meta: {
-          inPptIs: 'Picture',
-        },
+        foreground: { image },
+        meta: { inPptIs: 'Picture' },
       }
     },
   })

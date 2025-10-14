@@ -4,7 +4,7 @@ import { definePlugin } from '../../editor'
 
 declare global {
   namespace Mce {
-    interface InsertTextOptions extends InsertElementOptions {
+    interface InsertTextOptions extends AddElementOptions {
       style?: Record<string, any>
     }
 
@@ -21,41 +21,29 @@ export default definePlugin((editor) => {
     setState,
     t,
     exec,
+    addElement,
   } = editor
 
-  registerCommand(
-    'drawText',
-    (
-      content = t('clickEditText'),
-      options = {},
-    ) => {
-      setState('drawing', {
-        content: 'text',
-        callback: (position: Vector2Data) => {
-          exec('insertText', content, { ...options, position })
-        },
-      })
-    },
-  )
-
-  registerCommand('insertText', (
-    content = t('clickEditText'),
-    options = {},
-  ) => {
+  registerCommand('insertText', (content = t('clickEditText'), options = {}) => {
     const { style, ...restOptions } = options
     const box = measureText({ style, content }).boundingBox
-    return exec('insertElement', {
+    return addElement({
       style: {
         ...style,
         width: box.width,
         height: box.height,
       },
-      text: {
-        content,
-      },
-      meta: {
-        inPptIs: 'Shape',
-      },
+      text: { content },
+      meta: { inPptIs: 'Shape' },
     }, restOptions)
+  })
+
+  registerCommand('drawText', (content, options) => {
+    setState('drawing', {
+      content: 'text',
+      callback: (position: Vector2Data) => {
+        exec('insertText', content, { ...options, position })
+      },
+    })
   })
 })

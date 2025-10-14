@@ -23,6 +23,7 @@ import _2_loader from './plugins/2.loader'
 import _2_loader_image from './plugins/2.loader/image'
 import _2_loader_json from './plugins/2.loader/json'
 import _2_loader_pptx from './plugins/2.loader/pptx'
+import _2_loader_text from './plugins/2.loader/text'
 import _3_view from './plugins/3.view'
 import _4_0_text from './plugins/4.0.text'
 import _4_1_lock from './plugins/4.1.lock'
@@ -38,7 +39,6 @@ import _frame from './plugins/frame'
 import _group from './plugins/group'
 import _history from './plugins/history'
 import _import from './plugins/import'
-import _insert_element from './plugins/insert/element'
 import _insert_image from './plugins/insert/image'
 import _insert_text from './plugins/insert/text'
 import _menu from './plugins/menu'
@@ -76,6 +76,7 @@ export const presetPlugins = [
   _2_loader_image,
   _2_loader_json,
   _2_loader_pptx,
+  _2_loader_text,
   _3_view,
   _4_0_text,
   _4_1_lock,
@@ -91,7 +92,6 @@ export const presetPlugins = [
   _group,
   _history,
   _import,
-  _insert_element,
   _insert_image,
   _insert_text,
   _menu,

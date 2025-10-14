@@ -1,10 +1,14 @@
-import type { Vector2Data } from 'modern-canvas'
+import type { Element2D } from 'modern-canvas'
 import { definePlugin } from '../editor'
 
 declare global {
   namespace Mce {
+    interface ImportOptions extends AddElementOptions {
+      //
+    }
+
     interface Commands {
-      import: (pos?: Vector2Data) => Promise<void>
+      import: (options?: ImportOptions) => Promise<Element2D[]>
     }
 
     interface Hotkeys {
@@ -22,46 +26,27 @@ export default definePlugin((editor) => {
     addElement,
   } = editor
 
-  registerCommand([
-    { key: 'import', handle: _import },
-  ])
-
   registerHotkey([
     { key: 'import', accelerator: 'CmdOrCtrl+i' },
   ])
 
-  async function _import(pos?: Vector2Data): Promise<void> {
+  registerCommand('import', async (options = {}) => {
     const files = await openFileDialog({ multiple: true })
-    await Promise.all(files.map(async (file) => {
-      const res = await load(file)
-      if (res) {
-        let elements
-        if (res.meta?.inEditorIs === 'Doc') {
-          elements = res.children ?? []
-        }
-        else {
-          elements = [res]
-        }
-        if (pos) {
-          elements = elements.map((element) => {
-            const style = (element.style ?? {}) as Record<string, any>
-            return {
-              ...element,
-              style: {
-                ...style,
-                left: pos?.x ?? style.left,
-                top: pos?.y ?? style.top,
-              },
-            }
-          })
-        }
-        addElement(
-          elements,
-          pos
-            ? undefined
-            : { sizeToFit: true, positionToFit: true },
-        )
-      }
-    }))
-  }
+
+    return addElement((
+      await Promise.all(
+        files.map(async (file) => {
+          const res = await load(file)
+          let elements
+          if (res.meta?.inEditorIs === 'Doc') {
+            elements = res.children ?? []
+          }
+          else {
+            elements = [res]
+          }
+          return elements
+        }),
+      )
+    ).flat(), options)
+  })
 })

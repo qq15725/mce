@@ -13,24 +13,24 @@ export default definePlugin((editor) => {
   registerLoader({
     name: 'pptx',
     accept: '.pptx',
-    test: (file) => {
-      if (file instanceof Blob) {
-        if (file.type.startsWith('application/vnd.openxmlformats-officedocument.presentationml.presentation')) {
+    test: (source) => {
+      if (source instanceof Blob) {
+        if (source.type.startsWith('application/vnd.openxmlformats-officedocument.presentationml.presentation')) {
           return true
         }
       }
-      if (file instanceof File) {
-        if (RE.test(file.name)) {
+      if (source instanceof File) {
+        if (RE.test(source.name)) {
           return true
         }
       }
       return false
     },
-    load: async (file: File) => {
+    load: async (source: File | Blob) => {
       const { pptxToIdoc } = await import('modern-openxml')
       const presetShapeDefinitions = await import('modern-openxml/presetShapeDefinitions').then(rep => rep.default)
 
-      const idoc = await pptxToIdoc(await file.arrayBuffer(), {
+      const idoc = await pptxToIdoc(await source.arrayBuffer(), {
         presetShapeDefinitions,
         upload: async (input, meta) => {
           const filename = meta.image
@@ -61,7 +61,7 @@ export default definePlugin((editor) => {
         ;(child.meta as any).inEditorIs = 'Frame'
       })
 
-      idoc.name = file.name
+      idoc.name = source.name
       ;(idoc.meta as any).inEditorIs = 'Doc'
 
       return idoc

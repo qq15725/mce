@@ -10,21 +10,21 @@ export default definePlugin((editor) => {
   registerLoader({
     name: 'json',
     accept: '.json',
-    test: (file) => {
-      if (file instanceof Blob) {
-        if (file.type.startsWith('application/json')) {
+    test: (source) => {
+      if (source instanceof Blob) {
+        if (source.type.startsWith('application/json')) {
           return true
         }
       }
-      if (file instanceof File) {
-        if (RE.test(file.name)) {
+      if (source instanceof File) {
+        if (RE.test(source.name)) {
           return true
         }
       }
       return false
     },
-    load: async (file: File) => {
-      const json = JSON.parse(await file.text())
+    load: async (source: File | Blob) => {
+      const json = JSON.parse(await source.text())
 
       if (
         'version' in json

@@ -1,7 +1,6 @@
-import type { Element2D } from 'modern-canvas'
+import type { Element2D, Vector2Data } from 'modern-canvas'
 import type { Element } from 'modern-idoc'
 import type { AxisAlignedBoundingBox } from '../types'
-import { normalizeElement } from 'modern-idoc'
 import { definePlugin } from '../editor'
 import { isOverlappingObb } from '../utils'
 
@@ -11,6 +10,10 @@ declare global {
       frame?: Element2D
       positionToFit?: boolean
       sizeToFit?: boolean
+      position?: Vector2Data
+      inPointerPosition?: boolean
+      active?: boolean
+      regenId?: boolean
     }
 
     interface ResizeElementOptions {
@@ -81,6 +84,8 @@ export default definePlugin((editor) => {
     config,
     getAncestorFrame,
     currentElements,
+    getAabb,
+    getGlobalPointer,
   } = editor
 
   registerCommand([
@@ -97,11 +102,18 @@ export default definePlugin((editor) => {
     value: Element | Element[],
     options: Mce.AddElementOptions = {},
   ): Element2D | Element2D[] {
-    const isArray = Array.isArray(value)
-
     log('addElement', value, options)
 
-    let { frame } = options
+    let {
+      frame,
+      positionToFit,
+      sizeToFit,
+      position,
+      inPointerPosition,
+      active,
+      regenId,
+    } = options
+
     if (!frame) {
       if (config.value.viewMode === 'frame') {
         frame = activeFrame.value
@@ -121,15 +133,12 @@ export default definePlugin((editor) => {
 
     let top = rootAabb.value.top
     const left = rootAabb.value.left + rootAabb.value.width + config.value.frameGap
+    const isArray = Array.isArray(value)
 
     const elements = doc.value!.transact(() => {
       const values = isArray ? value : [value]
-      return values.map((_element) => {
-        const element = normalizeElement(_element)
-
-        const el = doc.value!.addElement(element, {
-          parentId: frame?.id,
-        }) as Element2D
+      const elements = values.map((element) => {
+        const el = doc.value!.addElement(element, { parentId: frame?.id, regenId }) as Element2D
 
         if (frame) {
           const { width, height } = frame.style
@@ -139,7 +148,7 @@ export default definePlugin((editor) => {
             el.style.width = halfWidth
           if (!el.style.height)
             el.style.height = halfHeight
-          if (options.sizeToFit) {
+          if (sizeToFit) {
             const aspectRatio = el.style.width / el.style.height
             const newWidth = aspectRatio > 1 ? halfWidth : halfHeight * aspectRatio
             const newHeight = aspectRatio > 1 ? halfWidth / aspectRatio : halfHeight
@@ -148,13 +157,13 @@ export default definePlugin((editor) => {
               textFontSizeToFit: true,
             })
           }
-          if (options.positionToFit) {
+          if (positionToFit) {
             el.style.left = (width - el.style.width) / 2
             el.style.top = (height - el.style.height) / 2
           }
         }
         else {
-          if (options.positionToFit) {
+          if (positionToFit) {
             el.style.top = top
             el.style.left = left
             top += el.style.height + config.value.frameGap
@@ -163,10 +172,41 @@ export default definePlugin((editor) => {
 
         return el
       })
+
+      const aabb = getAabb(elements)
+
+      if (!position) {
+        if (inPointerPosition) {
+          position = getGlobalPointer()
+        }
+      }
+
+      const diff = position
+        ? { x: position.x - aabb.left, y: position.y - aabb.top }
+        : { x: 0, y: 0 }
+
+      elements.forEach((el) => {
+        el.style.left += diff.x
+        el.style.top += diff.y
+      })
+
+      return elements
     })
+
     // TODO
     elements.forEach(el => el.updateGlobalTransform())
+
+    if (active) {
+      if (isArray) {
+        setSelectedElements(elements)
+      }
+      else {
+        setActiveElement(elements[0])
+      }
+    }
+
     emit('addElement', elements)
+
     return isArray ? elements : elements[0]
   }
 

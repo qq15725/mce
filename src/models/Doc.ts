@@ -11,7 +11,7 @@ import { Model } from './Model'
 interface AddElementOptions {
   parentId?: string
   index?: number
-  regenerateId?: boolean
+  regenId?: boolean
 }
 
 export type YElement = Y.Map<unknown> & {
@@ -41,11 +41,11 @@ function initYElement(
   yMap: Y.Map<unknown>,
   element: Element = {},
   parentId: string | undefined,
-  regenerateId = false,
+  regenId = false,
 ): { normalized: NormalizedElement, yChildrenIds: Y.Array<string> } {
   const normalized = normalizeElement({
     ...element,
-    id: regenerateId ? undefined : element.id,
+    id: regenId ? undefined : element.id,
     meta: {
       inCanvasIs: 'Element2D',
       ...(element?.meta ?? {}),
@@ -85,15 +85,15 @@ function initYElement(
 export function iElementToYElements(
   element: Element,
   parentId: string | undefined,
-  regenerateId = false,
+  regenId = false,
 ): YElementResult[] {
   const results: YElementResult[] = []
   const yElement = new Y.Map<unknown>() as YElement
-  const { normalized, yChildrenIds } = initYElement(yElement, element, parentId, regenerateId)
+  const { normalized, yChildrenIds } = initYElement(yElement, element, parentId, regenId)
   const id = normalized.id
   results.push({ id, element: yElement })
   normalized.children?.forEach((iChild) => {
-    const result = iElementToYElements(iChild, id, regenerateId)
+    const result = iElementToYElements(iChild, id, regenId)
     yChildrenIds.push([result[0].id])
     results.push(...result)
   })
@@ -222,8 +222,8 @@ export class Doc extends Model {
   }
 
   protected _addElement(element: Element, options: AddElementOptions = {}): Node {
-    const { parentId, index, regenerateId } = options
-    const yNodes = iElementToYElements(element, parentId, regenerateId)
+    const { parentId, index, regenId } = options
+    const yNodes = iElementToYElements(element, parentId, regenId)
     yNodes.forEach((result) => {
       this._yChildren.set(result.id, result.element)
     })

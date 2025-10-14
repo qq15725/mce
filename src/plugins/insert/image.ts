@@ -4,7 +4,7 @@ import { getImageSizeFromUrl } from '../../utils'
 
 declare global {
   namespace Mce {
-    interface InsertImageOptions extends InsertElementOptions {
+    interface InsertImageOptions extends AddElementOptions {
       //
     }
 
@@ -20,32 +20,25 @@ export default definePlugin((editor) => {
     registerCommand,
     setState,
     exec,
+    addElement,
   } = editor
 
-  registerCommand([
-    { key: 'drawImage', handle: drawImage },
-  ])
-
-  function drawImage() {
+  registerCommand('drawImage', () => {
     setState('drawing', {
       content: 'image',
-      callback: (pos: Vector2Data) => {
-        exec('import', pos)
+      callback: (position: Vector2Data) => {
+        exec('import', { position })
       },
     })
-  }
+  })
 
   registerCommand('insertImage', async (url, options) => {
-    return exec('insertElement', {
+    return addElement({
       style: {
         ...await getImageSizeFromUrl(url),
       },
-      foreground: {
-        image: url,
-      },
-      meta: {
-        inPptIs: 'Picture',
-      },
+      foreground: { image: url },
+      meta: { inPptIs: 'Picture' },
     }, options)
   })
 })

@@ -2,7 +2,7 @@ import { definePlugin } from '../editor'
 
 declare global {
   namespace Mce {
-    type Upload = (file: File) => Promise<string>
+    type Upload = (file: File | Blob) => Promise<string>
 
     interface Editor {
       upload: Upload

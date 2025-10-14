@@ -197,7 +197,7 @@ export default definePlugin((editor) => {
       key: 'insert',
       children: [
         { key: 'insertText' },
-        { key: 'drawImage' },
+        { key: 'insertImage' },
       ],
     },
   ])

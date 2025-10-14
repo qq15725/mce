@@ -1,3 +1,4 @@
+import type { Element } from 'modern-idoc'
 import type { Ref } from 'vue'
 import { cloneDeep } from 'lodash-es'
 import { ref } from 'vue'
@@ -33,8 +34,8 @@ export default definePlugin((editor) => {
     registerHotkey,
     registerCommand,
     deleteCurrentElements,
-    exec,
     load,
+    addElement,
   } = editor
 
   registerCommand([
@@ -80,39 +81,26 @@ export default definePlugin((editor) => {
   async function paste(): Promise<void> {
     if (SUPPORTS_CLIPBOARD) {
       const items: ClipboardItems = await navigator!.clipboard.read()
+      const elements: Element[] = []
       for (const item of items) {
         for (const type of item.types) {
           const blob = await item.getType(type)
           if (blob.type.startsWith('image/')) {
-            exec('insertElement', await load(blob), {
-              active: true,
-              inPointerPosition: true,
-            })
+            elements.push(await load(blob))
           }
           else {
             switch (blob.type) {
               case 'text/plain':
-                exec('insertText', await blob.text(), {
-                  active: true,
-                  inPointerPosition: true,
-                })
+                elements.push(await load(await blob.text()))
                 break
               case 'text/html': {
                 const dom = new DOMParser().parseFromString(await blob.text(), 'text/html')
 
                 const mce = dom.querySelector('mce-clipboard')
                 if (mce) {
-                  const els = JSON.parse(mce.textContent)
+                  const els = JSON.parse(mce.textContent) as any[]
                   if (Array.isArray(els)) {
-                    els.forEach((el) => {
-                      delete el.id
-                      el.style.left += 10
-                      el.style.top += 10
-                      exec('insertElement', cloneDeep(el), {
-                        active: true,
-                        inPointerPosition: true,
-                      })
-                    })
+                    elements.push(...els)
                   }
                 }
 
@@ -136,13 +124,13 @@ export default definePlugin((editor) => {
                     type: 'application/json;charset=utf-8',
                   })
 
-                  exec('insertElement', await load(blob), {
-                    active: true,
-                    inPointerPosition: true,
-                  })
+                  elements.push(await load(blob))
                 }
                 break
               }
+              case 'application/json':
+                elements.push(await load(blob))
+                break
               default:
                 console.warn(`Unhandled clipboard ${blob.type}`, await blob.text())
                 break
@@ -150,17 +138,23 @@ export default definePlugin((editor) => {
           }
         }
       }
+
+      addElement(elements, {
+        inPointerPosition: true,
+        active: true,
+        regenId: true,
+      })
     }
     else if (copiedData.value) {
       if (Array.isArray(copiedData.value)) {
-        copiedData.value?.forEach((el) => {
+        addElement(copiedData.value?.map((el) => {
           delete el.id
           el.style.left += 10
           el.style.top += 10
-          exec('insertElement', cloneDeep(el), {
-            active: true,
-            inPointerPosition: true,
-          })
+          return cloneDeep(el)
+        }) ?? [], {
+          active: true,
+          inPointerPosition: true,
         })
       }
     }
