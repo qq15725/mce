@@ -1,0 +1,37 @@
+import { definePlugin } from '../../editor'
+import { createImagaeElement, imageExtRe } from './image'
+
+async function isImage(url: string) {
+  try {
+    const response = await fetch(url, { method: 'HEAD' })
+    const contentType = response.headers.get('Content-Type')
+    return contentType && contentType.startsWith('image/')
+  }
+  // eslint-disable-next-line unused-imports/no-unused-vars
+  catch (_error: any) {
+    return false
+  }
+}
+
+export default definePlugin((editor) => {
+  const {
+    registerLoader,
+  } = editor
+
+  registerLoader({
+    name: 'url',
+    test: (source) => {
+      return typeof source === 'string'
+        && source.startsWith('http')
+    },
+    load: async (source: string) => {
+      if (imageExtRe.test(source) || await isImage(source)) {
+        return createImagaeElement(source)
+      }
+      else {
+        // TODO
+        throw new Error(`Failed to load url, ${source}`)
+      }
+    },
+  })
+})

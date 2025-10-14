@@ -20,6 +20,7 @@ import _2_exporter_pdf from './plugins/2.exporter/pdf'
 import _2_exporter_pptx from './plugins/2.exporter/pptx'
 import _2_exporter_video from './plugins/2.exporter/video'
 import _2_loader from './plugins/2.loader'
+import _2_loader_0_url from './plugins/2.loader/0.url'
 import _2_loader_image from './plugins/2.loader/image'
 import _2_loader_json from './plugins/2.loader/json'
 import _2_loader_pptx from './plugins/2.loader/pptx'
@@ -73,6 +74,7 @@ export const presetPlugins = [
   _2_exporter_pptx,
   _2_exporter_video,
   _2_loader,
+  _2_loader_0_url,
   _2_loader_image,
   _2_loader_json,
   _2_loader_pptx,
