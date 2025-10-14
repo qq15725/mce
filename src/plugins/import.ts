@@ -47,6 +47,10 @@ export default definePlugin((editor) => {
           return elements
         }),
       )
-    ).flat(), options)
+    ).flat(), {
+      ...options,
+      sizeToFit: true,
+      positionToFit: true,
+    })
   })
 })

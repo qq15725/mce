@@ -16,6 +16,7 @@ const editor = new Editor({
   frameGap: 48,
   typographyStrategy: 'autoHeight',
   handleShape: 'rect',
+  zoomToFitOffset: { left: 0, top: 0, right: 0, bottom: 0 },
   localDb: true,
   defaultFont: { family: 'SourceHanSansCN-Normal', src: '/SourceHanSansCN-Normal.woff' },
   // doc: 'test',

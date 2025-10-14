@@ -44,6 +44,7 @@ npm i modern-canvas-editor
     frameGap: 48,
     typographyStrategy: 'autoHeight',
     handleShape: 'rect',
+    zoomToFitOffset: { left: 0, top: 0, right: 0, bottom: 0 },
     localDb: false,
     defaultFont: { family: 'SourceHanSansCN-Normal', src: '/SourceHanSansCN-Normal.woff' },
     doc: {

@@ -23,7 +23,12 @@ declare global {
     }
 
     interface Config {
-      zoomToFitOffset: number
+      zoomToFitOffset: {
+        left?: number
+        top?: number
+        right?: number
+        bottom?: number
+      }
     }
 
     interface Editor {
@@ -31,6 +36,8 @@ declare global {
     }
   }
 }
+
+const defaultZoomToFitOffset = { left: 0, top: 0, bottom: 0, right: 0 }
 
 export default definePlugin((editor) => {
   const {
@@ -44,7 +51,7 @@ export default definePlugin((editor) => {
     registerConfig,
   } = editor
 
-  registerConfig('zoomToFitOffset', 0)
+  registerConfig('zoomToFitOffset', { ...defaultZoomToFitOffset })
 
   registerCommand([
     { key: 'zoomIn', handle: zoomIn },
@@ -83,19 +90,20 @@ export default definePlugin((editor) => {
     const targetAabb = selection
       ? currentAabb.value
       : viewAabb.value
-    const offset = { x: 0, y: 0 }
-    offset.x += config.value.zoomToFitOffset
-    offset.y += config.value.zoomToFitOffset
+    const offset = {
+      ...defaultZoomToFitOffset,
+      ...config.value.zoomToFitOffset,
+    }
     if (config.value.scrollbar) {
-      offset.x += 16
-      offset.y += 16
+      offset.right += 16
+      offset.bottom += 16
     }
     if (config.value.ruler) {
-      offset.x += 16
-      offset.y += 16
+      offset.left += 16
+      offset.top += 16
     }
-    const tw = drawboardAabb.value.width - offset.x
-    const th = drawboardAabb.value.height - offset.y
+    const tw = drawboardAabb.value.width - (offset.left + offset.right)
+    const th = drawboardAabb.value.height - (offset.top + offset.bottom)
     const sx = targetAabb.left
     const sy = targetAabb.top
     const sw = targetAabb.width
@@ -109,8 +117,8 @@ export default definePlugin((editor) => {
           : Math.max(zw, zh),
       )
       const zoom = camera.value.zoom.x
-      let x = offset.x / 2
-      let y = offset.y / 2
+      let x = offset.left
+      let y = offset.top
       if (zw < zh) {
         y += (th - sh * zoom) / 2
       }

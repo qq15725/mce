@@ -147,14 +147,10 @@ export default definePlugin((editor) => {
     }
     else if (copiedData.value) {
       if (Array.isArray(copiedData.value)) {
-        addElement(copiedData.value?.map((el) => {
-          delete el.id
-          el.style.left += 10
-          el.style.top += 10
-          return cloneDeep(el)
-        }) ?? [], {
-          active: true,
+        addElement(copiedData.value?.map(el => cloneDeep(el)) ?? [], {
           inPointerPosition: true,
+          active: true,
+          regenId: true,
         })
       }
     }
