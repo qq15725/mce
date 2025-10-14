@@ -43,8 +43,8 @@ export default definePlugin((editor) => {
     exporters.value.delete(key)
   }
 
-  const to: any = async (key: string, options: Mce.ExporterOptions = {}) => {
-    return await exporters.value.get(key)?.(options)
+  const to: Mce.Editor['to'] = (key, options = {}) => {
+    return exporters.value.get(key)?.(options)
   }
 
   Object.assign(editor, {

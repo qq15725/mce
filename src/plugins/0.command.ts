@@ -34,7 +34,7 @@ export default definePlugin((editor) => {
     emit,
   } = editor
 
-  const commands = ref(new Map<string, Mce.CommandHandle>())
+  const commands: Mce.Editor['commands'] = ref(new Map())
 
   function registerCommand(key: string, command: Mce.CommandHandle): void
   function registerCommand(commands: { key: string, handle: Mce.CommandHandle }[]): void
@@ -49,7 +49,7 @@ export default definePlugin((editor) => {
     }
   }
 
-  function unregisterCommand(key: string): void {
+  const unregisterCommand: Mce.Editor['unregisterCommand'] = (key) => {
     commands.value.delete(key)
   }
 

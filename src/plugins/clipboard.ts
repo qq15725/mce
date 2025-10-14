@@ -30,8 +30,6 @@ export default definePlugin((editor) => {
   const {
     activeElement,
     selectedElements,
-    addElement,
-    setActiveElement,
     registerHotkey,
     registerCommand,
     deleteCurrentElements,
@@ -86,13 +84,19 @@ export default definePlugin((editor) => {
         for (const type of item.types) {
           const blob = await item.getType(type)
           if (blob.type.startsWith('image/')) {
-            const image = await upload(new File([blob], 'pasted'))
-            exec('insertImage', image)
+            const url = await upload(new File([blob], 'pasted'))
+            exec('insertImage', url, {
+              active: true,
+              inPointerPosition: true,
+            })
           }
           else {
             switch (blob.type) {
               case 'text/plain':
-                exec('insertText', await blob.text())
+                exec('insertText', await blob.text(), {
+                  active: true,
+                  inPointerPosition: true,
+                })
                 break
               case 'text/html': {
                 const dom = new DOMParser().parseFromString(await blob.text(), 'text/html')
@@ -104,9 +108,10 @@ export default definePlugin((editor) => {
                       delete el.id
                       el.style.left += 10
                       el.style.top += 10
-                      setActiveElement(
-                        addElement(cloneDeep(el)),
-                      )
+                      exec('insertElement', cloneDeep(el), {
+                        active: true,
+                        inPointerPosition: true,
+                      })
                     })
                   }
                 }
@@ -126,9 +131,10 @@ export default definePlugin((editor) => {
           delete el.id
           el.style.left += 10
           el.style.top += 10
-          setActiveElement(
-            addElement(cloneDeep(el)),
-          )
+          exec('insertElement', cloneDeep(el), {
+            active: true,
+            inPointerPosition: true,
+          })
         })
       }
     }

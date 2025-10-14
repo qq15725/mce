@@ -38,6 +38,7 @@ import _frame from './plugins/frame'
 import _group from './plugins/group'
 import _history from './plugins/history'
 import _import from './plugins/import'
+import _insert_element from './plugins/insert/element'
 import _insert_image from './plugins/insert/image'
 import _insert_text from './plugins/insert/text'
 import _menu from './plugins/menu'
@@ -90,6 +91,7 @@ export const presetPlugins = [
   _group,
   _history,
   _import,
+  _insert_element,
   _insert_image,
   _insert_text,
   _menu,

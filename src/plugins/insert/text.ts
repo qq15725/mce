@@ -4,9 +4,13 @@ import { definePlugin } from '../../editor'
 
 declare global {
   namespace Mce {
+    interface InsertTextOptions extends InsertElementOptions {
+      style?: Record<string, any>
+    }
+
     interface Commands {
-      drawText: (content?: string, style?: Record<string, any>) => void
-      insertText: (content?: string, style?: Record<string, any>, pos?: Vector2Data) => Element2D
+      insertText: (content?: string, options?: InsertTextOptions) => Element2D
+      drawText: (content?: string, options?: InsertTextOptions) => void
     }
   }
 }
@@ -15,41 +19,36 @@ export default definePlugin((editor) => {
   const {
     registerCommand,
     setState,
-    addElement,
     t,
+    exec,
   } = editor
 
-  registerCommand([
-    { key: 'drawText', handle: drawText },
-    { key: 'insertText', handle: insertText },
-  ])
+  registerCommand(
+    'drawText',
+    (
+      content = t('clickEditText'),
+      options = {},
+    ) => {
+      setState('drawing', {
+        content: 'text',
+        callback: (position: Vector2Data) => {
+          exec('insertText', content, { ...options, position })
+        },
+      })
+    },
+  )
 
-  function drawText(
+  registerCommand('insertText', (
     content = t('clickEditText'),
-    style?: Record<string, any>,
-  ) {
-    setState('drawing', {
-      content: 'text',
-      callback: (pos: Vector2Data) => {
-        insertText(content, style, pos)
-      },
-    })
-  }
-
-  function insertText(
-    content = t('clickEditText'),
-    style?: Record<string, any>,
-    pos?: Vector2Data,
-  ) {
+    options = {},
+  ) => {
+    const { style, ...restOptions } = options
     const box = measureText({ style, content }).boundingBox
-    const width = box.width
-    const height = box.height
-    return addElement({
+    return exec('insertElement', {
       style: {
-        width,
-        height,
-        left: pos?.x ?? 0,
-        top: pos?.y ?? 0,
+        ...style,
+        width: box.width,
+        height: box.height,
       },
       text: {
         content,
@@ -57,8 +56,6 @@ export default definePlugin((editor) => {
       meta: {
         inPptIs: 'Shape',
       },
-    }, pos
-      ? undefined
-      : { sizeToFit: true, positionToFit: true })
-  }
+    }, restOptions)
+  })
 })

@@ -8,9 +8,9 @@ import { isOverlappingObb } from '../utils'
 declare global {
   namespace Mce {
     interface AddElementOptions {
+      frame?: Element2D
       positionToFit?: boolean
       sizeToFit?: boolean
-      frame?: Element2D
     }
 
     interface ResizeElementOptions {

@@ -4,9 +4,13 @@ import { getImageSizeFromUrl } from '../../utils'
 
 declare global {
   namespace Mce {
+    interface InsertImageOptions extends InsertElementOptions {
+      //
+    }
+
     interface Commands {
+      insertImage: (url: string, options?: InsertImageOptions) => Promise<Element2D>
       drawImage: () => void
-      insertImage: (image: string, pos?: Vector2Data) => Promise<Element2D>
     }
   }
 }
@@ -16,12 +20,10 @@ export default definePlugin((editor) => {
     registerCommand,
     setState,
     exec,
-    addElement,
   } = editor
 
   registerCommand([
     { key: 'drawImage', handle: drawImage },
-    { key: 'insertImage', handle: insertImage },
   ])
 
   function drawImage() {
@@ -33,21 +35,17 @@ export default definePlugin((editor) => {
     })
   }
 
-  async function insertImage(image: string, pos?: Vector2Data) {
-    return addElement({
+  registerCommand('insertImage', async (url, options) => {
+    return exec('insertElement', {
       style: {
-        ...await getImageSizeFromUrl(image),
-        left: pos?.x ?? 0,
-        top: pos?.y ?? 0,
+        ...await getImageSizeFromUrl(url),
       },
       foreground: {
-        image,
+        image: url,
       },
       meta: {
         inPptIs: 'Picture',
       },
-    }, pos
-      ? undefined
-      : { sizeToFit: true, positionToFit: true })
-  }
+    }, options)
+  })
 })

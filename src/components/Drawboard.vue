@@ -90,6 +90,7 @@ const {
   selectedElements,
   getAabbInDrawboard,
   drawboardAabb,
+  drawboardPointer,
 } = editor
 
 const overlayContainer = useTemplateRef('overlayContainerTpl')
@@ -341,9 +342,14 @@ function onPointerdown(event: PointerInputEvent): void {
 }
 
 function onPointermove(event: PointerInputEvent): void {
+  if (event.srcElement !== drawboardDom.value) {
+    return
+  }
+
+  drawboardPointer.value = { x: event.clientX, y: event.clientY }
+
   if (
-    event.srcElement !== drawboardDom.value
-    || camera.value.grabbing
+    camera.value.grabbing
     || event.button === 1
     || (state.value && state.value !== 'typing')
   ) {
@@ -354,6 +360,7 @@ function onPointermove(event: PointerInputEvent): void {
 }
 
 function onPointerover(): void {
+  drawboardPointer.value = undefined
   hoverElement.value = undefined
   setCursor(undefined)
 }

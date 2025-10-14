@@ -1,4 +1,4 @@
-import type { Cursor, Node } from 'modern-canvas'
+import type { Cursor, Node, Vector2Data } from 'modern-canvas'
 import type { ComputedRef, Ref } from 'vue'
 import type { Doc, Workspace } from '../models'
 import type { AxisAlignedBoundingBox } from '../types'
@@ -16,6 +16,7 @@ declare global {
       setCursor: (mode: Cursor | undefined) => void
       drawboardDom: Ref<HTMLElement | undefined>
       drawboardAabb: Ref<AxisAlignedBoundingBox>
+      drawboardPointer: Ref<Vector2Data | undefined>
       workspace: Ref<Workspace | undefined>
       root: ComputedRef<Node | undefined>
       docMeta: ComputedRef<{ title: string }>
@@ -23,6 +24,7 @@ declare global {
       state: Ref<State | undefined>
       setState: (state: State, context?: StateContext) => void
       stateContext: Ref<StateContext | undefined>
+      getGlobalPointer: () => Vector2Data
     }
 
     interface Events {
@@ -55,6 +57,7 @@ export default definePlugin((editor) => {
   const doc = ref<Doc>()
   const root = computed(() => doc.value?.root)
   const docMeta = computed(() => root.value?.meta ?? {})
+  const drawboardPointer = ref<Vector2Data>()
   const state = ref<Mce.State>()
   const stateContext = ref<Mce.StateContext>()
 
@@ -73,6 +76,14 @@ export default definePlugin((editor) => {
     renderEngine.value.input.setCursor(mode)
   }
 
+  function getGlobalPointer(): Vector2Data {
+    const { x = 0, y = 0 } = drawboardPointer.value ?? {}
+    return camera.value.toGlobal({
+      x: x - drawboardAabb.value.left,
+      y: y - drawboardAabb.value.top,
+    }, { x: 0, y: 0 })
+  }
+
   Object.assign(editor, {
     fonts,
     renderEngine,
@@ -87,5 +98,7 @@ export default definePlugin((editor) => {
     stateContext,
     setState,
     setCursor,
+    drawboardPointer,
+    getGlobalPointer,
   })
 })
