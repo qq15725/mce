@@ -11,13 +11,30 @@ export default definePlugin((editor) => {
     name: 'json',
     accept: '.json',
     test: (file) => {
-      return file instanceof File
-        && (
-          RE.test(file.name)
-        )
+      if (file instanceof Blob) {
+        if (file.type.startsWith('application/json')) {
+          return true
+        }
+      }
+      if (file instanceof File) {
+        if (RE.test(file.name)) {
+          return true
+        }
+      }
+      return false
     },
     load: async (file: File) => {
-      return JSON.parse(await file.text())
+      const json = JSON.parse(await file.text())
+
+      if (
+        'version' in json
+        && 'elements' in json
+      ) {
+        // TODO gd
+        console.log(json)
+      }
+
+      return json
     },
   })
 })

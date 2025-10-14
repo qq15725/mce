@@ -14,11 +14,17 @@ export default definePlugin((editor) => {
     name: 'pptx',
     accept: '.pptx',
     test: (file) => {
-      return file instanceof File
-        && (
-          RE.test(file.name)
-          || file.type === 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
-        )
+      if (file instanceof Blob) {
+        if (file.type.startsWith('application/vnd.openxmlformats-officedocument.presentationml.presentation')) {
+          return true
+        }
+      }
+      if (file instanceof File) {
+        if (RE.test(file.name)) {
+          return true
+        }
+      }
+      return false
     },
     load: async (file: File) => {
       const { pptxToIdoc } = await import('modern-openxml')

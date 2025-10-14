@@ -33,8 +33,8 @@ export default definePlugin((editor) => {
     registerHotkey,
     registerCommand,
     deleteCurrentElements,
-    upload,
     exec,
+    load,
   } = editor
 
   registerCommand([
@@ -84,8 +84,7 @@ export default definePlugin((editor) => {
         for (const type of item.types) {
           const blob = await item.getType(type)
           if (blob.type.startsWith('image/')) {
-            const url = await upload(new File([blob], 'pasted'))
-            exec('insertImage', url, {
+            exec('insertElement', await load(blob), {
               active: true,
               inPointerPosition: true,
             })
@@ -100,9 +99,10 @@ export default definePlugin((editor) => {
                 break
               case 'text/html': {
                 const dom = new DOMParser().parseFromString(await blob.text(), 'text/html')
-                const mceClipboard = dom.querySelector('mce-clipboard')
-                if (mceClipboard) {
-                  const els = JSON.parse(mceClipboard.textContent)
+
+                const mce = dom.querySelector('mce-clipboard')
+                if (mce) {
+                  const els = JSON.parse(mce.textContent)
                   if (Array.isArray(els)) {
                     els.forEach((el) => {
                       delete el.id
@@ -114,6 +114,32 @@ export default definePlugin((editor) => {
                       })
                     })
                   }
+                }
+
+                const gd = dom.querySelector('span[data-app="editor-next"]')
+                if (gd) {
+                  const json = decodeURIComponent(
+                    new TextDecoder('utf-8', { fatal: false }).decode(
+                      new Uint8Array(
+                        atob(
+                          gd
+                            .getAttribute('data-clipboard')
+                            ?.replace(/\s+/g, '') ?? '',
+                        )
+                          .split('')
+                          .map(c => c.charCodeAt(0)),
+                      ),
+                    ),
+                  )
+
+                  const blob = new Blob([json], {
+                    type: 'application/json;charset=utf-8',
+                  })
+
+                  exec('insertElement', await load(blob), {
+                    active: true,
+                    inPointerPosition: true,
+                  })
                 }
                 break
               }

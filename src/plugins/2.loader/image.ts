@@ -14,12 +14,21 @@ export default definePlugin((editor) => {
     name: 'image',
     accept: '.jpg,.jpeg,.png,.webp',
     test: (file) => {
-      return file instanceof File && (
-        RE.test(file.name)
-        || file.type === 'image/jpeg'
-        || file.type === 'image/png'
-        || file.type === 'image/webp'
-      )
+      if (file instanceof Blob) {
+        if (
+          file.type.startsWith('image/jpeg')
+          || file.type.startsWith('image/png')
+          || file.type.startsWith('image/webp')
+        ) {
+          return true
+        }
+      }
+      if (file instanceof File) {
+        if (RE.test(file.name)) {
+          return true
+        }
+      }
+      return false
     },
     load: async (file: File) => {
       const image = await upload(file)
