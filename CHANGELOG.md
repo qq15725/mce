@@ -1,3 +1,20 @@
+## [0.0.24](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.23...v0.0.24) (2025-10-14)
+
+
+### Bug Fixes
+
+* addElement ([19b154d](https://github.com/qq15725/modern-canvas-editor/commit/19b154d21ab87c7017af4dc14e9810fe0d9a80c5))
+
+
+### Features
+
+* add insertElement insertText insertImage commands ([34cedc0](https://github.com/qq15725/modern-canvas-editor/commit/34cedc07118fa372abd57f8662945154a18f1ab8))
+* addElement ([c337833](https://github.com/qq15725/modern-canvas-editor/commit/c3378331a96ce28520ff831b1dffd7dd66ec0249))
+* clipboard ([15b1a23](https://github.com/qq15725/modern-canvas-editor/commit/15b1a23409aa3cbd75f2dd3eccc1312d8af2d60a))
+* zoomToFitOffset ([3d25a6f](https://github.com/qq15725/modern-canvas-editor/commit/3d25a6fa54d6a6cd9778496ce4a4690b4b9460d0))
+
+
+
 ## [0.0.23](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.22...v0.0.23) (2025-10-13)
 
 
