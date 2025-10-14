@@ -61,7 +61,7 @@ export default definePlugin((editor) => {
         ;(child.meta as any).inEditorIs = 'Frame'
       })
 
-      idoc.name = source.name
+      idoc.name = (source as any).name
       ;(idoc.meta as any).inEditorIs = 'Doc'
 
       return idoc

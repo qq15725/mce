@@ -68,7 +68,7 @@ export default definePlugin((editor) => {
       return
     doc.value?.addElement(page.toJSON(), {
       index: index + 1,
-      regenerateId: true,
+      regenId: true,
     })
     emit('duplicateFrame', index)
   }
