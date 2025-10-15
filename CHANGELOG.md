@@ -1,3 +1,14 @@
+## [0.0.26](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.25...v0.0.26) (2025-10-15)
+
+
+### Features
+
+* createImageElement createTextElement ([df6d023](https://github.com/qq15725/modern-canvas-editor/commit/df6d023d55d8b58cca4b500453f5195620b110f7))
+* export Element2D, Element, NormalizedElement ([0b105fc](https://github.com/qq15725/modern-canvas-editor/commit/0b105fc91fb9ac6535bf472202b066888087d56f))
+* load url ([70ac5d9](https://github.com/qq15725/modern-canvas-editor/commit/70ac5d9956ca49bd5d4ec2683a69502cdfee5c92))
+
+
+
 ## [0.0.25](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.24...v0.0.25) (2025-10-14)
 
 
