@@ -1,30 +1,31 @@
 import { definePlugin } from '../../editor'
-import { createImageElement, imageExtRe, imageExts } from '../../utils'
+import { createTextElement } from '../../utils'
 
 export default definePlugin((editor) => {
   const {
     registerLoader,
-    upload,
   } = editor
 
+  const RE = /\.txt$/i
+
   registerLoader({
-    name: 'image',
-    accept: imageExts.join(','),
+    name: 'txt',
+    accept: '.txt',
     test: (source) => {
       if (source instanceof Blob) {
-        if (source.type.startsWith('image/')) {
+        if (source.type.startsWith('text/plain')) {
           return true
         }
       }
       if (source instanceof File) {
-        if (imageExtRe.test(source.name)) {
+        if (RE.test(source.name)) {
           return true
         }
       }
       return false
     },
     load: async (source: File | Blob) => {
-      return await createImageElement(await upload(source))
+      return createTextElement(await source.text())
     },
   })
 })

@@ -1,5 +1,5 @@
 import { definePlugin } from '../../editor'
-import { createImagaeElement, imageExtRe } from './image'
+import { createImageElement, imageExtRe } from '../../utils'
 
 async function isImage(url: string) {
   try {
@@ -26,7 +26,7 @@ export default definePlugin((editor) => {
     },
     load: async (source: string) => {
       if (imageExtRe.test(source) || await isImage(source)) {
-        return createImagaeElement(source)
+        return createImageElement(source)
       }
       else {
         // TODO

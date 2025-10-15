@@ -3,7 +3,7 @@ import type { Ref } from 'vue'
 import { cloneDeep } from 'lodash-es'
 import { ref } from 'vue'
 import { definePlugin } from '../editor'
-import { SUPPORTS_CLIPBOARD } from '../utils'
+import { createTextElement, SUPPORTS_CLIPBOARD } from '../utils'
 
 declare global {
   namespace Mce {
@@ -91,7 +91,7 @@ export default definePlugin((editor) => {
           else {
             switch (blob.type) {
               case 'text/plain':
-                elements.push(await load(await blob.text()))
+                elements.push(createTextElement(await blob.text()))
                 break
               case 'text/html': {
                 const dom = new DOMParser().parseFromString(await blob.text(), 'text/html')
@@ -121,7 +121,7 @@ export default definePlugin((editor) => {
                   )
 
                   const blob = new Blob([json], {
-                    type: 'application/json;charset=utf-8',
+                    type: 'application/json',
                   })
 
                   elements.push(await load(blob))

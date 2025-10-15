@@ -51,3 +51,21 @@ export function getImageSizeFromUrl(
     img.src = url
   })
 }
+
+export const imageMimeTypeExtMap = {
+  'image/jpeg': ['.jpg', '.jpeg'],
+  'image/png': ['.png'],
+  'image/gif': ['.gif'],
+  'image/svg+xml': ['.svg'],
+  'image/tiff': ['.tif', '.tiff'],
+  'image/bmp': ['.bmp'],
+  'image/x-ms-bmp': ['.bmp'],
+  'image/vnd.microsoft.icon': ['.ico'],
+  'image/webp': ['.webp'],
+  'image/heif': ['.heif'],
+  'image/heic': ['.heic'],
+  'image/avif': ['.avif'],
+}
+
+export const imageExts = Object.values(imageMimeTypeExtMap).flat()
+export const imageExtRe = new RegExp(`\\.(?:${imageExts.map(v => v.substring(1)).join('|')})`, 'i')

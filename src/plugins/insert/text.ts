@@ -1,6 +1,6 @@
 import type { Element2D, Vector2Data } from 'modern-canvas'
-import { measureText } from 'modern-text'
 import { definePlugin } from '../../editor'
+import { createTextElement } from '../../utils'
 
 declare global {
   namespace Mce {
@@ -26,16 +26,7 @@ export default definePlugin((editor) => {
 
   registerCommand('insertText', (content = t('clickEditText'), options = {}) => {
     const { style, ...restOptions } = options
-    const box = measureText({ style, content }).boundingBox
-    return addElement({
-      style: {
-        ...style,
-        width: box.width,
-        height: box.height,
-      },
-      text: { content },
-      meta: { inPptIs: 'Shape' },
-    }, {
+    return addElement(createTextElement(content, style), {
       sizeToFit: true,
       positionToFit: true,
       ...restOptions,

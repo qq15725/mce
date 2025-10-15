@@ -1,6 +1,6 @@
 import type { Element2D, Vector2Data } from 'modern-canvas'
 import { definePlugin } from '../../editor'
-import { getImageSizeFromUrl } from '../../utils'
+import { createImageElement } from '../../utils'
 
 declare global {
   namespace Mce {
@@ -23,26 +23,20 @@ export default definePlugin((editor) => {
     addElement,
   } = editor
 
+  registerCommand('insertImage', async (url, options) => {
+    return addElement(await createImageElement(url), {
+      sizeToFit: true,
+      positionToFit: true,
+      ...options,
+    })
+  })
+
   registerCommand('drawImage', () => {
     setState('drawing', {
       content: 'image',
       callback: (position: Vector2Data) => {
         exec('import', { position })
       },
-    })
-  })
-
-  registerCommand('insertImage', async (url, options) => {
-    return addElement({
-      style: {
-        ...await getImageSizeFromUrl(url),
-      },
-      foreground: { image: url },
-      meta: { inPptIs: 'Picture' },
-    }, {
-      sizeToFit: true,
-      positionToFit: true,
-      ...options,
     })
   })
 })

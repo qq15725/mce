@@ -24,7 +24,7 @@ import _2_loader_0_url from './plugins/2.loader/0.url'
 import _2_loader_image from './plugins/2.loader/image'
 import _2_loader_json from './plugins/2.loader/json'
 import _2_loader_pptx from './plugins/2.loader/pptx'
-import _2_loader_text from './plugins/2.loader/text'
+import _2_loader_txt from './plugins/2.loader/txt'
 import _3_view from './plugins/3.view'
 import _4_0_text from './plugins/4.0.text'
 import _4_1_lock from './plugins/4.1.lock'
@@ -78,7 +78,7 @@ export const presetPlugins = [
   _2_loader_image,
   _2_loader_json,
   _2_loader_pptx,
-  _2_loader_text,
+  _2_loader_txt,
   _3_view,
   _4_0_text,
   _4_1_lock,
