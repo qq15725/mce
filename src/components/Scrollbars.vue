@@ -15,7 +15,7 @@ const props = withDefaults(
   {
     infinite: true,
     offset: 0,
-    size: 16,
+    size: 8,
   },
 )
 

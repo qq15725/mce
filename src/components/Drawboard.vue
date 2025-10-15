@@ -31,8 +31,8 @@ import Floatbar from './Floatbar.vue'
 import Frames from './Frames.vue'
 import GoBackSelectedArea from './GoBackSelectedArea.vue'
 import Hover from './Hover.vue'
-import RulerXy from './RulerXy.vue'
-import ScrollbarXy from './ScrollbarXy.vue'
+import Rulers from './Rulers.vue'
+import Scrollbars from './Scrollbars.vue'
 import Selector from './Selector.vue'
 import Starter from './Starter.vue'
 import Statusbar from './Statusbar.vue'
@@ -425,8 +425,8 @@ function onScroll() {
           <slot name="selector" :box="box" />
         </template>
       </Selector>
-      <RulerXy v-if="config.ruler" />
-      <ScrollbarXy v-if="config.scrollbar" />
+      <Rulers v-if="config.ruler" />
+      <Scrollbars v-if="config.scrollbar" />
       <Floatbar
         v-if="$slots.floatbar"
         :target="state === 'typing'

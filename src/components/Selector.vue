@@ -32,6 +32,7 @@ const {
   isFrame,
   isLocked,
   currentElements,
+  config,
 } = useEditor()
 
 const transformable = useTemplateRef('transformableRef')
@@ -168,6 +169,7 @@ defineExpose({
     :visibility="state !== 'selecting' ? 'auto' : 'none'"
     :moveable="activeElement && !isLocked(activeElement)"
     :resize-strategy="props.resizeStrategy"
+    :handle-shape="config.handleShape"
     handle-strategy="point"
     class="mce-current-box"
     :border-style="selectedElements.length ? 'dashed' : 'solid'"
@@ -194,7 +196,7 @@ defineExpose({
 .mce-parent-element-box {
   position: absolute;
   pointer-events: none;
-  border-width: 2px;
+  border-width: 1px;
   border-style: dashed;
   color: rgba(var(--mce-theme-primary), 1);
   opacity: .5;
@@ -202,7 +204,7 @@ defineExpose({
 
 .mce-select-range-box {
   position: absolute;
-  border-width: 2px;
+  border-width: 1px;
   border-style: solid;
   color: rgba(var(--mce-theme-primary), 1);
   background-color: rgba(var(--mce-theme-primary), .1);
@@ -215,7 +217,7 @@ defineExpose({
 
 .mce-selected-element-box {
   position: absolute;
-  border-width: 2px;
+  border-width: 1px;
   border-style: solid;
   color: rgba(var(--mce-theme-primary), 1);
 }

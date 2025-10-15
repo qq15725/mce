@@ -26,7 +26,7 @@ export default definePlugin((editor) => {
     },
     load: async (source: string) => {
       if (imageExtRe.test(source) || await isImage(source)) {
-        return createImageElement(source)
+        return await createImageElement(source)
       }
       else {
         // TODO

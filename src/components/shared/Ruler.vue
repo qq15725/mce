@@ -11,7 +11,6 @@ const props = withDefaults(
     vertical?: boolean
     zoom?: number
     offset?: number
-    color?: string
     aabb?: AxisAlignedBoundingBox
     pixelRatio?: number
   }>(),
@@ -19,7 +18,6 @@ const props = withDefaults(
     size: 20,
     zoom: 1,
     offset: 0,
-    color: '#aaa6',
     pixelRatio: window.devicePixelRatio || 1,
   },
 )
@@ -108,6 +106,8 @@ function render() {
   if (!cvs || !offscreenCanvas.width || !offscreenCanvas.height)
     return
 
+  const color = getComputedStyle(canvas.value).color
+
   ctx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height)
   ctx.save()
   ctx.scale(pixelRatio.value, pixelRatio.value)
@@ -119,11 +119,11 @@ function render() {
 
   drawAabb()
 
-  drawAxis([props.size, props.size], Math.max(cvs.width, cvs.height), 2, props.color)
+  drawAxis([props.size, props.size], Math.max(cvs.width, cvs.height), 2, color)
 
   const drawPrimary = (tick: number, label: string) => {
     drawTick(tick, 10)
-    drawText(label, tick + 2, 4, 8, props.color)
+    drawText(label, tick + 2, 4, 8, color)
   }
 
   const drawSecondary = (tick: number) => {
@@ -131,7 +131,7 @@ function render() {
   }
 
   ctx.lineWidth = 1
-  ctx.strokeStyle = props.color
+  ctx.strokeStyle = color
   ctx.beginPath()
   for (let tick = start.value; tick <= end.value; tick += unit.value) {
     if (tick % (unit.value * 10) === 0) {
@@ -178,7 +178,9 @@ const resize = useDebounceFn(() => {
   render()
 }, 50)
 
-onMounted(resize)
+onMounted(() => {
+  resize()
+})
 
 onBeforeUnmount(() => {
   offscreenCanvas.width = 0
@@ -306,6 +308,7 @@ function startDrag(e: MouseEvent, index: number) {
     pointer-events: auto;
     cursor: pointer;
     background-color: rgba(var(--mce-theme-surface), 1);
+    color: rgba(var(--mce-theme-on-background), .3);
   }
 }
 

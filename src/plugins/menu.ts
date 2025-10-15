@@ -267,8 +267,6 @@ export default definePlugin((editor) => {
         { type: 'divider' },
         { key: 'import' },
         ...exportMenus.value,
-        { type: 'divider' },
-        { key: 'preferences' },
       ]
     }
   })

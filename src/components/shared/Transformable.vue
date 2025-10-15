@@ -648,17 +648,17 @@ defineExpose({
 
   &__box {
     stroke: currentColor;
-    stroke-width: 2px;
+    stroke-width: 1px;
   }
 
   &__handle {
     stroke: currentColor;
-    stroke-width: 2px;
+    stroke-width: 1px;
     pointer-events: none;
   }
 
   &__handle-box {
-    stroke-width: 2px;
+    stroke-width: 1px;
     fill: transparent;
     stroke: transparent;
   }

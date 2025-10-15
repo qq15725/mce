@@ -21,9 +21,7 @@ const thumbToTrack = (thumbLength: number, thumbPosition: number): number => ler
 const offset = defineModel<number>({ required: true })
 
 const track = useTemplateRef('trackTplRef')
-const subBtn = useTemplateRef('subBtnTplRef')
 const thumb = useTemplateRef('thumbTplRef')
-const addBtn = useTemplateRef('addBtnTplRef')
 const trackLength = ref(0)
 const contentLength = computed(() =>
   props.infinite
@@ -50,9 +48,9 @@ const resize = useDebounceFn(() => {
 const start = computed(() => props.infinite ? thumbToTrack(thumbLength.value, thumbPosition.value) : thumbPosition.value)
 const end = computed(() => 1 - start.value - thumbLength.value)
 const thumbTop = computed(() => props.vertical ? `${start.value * 100}%` : '0%')
-const thumbBottom = computed(() => props.vertical ? `${end.value * 100}%` : '0%')
+const thumbBottom = computed(() => props.vertical ? `${end.value * 100}%` : '50%')
 const thumbLeft = computed(() => props.vertical ? '0%' : `${start.value * 100}%`)
-const thumbRight = computed(() => props.vertical ? '0%' : `${end.value * 100}%`)
+const thumbRight = computed(() => props.vertical ? '50%' : `${end.value * 100}%`)
 
 function update(val: number) {
   emit('scroll', val - offset.value)
@@ -92,13 +90,7 @@ let clearId: NodeJS.Timeout
 function startAmount(e: PointerEvent) {
   const el = e.target as HTMLElement
   let direction = 0
-  if (addBtn.value?.contains(el)) {
-    direction = -1
-  }
-  else if (subBtn.value?.contains(el)) {
-    direction = 1
-  }
-  else if (thumb.value?.contains(el)) {
+  if (thumb.value?.contains(el)) {
     stopAmount()
     return
   }
@@ -142,19 +134,9 @@ onBeforeUnmount(() => {
     }"
   >
     <div
-      ref="subBtnTplRef"
-      class="mce-scrollbar__btn"
-      :style="{
-        width: props.vertical ? '100%' : undefined,
-        height: !props.vertical ? '100%' : undefined,
-      }"
-      @click="amount(AMOUNT_STEP)"
+      ref="trackTplRef"
+      class="mce-scrollbar__track"
     >
-      <svg v-if="props.vertical" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6l-6 6z" /></svg>
-      <svg v-else xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M15.41 16.58L10.83 12l4.58-4.59L14 6l-6 6l6 6z" /></svg>
-    </div>
-
-    <div ref="trackTplRef" class="mce-scrollbar__track">
       <div
         v-show="props.infinite || thumbLength < 1"
         ref="thumbTplRef"
@@ -170,19 +152,6 @@ onBeforeUnmount(() => {
         }"
       />
     </div>
-
-    <div
-      ref="addBtnTplRef"
-      class="mce-scrollbar__btn"
-      :style="{
-        width: props.vertical ? '100%' : undefined,
-        height: !props.vertical ? '100%' : undefined,
-      }"
-      @click="amount(-AMOUNT_STEP)"
-    >
-      <svg v-if="props.vertical" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M7.41 8.58L12 13.17l4.59-4.59L18 10l-6 6l-6-6z" /></svg>
-      <svg v-else xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M8.59 16.58L13.17 12L8.59 7.41L10 6l6 6l-6 6z" /></svg>
-    </div>
   </div>
 </template>
 
@@ -191,22 +160,10 @@ onBeforeUnmount(() => {
   position: absolute;
   display: flex;
   pointer-events: auto !important;
-  background-color: rgba(var(--mce-theme-background), 1);
 
   &--vertical {
     right: 0;
     flex-direction: column;
-
-    &::after{
-      content: '';
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      transform: translateY(100%);
-      width: 100%;
-      aspect-ratio: 1;
-      background-color: rgba(var(--mce-theme-background));
-    }
   }
 
   &--horizontal {
@@ -220,30 +177,11 @@ onBeforeUnmount(() => {
   &__thumb {
     position: absolute;
     border-radius: calc(infinity * 1px);
-    background-color: rgba(var(--mce-theme-on-background), .2);
+    background-color: rgba(var(--mce-theme-on-background), .3);
 
     &--active,
     &:hover {
-      background-color: rgba(var(--mce-theme-on-background), .3);
-    }
-  }
-
-  &__btn {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    cursor: pointer;
-    aspect-ratio: 1 / 1;
-    color: rgba(var(--mce-theme-on-background), .2);
-
-    > svg {
-      width: 1em;
-      height: 1em;
-    }
-
-    :hover {
-      color: rgba(var(--mce-theme-on-background), .3);
+      background-color: rgba(var(--mce-theme-on-background), .4);
     }
   }
 }
