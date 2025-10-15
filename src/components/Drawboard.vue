@@ -2,7 +2,7 @@
 import type { Cursor, PointerInputEvent } from 'modern-canvas'
 import type { OrientedBoundingBox } from '../types'
 import { useResizeObserver } from '@vueuse/core'
-import { Element2D } from 'modern-canvas'
+import { easeInOut, Element2D } from 'modern-canvas'
 import {
   computed,
   nextTick,
@@ -23,7 +23,6 @@ import {
 } from '../composables/strategy'
 import { Editor } from '../editor'
 import { isPointInsideAabb } from '../utils/box'
-import { easeInOut } from '../utils/easing'
 import Auxiliary from './Auxiliary.vue'
 import Bottombar from './Bottombar.vue'
 import ContextMenu from './ContextMenu.vue'

@@ -1,7 +1,6 @@
 export * from './box'
 export * from './constants'
 export * from './create'
-export * from './easing'
 export * from './helper'
 export * from './image'
 export * from './propsFactory'
