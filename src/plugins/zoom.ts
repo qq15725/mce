@@ -95,8 +95,8 @@ export default definePlugin((editor) => {
       ...config.value.zoomToFitOffset,
     }
     if (config.value.scrollbar) {
-      offset.right += 16
-      offset.bottom += 16
+      offset.right += 8
+      offset.bottom += 8
     }
     if (config.value.ruler) {
       offset.left += 16

@@ -95,6 +95,12 @@ function onClickItem(item: MenuItem, index: number, e: MouseEvent) {
   }
 }
 
+function onMouseleave() {
+  if (props.items?.[opened.value]?.children?.length === undefined) {
+    opened.value = -1
+  }
+}
+
 defineExpose({
   isActive,
   updateLocation,
@@ -123,7 +129,7 @@ defineExpose({
     <div
       v-if="items?.length"
       class="mce-list"
-      @mouseleave="opened = -1"
+      @mouseleave="onMouseleave"
     >
       <template
         v-for="(item, index) in items" :key="index"
@@ -176,6 +182,7 @@ defineExpose({
         :model-value="opened > -1"
         :target="menuItemRefs?.[opened]"
         :attach="false"
+        :offset="8"
         @update:model-value="opened = -1"
         @click:item="(_item, _event) => emit('click:item', _item, _event)"
       >
@@ -195,15 +202,15 @@ defineExpose({
 .mce-list {
   display: flex;
   flex-direction: column;
-  background-color: rgba(var(--mce-theme-surface), 1);
-  color: rgba(var(--mce-theme-on-surface), 1);
+  background-color: rgba(var(--mce-theme-on-surface), 1);
+  color: rgba(var(--mce-theme-surface), 1);
   box-shadow: var(--mce-shadow);
   padding: 4px;
   border-radius: 4px;
   gap: 2px;
 
   &__divider {
-    border-bottom: 1px solid rgba(var(--mce-theme-on-surface), .12);
+    border-bottom: 1px solid rgba(var(--mce-theme-surface), .12);
   }
 }
 
@@ -237,9 +244,11 @@ defineExpose({
   }
 
   &__append {
-    height: 14px;
+    width: 12px;
+    height: 12px;
 
     > svg {
+      display: block;
       width: 100%;
       height: 100%;
     }

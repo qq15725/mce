@@ -72,7 +72,7 @@ async function onPointerdown(ev: PointerEvent) {
     left: 0;
     transform: translate(0%, -100%) translate(0px, -4px);
     transform-origin: left bottom;
-    font-size: 14px;
+    font-size: 12px;
     line-height: 1.5;
     white-space: nowrap;
     pointer-events: auto;
@@ -80,27 +80,21 @@ async function onPointerdown(ev: PointerEvent) {
 
     > div {
       position: relative;
-      padding: 0 4px;
-      border: 1px solid #0000002b;
-      border-radius: 4px;
       min-width: 28px;
-      min-height: 21px;
       box-sizing: content-box;
-      background-color: rgba(var(--mce-theme-surface), 1);
+      color: rgba(var(--mce-theme-on-surface), .8);
     }
 
     > input {
       position: absolute;
       left: 0;
       top: 0;
-      padding: 2px 4px;
       outline: none;
       width: 100%;
       height: 100%;
       border: 1px solid #0000002b;
       border-radius: 4px;
       cursor: default;
-      background-color: rgba(var(--mce-theme-surface), 1);
     }
   }
 }
