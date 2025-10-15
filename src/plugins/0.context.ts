@@ -49,6 +49,8 @@ export default definePlugin((editor) => {
   markRaw(_renderEngine.renderer)
   const renderEngine = ref(_renderEngine)
   const camera = ref(new Camera2D({ internalMode: 'front' }))
+  camera.value.minZoom.set(0.02, 0.02)
+  camera.value.maxZoom.set(256, 256)
   _renderEngine.root.append(camera.value as any)
 
   const drawboardDom = ref<HTMLElement>()

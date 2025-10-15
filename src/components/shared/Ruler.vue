@@ -78,7 +78,7 @@ function drawText(content: string, tick: number, top: number, size: number, colo
 const unit = computed(() => {
   const baseUnit = 5
   let idealUnit = baseUnit / props.zoom
-  idealUnit = Math.min(Math.max(idealUnit, 1), 100)
+  idealUnit = Math.max(idealUnit, 1)
   const exponent = Math.floor(Math.log10(idealUnit))
   const fraction = idealUnit / 10 ** exponent
   let niceFraction = 10
@@ -101,12 +101,16 @@ function logic2ui(num: number) {
 function ui2logic(num: number) {
   return ~~((num - props.offset) / props.zoom)
 }
+
+let color: string | undefined
+
 function render() {
   const cvs = canvas.value
+
   if (!cvs || !offscreenCanvas.width || !offscreenCanvas.height)
     return
 
-  const color = getComputedStyle(canvas.value).color
+  color ??= getComputedStyle(canvas.value).color
 
   ctx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height)
   ctx.save()
@@ -119,11 +123,11 @@ function render() {
 
   drawAabb()
 
-  drawAxis([props.size, props.size], Math.max(cvs.width, cvs.height), 2, color)
+  drawAxis([props.size, props.size], Math.max(cvs.width, cvs.height), 2, color!)
 
   const drawPrimary = (tick: number, label: string) => {
     drawTick(tick, 10)
-    drawText(label, tick + 2, 4, 8, color)
+    drawText(label, tick + 2, 4, 8, color!)
   }
 
   const drawSecondary = (tick: number) => {
@@ -131,7 +135,7 @@ function render() {
   }
 
   ctx.lineWidth = 1
-  ctx.strokeStyle = color
+  ctx.strokeStyle = color!
   ctx.beginPath()
   for (let tick = start.value; tick <= end.value; tick += unit.value) {
     if (tick % (unit.value * 10) === 0) {
