@@ -104,7 +104,12 @@ export default definePlugin((editor) => {
   ): OrientedBoundingBox {
     let obb
     if (Array.isArray(node) && node.length > 0) {
-      obb = { ...getAabb(node), rotate: 0 }
+      if (node.length === 1) {
+        obb = getObb(node[0])
+      }
+      else {
+        obb = { ...getAabb(node), rotate: 0 }
+      }
     }
     else if (node instanceof Element2D) {
       // for vue reactive

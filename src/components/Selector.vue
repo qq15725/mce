@@ -48,7 +48,7 @@ const parentObbs = computed(() => {
     return []
   }
   const obbs: OrientedBoundingBox[] = []
-  selection.value[0].forEachAncestor((ancestor) => {
+  selection.value[0]?.forEachAncestor((ancestor) => {
     if (ancestor instanceof Element2D) {
       obbs.push(getObbInDrawboard(ancestor as Element2D))
     }
