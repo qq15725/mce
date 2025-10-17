@@ -171,14 +171,14 @@ export default definePlugin((editor) => {
             )
           }
           if (positionToFit) {
-            el.style.left = (width - el.style.width) / 2
-            el.style.top = (height - el.style.height) / 2
+            el.style.left = Math.round(width - el.style.width) / 2
+            el.style.top = Math.round(height - el.style.height) / 2
           }
         }
         else {
           if (positionToFit) {
-            el.style.top = top
-            el.style.left = left
+            el.style.top = Math.round(top)
+            el.style.left = Math.round(left)
             top += el.style.height + config.value.frameGap
           }
         }
@@ -246,10 +246,10 @@ export default definePlugin((editor) => {
 
     function handle(element: Element2D) {
       const style = element.style
-      style.left *= scaleX
-      style.top *= scaleY
-      style.width *= scaleX
-      style.height *= scaleY
+      style.left = Math.round(style.left * scaleX)
+      style.top = Math.round(style.top * scaleY)
+      style.width = Math.round(style.width * scaleX)
+      style.height = Math.round(style.height * scaleY)
       element?.requestRedraw?.() // TODO
     }
 
