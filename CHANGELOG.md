@@ -1,3 +1,17 @@
+## [0.0.28](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.27...v0.0.28) (2025-10-17)
+
+
+### Bug Fixes
+
+* yjs ([9df2232](https://github.com/qq15725/modern-canvas-editor/commit/9df223212f9f3f2e3ce761421601ca45386b44ef))
+
+
+### Features
+
+* custom upload / fix resizeEelement ([b76f5cd](https://github.com/qq15725/modern-canvas-editor/commit/b76f5cdabc5418e0d8c31c6ac8d6f20bca9c3ac9))
+
+
+
 ## [0.0.27](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.26...v0.0.27) (2025-10-17)
 
 
