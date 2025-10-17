@@ -89,6 +89,7 @@ export default definePlugin((editor) => {
     activeElementParent,
     state,
     getObbInDrawboard,
+    root,
   } = editor
 
   function createBox(node?: Element2D | BoundingBox | undefined): Box | undefined {
@@ -137,7 +138,7 @@ export default definePlugin((editor) => {
 
   const boxes = computed(() => {
     const elements = [
-      ...(activeElementParent.value?.children ?? []),
+      ...(activeElementParent.value?.children ?? root.value?.getChildren<Element2D>() ?? []),
     ]
     if (activeFrame.value && activeElementParent.value?.equal(activeFrame.value)) {
       elements.push(activeElementParent.value)
