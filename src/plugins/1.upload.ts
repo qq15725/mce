@@ -9,7 +9,7 @@ declare global {
     }
 
     interface Options {
-      upload: Upload
+      upload?: Upload
     }
   }
 }
