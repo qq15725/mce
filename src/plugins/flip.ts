@@ -12,7 +12,7 @@ declare global {
 export default definePlugin((editor) => {
   const {
     registerCommand,
-    currentElements,
+    selection,
   } = editor
 
   registerCommand([
@@ -21,13 +21,13 @@ export default definePlugin((editor) => {
   ])
 
   function flipX() {
-    currentElements.value.forEach((el) => {
+    selection.value.forEach((el) => {
       el.style.scaleX = -el.style.scaleX
     })
   }
 
   function flipY() {
-    currentElements.value.forEach((el) => {
+    selection.value.forEach((el) => {
       el.style.scaleY = -el.style.scaleY
     })
   }

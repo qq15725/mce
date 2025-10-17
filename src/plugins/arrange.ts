@@ -23,8 +23,7 @@ export default definePlugin((editor) => {
   const {
     registerCommand,
     registerHotkey,
-    currentElements,
-    activeElement,
+    selection,
   } = editor
 
   registerCommand([
@@ -72,19 +71,19 @@ export default definePlugin((editor) => {
     })
   }
 
-  function raiseToFront(target: Element2D | Element2D[] = currentElements.value): void {
+  function raiseToFront(target: Element2D | Element2D[] = selection.value): void {
     target && arrange(target, 'raiseToFront')
   }
 
-  function raise(target: Element2D | undefined = activeElement.value): void {
+  function raise(target: Element2D | undefined = selection.value[0]): void {
     target && arrange(target, 'raise')
   }
 
-  function lower(target: Element2D | undefined = activeElement.value): void {
+  function lower(target: Element2D | undefined = selection.value[0]): void {
     target && arrange(target, 'lower')
   }
 
-  function lowerToBack(target: Element2D | Element2D[] = currentElements.value): void {
+  function lowerToBack(target: Element2D | Element2D[] = selection.value): void {
     target && arrange(target, 'lowerToBack')
   }
 })

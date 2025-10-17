@@ -25,10 +25,8 @@ export default definePlugin((editor) => {
   const {
     registerHotkey,
     registerCommand,
-    setSelectedElements,
+    selection,
     root,
-    setActiveElement,
-    activeElement,
   } = editor
 
   registerCommand([
@@ -48,24 +46,22 @@ export default definePlugin((editor) => {
   ])
 
   function selectAll(): void {
-    setSelectedElements([...root.value?.children ?? []] as Element2D[])
+    selection.value = [...root.value?.children ?? []] as Element2D[]
   }
 
   function deselectAll() {
-    setActiveElement(undefined)
-    setSelectedElements([])
+    selection.value = []
   }
 
   function selectParent() {
-    const parent = activeElement.value?.parent
+    const parent = selection.value[0]?.parent
     if (parent instanceof Element2D) {
-      setActiveElement(parent)
-      setSelectedElements([])
+      selection.value = [parent]
     }
   }
 
   function previousSelection() {
-    const element = activeElement.value
+    const element = selection.value[0]
     if (!element)
       return
     const previousSibling = element.previousSibling
@@ -73,13 +69,12 @@ export default definePlugin((editor) => {
       previousSibling instanceof Element2D
       && !element.equal(previousSibling)
     ) {
-      setActiveElement(previousSibling)
-      setSelectedElements([])
+      selection.value = [previousSibling]
     }
   }
 
   function nextSelection() {
-    const element = activeElement.value
+    const element = selection.value[0]
     if (!element)
       return
     const nextSibling = element.nextSibling
@@ -87,8 +82,7 @@ export default definePlugin((editor) => {
       nextSibling instanceof Element2D
       && !element.equal(nextSibling)
     ) {
-      setActiveElement(nextSibling)
-      setSelectedElements([])
+      selection.value = [nextSibling]
     }
   }
 })

@@ -74,19 +74,14 @@ const {
   renderEngine,
   camera,
   bindRenderCanvas,
-  activeElement,
   hoverElement,
   state,
-  setState,
   setCursor,
-  setActiveElement,
-  setSelectedElements,
   isFrame,
   selectArea,
   exec,
   isLocked,
-  currentElements,
-  selectedElements,
+  selection,
   getAabbInDrawboard,
   drawboardAabb,
   drawboardPointer,
@@ -132,13 +127,13 @@ function onHover(event: PointerInputEvent) {
   let hovered: Element2D | undefined
   if (isPointInsideAabb(
     { x: event.clientX, y: event.clientY },
-    getAabbInDrawboard(selectedElements.value),
+    getAabbInDrawboard(selection.value),
   )) {
     cursor = 'move'
   }
   else {
     const element = event.target
-    const oldElement = activeElement.value
+    const oldElement = selection.value[0]
     const result = props.hoverStrategy({
       element,
       oldElement,
@@ -169,19 +164,18 @@ function onPointerdown(event: PointerInputEvent): void {
     return
   }
 
-  const oldElement = activeElement.value
+  const oldElement = selection.value[0]
   const element = event.target
   const start = { x: event.clientX, y: event.clientY }
   let current = { ...start }
   let dragging = false
   let isUp = false
-  let activated: Element2D | undefined
   let selected: Element2D[] = []
   let ctxState: Mce.State | undefined
   const inSelected = isPointInsideAabb({
     x: start.x + -drawboardAabb.value.left,
     y: start.y + -drawboardAabb.value.top,
-  }, getAabbInDrawboard(selectedElements.value))
+  }, getAabbInDrawboard(selection.value))
 
   if (event.button === 2) {
     if (!inSelected) {
@@ -192,13 +186,12 @@ function onPointerdown(event: PointerInputEvent): void {
         isExcluded,
       })
       if (result && !(result instanceof Element2D)) {
-        activated = result.element
+        selected = result.element ? [result.element] : []
       }
       else {
-        activated = result
+        selected = result ? [result] : []
       }
-      setActiveElement(activated)
-      setSelectedElements(selected)
+      selection.value = selected
     }
     return
   }
@@ -211,20 +204,18 @@ function onPointerdown(event: PointerInputEvent): void {
       isExcluded,
     })
     if (result && !(result instanceof Element2D)) {
-      activated = result.element
+      selected = result.element ? [result.element] : []
     }
     else {
-      activated = result
+      selected = result ? [result] : []
     }
-    setActiveElement(activated)
+    selection.value = selected
   }
 
   function onSelectArea(): void {
     if (state.value !== 'selecting') {
-      setState('selecting')
+      state.value = 'selecting'
     }
-    activated = undefined
-    setActiveElement(activated)
     selectedArea.value = {
       left: Math.min(start.x, current.x) - drawboardAabb.value.left,
       top: Math.min(start.y, current.y) - drawboardAabb.value.top,
@@ -252,15 +243,15 @@ function onPointerdown(event: PointerInputEvent): void {
     }
 
     if (_element && (event?.ctrlKey || event?.shiftKey || event?.metaKey)) {
-      if (currentElements.value.findIndex(v => v.equal(_element)) > -1) {
-        selected = currentElements.value.filter(v => !v.equal(_element))
+      if (selection.value.findIndex(v => v.equal(_element)) > -1) {
+        selected = selection.value.filter(v => !v.equal(_element))
       }
       else {
-        selected = [...currentElements.value, _element]
+        selected = [...selection.value, _element]
       }
     }
     else {
-      activated = _element
+      selected = _element ? [_element] : []
     }
   }
 
@@ -301,7 +292,7 @@ function onPointerdown(event: PointerInputEvent): void {
 
   async function onUp(_event: PointerEvent) {
     if (state.value) {
-      setState(undefined)
+      state.value = undefined
     }
 
     if (!dragging) {
@@ -309,16 +300,10 @@ function onPointerdown(event: PointerInputEvent): void {
         onActivate()
       }
 
-      if (selected.length === 1) {
-        activated = selected[0]
-        selected = []
-      }
-
-      setActiveElement(activated)
-      setSelectedElements(selected)
+      selection.value = selected
 
       if (ctxState) {
-        if (activated && !isLocked(activated)) {
+        if (selected[0] && !isLocked(selected[0])) {
           switch (ctxState) {
             case 'typing': {
               await exec('startTyping', _event)
@@ -401,7 +386,7 @@ function onScroll() {
       <Selector
         ref="selectorTpl"
         :selected-area="selectedArea"
-        :resize-strategy="activeElement ? props.resizeStrategy(activeElement) : undefined"
+        :resize-strategy="selection[0] ? props.resizeStrategy(selection[0]) : undefined"
       >
         <template #transformable="{ box }">
           <slot name="transformer" :box="box" />

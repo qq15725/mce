@@ -18,8 +18,7 @@ export default definePlugin((editor) => {
   const {
     getObb,
     getAabb,
-    selectedElements,
-    activeElement,
+    selection,
     registerHotkey,
     addElement,
     deleteElement,
@@ -38,7 +37,7 @@ export default definePlugin((editor) => {
   ])
 
   function group(): void {
-    const elements = selectedElements.value
+    const elements = selection.value
     if (elements.length === 0) {
       return
     }
@@ -65,7 +64,7 @@ export default definePlugin((editor) => {
   }
 
   function ungroup() {
-    const element = activeElement.value
+    const element = selection.value[0]
     if (!element)
       return
     const items = element.children.map((child) => {
@@ -85,10 +84,10 @@ export default definePlugin((editor) => {
   }
 
   function groupOrUngroup() {
-    if (activeElement.value?.children.length) {
+    if (selection.value.length === 1) {
       ungroup()
     }
-    else {
+    else if (selection.value.length > 1) {
       group()
     }
   }

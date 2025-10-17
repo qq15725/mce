@@ -149,12 +149,12 @@ export default definePlugin((editor) => {
       drawboardDom,
       on,
       config,
-      currentElements,
+      selection,
     } = editor
 
     on('setDoc', zoomToFit)
     on('setActiveFrame', () => {
-      if (currentElements.value.length) {
+      if (selection.value.length) {
         zoomToSelection()
       }
       else {

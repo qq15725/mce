@@ -24,10 +24,8 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    activeElement,
     activeFrameAabb,
-    selectedElements,
-    currentElements,
+    selection,
     getAabb,
     registerCommand,
   } = editor
@@ -43,11 +41,11 @@ export default definePlugin((editor) => {
   ])
 
   function align(direction: Mce.AlignCommandDirection) {
-    const box = activeElement.value
+    const box = selection.value.length === 1
       ? activeFrameAabb.value
-      : getAabb(selectedElements.value)
+      : getAabb(selection.value)
 
-    currentElements.value.forEach((el) => {
+    selection.value.forEach((el) => {
       switch (direction) {
         case 'left':
           el.style.left = 0

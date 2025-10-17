@@ -30,8 +30,7 @@ export default definePlugin((editor) => {
     activeFrameIndex,
     frameThumbs,
     emit,
-    setActiveElement,
-    setSelectedElements,
+    selection,
     frames,
     config,
   } = editor
@@ -105,12 +104,11 @@ export default definePlugin((editor) => {
     const oldIndex = activeFrameIndex.value
     activeFrameIndex.value = index
     if (config.value.viewMode === 'edgeless') {
-      setActiveElement(frames.value[index])
+      selection.value = [frames.value[index]]
     }
     else {
-      setActiveElement(undefined)
+      selection.value = []
     }
-    setSelectedElements([])
     emit('setActiveFrame', index, oldIndex)
   }
 

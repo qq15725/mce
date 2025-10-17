@@ -1,5 +1,5 @@
-import type { Element2D } from 'modern-canvas'
 import type { ComputedRef } from 'vue'
+import { Element2D } from 'modern-canvas'
 import { computed } from 'vue'
 import { definePlugin } from '../editor'
 import { isOverlappingAabb } from '../utils'
@@ -85,8 +85,7 @@ function isLeftTopLine(line: Line) {
 export default definePlugin((editor) => {
   const {
     activeFrame,
-    activeElement,
-    activeElementParent,
+    selection,
     state,
     getObbInDrawboard,
     root,
@@ -122,26 +121,33 @@ export default definePlugin((editor) => {
   const excluded = computed(() => {
     return new Set(
       [
-        activeElement.value?.instanceId,
+        selection.value[0]?.instanceId,
       ].filter(Boolean),
     )
   })
 
   const activatedBox = computed(() => {
-    if (activeElement.value) {
-      return createBox(activeElement.value)!
+    if (selection.value[0]) {
+      return createBox(selection.value[0])!
     }
     return undefined
   })
 
-  const parentBox = computed(() => createBox(activeElementParent.value ?? { left: 0, top: 0, width: 0, height: 0 })!)
+  const parnet = computed(() => {
+    const p = selection.value[0].parent
+    return p instanceof Element2D ? p : undefined
+  })
+
+  const parentBox = computed(() => createBox(
+    parnet.value ?? { left: 0, top: 0, width: 0, height: 0 },
+  )!)
 
   const boxes = computed(() => {
     const elements = [
-      ...(activeElementParent.value?.children ?? root.value?.children ?? []),
+      ...(parnet.value?.children ?? root.value?.children ?? []),
     ]
-    if (activeFrame.value && activeElementParent.value?.equal(activeFrame.value)) {
-      elements.push(activeElementParent.value)
+    if (activeFrame.value && parnet.value?.equal(activeFrame.value)) {
+      elements.push(parnet.value)
     }
     return elements
       .filter(node => !excluded.value.has(node.instanceId))

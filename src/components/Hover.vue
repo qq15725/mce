@@ -4,7 +4,7 @@ import { useEditor } from '../composables/editor'
 import { boundingBoxToStyle } from '../utils/box'
 
 const {
-  activeElement,
+  selection,
   hoverElement,
   getObbInDrawboard,
 } = useEditor()
@@ -14,7 +14,7 @@ const hoverElementObb = computed(() => getObbInDrawboard(hoverElement.value))
 
 <template>
   <div
-    v-if="hoverElement && !hoverElement.equal(activeElement)"
+    v-if="hoverElement && !hoverElement.equal(selection[0])"
     class="mce-hover"
     :data-name="hoverElement.name"
     :style="{

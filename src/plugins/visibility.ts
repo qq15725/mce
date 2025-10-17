@@ -18,7 +18,7 @@ export default definePlugin((editor) => {
   const {
     registerHotkey,
     registerCommand,
-    currentElements,
+    selection,
   } = editor
 
   registerCommand([
@@ -32,19 +32,19 @@ export default definePlugin((editor) => {
   ])
 
   function show(): void {
-    currentElements.value.forEach((el) => {
+    selection.value.forEach((el) => {
       el.style.visibility = 'visible'
     })
   }
 
   function hide(): void {
-    currentElements.value.forEach((el) => {
+    selection.value.forEach((el) => {
       el.style.visibility = 'hidden'
     })
   }
 
   function hideOrShow(): void {
-    currentElements.value.forEach((el) => {
+    selection.value.forEach((el) => {
       el.style.visibility = el.style.visibility === 'hidden' ? 'visible' : 'hidden'
     })
   }

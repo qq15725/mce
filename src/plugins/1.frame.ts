@@ -62,10 +62,12 @@ export default definePlugin((editor) => {
 
   return () => {
     const {
-      activeElement,
+      selection,
     } = editor
 
-    watch(activeElement, (element) => {
+    watch(() => {
+      return selection.value.length === 1 && selection.value[0]
+    }, (element) => {
       if (element && isFrame(element)) {
         activeFrameIndex.value = frames.value.findIndex(v => v.equal(element))
       }

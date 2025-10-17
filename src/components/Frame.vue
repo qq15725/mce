@@ -10,7 +10,7 @@ const input = useTemplateRef('inputTpl')
 const {
   getObbInDrawboard,
   hoverElement,
-  setActiveElement,
+  selection,
   state,
   config,
   exec,
@@ -29,7 +29,7 @@ async function onDblclick() {
 
 async function onPointerdown(ev: PointerEvent) {
   if (!editing.value) {
-    setActiveElement(frame.value)
+    selection.value = [frame.value]
     await nextTick()
     exec('startTransform', ev)
   }

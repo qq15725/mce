@@ -21,8 +21,7 @@ export default definePlugin((editor) => {
     deleteElement,
     getAabb,
     getObb,
-    activeElement,
-    selectedElements,
+    selection,
     addElement,
     isFrame,
     doc,
@@ -39,7 +38,7 @@ export default definePlugin((editor) => {
   ])
 
   function frame(): void {
-    const elements = selectedElements.value
+    const elements = selection.value
     if (elements.length === 0) {
       return
     }
@@ -66,7 +65,7 @@ export default definePlugin((editor) => {
   }
 
   function unframe() {
-    const element = activeElement.value
+    const element = selection.value[0]
     if (!element)
       return
     const items = element.children.map((el) => {
@@ -86,12 +85,12 @@ export default definePlugin((editor) => {
   }
 
   function frameOrUnframe() {
-    if (activeElement.value) {
-      if (isFrame(activeElement.value)) {
+    if (selection.value.length === 1) {
+      if (isFrame(selection.value[0])) {
         unframe()
       }
     }
-    else if (selectedElements.value.length > 0) {
+    else if (selection.value.length > 1) {
       frame()
     }
   }

@@ -25,13 +25,13 @@ export default definePlugin((editor) => {
   const {
     registerCommand,
     registerHotkey,
-    currentElements,
+    selection,
   } = editor
 
   registerCommand([
-    { key: 'lock', handle: () => currentElements.value.forEach(lock) },
-    { key: 'unlock', handle: () => currentElements.value.forEach(unlock) },
-    { key: 'lock/unlock', handle: () => currentElements.value.forEach(el => isLocked(el) ? unlock(el) : lock(el)) },
+    { key: 'lock', handle: () => selection.value.forEach(lock) },
+    { key: 'unlock', handle: () => selection.value.forEach(unlock) },
+    { key: 'lock/unlock', handle: () => selection.value.forEach(el => isLocked(el) ? unlock(el) : lock(el)) },
   ])
 
   registerHotkey([

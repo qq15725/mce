@@ -19,11 +19,10 @@ const props = withDefaults(
 const {
   camera,
   getAabbInDrawboard,
-  activeElement,
-  selectedElements,
+  selection,
 } = useEditor()
 
-const activeAabb = computed(() => getAabbInDrawboard(activeElement.value ?? selectedElements.value))
+const activeAabb = computed(() => getAabbInDrawboard(selection.value))
 </script>
 
 <template>

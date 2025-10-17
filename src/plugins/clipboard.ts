@@ -29,8 +29,7 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    activeElement,
-    selectedElements,
+    selection,
     registerHotkey,
     registerCommand,
     deleteCurrentElements,
@@ -55,9 +54,9 @@ export default definePlugin((editor) => {
   const copiedData = ref<any>()
 
   async function copy(): Promise<void> {
-    const data = activeElement.value
-      ? [activeElement.value.toJSON()]
-      : selectedElements.value.map(v => v.toJSON())
+    const data = selection.value.length === 1
+      ? [selection.value[0].toJSON()]
+      : selection.value.map(v => v.toJSON())
     if (SUPPORTS_CLIPBOARD) {
       const type = 'text/html'
       await navigator!.clipboard.write([

@@ -20,7 +20,6 @@ declare global {
       drawboardPointer: Ref<Vector2Data | undefined>
       workspace: Ref<Workspace | undefined>
       root: ComputedRef<Node | undefined>
-      docMeta: ComputedRef<{ title: string }>
       doc: Ref<Doc | undefined>
       state: Ref<State | undefined>
       setState: (state: State, context?: StateContext) => void
@@ -57,7 +56,6 @@ export default definePlugin((editor) => {
   const workspace = ref<Workspace>()
   const doc = ref<Doc>()
   const root = computed(() => doc.value?.root)
-  const docMeta = computed(() => root.value?.meta ?? {})
   const drawboardPointer = ref<Vector2Data>()
   const state = ref<Mce.State>()
   const stateContext = ref<Mce.StateContext>()
@@ -94,7 +92,6 @@ export default definePlugin((editor) => {
     drawboardDom,
     drawboardAabb,
     workspace,
-    docMeta,
     doc,
     state,
     stateContext,

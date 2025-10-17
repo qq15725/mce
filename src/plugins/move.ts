@@ -25,19 +25,19 @@ export default definePlugin((editor) => {
   const {
     registerCommand,
     registerHotkey,
-    currentElements,
+    selection,
   } = editor
 
   registerCommand([
     { key: 'move', handle: move },
-    { key: 'moveLeft', handle: moveLeft },
-    { key: 'moveTop', handle: moveTop },
-    { key: 'moveRight', handle: moveRight },
-    { key: 'moveBottom', handle: moveBottom },
+    { key: 'moveLeft', handle: (distance?: number) => move('left', distance) },
+    { key: 'moveTop', handle: (distance?: number) => move('top', distance) },
+    { key: 'moveRight', handle: (distance?: number) => move('right', distance) },
+    { key: 'moveBottom', handle: (distance?: number) => move('bottom', distance) },
   ])
 
   function condition(): boolean {
-    return currentElements.value.length > 0
+    return selection.value.length > 0
   }
 
   registerHotkey([
@@ -62,24 +62,8 @@ export default definePlugin((editor) => {
         prop = 'left'
         break
     }
-    currentElements.value.forEach((element) => {
+    selection.value.forEach((element) => {
       (element.style as any)[prop] += distance
     })
-  }
-
-  function moveLeft(distance?: number): void {
-    move('left', distance)
-  }
-
-  function moveTop(distance?: number): void {
-    move('top', distance)
-  }
-
-  function moveRight(distance?: number): void {
-    move('right', distance)
-  }
-
-  function moveBottom(distance?: number): void {
-    move('bottom', distance)
   }
 })

@@ -48,15 +48,13 @@ declare global {
 export default definePlugin((editor) => {
   const {
     copiedData,
-    activeElement,
-    selectedElements,
-    currentElements,
+    selection,
     canUndo,
     canRedo,
     textSelection,
   } = editor
 
-  const hasSelected = computed(() => currentElements.value.length > 0)
+  const hasSelected = computed(() => selection.value.length > 0)
 
   const editMenus1 = computed(() => [
     { key: 'undo', disabled: !canUndo.value },
@@ -211,7 +209,7 @@ export default definePlugin((editor) => {
   ])
 
   const contextMenus = computed(() => {
-    if (activeElement.value) {
+    if (selection.value.length === 1) {
       if (textSelection.value) {
         return [
           ...editMenus1.value,
@@ -235,7 +233,7 @@ export default definePlugin((editor) => {
         ]
       }
     }
-    else if (selectedElements.value.length) {
+    else if (selection.value.length > 1) {
       return [
         ...editMenus1.value,
         { type: 'divider' },

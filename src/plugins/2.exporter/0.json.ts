@@ -17,7 +17,7 @@ export default definePlugin((editor) => {
     getAabb,
     doc,
     rootAabb,
-    currentElements,
+    selection,
   } = editor
 
   registerExporter('json', (options) => {
@@ -30,7 +30,7 @@ export default definePlugin((editor) => {
 
     let elements: Element2D[] = []
     if (selected === true) {
-      elements = currentElements.value
+      elements = selection.value
     }
     else if (Array.isArray(selected)) {
       elements = selected

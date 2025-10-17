@@ -31,9 +31,9 @@ export default definePlugin((editor) => {
     doc,
     renderEngine,
     emit,
-    setActiveElement,
+    selection,
     setActiveFrame,
-    setState,
+    state,
     to,
     waitUntilFontLoad,
     config,
@@ -45,7 +45,7 @@ export default definePlugin((editor) => {
   }
 
   async function setDoc(source: Document | string): Promise<Doc> {
-    setState('loading')
+    state.value = 'loading'
 
     const _doc = new Doc(typeof source === 'string' ? source : source.id)
 
@@ -76,7 +76,7 @@ export default definePlugin((editor) => {
       emit('setDoc', _doc)
     }
     finally {
-      setState(undefined)
+      state.value = undefined
     }
 
     return _doc
@@ -92,7 +92,7 @@ export default definePlugin((editor) => {
     renderEngine.value.root.removeChildren()
     renderEngine.value.root.children.length = 0 // TODO
     doc.value = undefined
-    setActiveElement(undefined)
+    selection.value = []
     emit('clearDoc')
   }
 

@@ -26,7 +26,7 @@ export default definePlugin((editor) => {
   const {
     camera,
     root,
-    currentElements,
+    selection,
     getAncestorFrame,
   } = editor
 
@@ -231,7 +231,7 @@ export default definePlugin((editor) => {
   }
 
   const rootAabb = computed(() => getAabb(root.value?.children ?? []))
-  const currentAabb = computed(() => getAabb(currentElements.value))
+  const currentAabb = computed(() => getAabb(selection.value))
 
   Object.assign(editor, {
     obbToFit,

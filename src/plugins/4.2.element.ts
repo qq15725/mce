@@ -36,21 +36,16 @@ declare global {
         height: number,
         options?: ResizeElementOptions,
       ) => void
-      getActiveElement: () => Element2D | undefined
-      setActiveElement: (id: string | Element2D | undefined) => void
       pointerActivateElement: (
         element: Element2D | undefined,
         event?: MouseEvent | PointerEvent,
       ) => void
       deleteCurrentElements: () => void
-      setSelectedElements: (elements: Element2D[]) => void
       selectArea: (areaInDrawboard: AxisAlignedBoundingBox) => Element2D[]
     }
 
     interface Events {
       addElement: [element: Element2D[]]
-      setActiveElement: [element?: Element2D]
-      setSelectedElements: [elements: Element2D[]]
     }
 
     interface Hotkeys {
@@ -70,8 +65,6 @@ export default definePlugin((editor) => {
     doc,
     rootAabb,
     activeFrame,
-    activeElement,
-    selectedElements,
     hoverElement,
     emit,
     textFontSizeToFit,
@@ -83,16 +76,16 @@ export default definePlugin((editor) => {
     getObbInDrawboard,
     config,
     getAncestorFrame,
-    currentElements,
     getAabb,
     getGlobalPointer,
+    selection,
   } = editor
 
   registerCommand([
     { key: 'delete', handle: deleteCurrentElements },
   ])
 
-  const condition = (): boolean => Boolean(!!activeElement.value || selectedElements.value.length)
+  const condition = (): boolean => Boolean(selection.value.length > 0)
 
   registerHotkey([
     { key: 'delete', accelerator: ['Backspace', 'Delete'], condition },
@@ -127,7 +120,7 @@ export default definePlugin((editor) => {
         frame = activeFrame.value
       }
       else {
-        const element = currentElements.value[0]
+        const element = selection.value[0]
         if (element) {
           if (isFrame(element)) {
             frame = element
@@ -207,12 +200,7 @@ export default definePlugin((editor) => {
     elements.forEach(el => el.updateGlobalTransform())
 
     if (active) {
-      if (isArray) {
-        setSelectedElements(elements)
-      }
-      else {
-        setActiveElement(elements[0])
-      }
+      selection.value = elements
     }
 
     emit('addElement', elements)
@@ -221,8 +209,8 @@ export default definePlugin((editor) => {
   }
 
   function deleteElement(id: string): void {
-    if (id === activeElement.value?.id) {
-      setActiveElement(undefined)
+    if (id === selection.value[0]?.id) {
+      selection.value = []
     }
     doc.value?.deleteElement(id)
   }
@@ -266,78 +254,38 @@ export default definePlugin((editor) => {
     options.textFontSizeToFit && textFontSizeToFit(element)
   }
 
-  function getActiveElement(): Element2D | undefined {
-    return activeElement.value
-  }
-
-  function setActiveElement(id: string | Element2D | undefined): void {
-    let element
-    if (typeof id === 'string') {
-      element = getElement(id)
-    }
-    else {
-      element = id
-    }
-    const unequal = activeElement.value
-      ? !activeElement.value.equal(element)
-      : activeElement.value !== element
-    activeElement.value = element
-    if (element) {
-      setSelectedElements([])
-    }
-    if (unequal) {
-      emit('setActiveElement', element)
-    }
-  }
-
   function pointerActivateElement(
     element: Element2D | undefined,
     event?: MouseEvent | PointerEvent,
   ): void {
     if (element && (event?.ctrlKey || event?.shiftKey || event?.metaKey)) {
       let elements
-      if (activeElement.value) {
-        elements = [activeElement.value, element]
-        setActiveElement(undefined)
+      if (selection.value.length === 1) {
+        elements = [selection.value[0], element]
       }
       else {
-        if (selectedElements.value.findIndex(v => v.equal(element)) > -1) {
-          elements = selectedElements.value.filter(v => v.equal(element))
+        if (selection.value.findIndex(v => v.equal(element)) > -1) {
+          elements = selection.value.filter(v => v.equal(element))
         }
         else {
-          elements = [...selectedElements.value, element]
+          elements = [...selection.value, element]
         }
       }
-      setSelectedElements(elements)
+      selection.value = elements
     }
     else {
-      setSelectedElements([])
-      setActiveElement(element)
+      selection.value = element ? [element] : []
     }
   }
 
   function deleteCurrentElements(): void {
-    if (selectedElements.value.length) {
-      selectedElements.value.forEach((element: Element2D) => {
+    if (selection.value.length) {
+      selection.value.forEach((element: Element2D) => {
         deleteElement(element.id)
       })
-      setSelectedElements([])
-    }
-    else if (activeElement.value) {
-      deleteElement(activeElement.value.id)
+      selection.value = []
     }
     hoverElement.value = undefined
-  }
-
-  function setSelectedElements(elements: Element2D[]): void {
-    if (!elements.length && !selectedElements.value.length) {
-      return
-    }
-    selectedElements.value = elements
-    if (elements.length) {
-      setActiveElement(undefined)
-    }
-    emit('setSelectedElements', elements)
   }
 
   function selectArea(areaInDrawboard: AxisAlignedBoundingBox): Element2D[] {
@@ -355,7 +303,7 @@ export default definePlugin((editor) => {
           && isOverlappingObb(areaInDrawboard, getObbInDrawboard(node))
           && !isLocked(node)
       }) ?? []
-    setSelectedElements(selected)
+    selection.value = selected
     return selected
   }
 
@@ -365,11 +313,8 @@ export default definePlugin((editor) => {
     updateElement,
     getElement,
     resizeElement,
-    getActiveElement,
-    setActiveElement,
     pointerActivateElement,
     deleteCurrentElements,
-    setSelectedElements,
     selectArea,
   })
 })

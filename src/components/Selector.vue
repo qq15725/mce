@@ -20,10 +20,8 @@ const props = withDefaults(defineProps<{
 const {
   state,
   resizeElement,
-  setState,
-  selectedElements,
+  selection,
   camera,
-  activeElement,
   obbToFit,
   getObbInDrawboard,
   getObb,
@@ -31,7 +29,6 @@ const {
   unregisterCommand,
   isFrame,
   isLocked,
-  currentElements,
   config,
 } = useEditor()
 
@@ -45,10 +42,13 @@ onBeforeUnmount(() => {
   unregisterCommand('startTransform')
 })
 
-const _currentObb = computed(() => getObbInDrawboard(activeElement.value ?? selectedElements.value))
+const _currentObb = computed(() => getObbInDrawboard(selection.value))
 const parentObbs = computed(() => {
+  if (selection.value.length !== 1) {
+    return []
+  }
   const obbs: OrientedBoundingBox[] = []
-  activeElement.value?.forEachAncestor((ancestor) => {
+  selection.value[0].forEachAncestor((ancestor) => {
     if (ancestor instanceof Element2D) {
       obbs.push(getObbInDrawboard(ancestor as Element2D))
     }
@@ -56,7 +56,10 @@ const parentObbs = computed(() => {
   return obbs
 })
 const selectedElementBoxes = computed(() => {
-  return selectedElements.value.map((el) => {
+  if (selection.value.length <= 1) {
+    return []
+  }
+  return selection.value.map((el) => {
     return {
       name: el.name,
       box: getObbInDrawboard(el),
@@ -76,7 +79,7 @@ const currentObb = computed({
       rotate: Math.round(((val.rotate ?? 0) - (oldBox.rotate ?? 0))),
     }
     const handle: string = transformable.value?.activeHandle ?? 'move'
-    currentElements.value.forEach((element) => {
+    selection.value.forEach((element) => {
       const style = element.style
       const box = {
         left: style.left + offsetBox.left,
@@ -116,7 +119,10 @@ const currentObb = computed({
 })
 
 function getTipText(type: 'resize' | 'rotate') {
-  const obb = activeElement.value?.style ?? getObb(selectedElements.value)
+  const obb = selection.value.length === 1
+    ? selection.value[0].style
+    : getObb(selection.value)
+
   if (type === 'rotate') {
     return `${Math.floor(obb.rotate ?? 0)}°`
   }
@@ -167,15 +173,15 @@ defineExpose({
     ref="transformableRef"
     v-model="currentObb"
     :visibility="state !== 'selecting' ? 'auto' : 'none'"
-    :moveable="activeElement && !isLocked(activeElement)"
+    :moveable="selection[0] && !isLocked(selection[0])"
     :resize-strategy="props.resizeStrategy"
     :handle-shape="config.handleShape"
     handle-strategy="point"
     class="mce-current-box"
-    :border-style="selectedElements.length ? 'dashed' : 'solid'"
+    :border-style="selection.length > 1 ? 'dashed' : 'solid'"
     :get-tip-text="getTipText"
-    @move="() => !state && setState('transforming')"
-    @end="() => state === 'transforming' && setState(undefined)"
+    @move="() => !state && (state = 'transforming')"
+    @end="() => state === 'transforming' && (state = undefined)"
   >
     <template v-if="$slots.transformable" #svg="slotProps">
       <slot name="transformable" v-bind="slotProps" />
