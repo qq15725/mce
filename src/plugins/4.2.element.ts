@@ -189,7 +189,10 @@ export default definePlugin((editor) => {
       const aabb = getAabb(elements)
 
       if (position) {
-        const diff = { x: position.x - aabb.left, y: position.y - aabb.top }
+        const diff = {
+          x: Math.round(position.x - aabb.left),
+          y: Math.round(position.y - aabb.top),
+        }
 
         elements.forEach((el) => {
           el.style.left += diff.x

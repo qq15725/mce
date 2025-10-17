@@ -69,11 +69,11 @@ const currentObb = computed({
     const zoom = camera.value.zoom
     const oldBox = _currentObb.value
     const offsetBox = {
-      left: Math.ceil((val.left - oldBox.left) / zoom.x),
-      top: Math.ceil((val.top - oldBox.top) / zoom.y),
-      width: Math.ceil((val.width - oldBox.width) / zoom.x),
-      height: Math.ceil((val.height - oldBox.height) / zoom.y),
-      rotate: Math.ceil(((val.rotate ?? 0) - (oldBox.rotate ?? 0))),
+      left: Math.round((val.left - oldBox.left) / zoom.x),
+      top: Math.round((val.top - oldBox.top) / zoom.y),
+      width: Math.round((val.width - oldBox.width) / zoom.x),
+      height: Math.round((val.height - oldBox.height) / zoom.y),
+      rotate: Math.round(((val.rotate ?? 0) - (oldBox.rotate ?? 0))),
     }
     const handle: string = transformable.value?.activeHandle ?? 'move'
     currentElements.value.forEach((element) => {
