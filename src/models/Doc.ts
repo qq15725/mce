@@ -172,15 +172,22 @@ export class Doc extends Model {
     })
   }
 
+  protected _isSelfTransaction(transaction: Y.Transaction) {
+    return !transaction.origin || transaction.origin === this._yDoc.clientID
+  }
+
   protected _onChildrenChange(
     event: Y.YMapEvent<Y.Map<unknown>>,
-    _transaction: Y.Transaction,
+    transaction: Y.Transaction,
   ) {
+    if (this._isSelfTransaction(transaction)) {
+      return
+    }
+
     const { keysChanged, changes } = event
 
     keysChanged.forEach((key) => {
       const change = changes.keys.get(key)
-      // const oldValue = change?.oldValue
       const yNode = this._yChildren.get(key)
       switch (change?.action) {
         case 'add':
@@ -224,27 +231,36 @@ export class Doc extends Model {
   protected _addElement(element: Element, options: AddElementOptions = {}): Node {
     const { parentId, index, regenId } = options
     const yNodes = iElementToYElements(element, parentId, regenId)
-    yNodes.forEach((result) => {
-      this._yChildren.set(result.id, result.element)
-    })
+    yNodes.forEach(result => this._yChildren.set(result.id, result.element))
     const nodeMap = yNodes.map(result => this._getOrCreateNode(result.element))
-    const root = nodeMap[0]
-    const childrenIds = parentId
-      ? this._yChildren.get(parentId)?.get('childrenIds')
-      : this._yChildrenIds
-    if (childrenIds) {
+    const first = nodeMap[0]
+    let parent
+    let childrenIds
+    if (parentId) {
+      parent = this.nodeMap.get(parentId)
+      childrenIds = this._yChildren.get(parentId)?.get('childrenIds')
+    }
+    else {
+      parent = this.root
+      childrenIds = this._yChildrenIds
+    }
+    if (parent && childrenIds) {
       if (index === undefined) {
-        childrenIds.push([root.id])
+        childrenIds.push([first.id])
+        parent.appendChild(first)
       }
       else {
-        childrenIds.insert(index, [root.id])
+        childrenIds.insert(index, [first.id])
+        parent.moveChild(first, index)
       }
     }
-    return root
+    return first
   }
 
   addElement(element: Element, options?: AddElementOptions): Node {
-    return this.transact(() => this._addElement(element, options))
+    return this.transact(() => {
+      return this._addElement(element, options)
+    })
   }
 
   addElements(elements: Element[], options?: AddElementOptions): Node[] {
@@ -263,8 +279,9 @@ export class Doc extends Model {
   }
 
   protected _deleteElement(id: string): void {
+    const node = this.nodeMap.get(id)
     const yNode = this._yChildren.get(id)
-    if (!yNode) {
+    if (!yNode || !node) {
       return
     }
     const parentId = yNode.get('parentId')
@@ -278,7 +295,7 @@ export class Doc extends Model {
       }
     }
     yNode.get('childrenIds').forEach(id => this._deleteElement(id))
-    this._yChildren.delete(id)
+    node.remove()
   }
 
   deleteElement(id: string): void {
@@ -286,10 +303,13 @@ export class Doc extends Model {
   }
 
   moveElement(id: string, toIndex: number): void {
-    const yNode = this._yChildren.get(id)
-    const parentId = yNode?.get('parentId')
-    const childrenIds = parentId
-      ? this._yChildren.get(parentId)?.get('childrenIds')
+    const node = this.nodeMap.get(id)
+    if (!node) {
+      return
+    }
+    const parent = node.parent
+    const childrenIds = parent?.id
+      ? this._yChildren.get(parent.id)?.get('childrenIds')
       : this._yChildrenIds
     if (!childrenIds) {
       return
@@ -297,6 +317,12 @@ export class Doc extends Model {
     const fromIndex = childrenIds.toJSON().indexOf(id)
     childrenIds.delete(fromIndex, 1)
     childrenIds.insert(toIndex, [id])
+    if (parent) {
+      parent.moveChild(node, toIndex)
+    }
+    else {
+      this.root.moveChild(node, toIndex)
+    }
   }
 
   protected _proxyProps(obj: CoreObject, yMap: Y.Map<any>, isMeta = false): void {
@@ -329,8 +355,8 @@ export class Doc extends Model {
 
     obj.setPropertyAccessor(accessor)
 
-    const observeFn = (event: YMapEvent<any>, _transaction: Transaction): void => {
-      if (event.transaction.origin !== this.undoManager) {
+    const observeFn = (event: YMapEvent<any>, transaction: Transaction): void => {
+      if (this._isSelfTransaction(transaction)) {
         return
       }
       this.transact(() => {
@@ -370,18 +396,21 @@ export class Doc extends Model {
       }
     })
 
-    const observeFn = (event: YArrayEvent<any>, _transaction: Transaction): void => {
-      // const children = node.children
+    const observeFn = (event: YArrayEvent<any>, transaction: Transaction): void => {
+      if (this._isSelfTransaction(transaction)) {
+        return
+      }
+      const children = node.children
       let retain = 0
       event.changes.delta.forEach((action) => {
         if (action.retain !== undefined) {
-          retain = action.retain
+          retain += action.retain
         }
-        // if (action.delete) {
-        //   for (let i = retain; i < retain + action.delete; i++) {
-        //     children[i]?.remove()
-        //   }
-        // }
+        if (action.delete) {
+          for (let i = retain; i < retain + action.delete; i++) {
+            children[i]?.remove()
+          }
+        }
         if (action.insert) {
           const ids = Array.isArray(action.insert) ? action.insert : [action.insert]
           ids.forEach((id, index) => {
@@ -399,6 +428,7 @@ export class Doc extends Model {
               }, 0)
             }
           })
+          retain += ids.length
         }
       })
     }

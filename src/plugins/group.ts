@@ -20,8 +20,6 @@ export default definePlugin((editor) => {
     getAabb,
     selectedElements,
     activeElement,
-    setActiveElement,
-    setSelectedElements,
     registerHotkey,
     addElement,
     deleteElement,
@@ -39,11 +37,6 @@ export default definePlugin((editor) => {
     { key: 'group/ungroup', accelerator: 'CmdOrCtrl+g', editable: false },
   ])
 
-  function rmId(el: Record<string, any>): void {
-    delete el.id
-    el.children?.forEach((child: Record<string, any>) => rmId(child))
-  }
-
   function group(): void {
     const elements = selectedElements.value
     if (elements.length === 0) {
@@ -52,21 +45,21 @@ export default definePlugin((editor) => {
     const aabb = getAabb(elements, 'frame')
     const children = elements.map((v) => {
       const cloned = v.toJSON()
-      rmId(cloned)
       cloned.style.left = (cloned.style.left ?? 0) - aabb.left
       cloned.style.top = (cloned.style.top ?? 0) - aabb.top
       return cloned
     })
     doc.value?.transact(() => {
-      setActiveElement(
-        addElement({
-          style: { ...aabb },
-          children,
-          meta: {
-            inPptIs: 'GroupShape',
-          },
-        }),
-      )
+      addElement({
+        style: { ...aabb },
+        children,
+        meta: {
+          inPptIs: 'GroupShape',
+        },
+      }, {
+        active: true,
+        regenId: true,
+      })
       elements.forEach(v => deleteElement(v.id))
     })
   }
@@ -78,15 +71,15 @@ export default definePlugin((editor) => {
     const items = element.children.map((child) => {
       const obb = getObb(child, 'frame')
       const cloned = child.toJSON()
-      rmId(cloned)
       cloned.style.left = obb.left
       cloned.style.top = obb.top
       return cloned
     })
     doc.value?.transact(() => {
-      setSelectedElements(
-        items.map(el => addElement(el)),
-      )
+      addElement(items, {
+        active: true,
+        regenId: true,
+      })
       deleteElement(element.id)
     })
   }
