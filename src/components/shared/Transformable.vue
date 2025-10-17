@@ -116,7 +116,7 @@ const computedHandles = computed<HandleObject[]>(() => {
   const { width = 0, height = 0 } = model.value
   const size = 6
   const sizeHalf = size / 2
-  const size1 = 9
+  const size1 = 8
   const size1Half = size1 / 2
   const size2 = 12
   let handles

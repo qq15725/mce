@@ -66,31 +66,31 @@ const selectedElementBoxes = computed(() => {
 const currentObb = computed({
   get: () => _currentObb.value,
   set: (val: OrientedBoundingBox) => {
+    const zoom = camera.value.zoom
     const oldBox = _currentObb.value
     const offsetBox = {
-      left: (val.left - oldBox.left),
-      top: (val.top - oldBox.top),
-      width: (val.width - oldBox.width),
-      height: (val.height - oldBox.height),
-      rotate: ((val.rotate ?? 0) - (oldBox.rotate ?? 0)),
+      left: Math.ceil((val.left - oldBox.left) / zoom.x),
+      top: Math.ceil((val.top - oldBox.top) / zoom.y),
+      width: Math.ceil((val.width - oldBox.width) / zoom.x),
+      height: Math.ceil((val.height - oldBox.height) / zoom.y),
+      rotate: Math.ceil(((val.rotate ?? 0) - (oldBox.rotate ?? 0))),
     }
     const handle: string = transformable.value?.activeHandle ?? 'move'
     currentElements.value.forEach((element) => {
       const style = element.style
-      const zoom = camera.value.zoom.x
       const box = {
-        left: style.left + offsetBox.left / zoom,
-        top: style.top + offsetBox.top / zoom,
-        width: style.width + offsetBox.width / zoom,
-        height: style.height + offsetBox.height / zoom,
+        left: style.left + offsetBox.left,
+        top: style.top + offsetBox.top,
+        width: style.width + offsetBox.width,
+        height: style.height + offsetBox.height,
         rotate: style.rotate + offsetBox.rotate,
       }
       if (!handle.startsWith('rotate')) {
         if (handle.startsWith('resize')) {
           resizeElement(
             element,
-            box.width,
-            box.height,
+            box.width / element.style.width,
+            box.height / element.style.height,
             isFrame(element)
               ? undefined
               : handle.split('-').length > 2

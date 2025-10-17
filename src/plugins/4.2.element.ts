@@ -160,10 +160,15 @@ export default definePlugin((editor) => {
             const aspectRatio = el.style.width / el.style.height
             const newWidth = aspectRatio > 1 ? halfWidth : halfHeight * aspectRatio
             const newHeight = aspectRatio > 1 ? halfWidth / aspectRatio : halfHeight
-            resizeElement(el, newWidth, newHeight, {
-              deep: true,
-              textFontSizeToFit: true,
-            })
+            resizeElement(
+              el,
+              newWidth / el.style.width,
+              newHeight / el.style.height,
+              {
+                deep: true,
+                textFontSizeToFit: true,
+              },
+            )
           }
           if (positionToFit) {
             el.style.left = (width - el.style.width) / 2
@@ -229,28 +234,25 @@ export default definePlugin((editor) => {
 
   function resizeElement(
     element: Element2D,
-    width: number,
-    height: number,
+    scaleX: number,
+    scaleY: number,
     options: Mce.ResizeElementOptions = {},
   ): void {
-    const scale = {
-      x: width / (element.style.width ?? 0),
-      y: height / (element.style.height ?? 0),
-    }
+    scaleX = Math.abs(scaleX)
+    scaleY = Math.abs(scaleY)
 
     function handle(element: Element2D) {
       const style = element.style
-      style.left *= scale.x
-      style.top *= scale.y
-      style.width *= scale.x
-      style.height *= scale.y
+      style.left *= scaleX
+      style.top *= scaleY
+      style.width *= scaleX
+      style.height *= scaleY
       element?.requestRedraw?.() // TODO
     }
 
     handle(element)
 
     function deepHandle(element: Element2D): void {
-      handle(element)
       element.children?.forEach((child) => {
         deepHandle(child as any)
       })

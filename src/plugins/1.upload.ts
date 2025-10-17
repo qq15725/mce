@@ -7,21 +7,19 @@ declare global {
     interface Editor {
       upload: Upload
     }
+
+    interface Options {
+      upload: Upload
+    }
   }
 }
 
-export default definePlugin((editor) => {
-  // const {
-  //   doc,
-  // } = editor
-
+export default definePlugin((editor, options) => {
   const upload: Mce.Upload = async (file) => {
-    // const indexeddb = doc.value?.indexeddb
-    // if (indexeddb) {
-    //   const id = idGenerator()
-    //   await indexeddb.set(`file:${id}`, file)
-    //   return `/~files/${indexeddb.name}/${id}`
-    // }
+    if (options.upload) {
+      return await options.upload(file)
+    }
+
     return URL.createObjectURL(file)
   }
 

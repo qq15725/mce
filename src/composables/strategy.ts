@@ -39,12 +39,15 @@ export const makeMceStrategyProps = propsFactory({
 }, 'makeMceStrategyProps')
 
 export const defaultResizeStrategy: ResizeStrategy = (element) => {
-  if (element.meta?.inPptIs) {
-    switch (element.meta.inPptIs) {
-      case 'Picture':
-        return 'diagonalAspectRatio'
-    }
+  switch (element.meta?.inPptIs) {
+    case 'Picture':
+      return 'diagonalAspectRatio'
   }
+
+  if (element.foreground.canDraw()) {
+    return 'diagonalAspectRatio'
+  }
+
   return 'free'
 }
 
