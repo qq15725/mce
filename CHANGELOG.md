@@ -1,3 +1,13 @@
+## [0.0.29](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.28...v0.0.29) (2025-10-17)
+
+
+### Bug Fixes
+
+* round px ([8ddf546](https://github.com/qq15725/modern-canvas-editor/commit/8ddf5467473cc3a5537cf39cd4c6f923ad94ac64))
+* round px ([4104f75](https://github.com/qq15725/modern-canvas-editor/commit/4104f7524aca436d99f1b29566bbcc4ad51bbed5))
+
+
+
 ## [0.0.28](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.27...v0.0.28) (2025-10-17)
 
 
