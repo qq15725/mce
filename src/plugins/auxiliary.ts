@@ -138,7 +138,7 @@ export default definePlugin((editor) => {
 
   const boxes = computed(() => {
     const elements = [
-      ...(activeElementParent.value?.children ?? root.value?.getChildren<Element2D>() ?? []),
+      ...(activeElementParent.value?.children ?? root.value?.children ?? []),
     ]
     if (activeFrame.value && activeElementParent.value?.equal(activeFrame.value)) {
       elements.push(activeElementParent.value)
