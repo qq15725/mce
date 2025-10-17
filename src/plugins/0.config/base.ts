@@ -17,6 +17,8 @@ declare global {
       theme: Theme
       language: Language
       viewMode: ViewMode
+      checkerboard: boolean
+      pixelGrid: boolean
       camera: boolean
       ruler: boolean
       scrollbar: boolean
@@ -42,6 +44,8 @@ export default definePlugin((editor) => {
   registerConfig('language', 'en')
   // Editor
   registerConfig('viewMode', 'edgeless')
+  registerConfig('checkerboard', false)
+  registerConfig('pixelGrid', false)
   registerConfig('camera', false)
   registerConfig('ruler', false)
   registerConfig('scrollbar', false)
@@ -57,6 +61,7 @@ export default definePlugin((editor) => {
   return (editor, options) => {
     const {
       camera,
+      drawboardEffect,
     } = editor
 
     Object.keys(config.value).forEach((key) => {
@@ -70,6 +75,18 @@ export default definePlugin((editor) => {
       (enable) => {
         camera.value.inputMode = enable ? 'inherit' : 'disabled'
       },
+      { immediate: true },
+    )
+
+    watch(
+      () => config.value.checkerboard,
+      enable => drawboardEffect.value.checkerboard = enable,
+      { immediate: true },
+    )
+
+    watch(
+      () => config.value.pixelGrid,
+      enable => drawboardEffect.value.pixelGrid = enable,
       { immediate: true },
     )
   }

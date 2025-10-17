@@ -2,7 +2,7 @@ import type { Cursor, Node, Vector2Data } from 'modern-canvas'
 import type { ComputedRef, Ref } from 'vue'
 import type { Doc, Workspace } from '../models'
 import type { AxisAlignedBoundingBox } from '../types'
-import { Camera2D, Engine } from 'modern-canvas'
+import { Camera2D, DrawboardEffect, Engine } from 'modern-canvas'
 import { Fonts } from 'modern-font'
 import { computed, markRaw, ref } from 'vue'
 import { definePlugin } from '../editor'
@@ -13,6 +13,7 @@ declare global {
       fonts: Fonts
       renderEngine: Ref<Engine>
       camera: Ref<Camera2D>
+      drawboardEffect: Ref<DrawboardEffect>
       setCursor: (mode: Cursor | undefined) => void
       drawboardDom: Ref<HTMLElement | undefined>
       drawboardAabb: Ref<AxisAlignedBoundingBox>
@@ -42,16 +43,14 @@ export default definePlugin((editor) => {
   const _renderEngine = new Engine({
     pixelRatio: 2,
     fonts,
-    msaa: true,
-    antialias: true,
     autoStart: true,
   })
   markRaw(_renderEngine.renderer)
-  const renderEngine = ref(_renderEngine)
   const camera = ref(new Camera2D({ internalMode: 'front' }))
-  camera.value.minZoom.set(0.02, 0.02)
-  camera.value.maxZoom.set(256, 256)
+  const drawboardEffect = ref(new DrawboardEffect({ internalMode: 'back', effectMode: 'before' }))
   _renderEngine.root.append(camera.value as any)
+  _renderEngine.root.append(drawboardEffect.value as any)
+  const renderEngine = ref(_renderEngine)
 
   const drawboardDom = ref<HTMLElement>()
   const drawboardAabb = ref({ left: 0, top: 0, width: 0, height: 0 })
@@ -90,6 +89,7 @@ export default definePlugin((editor) => {
     fonts,
     renderEngine,
     camera,
+    drawboardEffect,
     root,
     drawboardDom,
     drawboardAabb,

@@ -2,7 +2,7 @@
 import type { Cursor, PointerInputEvent } from 'modern-canvas'
 import type { OrientedBoundingBox } from '../types'
 import { useResizeObserver } from '@vueuse/core'
-import { easeInOut, Element2D } from 'modern-canvas'
+import { Element2D } from 'modern-canvas'
 import {
   computed,
   nextTick,
@@ -364,20 +364,6 @@ function onPointerover(): void {
   setCursor(undefined)
 }
 
-const drawboardStyle = computed(() => {
-  if (config.value.viewMode === 'edgeless') {
-    const { position, zoom } = camera.value
-    const w = 20 * zoom.x
-    const h = 20 * zoom.y
-    return {
-      '--mce-grid-opacity': easeInOut(Math.min(1, zoom.x, zoom.y)) * 0.4,
-      'backgroundPosition': `${w / 2 + position.x}px ${h / 2 + position.y}px`,
-      'backgroundSize': `${w}px ${h}px`,
-    }
-  }
-  return {}
-})
-
 function onScroll() {
   if (drawboardDom.value) {
     if (drawboardDom.value.scrollLeft) {
@@ -394,7 +380,6 @@ function onScroll() {
   <div
     class="mce-drawboard"
     :class="`mce-drawboard--${config.viewMode}`"
-    :style="drawboardStyle"
   >
     <div
       ref="drawboardDom"
@@ -477,12 +462,6 @@ function onScroll() {
 
   * {
     box-sizing: border-box;
-  }
-
-  &--edgeless {
-    --mce-grid-opacity: 0.5;
-    background-image: radial-gradient(rgba(var(--mce-theme-on-surface), var(--mce-grid-opacity)) 1px, rgba(var(--mce-theme-surface), var(--mce-grid-opacity)) 1px);
-    background-repeat: repeat;
   }
 
   &__overlay-container {

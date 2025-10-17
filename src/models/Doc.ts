@@ -371,17 +371,17 @@ export class Doc extends Model {
     })
 
     const observeFn = (event: YArrayEvent<any>, _transaction: Transaction): void => {
-      const children = node.children
+      // const children = node.children
       let retain = 0
       event.changes.delta.forEach((action) => {
         if (action.retain !== undefined) {
           retain = action.retain
         }
-        if (action.delete) {
-          for (let i = retain; i < retain + action.delete; i++) {
-            children[i]?.remove()
-          }
-        }
+        // if (action.delete) {
+        //   for (let i = retain; i < retain + action.delete; i++) {
+        //     children[i]?.remove()
+        //   }
+        // }
         if (action.insert) {
           const ids = Array.isArray(action.insert) ? action.insert : [action.insert]
           ids.forEach((id, index) => {

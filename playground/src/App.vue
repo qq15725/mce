@@ -7,6 +7,8 @@ const editor = new Editor({
   theme: 'system',
   language: 'en',
   viewMode: 'edgeless',
+  checkerboard: true,
+  pixelGrid: true,
   camera: true,
   ruler: true,
   scrollbar: true,
@@ -21,45 +23,38 @@ const editor = new Editor({
   defaultFont: { family: 'SourceHanSansCN-Normal', src: '/SourceHanSansCN-Normal.woff' },
   // doc: 'test',
   doc: {
-    id: 'test',
-    children: [
-      {
-        style: { left: 10, top: 10, width: 500, height: 500 },
-        children: [
-          { foreground: '/example.png', style: { width: 500, height: 500 } },
-        ],
-        meta: {
-          inEditorIs: 'Frame',
-        },
-      },
-      { foreground: '/example.jpg', style: { left: 520, top: 10, width: 500, height: 500 } },
-      { foreground: '/example.gif', style: { left: 1030, top: 10, width: 500, height: 500 } },
-      { text: 'test', style: { rotate: 40, left: 100, top: 500, width: 60, height: 40, fontSize: 20, color: '#FF00FF' } },
-      {
-        style: { left: 200, top: 500, width: 100, height: 100, fontSize: 22 },
-        text: [
-          {
-            letterSpacing: 3,
-            fragments: [
-              { content: 'He', color: '#00FF00', fontSize: 12 },
-              { content: 'llo', color: '#000000' },
-            ],
-          },
-          { content: ', ', color: '#FF0000' },
-          { content: 'World!', color: '#0000FF' },
-        ],
-      },
-    ],
+    id: '432c5427-3747-43a6-9922-2fa12074923a',
+    children: [{
+      id: 't3dr53jx7e',
+      style: { left: 0, top: 100, width: 936, height: 1664 },
+      foreground: 'https://inspo.cdn.bcebos.com/image_agent/user/9/2f06be450f713690d7c222e327fb77b0.jpg',
+    }, {
+      id: 't3drl24vaw',
+      style: { left: 1036, top: 100, width: 1024, height: 1024 },
+      foreground: 'https://inspo.cdn.bcebos.com/image_agent/user/9/4f201f49ccc7b70d37d8be083b358667.jpg',
+    }, {
+      id: 't3drvauugc',
+      style: { left: 2160, top: 100, width: 2048, height: 2048 },
+      foreground: 'https://inspo.cdn.bcebos.com/image_agent/user/9/b043ffc3ebf75bdbda3f1d966b9480fd.jpg',
+    }, {
+      id: 't3dsj7iso1',
+      style: { left: 0, top: 2248, width: 2048, height: 2048 },
+      foreground: 'https://inspo.cdn.bcebos.com/image_agent/user/9/9c4fc5bbb918debc712a75a1d6e5cf78.jpg',
+    }, {
+      id: 't441vte2es',
+      style: { left: 2148, top: 2248, width: 2048, height: 2048 },
+      foreground: 'https://bgseg.oss-cn-shanghai.aliyuncs.com/image_agent/3.0/1760426643_2b3b763a.jpg',
+    }],
   },
 })
 
-editor.on('setDoc', () => {
-  editor.load('http://localhost:5173/example.jpg').then((el) => {
-    editor.addElement(el, {
-      position: { x: 500, y: 100 },
-    })
-  })
-})
+// editor.on('setDoc', () => {
+//   editor.load('http://localhost:5173/example.jpg').then((el) => {
+//     editor.addElement(el, {
+//       position: { x: 500, y: 100 },
+//     })
+//   })
+// })
 
 window.editor = editor
 window.doc = editor.doc

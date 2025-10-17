@@ -35,6 +35,8 @@ npm i modern-canvas-editor
     theme: 'system',
     language: 'en',
     viewMode: 'edgeless',
+    checkerboard: true,
+    pixelGrid: true,
     camera: true,
     ruler: true,
     scrollbar: true,

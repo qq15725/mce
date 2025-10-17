@@ -27,6 +27,7 @@ export default definePlugin((editor) => {
     addElement,
     isFrame,
     setSelectedElements,
+    doc,
   } = editor
 
   registerCommand([
@@ -53,20 +54,22 @@ export default definePlugin((editor) => {
     const children = elements.map((v) => {
       const cloned = v.toJSON()
       rmId(cloned)
-      cloned.style.left -= aabb.left
-      cloned.style.top -= aabb.top
+      cloned.style.left = (cloned.style.left ?? 0) - aabb.left
+      cloned.style.top = (cloned.style.top ?? 0) - aabb.top
       return cloned
     })
-    setActiveElement(
-      addElement({
-        style: { ...aabb },
-        children,
-        meta: {
-          inEditorIs: 'Frame',
-        },
-      }),
-    )
-    elements.forEach(v => deleteElement(v.id))
+    doc.value?.transact(() => {
+      setActiveElement(
+        addElement({
+          style: { ...aabb },
+          children,
+          meta: {
+            inEditorIs: 'Frame',
+          },
+        }),
+      )
+      elements.forEach(v => deleteElement(v.id))
+    })
   }
 
   function unframe() {
@@ -81,8 +84,10 @@ export default definePlugin((editor) => {
       cloned.style.top = obb.top
       return cloned
     })
-    deleteElement(element.id)
-    setSelectedElements(items.map(el => addElement(el)))
+    doc.value?.transact(() => {
+      deleteElement(element.id)
+      setSelectedElements(items.map(el => addElement(el)))
+    })
   }
 
   function frameOrUnframe() {
