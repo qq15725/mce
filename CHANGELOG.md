@@ -1,3 +1,19 @@
+## [0.0.27](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.26...v0.0.27) (2025-10-17)
+
+
+### Bug Fixes
+
+* auxiliary ([97af016](https://github.com/qq15725/modern-canvas-editor/commit/97af0160396bb72df4c6d9ebb8e29a2a62720861))
+* Ruler ([0526bb6](https://github.com/qq15725/modern-canvas-editor/commit/0526bb645a5e832720c5954b2cdf920d03817df6))
+
+
+### Features
+
+* style ([75c8ab3](https://github.com/qq15725/modern-canvas-editor/commit/75c8ab3ad88b4a356a2639afff72709db97bf595))
+* supports checkerboard / pixelGrid ([b5c04e8](https://github.com/qq15725/modern-canvas-editor/commit/b5c04e80c4b78eb96b8cc5980b0f500c0a394c3e))
+
+
+
 ## [0.0.26](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.25...v0.0.26) (2025-10-15)
 
 
