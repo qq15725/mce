@@ -1,3 +1,20 @@
+# [0.1.0](https://github.com/qq15725/mce/compare/v0.0.29...v0.1.0) (2025-10-20)
+
+
+### Bug Fixes
+
+* bug ([9ad04ed](https://github.com/qq15725/mce/commit/9ad04ed38a48478f0cbbdb2bc82324d92f29f4bf))
+
+
+### Features
+
+* remove activeElement / selectedElements / currentElements, add selection ([84b3c16](https://github.com/qq15725/mce/commit/84b3c16f865a45c21982d5544026c4c6e60bd12f))
+* rename pkg ([255cab1](https://github.com/qq15725/mce/commit/255cab11fab1f4e65ec0b17ec8922abcd81062ed))
+* up deps ([25193c0](https://github.com/qq15725/mce/commit/25193c05f0b126432e6aa2a3ebdef2d4054e94d5))
+* up deps ([231849a](https://github.com/qq15725/mce/commit/231849a4a594d539d0e3dec842041cab5d7183d7))
+
+
+
 ## [0.0.29](https://github.com/qq15725/modern-canvas-editor/compare/v0.0.28...v0.0.29) (2025-10-17)
 
 
