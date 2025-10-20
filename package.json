@@ -1,147 +1,34 @@
 {
-  "name": "mce",
+  "name": "mce-monorepo",
   "type": "module",
+  "private": true,
   "version": "0.1.0",
   "packageManager": "pnpm@10.18.1",
-  "description": "Modern canvas editor, based modern-canvas and Vue.js. only the ESM.",
-  "author": "wxm",
-  "license": "MIT",
-  "homepage": "https://github.com/qq15725/mce",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/qq15725/mce.git"
-  },
-  "bugs": {
-    "url": "https://github.com/qq15725/mce/issues"
-  },
-  "keywords": [
-    "vue",
-    "webgl",
-    "modern",
-    "infinite",
-    "canvas",
-    "editor",
-    "mce",
-    "typescript"
-  ],
-  "sideEffects": true,
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.js"
-    },
-    "./styles": {
-      "default": "./dist/index.css"
-    },
-    "./*.mjs": "./*.js",
-    "./*": "./*"
-  },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "browser": "./dist/index.js",
-  "typings": "dist/index.d.ts",
-  "types": "dist/index.d.ts",
-  "styles": "dist/index.css",
-  "typesVersions": {
-    "*": {
-      "*": [
-        "*",
-        "dist/*",
-        "dist/*.d.ts"
-      ]
-    }
-  },
-  "files": [
-    "dist"
-  ],
   "scripts": {
-    "build:code": "vite build",
-    "build:tsc": "NODE_ENV=production vue-tsc --emitDeclarationOnly --project tsconfig.build.json",
-    "build:plugins": "jiti ./scripts/plugins.ts",
-    "build:dts": "jiti ./scripts/dts.ts",
-    "build": "pnpm build:code && pnpm build:tsc && pnpm build:dts",
-    "dev": "MODE=local vite playground",
-    "lint": "eslint src",
+    "build": "pnpm -F mce build",
+    "build:plugins": "pnpm -F mce build:plugins",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint",
+    "cli": "pnpm -F @mce/cli cli",
+    "stub": "pnpm -F @mce/cli stub",
+    "dev": "pnpm -F playground dev",
+    "publish": "pnpm -r publish --no-git-checks --access public",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
-    "release": "bumpp package.json --commit \"release: v%s\" --push --all --tag",
-    "test": "vitest",
-    "typecheck": "vue-tsc --noEmit",
-    "prepare": "simple-git-hooks"
-  },
-  "peerDependencies": {
-    "lottie-web": "^5",
-    "modern-gif": "^2",
-    "modern-mp4": "^0",
-    "modern-openxml": "^1",
-    "modern-pdf": "^1",
-    "typescript": ">=4.7",
-    "vue": "^3.5.0",
-    "yoga-layout": "^3"
-  },
-  "peerDependenciesMeta": {
-    "lottie-web": {
-      "optional": true
-    },
-    "modern-gif": {
-      "optional": true
-    },
-    "modern-mp4": {
-      "optional": true
-    },
-    "modern-openxml": {
-      "optional": true
-    },
-    "modern-pdf": {
-      "optional": true
-    },
-    "typescript": {
-      "optional": true
-    },
-    "yoga-layout": {
-      "optional": true
-    }
-  },
-  "dependencies": {
-    "@floating-ui/vue": "^1.1.9",
-    "@vueuse/components": "^13.9.0",
-    "@vueuse/core": "^13.9.0",
-    "diff": "^8.0.2",
-    "file-saver": "^2.0.5",
-    "lodash-es": "^4.17.21",
-    "modern-canvas": "^0.12.4",
-    "modern-font": "^0.4.4",
-    "modern-idoc": "^0.10.1",
-    "modern-text": "^1.9.1",
-    "yjs": "^13.6.27"
+    "release": "bumpp package.json packages/*/package.json --commit \"release: v%s\" --push --all --tag"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^6.0.0",
-    "@types/file-saver": "^2.0.7",
-    "@types/lodash-es": "^4.17.12",
     "@types/node": "^24.8.1",
-    "@vitejs/plugin-vue": "^6.0.1",
     "bumpp": "^10.3.1",
     "conventional-changelog-cli": "^5.0.0",
     "eslint": "^9.38.0",
-    "jiti": "^2.6.1",
     "lint-staged": "^16.2.4",
-    "modern-gif": "^2.0.4",
-    "modern-mp4": "^0.2.0",
-    "modern-openxml": "^1.9.0",
-    "modern-pdf": "^1.3.2",
-    "sass-embedded": "^1.93.2",
     "simple-git-hooks": "^2.13.1",
     "typescript": "^5.9.3",
     "vite": "^7.1.11",
     "vitest": "^3.2.4",
+    "mce": "workspace:*",
     "vue": "^3.5.22",
     "vue-tsc": "^3.1.1"
-  },
-  "simple-git-hooks": {
-    "pre-commit": "pnpm lint-staged"
-  },
-  "lint-staged": {
-    "*": ""
   }
 }
