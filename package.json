@@ -1,23 +1,24 @@
 {
-  "name": "modern-canvas-editor",
+  "name": "mce",
   "type": "module",
   "version": "0.0.29",
   "packageManager": "pnpm@10.18.1",
-  "description": "Vue 2D WebGL editor, based modern-canvas. only the ESM.",
+  "description": "Modern canvas editor, based modern-canvas and Vue.js. only the ESM.",
   "author": "wxm",
   "license": "MIT",
-  "homepage": "https://github.com/qq15725/modern-canvas-editor",
+  "homepage": "https://github.com/qq15725/mce",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/qq15725/modern-canvas-editor.git"
+    "url": "git+https://github.com/qq15725/mce.git"
   },
   "bugs": {
-    "url": "https://github.com/qq15725/modern-canvas-editor/issues"
+    "url": "https://github.com/qq15725/mce/issues"
   },
   "keywords": [
     "vue",
     "webgl",
     "modern",
+    "infinite",
     "canvas",
     "editor",
     "mce",

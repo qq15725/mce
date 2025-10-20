@@ -1,35 +1,37 @@
-<h1 align="center">modern-canvas-editor</h1>
+<h1 align="center">mce</h1>
 
 <p align="center">
-  <a href="https://unpkg.com/modern-canvas-editor">
-    <img src="https://img.shields.io/bundlephobia/minzip/modern-canvas-editor" alt="Minzip">
+  <a href="https://unpkg.com/mce">
+    <img src="https://img.shields.io/bundlephobia/minzip/mce" alt="Minzip">
   </a>
-  <a href="https://www.npmjs.com/package/modern-canvas-editor">
-    <img src="https://img.shields.io/npm/v/modern-canvas-editor.svg" alt="Version">
+  <a href="https://www.npmjs.com/package/mce">
+    <img src="https://img.shields.io/npm/v/mce.svg" alt="Version">
   </a>
-  <a href="https://www.npmjs.com/package/modern-canvas-editor">
-    <img src="https://img.shields.io/npm/dm/modern-canvas-editor" alt="Downloads">
+  <a href="https://www.npmjs.com/package/mce">
+    <img src="https://img.shields.io/npm/dm/mce" alt="Downloads">
   </a>
-  <a href="https://github.com/qq15725/modern-canvas-editor/issues">
-    <img src="https://img.shields.io/github/issues/qq15725/modern-canvas-editor" alt="Issues">
+  <a href="https://github.com/qq15725/mce/issues">
+    <img src="https://img.shields.io/github/issues/qq15725/mce" alt="Issues">
   </a>
-  <a href="https://github.com/qq15725/modern-canvas-editor/blob/main/LICENSE">
-    <img src="https://img.shields.io/npm/l/modern-canvas-editor.svg" alt="License">
+  <a href="https://github.com/qq15725/mce/blob/main/LICENSE">
+    <img src="https://img.shields.io/npm/l/mce.svg" alt="License">
   </a>
 </p>
+
+<p align="center">Modern canvas editor, based modern-canvas and Vue.js. only the ESM.</p>
 
 ## 📦 Install
 
 ```shell
-npm i modern-canvas-editor
+npm i mce
 ```
 
 ## 🦄 Usage
 
 ```vue
 <script setup lang="ts">
-  import { Drawboard, Editor } from 'modern-canvas-editor'
-  import 'modern-canvas-editor/styles'
+  import { Drawboard, Editor } from 'mce'
+  import 'mce/styles'
 
   const editor = new Editor({
     theme: 'system',
@@ -108,7 +110,7 @@ slot sub component
 
 ```vue
 <script setup lang="ts">
-  import { useEditor } from 'modern-canvas-editor'
+  import { useEditor } from 'mce'
   const { activeElement } = useEditor()
 </script>
 
