@@ -109,7 +109,7 @@
     "diff": "^8.0.2",
     "file-saver": "^2.0.5",
     "lodash-es": "^4.17.21",
-    "modern-canvas": "^0.12.0",
+    "modern-canvas": "^0.12.4",
     "modern-font": "^0.4.4",
     "modern-idoc": "^0.10.1",
     "modern-text": "^1.9.1",

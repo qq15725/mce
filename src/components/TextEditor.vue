@@ -59,7 +59,7 @@ async function startTyping(e?: PointerEvent): Promise<boolean> {
   if (!element.text.isValid()) {
     element.text.setContent(' ')
   }
-  element.text.updateMeasure()
+  element.text.update()
   state.value = 'typing'
   const editor = textEditor.value!
   editor.set(element.text.base)
@@ -83,17 +83,23 @@ defineExpose({
       ...mainStyleWithScale,
     }"
   >
-    <text-editor
-      ref="textEditor"
-      class="mce-text-editor__editor"
+    <div
+      class="mce-text-editor__wrapper"
       :style="{
         ...textEditorStyle,
-        '--color': 'var(--mce-theme-primary)',
       }"
-      data-pointerdown_to_drawboard
-      @selected="onUpdateTextSelection"
-      @update="onUpdate"
-    />
+    >
+      <text-editor
+        ref="textEditor"
+        class="mce-text-editor__editor"
+        :style="{
+          '--color': 'var(--mce-theme-primary)',
+        }"
+        data-pointerdown_to_drawboard
+        @selected="onUpdateTextSelection"
+        @update="onUpdate"
+      />
+    </div>
   </div>
 </template>
 
@@ -105,6 +111,10 @@ defineExpose({
   left: 0;
   top: 0;
   overflow: visible;
+
+  &__wrapper {
+    position: absolute;
+  }
 
   &__editor {
     pointer-events: auto !important;

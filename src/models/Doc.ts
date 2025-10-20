@@ -342,7 +342,7 @@ export class Doc extends Model {
       yMap.forEach((_value, key) => {
         oldValues[key] = obj.getProperty(key)
       })
-      ;(obj as any)._propertyAccessor = accessor
+      ;(obj as any)._propertyAccessor = markRaw(accessor)
       yMap.forEach((_value, key) => {
         const newValue = obj.getProperty(key)
         const oldValue = oldValues[key]
@@ -382,9 +382,9 @@ export class Doc extends Model {
         })
       }, false)
     }
-    ;(obj as any)._yMap = yMap
+    ;(obj as any)._yMap = markRaw(yMap)
     ;(obj as any)._yMapObserveFn && yMap.unobserve((obj as any)._yMapObserveFn)
-    ;(obj as any)._yMapObserveFn = observeFn
+    ;(obj as any)._yMapObserveFn = markRaw(observeFn)
     yMap.observe(observeFn)
   }
 
@@ -432,9 +432,9 @@ export class Doc extends Model {
         }
       })
     }
-    ;(node as any)._childrenIds = childrenIds
+    ;(node as any)._childrenIds = markRaw(childrenIds)
     ;(node as any)._childrenIdsObserveFn && childrenIds.unobserve((node as any)._childrenIdsObserveFn)
-    ;(node as any)._childrenIdsObserveFn = observeFn
+    ;(node as any)._childrenIdsObserveFn = markRaw(observeFn)
     childrenIds.observe(observeFn)
   }
 
@@ -463,6 +463,8 @@ export class Doc extends Model {
         }
       })
       ;(node as any)._text = markRaw((node as any)._text)
+      node.text.update()
+      node.requestRedraw()
     }
 
     this._proxyChildren(node, yEle.get('childrenIds'))
