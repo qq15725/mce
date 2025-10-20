@@ -35,13 +35,7 @@ export default definePlugin((editor) => {
   // }
 
   function getAncestor(element?: Element2D): Element2D | undefined {
-    let ancestor: Element2D | undefined
-    element?.forEachAncestor((_ancestor) => {
-      if (_ancestor instanceof Element2D) {
-        ancestor = _ancestor
-      }
-    })
-    return ancestor
+    return element?.findAncestor<Element2D>(node => node instanceof Element2D ? node : undefined)
   }
 
   const hoverElement = ref<Element2D>()

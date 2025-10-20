@@ -1,7 +1,7 @@
 import { Element2D } from 'modern-canvas'
 import { measureText } from 'modern-text'
+import { TextEditor } from 'modern-text/web-components'
 import { definePlugin } from '../editor'
-import { TextEditor } from '../web-components/TextEditor'
 
 declare global {
   namespace Mce {
@@ -70,7 +70,7 @@ export default definePlugin((editor) => {
 
       _scaleStyle(element.style)
 
-      if (element.text?.canDraw?.() && Array.isArray(element.text?.content)) {
+      if (element.text?.isValid?.() && Array.isArray(element.text?.content)) {
         element.text.content.forEach((p) => {
           _scaleStyle(p)
           p.fragments.forEach((f) => {
@@ -83,10 +83,11 @@ export default definePlugin((editor) => {
     }
 
     _handle(element)
-    element.forEachDescendant((descendant) => {
+    element.findOne((descendant) => {
       if (descendant instanceof Element2D) {
         _handle(descendant)
       }
+      return false
     })
   }
 
@@ -101,7 +102,7 @@ export default definePlugin((editor) => {
     }
 
     function _handle(element: Element2D): void {
-      if (!element.text?.canDraw?.() || typeof element.text?.content !== 'object') {
+      if (!element.text?.isValid?.() || typeof element.text?.content !== 'object') {
         return
       }
 
@@ -132,10 +133,11 @@ export default definePlugin((editor) => {
     }
 
     _handle(element)
-    element.forEachDescendant((descendant) => {
+    element.findOne((descendant) => {
       if (descendant instanceof Element2D) {
         _handle(descendant)
       }
+      return false
     })
   }
 

@@ -48,10 +48,11 @@ const parentObbs = computed(() => {
     return []
   }
   const obbs: OrientedBoundingBox[] = []
-  selection.value[0]?.forEachAncestor((ancestor) => {
+  selection.value[0]?.findAncestor((ancestor) => {
     if (ancestor instanceof Element2D) {
       obbs.push(getObbInDrawboard(ancestor as Element2D))
     }
+    return undefined
   })
   return obbs
 })
@@ -106,13 +107,14 @@ const currentObb = computed({
       }
       Object.assign(style, box)
       element.updateGlobalTransform()
-      element.forEachAncestor((ancestor) => {
+      element.findAncestor((ancestor) => {
         if (
           ancestor instanceof Element2D
           && !isFrame(ancestor)
         ) {
           obbToFit(ancestor)
         }
+        return undefined
       })
     })
   },

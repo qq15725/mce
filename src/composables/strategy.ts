@@ -44,7 +44,7 @@ export const defaultResizeStrategy: ResizeStrategy = (element) => {
       return 'diagonalAspectRatio'
   }
 
-  if (element.foreground.canDraw()) {
+  if (element.foreground.isValid()) {
     return 'diagonalAspectRatio'
   }
 
@@ -55,7 +55,7 @@ export const defaultActiveStrategy: ActiveStrategy = (context) => {
   const { element, oldElement, isExcluded } = context
   if (element && !isExcluded(element)) {
     if (element.equal(oldElement)) {
-      if (element.text.canDraw()) {
+      if (element.text.isValid()) {
         return {
           element,
           state: 'typing' as const,

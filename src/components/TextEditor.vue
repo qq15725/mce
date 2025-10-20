@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import type { TextEditor as _TextEditor } from 'modern-text/web-components'
 import { computed, nextTick, onBeforeMount, onBeforeUnmount, ref } from 'vue'
 import { useEditor } from '../composables/editor'
 import { boundingBoxToStyle } from '../utils/box'
@@ -14,7 +15,7 @@ const {
   camera,
 } = useEditor()
 
-const textEditor = ref<any>()
+const textEditor = ref<_TextEditor>()
 
 const mainStyleWithScale = computed(() => {
   const { zoom, position } = camera.value
@@ -55,15 +56,15 @@ async function startTyping(e?: PointerEvent): Promise<boolean> {
   if (!element) {
     return false
   }
-  if (!element.text.canDraw()) {
+  if (!element.text.isValid()) {
     element.text.setContent(' ')
   }
   element.text.updateMeasure()
   state.value = 'typing'
-  const editor = textEditor.value as any
-  editor.text = element.text.base
+  const editor = textEditor.value!
+  editor.set(element.text.base)
   await nextTick()
-  return editor.start(e) as boolean
+  return editor.pointerdown(e)
 }
 
 onBeforeMount(() => registerCommand('startTyping', startTyping))
