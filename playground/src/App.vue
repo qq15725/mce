@@ -1,6 +1,6 @@
 <script setup lang="ts">
-// import { Drawboard, Editor } from 'modern-canvas-editor'
-// import 'modern-canvas-editor/styles'
+// import { Drawboard, Editor } from 'mce'
+// import 'mce/styles'
 import { Drawboard, Editor } from '../../src'
 
 const editor = new Editor({

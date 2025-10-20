@@ -21,8 +21,8 @@ export default defineConfig(() => {
       resolve: {
         alias: {
           '@': fileURLToPath(new URL('./src', import.meta.url)),
-          'modern-canvas-editor/styles': fileURLToPath(new URL('../src/index.ts', import.meta.url)),
-          'modern-canvas-editor': fileURLToPath(new URL('../src/index.ts', import.meta.url)),
+          'mce/styles': fileURLToPath(new URL('../src/index.ts', import.meta.url)),
+          'mce': fileURLToPath(new URL('../src/index.ts', import.meta.url)),
         },
       },
     }
