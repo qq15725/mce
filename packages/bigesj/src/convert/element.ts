@@ -1,32 +1,33 @@
 import type { NormalizedElement } from 'modern-idoc'
 import { idGenerator } from 'modern-idoc'
 import { parseAnimations } from './animation'
+import { convertTextContent, convertTextEffects, convertTextStyle } from './text'
 
 const percentageToPx = (per: string) => (Number.parseFloat(per) || 0) / 100
 
 export async function convertElement(
-  bigeElement: Record<string, any>,
+  el: Record<string, any>,
   parent: Record<string, any> | undefined,
   context?: {
     endTime: number
   },
 ): Promise<NormalizedElement> {
-  const style = bigeElement.style ?? bigeElement
+  const style = el.style ?? el
 
   if (style.borderRadius) {
     style.borderRadius = (style.borderRadius * 0.01) * Math.max(style.height, style.width)
   }
 
-  if (parent && bigeElement.groupStyle) {
-    style.width = parent.style.width * percentageToPx(bigeElement.groupStyle.width)
-    style.height = parent.style.height * percentageToPx(bigeElement.groupStyle.height)
-    style.left = parent.style.width * percentageToPx(bigeElement.groupStyle.left)
-    style.top = parent.style.height * percentageToPx(bigeElement.groupStyle.top)
+  if (parent && el.groupStyle) {
+    style.width = parent.style.width * percentageToPx(el.groupStyle.width)
+    style.height = parent.style.height * percentageToPx(el.groupStyle.height)
+    style.left = parent.style.width * percentageToPx(el.groupStyle.left)
+    style.top = parent.style.height * percentageToPx(el.groupStyle.top)
   }
 
   const element: NormalizedElement = {
     id: idGenerator(),
-    name: bigeElement.name ?? bigeElement.title ?? bigeElement.id,
+    name: el.name ?? el.title ?? el.id,
     style, // 过滤掉部分属性
     meta: {
       inPptIs: 'Shape',
@@ -35,8 +36,8 @@ export async function convertElement(
     children: [],
   }
 
-  if (bigeElement.animations?.length) {
-    const parsed = parseAnimations(bigeElement)
+  if (el.animations?.length) {
+    const parsed = parseAnimations(el)
     ;(element as any).delay = parsed.delay
     ;(element as any).duration = parsed.duration
     element.children!.push(...parsed.animations as any)
@@ -45,20 +46,20 @@ export async function convertElement(
     }
   }
 
-  switch (bigeElement.type) {
+  switch (el.type) {
     case 'image':
       element.meta!.inPptIs = 'Picture'
       element.foreground = {
-        image: bigeElement.url,
+        image: el.url,
         fillWithShape: true,
       }
-      if (bigeElement.maskUrl) {
+      if (el.maskUrl) {
         // TODO maskUrl
-        // element.style!.maskImage = bigeElement.maskUrl
+        // element.style!.maskImage = el.maskUrl
       }
-      if (bigeElement.cropping) {
-        const width = bigeElement.style.width
-        const height = bigeElement.style.height
+      if (el.cropping) {
+        const width = el.style.width
+        const height = el.style.height
         const {
           imageWidth,
           imageHeight,
@@ -67,7 +68,7 @@ export async function convertElement(
           translateX,
           translateY,
           zoom = 1,
-        } = bigeElement.cropping
+        } = el.cropping
         const cvsWidth = imageWidth * zoom
         const cvsHeight = imageHeight * zoom
         const distX = (cvsWidth - maskWidth) / 2 - translateX
@@ -88,12 +89,12 @@ export async function convertElement(
       break
     case 'svg': {
       element.meta!.inPptIs = 'Picture'
-      let doc = bigeElement.doc
+      let doc = el.doc
       if (!doc) {
-        doc = await fetch(bigeElement.url).then(rep => rep.text())
+        doc = await fetch(el.url).then(rep => rep.text())
       }
       // fix
-      doc = doc.replace(new RegExp(`#el-${bigeElement.id} `, 'gi'), '')
+      doc = doc.replace(new RegExp(`#el-${el.id} `, 'gi'), '')
       doc = doc.replace('width="100%"', `width="${style.width * 2}"`)
       doc = doc.replace('height="100%"', `height="${style.height * 2}"`)
       element.foreground = {
@@ -105,48 +106,17 @@ export async function convertElement(
     case 'text': {
       element.meta!.inPptIs = 'Shape'
       element.text = {
-        /**
-         * 老版 white-space: normal
-         * 新版 white-space: pre-wrap
-         */
-        content: (
-          bigeElement.version
-            ? bigeElement.contents
-            : bigeElement.contents.map((p: any[]) => {
-                let prevChar: string | undefined
-                return p.map((f: any, fIndex) => {
-                  let content = f.content as string
-                  // 老逻辑
-                  content = content.replace(/ |\r\n|\n\r|[\n\r\t\v]/g, ' ')
-                  content = content.replace(/<br\/>/g, '\n')
-                  let newContent = ''
-                  for (const char of Array.from(content)) {
-                    if (fIndex === 0 && char === ' ') {
-                    // 首行空格移除
-                    }
-                    else if (prevChar === ' ' && char === ' ') {
-                    // 多空格合并
-                    }
-                    else {
-                      newContent += char
-                    }
-                    prevChar = char
-                  }
-                  return {
-                    ...f,
-                    content: newContent,
-                  }
-                })
-                  .filter(f => f.content)
-              })
-        ).map((fragments: any) => ({ fragments })),
+        content: await convertTextContent(el),
+        style: await convertTextStyle(el),
+        effects: await convertTextEffects(el),
+        // plugins: [deformation(el.deformation?.type?.endsWith("byWord") ? -1 : 999, () => el.deformation)],
       }
       break
     }
     case 'com':
       element.meta!.inPptIs = 'GroupShape'
       element.children = await Promise.all(
-        bigeElement.children.map((child: any) => convertElement(child, bigeElement, context)),
+        el.children.map((child: any) => convertElement(child, el, context)),
       )
       break
     case 'pic':
@@ -171,7 +141,7 @@ export async function convertElement(
     case 'collage':
     case 'imageWall':
     default:
-      console.warn(bigeElement)
+      console.warn(el)
       break
   }
   return element
