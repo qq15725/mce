@@ -1,3 +1,5 @@
+import { idGenerator } from 'modern-idoc'
+
 const animations = {
   easing: {
     匀速: 'linear',
@@ -337,7 +339,16 @@ export function convertAnimation(
   animation: Record<string, any>,
   type: 'in' | 'stay' | 'out',
 ) {
-  const { name, duration, iterations, mode, easing, path, offsetRotate } = animation
+  const {
+    name,
+    duration,
+    iterations,
+    mode,
+    easing,
+    path,
+    offsetRotate,
+    ...meta
+  } = animation
 
   let keyframes: Keyframe[] | undefined
   if (name === '自定义路径' && path) {
@@ -384,12 +395,14 @@ export function convertAnimation(
 
   return {
     delay: 0,
-    ...animation,
+    id: idGenerator(),
+    name: animation.name ?? animation.title ?? animation.id,
     duration: name ? duration * (iterations || 1) : 0,
     effectMode: mode === '逐字' || mode === '逐行' ? 'sibling' : 'parent',
     keyframes: keyframes ?? [],
     easing: animations.easing[easing],
     meta: {
+      ...meta,
       inCanvasIs: 'Animation',
       inPptIs: 'Animation',
       inEditorIs: 'Node',
@@ -426,18 +439,23 @@ export function parseAnimations(
   }
 
   const delay = _animIn?.delay ?? 0
+
   const animIn = _animIn
     ? convertAnimation(el, { ..._animIn, delay: 0 }, 'in')
     : undefined
+
   const animStay = _animStay
     ? convertAnimation(el, { ..._animStay, delay: _animStay.delay - delay }, 'stay')
     : undefined
+
   const animOut = _animOut
     ? convertAnimation(el, { ..._animOut, delay: _animOut.delay - delay }, 'out')
     : undefined
+
   const duration = animOut && !!animOut.keyframes
     ? animOut.delay - delay + animOut.duration
     : 0
+
   return {
     delay,
     duration,

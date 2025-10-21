@@ -4,7 +4,7 @@ import { convertElement } from './element'
 
 export async function convertLayout(
   layout: Record<string, any>,
-  isPage = true,
+  isFrame = true,
   context?: {
     endTime: number
   },
@@ -15,7 +15,7 @@ export async function convertLayout(
     ...(layout.style ?? layout),
   }
 
-  if (isPage) {
+  if (isFrame) {
     style.overflow = 'hidden'
   }
 
@@ -38,15 +38,15 @@ export async function convertLayout(
 
   return {
     id,
-    name: isPage ? `Frame ${id}` : layout.name,
+    name: isFrame ? `Frame ${id}` : layout.name,
     style, // TODO 过滤掉部分属性
     background,
     children: await Promise.all(
       layout.elements.map((element: any) => convertElement(element, undefined, context)),
     ),
     meta: {
-      inPptIs: isPage ? 'Slide' : 'GroupShape',
-      inEditorIs: isPage ? 'Frame' : 'Element',
+      inPptIs: isFrame ? 'Slide' : 'GroupShape',
+      inEditorIs: isFrame ? 'Frame' : 'Element',
     },
   } as NormalizedElement
 }

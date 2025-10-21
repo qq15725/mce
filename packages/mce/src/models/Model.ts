@@ -67,8 +67,7 @@ export class Model extends Reactivable {
 
   async loadIndexeddb(): Promise<void> {
     const indexeddb = new IndexeddbProvider(this._yDoc.guid, this._yDoc)
-    await indexeddb.whenSynced
-    this.indexeddb = indexeddb
+    this.indexeddb = await indexeddb.whenSynced
     console.info('loaded data from indexed db')
   }
 

@@ -51,13 +51,14 @@ function initYElement(
       ...(element?.meta ?? {}),
     },
   })
+
   const id = normalized.id
   const yChildrenIds = new Y.Array<string>()
+
+  // Node
   for (const key in normalized) {
     yMap.set(key, (normalized as any)[key])
   }
-
-  // Node
   yMap.set('id', id)
   yMap.set('parentId', parentId)
   yMap.set('name', normalized.name ?? id)
@@ -208,6 +209,8 @@ export class Doc extends Model {
     this._yChildren.clear()
     this._yChildrenIds.delete(0, this._yChildrenIds.length)
     this.nodeMap.clear()
+    this.undoManager.clear()
+    this.indexeddb?.clearData()
     return this
   }
 

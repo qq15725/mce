@@ -6,7 +6,6 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
 export default defineConfig(() => {
-  console.log(process.env.MODE)
   if (process.env.MODE === 'local') {
     return {
       plugins: [
