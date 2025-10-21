@@ -1,0 +1,19 @@
+import path from 'node:path'
+import { defineConfig } from 'vite'
+import pkg from './package.json'
+
+export default defineConfig({
+  build: {
+    minify: true,
+    lib: {
+      entry: path.resolve(__dirname, 'src/index.ts'),
+      fileName: () => `index.js`,
+      formats: ['es'],
+    },
+    rollupOptions: {
+      external: [
+        ...Object.keys(pkg.dependencies || {}),
+      ].map(v => new RegExp(`^${v}`)),
+    },
+  },
+})

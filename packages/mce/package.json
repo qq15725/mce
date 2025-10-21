@@ -2,7 +2,6 @@
   "name": "mce",
   "type": "module",
   "version": "0.1.0",
-  "packageManager": "pnpm@10.18.1",
   "description": "Modern canvas editor, based modern-canvas and Vue.js. only the ESM.",
   "author": "wxm",
   "license": "MIT",
@@ -57,17 +56,14 @@
   ],
   "scripts": {
     "build:code": "vite build",
-    "build:tsc": "NODE_ENV=production vue-tsc --emitDeclarationOnly --project tsconfig.build.json",
+    "build:tsc": "NODE_ENV=production vue-tsc --emitDeclarationOnly",
     "build:plugins": "jiti ./scripts/plugins.ts",
     "build:dts": "jiti ./scripts/dts.ts",
     "build": "pnpm build:code && pnpm build:tsc && pnpm build:dts",
     "dev": "MODE=local vite playground",
     "lint": "eslint src",
-    "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
-    "release": "bumpp package.json --commit \"release: v%s\" --push --all --tag",
     "test": "vitest",
-    "typecheck": "vue-tsc --noEmit",
-    "prepare": "simple-git-hooks"
+    "typecheck": "vue-tsc --noEmit"
   },
   "peerDependencies": {
     "lottie-web": "^5",
@@ -125,11 +121,5 @@
     "modern-openxml": "^1.9.0",
     "modern-pdf": "^1.3.2",
     "sass-embedded": "^1.93.2"
-  },
-  "simple-git-hooks": {
-    "pre-commit": "pnpm lint-staged"
-  },
-  "lint-staged": {
-    "*": ""
   }
 }

@@ -1,0 +1,57 @@
+{
+  "name": "@mce/bigesj",
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Bigesj for mce",
+  "author": "wxm",
+  "license": "MIT",
+  "homepage": "https://github.com/qq15725/mce",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qq15725/mce.git"
+  },
+  "bugs": {
+    "url": "https://github.com/qq15725/mce/issues"
+  },
+  "keywords": [
+    "bigesj",
+    "mce"
+  ],
+  "sideEffects": true,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./*.mjs": "./*.js",
+    "./*": "./*"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "browser": "./dist/index.js",
+  "typings": "dist/index.d.ts",
+  "types": "dist/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "*",
+        "dist/*",
+        "dist/*.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build:code": "vite build",
+    "build:tsc": "NODE_ENV=production tsc --emitDeclarationOnly",
+    "build": "pnpm build:code && pnpm build:tsc",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "mce": "workspace:*",
+    "modern-idoc": "^0.10.1"
+  }
+}
