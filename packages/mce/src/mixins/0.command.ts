@@ -42,11 +42,11 @@ export default defineMixin((editor) => {
   const commands: Mce.Editor['commands'] = ref(new Map())
 
   function registerCommand(command: string, handle: Mce.CommandHandle): void
-  function registerCommand(commands: { key: string, handle: Mce.CommandHandle }[]): void
+  function registerCommand(commands: { command: string, handle: Mce.CommandHandle }[]): void
   function registerCommand(...args: any[]): void {
     if (Array.isArray(args[0])) {
-      args[0].forEach((command) => {
-        commands.value.set(command.key, command.handle)
+      args[0].forEach((item) => {
+        commands.value.set(item.command, item.handle)
       })
     }
     else {
