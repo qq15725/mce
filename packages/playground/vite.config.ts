@@ -6,6 +6,7 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
 export default defineConfig(() => {
+  console.log(process.env.MODE)
   if (process.env.MODE === 'local') {
     return {
       plugins: [
@@ -18,11 +19,20 @@ export default defineConfig(() => {
         }),
         vueDevTools(),
       ],
+      server: {
+        host: '0.0.0.0',
+        allowedHosts: [
+          'local.bigesj.com',
+        ],
+        cors: true,
+      },
       resolve: {
         alias: {
           '@': fileURLToPath(new URL('./src', import.meta.url)),
-          'mce/styles': fileURLToPath(new URL('../src/index.ts', import.meta.url)),
-          'mce': fileURLToPath(new URL('../src/index.ts', import.meta.url)),
+          '@mce/bigesj': fileURLToPath(new URL('../bigesj/src/index.ts', import.meta.url)),
+          '@mce/gaoding': fileURLToPath(new URL('../gaoding/src/index.ts', import.meta.url)),
+          'mce/styles': fileURLToPath(new URL('../mce/src/index.ts', import.meta.url)),
+          'mce': fileURLToPath(new URL('../mce/src/index.ts', import.meta.url)),
         },
       },
     }

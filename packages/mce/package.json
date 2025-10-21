@@ -60,7 +60,6 @@
     "build:plugins": "jiti ./scripts/plugins.ts",
     "build:dts": "jiti ./scripts/dts.ts",
     "build": "pnpm build:code && pnpm build:tsc && pnpm build:dts",
-    "dev": "MODE=local vite playground",
     "lint": "eslint src",
     "test": "vitest",
     "typecheck": "vue-tsc --noEmit"
