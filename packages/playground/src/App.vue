@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import bigesj from '@mce/bigesj'
+import gaoding from '@mce/gaoding'
 import { Drawboard, Editor } from 'mce'
 import 'mce/styles'
 
 const editor = new Editor({
   plugins: [
     bigesj,
+    gaoding,
   ],
   theme: 'system',
   language: 'en',

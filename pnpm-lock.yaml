@@ -11,9 +11,6 @@ importers:
       '@antfu/eslint-config':
         specifier: ^6.0.0
         version: 6.0.0(@vue/compiler-sfc@3.5.22)(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3)(vitest@3.2.4(@types/debug@4.1.12)(@types/node@24.8.1)(jiti@2.6.1)(sass-embedded@1.93.2)(sass@1.93.2)(yaml@2.8.1))
-      '@mce/bigesj':
-        specifier: workspace:*
-        version: link:packages/bigesj
       '@types/node':
         specifier: ^24.8.1
         version: 24.8.1
@@ -26,9 +23,6 @@ importers:
       eslint:
         specifier: ^9.38.0
         version: 9.38.0(jiti@2.6.1)
-      mce:
-        specifier: workspace:*
-        version: link:packages/mce
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -50,6 +44,12 @@ importers:
       fflate:
         specifier: ^0.8.2
         version: 0.8.2
+    devDependencies:
+      mce:
+        specifier: workspace:*
+        version: link:../mce
+
+  packages/gaoding:
     devDependencies:
       mce:
         specifier: workspace:*
@@ -133,6 +133,12 @@ importers:
 
   packages/playground:
     devDependencies:
+      '@mce/bigesj':
+        specifier: workspace:*
+        version: link:../bigesj
+      '@mce/gaoding':
+        specifier: workspace:*
+        version: link:../gaoding
       '@tsconfig/node22':
         specifier: ^22.0.2
         version: 22.0.2
@@ -142,6 +148,9 @@ importers:
       '@vue/tsconfig':
         specifier: ^0.8.1
         version: 0.8.1(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
+      mce:
+        specifier: workspace:*
+        version: link:../mce
       npm-run-all2:
         specifier: ^8.0.4
         version: 8.0.4
