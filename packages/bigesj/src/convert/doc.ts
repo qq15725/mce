@@ -29,7 +29,7 @@ export async function convertDoc(doc: Record<string, any>, gap = 48): Promise<No
         element.style.top = top
         top += Number(element.style.height) + gap
       }
-      element.name = `页面 ${index + 1}`
+      element.name = `Frame ${index + 1}`
       return element
     })
 

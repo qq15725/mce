@@ -1,8 +1,12 @@
 <script setup lang="ts">
+import bigesj from '@mce/bigesj'
 import { Drawboard, Editor } from 'mce'
 import 'mce/styles'
 
 const editor = new Editor({
+  plugins: [
+    bigesj,
+  ],
   theme: 'system',
   language: 'en',
   viewMode: 'edgeless',

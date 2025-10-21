@@ -56,7 +56,7 @@
   ],
   "scripts": {
     "build:code": "vite build",
-    "build:tsc": "NODE_ENV=production vue-tsc --emitDeclarationOnly",
+    "build:tsc": "NODE_ENV=production vue-tsc --emitDeclarationOnly --project tsconfig.json",
     "build:plugins": "jiti ./scripts/plugins.ts",
     "build:dts": "jiti ./scripts/dts.ts",
     "build": "pnpm build:code && pnpm build:tsc && pnpm build:dts",
