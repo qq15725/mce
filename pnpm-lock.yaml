@@ -46,13 +46,10 @@ importers:
         version: 3.1.1(typescript@5.9.3)
 
   packages/bigesj:
-    dependencies:
+    devDependencies:
       mce:
         specifier: workspace:*
         version: link:../mce
-      modern-idoc:
-        specifier: ^0.10.1
-        version: 0.10.1
 
   packages/mce:
     dependencies:

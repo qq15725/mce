@@ -50,8 +50,10 @@
     "build": "pnpm build:code && pnpm build:tsc",
     "lint": "eslint src"
   },
-  "dependencies": {
-    "mce": "workspace:*",
-    "modern-idoc": "^0.10.1"
+  "peerDependencies": {
+    "mce": "^0"
+  },
+  "devDependencies": {
+    "mce": "workspace:*"
   }
 }
