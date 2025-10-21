@@ -24,33 +24,35 @@ export default definePlugin((editor) => {
     addElement,
   } = editor
 
+  const _import: Mce.Commands['import'] = async (options = {}) => {
+    const files = await openFileDialog({ multiple: true })
+
+    return addElement((
+      await Promise.all(
+        files.map(async (file) => {
+          const res = await load(file)
+          let elements
+          if (res.meta?.inEditorIs === 'Doc') {
+            elements = res.children ?? []
+          }
+          else {
+            elements = [res]
+          }
+          return elements
+        }),
+      )
+    ).flat(), {
+      ...options,
+      sizeToFit: true,
+      positionToFit: true,
+    })
+  }
+
   return {
     name: 'import',
-    commands: {
-      import: async (options = {}) => {
-        const files = await openFileDialog({ multiple: true })
-
-        return addElement((
-          await Promise.all(
-            files.map(async (file) => {
-              const res = await load(file)
-              let elements
-              if (res.meta?.inEditorIs === 'Doc') {
-                elements = res.children ?? []
-              }
-              else {
-                elements = [res]
-              }
-              return elements
-            }),
-          )
-        ).flat(), {
-          ...options,
-          sizeToFit: true,
-          positionToFit: true,
-        })
-      },
-    },
+    commands: [
+      { command: 'import', handle: _import },
+    ],
     hotkeys: [
       { command: 'import', key: 'CmdOrCtrl+i' },
     ],

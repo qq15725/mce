@@ -23,25 +23,29 @@ export default definePlugin((editor) => {
     addElement,
   } = editor
 
+  const insertText: Mce.Commands['insertText'] = (content = t('clickEditText'), options = {}) => {
+    const { style, ...restOptions } = options
+    return addElement(createTextElement(content, style), {
+      sizeToFit: true,
+      positionToFit: true,
+      ...restOptions,
+    })
+  }
+
+  const drawText: Mce.Commands['drawText'] = (content, options) => {
+    setState('drawing', {
+      content: 'text',
+      callback: (position: Vector2Data) => {
+        exec('insertText', content, { ...options, position })
+      },
+    })
+  }
+
   return {
     name: 'text',
-    commands: {
-      insertText: (content = t('clickEditText'), options = {}) => {
-        const { style, ...restOptions } = options
-        return addElement(createTextElement(content, style), {
-          sizeToFit: true,
-          positionToFit: true,
-          ...restOptions,
-        })
-      },
-      drawText: (content, options) => {
-        setState('drawing', {
-          content: 'text',
-          callback: (position: Vector2Data) => {
-            exec('insertText', content, { ...options, position })
-          },
-        })
-      },
-    },
+    commands: [
+      { command: 'insertText', handle: insertText },
+      { command: 'drawText', handle: drawText },
+    ],
   }
 })

@@ -22,24 +22,28 @@ export default definePlugin((editor) => {
     addElement,
   } = editor
 
+  const insertImage: Mce.Commands['insertImage'] = async (url, options) => {
+    return addElement(await createImageElement(url), {
+      sizeToFit: true,
+      positionToFit: true,
+      ...options,
+    })
+  }
+
+  const drawImage: Mce.Commands['drawImage'] = () => {
+    setState('drawing', {
+      content: 'image',
+      callback: (position: Vector2Data) => {
+        exec('import', { position })
+      },
+    })
+  }
+
   return {
     name: 'image',
-    commands: {
-      insertImage: async (url, options) => {
-        return addElement(await createImageElement(url), {
-          sizeToFit: true,
-          positionToFit: true,
-          ...options,
-        })
-      },
-      drawImage: () => {
-        setState('drawing', {
-          content: 'image',
-          callback: (position: Vector2Data) => {
-            exec('import', { position })
-          },
-        })
-      },
-    },
+    commands: [
+      { command: 'insertImage', handle: insertImage },
+      { command: 'drawImage', handle: drawImage },
+    ],
   }
 })

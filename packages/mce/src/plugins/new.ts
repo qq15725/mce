@@ -29,9 +29,9 @@ export default definePlugin((editor) => {
 
   return {
     name: 'new',
-    commands: {
-      new: _new,
-    },
+    commands: [
+      { command: 'new', handle: _new },
+    ],
     hotkeys: [
       { command: 'new', key: 'Alt+CmdOrCtrl+Dead' },
     ],

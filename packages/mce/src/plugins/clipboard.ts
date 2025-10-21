@@ -150,12 +150,12 @@ export default definePlugin((editor) => {
 
   return {
     name: 'clipboard',
-    commands: {
-      copy,
-      cut,
-      paste,
-      duplicate,
-    },
+    commands: [
+      { command: 'copy', handle: copy },
+      { command: 'cut', handle: cut },
+      { command: 'paste', handle: paste },
+      { command: 'duplicate', handle: duplicate },
+    ],
     hotkeys: [
       { command: 'copy', key: 'CmdOrCtrl+c', editable: false },
       { command: 'cut', key: 'CmdOrCtrl+x', editable: false },

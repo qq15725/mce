@@ -29,13 +29,13 @@ export default defineMixin((editor) => {
   } = editor
 
   registerCommand([
-    { key: 'lock', handle: () => selection.value.forEach(lock) },
-    { key: 'unlock', handle: () => selection.value.forEach(unlock) },
-    { key: 'lock/unlock', handle: () => selection.value.forEach(el => isLocked(el) ? unlock(el) : lock(el)) },
+    { command: 'lock', handle: () => selection.value.forEach(lock) },
+    { command: 'unlock', handle: () => selection.value.forEach(unlock) },
+    { command: 'lock/unlock', handle: () => selection.value.forEach(el => isLocked(el) ? unlock(el) : lock(el)) },
   ])
 
   registerHotkey([
-    { key: 'lock/unlock', accelerator: 'CmdOrCtrl+l', editable: false },
+    { command: 'lock/unlock', key: 'CmdOrCtrl+l', editable: false },
   ])
 
   function isLocked(element: Element2D): boolean {

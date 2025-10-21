@@ -85,11 +85,11 @@ export default definePlugin((editor) => {
 
   return {
     name: 'frame',
-    commands: {
-      'frame': frame,
-      'unframe': unframe,
-      'frame/unframe': frameOrUnframe,
-    },
+    commands: [
+      { command: 'frame', handle: frame },
+      { command: 'unframe', handle: unframe },
+      { command: 'frame/unframe', handle: frameOrUnframe },
+    ],
     hotkeys: [
       { command: 'frame/unframe', key: 'CmdOrCtrl+f', editable: false },
     ],

@@ -18,7 +18,7 @@ export default definePlugin((editor) => {
     to,
   } = editor
 
-  async function saveAs(key: keyof Mce.Exporters, options: Mce.SaveAsOptions = {}): Promise<void> {
+  const saveAs: Mce.Commands['saveAs'] = async (key, options = {}) => {
     const {
       filename = 'download',
       ...restOptions
@@ -38,8 +38,8 @@ export default definePlugin((editor) => {
 
   return {
     name: 'saveAs',
-    commands: {
-      saveAs: (type, options) => saveAs(type, options),
-    },
+    commands: [
+      { command: 'saveAs', handle: saveAs },
+    ],
   }
 })

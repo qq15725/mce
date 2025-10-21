@@ -31,9 +31,9 @@ export default definePlugin((editor) => {
 
   return {
     name: 'preferences',
-    commands: {
-      preferences,
-    },
+    commands: [
+      { command: 'preferences', handle: preferences },
+    ],
     hotkeys: [
       { command: 'preferences', key: 'CmdOrCtrl+,', editable: false, system: true },
     ],

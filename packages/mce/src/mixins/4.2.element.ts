@@ -82,13 +82,13 @@ export default defineMixin((editor) => {
   } = editor
 
   registerCommand([
-    { key: 'delete', handle: deleteCurrentElements },
+    { command: 'delete', handle: deleteCurrentElements },
   ])
 
-  const condition = (): boolean => Boolean(selection.value.length > 0)
+  const when = (): boolean => Boolean(selection.value.length > 0)
 
   registerHotkey([
-    { key: 'delete', accelerator: ['Backspace', 'Delete'], condition },
+    { command: 'delete', key: ['Backspace', 'Delete'], when },
   ])
 
   function addElement(

@@ -8,7 +8,12 @@ declare global {
       //
     }
 
-    type Command = (...args: any[]) => any
+    type CommandHandle = (...args: any[]) => any
+
+    interface Command {
+      command: string
+      handle: CommandHandle
+    }
 
     type CommandEvents = {
       [K in keyof Commands as `command:${K}`]: [ReturnType<Commands[K]>]
@@ -21,8 +26,8 @@ declare global {
     interface Editor {
       commands: Ref<Map<string, Commands[keyof Commands]>>
       registerCommand: {
-        <K extends keyof Commands>(key: K, command: Commands[K]): void
-        <K extends keyof Commands>(commands: { key: K, handle: Commands[K] }[]): void
+        <K extends keyof Commands>(command: K, handle: Commands[K]): void
+        <K extends keyof Commands>(commands: { command: K, handle: Commands[K] }[]): void
       }
       unregisterCommand: <K extends keyof Commands = keyof Commands>(key: K) => void
       exec: <K extends keyof Commands>(key: K, ...args: Parameters<Commands[K]>) => ReturnType<Commands[K]>
@@ -36,8 +41,8 @@ export default defineMixin((editor) => {
 
   const commands: Mce.Editor['commands'] = ref(new Map())
 
-  function registerCommand(key: string, command: Mce.Command): void
-  function registerCommand(commands: { key: string, handle: Mce.Command }[]): void
+  function registerCommand(command: string, handle: Mce.CommandHandle): void
+  function registerCommand(commands: { key: string, handle: Mce.CommandHandle }[]): void
   function registerCommand(...args: any[]): void {
     if (Array.isArray(args[0])) {
       args[0].forEach((command) => {

@@ -49,9 +49,9 @@ export default definePlugin((editor) => {
 
   return {
     name: 'open',
-    commands: {
-      open,
-    },
+    commands: [
+      { command: 'open', handle: open },
+    ],
     hotkeys: [
       { command: 'open', key: 'CmdOrCtrl+o' },
     ],

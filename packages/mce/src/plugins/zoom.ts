@@ -127,14 +127,14 @@ export default definePlugin((editor) => {
 
   return {
     name: 'zoom',
-    commands: {
-      zoomIn,
-      zoomOut,
-      zoomTo100,
-      zoomToFit,
-      zoomToCover,
-      zoomToSelection,
-    },
+    commands: [
+      { command: 'zoomIn', handle: zoomIn },
+      { command: 'zoomOut', handle: zoomOut },
+      { command: 'zoomTo100', handle: zoomTo100 },
+      { command: 'zoomToFit', handle: zoomToFit },
+      { command: 'zoomToCover', handle: zoomToCover },
+      { command: 'zoomToSelection', handle: zoomToSelection },
+    ],
     hotkeys: [
       { command: 'zoomIn', key: 'CmdOrCtrl+=' },
       { command: 'zoomOut', key: 'CmdOrCtrl+-' },

@@ -70,13 +70,13 @@ export default definePlugin((editor) => {
 
   return {
     name: 'select',
-    commands: {
-      selectAll,
-      deselectAll,
-      selectParent,
-      previousSelection,
-      nextSelection,
-    },
+    commands: [
+      { command: 'selectAll', handle: selectAll },
+      { command: 'deselectAll', handle: deselectAll },
+      { command: 'selectParent', handle: selectParent },
+      { command: 'previousSelection', handle: previousSelection },
+      { command: 'nextSelection', handle: nextSelection },
+    ],
     hotkeys: [
       { command: 'selectAll', key: 'CmdOrCtrl+a' },
       { command: 'deselectAll', key: 'Shift+CmdOrCtrl+a' },

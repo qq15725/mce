@@ -60,14 +60,14 @@ export default definePlugin((editor) => {
 
   return {
     name: 'align',
-    commands: {
-      align,
-      alignLeft: () => align('left'),
-      alignHorizontalCenter: () => align('horizontal-center'),
-      alignRight: () => align('right'),
-      alignTop: () => align('top'),
-      alignVerticalCenter: () => align('vertical-center'),
-      alignBottom: () => align('bottom'),
-    },
+    commands: [
+      { command: 'align', handle: align },
+      { command: 'alignLeft', handle: () => align('left') },
+      { command: 'alignHorizontalCenter', handle: () => align('horizontal-center') },
+      { command: 'alignRight', handle: () => align('right') },
+      { command: 'alignTop', handle: () => align('top') },
+      { command: 'alignVerticalCenter', handle: () => align('vertical-center') },
+      { command: 'alignBottom', handle: () => align('bottom') },
+    ],
   }
 })

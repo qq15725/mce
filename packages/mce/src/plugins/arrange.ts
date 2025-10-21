@@ -73,12 +73,12 @@ export default definePlugin((editor) => {
 
   return {
     name: 'arrange',
-    commands: {
-      raiseToFront,
-      raise,
-      lower,
-      lowerToBack,
-    },
+    commands: [
+      { command: 'raiseToFront', handle: raiseToFront },
+      { command: 'raise', handle: raise },
+      { command: 'lower', handle: lower },
+      { command: 'lowerToBack', handle: lowerToBack },
+    ],
     hotkeys: [
       { command: 'raiseToFront', key: 'Shift+CmdOrCtrl+ArrowUp' },
       { command: 'raise', key: 'CmdOrCtrl+ArrowUp' },

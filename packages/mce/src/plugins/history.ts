@@ -56,10 +56,10 @@ export default definePlugin((editor) => {
 
   return {
     name: 'history',
-    commands: {
-      undo,
-      redo,
-    },
+    commands: [
+      { command: 'undo', handle: undo },
+      { command: 'redo', handle: redo },
+    ],
     hotkeys: [
       { command: 'undo', key: 'CmdOrCtrl+z' },
       { command: 'redo', key: 'Shift+CmdOrCtrl+z' },

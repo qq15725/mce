@@ -46,24 +46,24 @@ export default definePlugin((editor) => {
     })
   }
 
-  function condition(): boolean {
+  function when(): boolean {
     return selection.value.length > 0
   }
 
   return {
     name: 'move',
-    commands: {
-      move,
-      moveLeft: (distance?: number) => move('left', distance),
-      moveTop: (distance?: number) => move('top', distance),
-      moveRight: (distance?: number) => move('right', distance),
-      moveBottom: (distance?: number) => move('bottom', distance),
-    },
+    commands: [
+      { command: 'move', handle: move },
+      { command: 'moveLeft', handle: (distance?: number) => move('left', distance) },
+      { command: 'moveTop', handle: (distance?: number) => move('top', distance) },
+      { command: 'moveRight', handle: (distance?: number) => move('right', distance) },
+      { command: 'moveBottom', handle: (distance?: number) => move('bottom', distance) },
+    ],
     hotkeys: [
-      { command: 'moveLeft', key: 'ArrowLeft', editable: false, condition },
-      { command: 'moveTop', key: 'ArrowUp', editable: false, condition },
-      { command: 'moveRight', key: 'ArrowRight', editable: false, condition },
-      { command: 'moveBottom', key: 'ArrowDown', editable: false, condition },
+      { command: 'moveLeft', key: 'ArrowLeft', editable: false, when },
+      { command: 'moveTop', key: 'ArrowUp', editable: false, when },
+      { command: 'moveRight', key: 'ArrowRight', editable: false, when },
+      { command: 'moveBottom', key: 'ArrowDown', editable: false, when },
     ],
   }
 })

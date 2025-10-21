@@ -39,11 +39,11 @@ export default definePlugin((editor) => {
 
   return {
     name: 'visibility',
-    commands: {
-      hide,
-      show,
-      'hide/show': hideOrShow,
-    },
+    commands: [
+      { command: 'hide', handle: hide },
+      { command: 'show', handle: show },
+      { command: 'hide/show', handle: hideOrShow },
+    ],
     hotkeys: [
       { command: 'hide/show', key: 'CmdOrCtrl+h' },
     ],

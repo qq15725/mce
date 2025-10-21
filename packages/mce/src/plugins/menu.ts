@@ -57,17 +57,17 @@ export default definePlugin((editor) => {
   const hasSelected = computed(() => selection.value.length > 0)
 
   const editMenus1 = computed(() => [
-    { command: 'undo', disabled: !canUndo.value },
-    { command: 'redo', disabled: !canRedo.value },
+    { key: 'undo', disabled: !canUndo.value },
+    { key: 'redo', disabled: !canRedo.value },
   ])
 
   const editMenus2 = computed(() => [
-    { command: 'cut', disabled: !hasSelected.value },
-    { command: 'copy', disabled: !hasSelected.value },
-    { command: 'paste', disabled: !copiedData.value },
+    { key: 'cut', disabled: !hasSelected.value },
+    { key: 'copy', disabled: !hasSelected.value },
+    { key: 'paste', disabled: !copiedData.value },
     { type: 'divider' },
-    { command: 'duplicate', disabled: !hasSelected.value },
-    { command: 'delete', disabled: !hasSelected.value },
+    { key: 'duplicate', disabled: !hasSelected.value },
+    { key: 'delete', disabled: !hasSelected.value },
   ])
 
   const editMenus = computed(() => [
@@ -82,40 +82,40 @@ export default definePlugin((editor) => {
   ])
 
   const layerMenus1 = computed(() => [
-    { command: 'frame/unframe', disabled: !hasSelected.value },
-    { command: 'group/ungroup', disabled: !hasSelected.value },
+    { key: 'frame/unframe', disabled: !hasSelected.value },
+    { key: 'group/ungroup', disabled: !hasSelected.value },
     { type: 'divider' },
-    { command: 'hide/show', disabled: !hasSelected.value },
-    { command: 'lock/unlock', disabled: !hasSelected.value },
+    { key: 'hide/show', disabled: !hasSelected.value },
+    { key: 'lock/unlock', disabled: !hasSelected.value },
   ])
 
   const layerMenus2 = computed(() => [
     {
       key: 'arrange',
       children: [
-        { command: 'raiseToFront' },
-        { command: 'raise' },
-        { command: 'lower' },
-        { command: 'lowerToBack' },
+        { key: 'raiseToFront' },
+        { key: 'raise' },
+        { key: 'lower' },
+        { key: 'lowerToBack' },
       ],
     },
     {
       key: 'flip',
       children: [
-        { command: 'flipX' },
-        { command: 'flipY' },
+        { key: 'flipX' },
+        { key: 'flipY' },
       ],
     },
     {
       key: 'align',
       children: [
-        { command: 'alignLeft' },
-        { command: 'alignHorizontalCenter' },
-        { command: 'alignRight' },
+        { key: 'alignLeft' },
+        { key: 'alignHorizontalCenter' },
+        { key: 'alignRight' },
         { type: 'divider' },
-        { command: 'alignTop' },
-        { command: 'alignVerticalCenter' },
-        { command: 'alignBottom' },
+        { key: 'alignTop' },
+        { key: 'alignVerticalCenter' },
+        { key: 'alignBottom' },
       ],
     },
   ])
@@ -135,12 +135,12 @@ export default definePlugin((editor) => {
     {
       key: 'select',
       children: [
-        { command: 'selectAll' },
-        { command: 'deselectAll', disabled: !hasSelected.value },
-        { command: 'selectParent', disabled: !hasSelected.value },
+        { key: 'selectAll' },
+        { key: 'deselectAll', disabled: !hasSelected.value },
+        { key: 'selectParent', disabled: !hasSelected.value },
         { type: 'divider' },
-        { command: 'previousSelection' },
-        { command: 'nextSelection' },
+        { key: 'previousSelection' },
+        { key: 'nextSelection' },
       ],
     },
   ])
@@ -149,11 +149,11 @@ export default definePlugin((editor) => {
     {
       key: 'view',
       children: [
-        { command: 'zoomIn' },
-        { command: 'zoomOut' },
-        { command: 'zoomTo100' },
-        { command: 'zoomToFit' },
-        { command: 'zoomToSelection', disabled: !hasSelected.value },
+        { key: 'zoomIn' },
+        { key: 'zoomOut' },
+        { key: 'zoomTo100' },
+        { key: 'zoomToFit' },
+        { key: 'zoomToSelection', disabled: !hasSelected.value },
       ],
     },
   ])
@@ -162,15 +162,15 @@ export default definePlugin((editor) => {
     {
       key: 'export',
       children: [
-        { command: 'saveAs:png' },
-        { command: 'saveAs:jpeg' },
-        { command: 'saveAs:webp' },
-        { command: 'saveAs:svg' },
-        { command: 'saveAs:gif' },
-        { command: 'saveAs:mp4' },
-        { command: 'saveAs:pdf' },
-        { command: 'saveAs:pptx' },
-        { command: 'saveAs:json' },
+        { key: 'saveAs:png' },
+        { key: 'saveAs:jpeg' },
+        { key: 'saveAs:webp' },
+        { key: 'saveAs:svg' },
+        { key: 'saveAs:gif' },
+        { key: 'saveAs:mp4' },
+        { key: 'saveAs:pdf' },
+        { key: 'saveAs:pptx' },
+        { key: 'saveAs:json' },
       ],
     },
   ])
@@ -179,13 +179,13 @@ export default definePlugin((editor) => {
     {
       key: 'file',
       children: [
-        { command: 'new' },
-        { command: 'open' },
+        { key: 'new' },
+        { key: 'open' },
         { type: 'divider' },
-        { command: 'import' },
+        { key: 'import' },
         ...exportMenus.value,
         { type: 'divider' },
-        { command: 'preferences' },
+        { key: 'preferences' },
       ],
     },
   ])
@@ -194,7 +194,7 @@ export default definePlugin((editor) => {
     {
       key: 'insert',
       children: [
-        { command: 'insertText' },
+        { key: 'insertText' },
       ],
     },
   ])
@@ -260,10 +260,10 @@ export default definePlugin((editor) => {
         { type: 'divider' },
         ...insertMenus.value,
         { type: 'divider' },
-        { command: 'new' },
-        { command: 'open' },
+        { key: 'new' },
+        { key: 'open' },
         { type: 'divider' },
-        { command: 'import' },
+        { key: 'import' },
         ...exportMenus.value,
       ]
     }

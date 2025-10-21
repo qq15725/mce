@@ -28,9 +28,9 @@ export default definePlugin((editor) => {
 
   return {
     name: 'flip',
-    commands: {
-      flipX,
-      flipY,
-    },
+    commands: [
+      { command: 'flipX', handle: flipX },
+      { command: 'flipY', handle: flipY },
+    ],
   }
 })

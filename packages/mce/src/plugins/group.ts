@@ -82,11 +82,11 @@ export default definePlugin((editor) => {
 
   return {
     name: 'group',
-    commands: {
-      group,
-      ungroup,
-      'group/ungroup': groupOrUngroup,
-    },
+    commands: [
+      { command: 'group', handle: group },
+      { command: 'ungroup', handle: ungroup },
+      { command: 'group/ungroup', handle: groupOrUngroup },
+    ],
     hotkeys: [
       { command: 'group/ungroup', key: 'CmdOrCtrl+g', editable: false },
     ],
