@@ -33,7 +33,7 @@ export default definePlugin((editor) => {
       new: _new,
     },
     hotkeys: [
-      { key: 'new', accelerator: 'Alt+CmdOrCtrl+Dead' },
+      { command: 'new', key: 'Alt+CmdOrCtrl+Dead' },
     ],
   }
 })

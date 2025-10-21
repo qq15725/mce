@@ -53,7 +53,7 @@ export default definePlugin((editor) => {
       open,
     },
     hotkeys: [
-      { key: 'open', accelerator: 'CmdOrCtrl+o' },
+      { command: 'open', key: 'CmdOrCtrl+o' },
     ],
   }
 })

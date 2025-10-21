@@ -157,10 +157,10 @@ export default definePlugin((editor) => {
       duplicate,
     },
     hotkeys: [
-      { key: 'copy', accelerator: 'CmdOrCtrl+c', editable: false },
-      { key: 'cut', accelerator: 'CmdOrCtrl+x', editable: false },
-      { key: 'paste', accelerator: 'CmdOrCtrl+v', editable: false },
-      { key: 'duplicate', accelerator: 'CmdOrCtrl+d', editable: false },
+      { command: 'copy', key: 'CmdOrCtrl+c', editable: false },
+      { command: 'cut', key: 'CmdOrCtrl+x', editable: false },
+      { command: 'paste', key: 'CmdOrCtrl+v', editable: false },
+      { command: 'duplicate', key: 'CmdOrCtrl+d', editable: false },
     ],
   }
 })

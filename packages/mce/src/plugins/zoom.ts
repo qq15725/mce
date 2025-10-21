@@ -136,11 +136,11 @@ export default definePlugin((editor) => {
       zoomToSelection,
     },
     hotkeys: [
-      { key: 'zoomIn', accelerator: 'CmdOrCtrl+=' },
-      { key: 'zoomOut', accelerator: 'CmdOrCtrl+-' },
-      { key: 'zoomTo100', accelerator: 'Alt+º' },
-      { key: 'zoomToFit', accelerator: 'Alt+¡' },
-      { key: 'zoomToSelection', accelerator: 'Alt+™' },
+      { command: 'zoomIn', key: 'CmdOrCtrl+=' },
+      { command: 'zoomOut', key: 'CmdOrCtrl+-' },
+      { command: 'zoomTo100', key: 'Alt+º' },
+      { command: 'zoomToFit', key: 'Alt+¡' },
+      { command: 'zoomToSelection', key: 'Alt+™' },
     ],
     setup: () => {
       const {

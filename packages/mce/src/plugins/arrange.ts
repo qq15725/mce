@@ -80,10 +80,10 @@ export default definePlugin((editor) => {
       lowerToBack,
     },
     hotkeys: [
-      { key: 'raiseToFront', accelerator: 'Shift+CmdOrCtrl+ArrowUp' },
-      { key: 'raise', accelerator: 'CmdOrCtrl+ArrowUp' },
-      { key: 'lower', accelerator: 'CmdOrCtrl+ArrowDown' },
-      { key: 'lowerToBack', accelerator: 'Shift+CmdOrCtrl+ArrowDown' },
+      { command: 'raiseToFront', key: 'Shift+CmdOrCtrl+ArrowUp' },
+      { command: 'raise', key: 'CmdOrCtrl+ArrowUp' },
+      { command: 'lower', key: 'CmdOrCtrl+ArrowDown' },
+      { command: 'lowerToBack', key: 'Shift+CmdOrCtrl+ArrowDown' },
     ],
   }
 })

@@ -60,10 +60,10 @@ export default definePlugin((editor) => {
       moveBottom: (distance?: number) => move('bottom', distance),
     },
     hotkeys: [
-      { key: 'moveLeft', accelerator: 'ArrowLeft', editable: false, condition },
-      { key: 'moveTop', accelerator: 'ArrowUp', editable: false, condition },
-      { key: 'moveRight', accelerator: 'ArrowRight', editable: false, condition },
-      { key: 'moveBottom', accelerator: 'ArrowDown', editable: false, condition },
+      { command: 'moveLeft', key: 'ArrowLeft', editable: false, condition },
+      { command: 'moveTop', key: 'ArrowUp', editable: false, condition },
+      { command: 'moveRight', key: 'ArrowRight', editable: false, condition },
+      { command: 'moveBottom', key: 'ArrowDown', editable: false, condition },
     ],
   }
 })

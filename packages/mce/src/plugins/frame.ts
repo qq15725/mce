@@ -91,7 +91,7 @@ export default definePlugin((editor) => {
       'frame/unframe': frameOrUnframe,
     },
     hotkeys: [
-      { key: 'frame/unframe', accelerator: 'CmdOrCtrl+f', editable: false },
+      { command: 'frame/unframe', key: 'CmdOrCtrl+f', editable: false },
     ],
   }
 })

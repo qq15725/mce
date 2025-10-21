@@ -23,8 +23,8 @@ declare global {
     }
 
     interface HotkeyData {
-      key: keyof Hotkeys
-      accelerator: string | string[]
+      command: keyof Hotkeys
+      key: string | string[]
       editable?: boolean
       enabled?: boolean
       system?: boolean
@@ -49,7 +49,7 @@ declare global {
 }
 
 const defaultHotkeys: Mce.HotkeyData[] = [
-  { key: 'cancel', accelerator: 'Esc', editable: false },
+  { command: 'cancel', key: 'Esc', editable: false },
 ]
 
 function isInputEvent(event?: KeyboardEvent): boolean {
@@ -81,22 +81,22 @@ export default defineMixin((editor) => {
       args[0].forEach(item => registerHotkey(item.key, item))
     }
     else {
-      const [key, item] = args
+      const [command, item] = args
       const {
         condition: _condition,
         handle: _handle,
         ...hotkeyData
       } = item
       hotkeysData.value = [
-        ...hotkeysData.value.filter(v => v.key !== key),
+        ...hotkeysData.value.filter(v => v.command !== command),
         hotkeyData,
       ]
-      hotkeys.value.set(key, item)
+      hotkeys.value.set(command, item)
     }
   }
 
-  function unregisterHotkey(key: string): void {
-    hotkeysData.value = hotkeysData.value.filter(v => v.key !== key)
+  function unregisterHotkey(command: string): void {
+    hotkeysData.value = hotkeysData.value.filter(v => v.command !== command)
   }
 
   const kbdMap = {
@@ -123,17 +123,17 @@ export default defineMixin((editor) => {
     'Dead': 'N',
   }
 
-  function getKbd(key: string): string {
-    if (!key) {
+  function getKbd(command: string): string {
+    if (!command) {
       return ''
     }
     let arr
-    const hotkey = hotkeysData.value.find(v => v.key === key)
+    const hotkey = hotkeysData.value.find(v => v.command === command)
     if (hotkey) {
-      arr = Array.isArray(hotkey.accelerator) ? hotkey.accelerator : [hotkey.accelerator]
+      arr = Array.isArray(hotkey.key) ? hotkey.key : [hotkey.key]
     }
     else {
-      arr = [key]
+      arr = [command]
     }
     return arr[0].split('+').map((key) => {
       switch (key) {
@@ -184,15 +184,15 @@ export default defineMixin((editor) => {
           .join('+')
 
         hotkeysData.value.forEach((hotkeyData) => {
-          const key = hotkeyData.key
-          const hotkey = hotkeys.value.get(key)
+          const command = hotkeyData.command
+          const hotkey = hotkeys.value.get(command)
 
-          const accelerators = Array.isArray(hotkeyData.accelerator)
-            ? hotkeyData.accelerator
-            : [hotkeyData.accelerator]
+          const accelerators = Array.isArray(hotkeyData.key)
+            ? hotkeyData.key
+            : [hotkeyData.key]
 
-          accelerators.forEach((accelerator) => {
-            const tKey = accelerator
+          accelerators.forEach((key) => {
+            const tKey = key
               .split('+')
               .map((v) => {
                 switch (v) {
@@ -214,9 +214,9 @@ export default defineMixin((editor) => {
                 hotkey.handle(e)
               }
               else {
-                (commands.value.get(key) as any)?.()
+                (commands.value.get(command) as any)?.()
               }
-              editor.emit(`hotkey:${key}` as any, e)
+              editor.emit(`hotkey:${command}` as any, e)
             }
           })
         })

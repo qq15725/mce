@@ -78,11 +78,11 @@ export default definePlugin((editor) => {
       nextSelection,
     },
     hotkeys: [
-      { key: 'selectAll', accelerator: 'CmdOrCtrl+a' },
-      { key: 'deselectAll', accelerator: 'Shift+CmdOrCtrl+a' },
-      { key: 'selectParent', accelerator: 'Alt+\\' },
-      { key: 'previousSelection', accelerator: 'Alt+[' },
-      { key: 'nextSelection', accelerator: 'Alt+]' },
+      { command: 'selectAll', key: 'CmdOrCtrl+a' },
+      { command: 'deselectAll', key: 'Shift+CmdOrCtrl+a' },
+      { command: 'selectParent', key: 'Alt+\\' },
+      { command: 'previousSelection', key: 'Alt+[' },
+      { command: 'nextSelection', key: 'Alt+]' },
     ],
   }
 })

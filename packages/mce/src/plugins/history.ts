@@ -61,8 +61,8 @@ export default definePlugin((editor) => {
       redo,
     },
     hotkeys: [
-      { key: 'undo', accelerator: 'CmdOrCtrl+z' },
-      { key: 'redo', accelerator: 'Shift+CmdOrCtrl+z' },
+      { command: 'undo', key: 'CmdOrCtrl+z' },
+      { command: 'redo', key: 'Shift+CmdOrCtrl+z' },
     ],
   }
 })

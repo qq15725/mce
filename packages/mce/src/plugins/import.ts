@@ -52,7 +52,7 @@ export default definePlugin((editor) => {
       },
     },
     hotkeys: [
-      { key: 'import', accelerator: 'CmdOrCtrl+i' },
+      { command: 'import', key: 'CmdOrCtrl+i' },
     ],
   }
 })
