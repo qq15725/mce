@@ -22,12 +22,15 @@ export default definePlugin((editor) => {
     emit,
   } = editor
 
-  return () => {
-    // TODO lazy watch
-    watch(
-      () => getAabbInDrawboard(selection.value),
-      aabb => emit('setTransform', { aabb }),
-      { deep: true },
-    )
+  return {
+    name: 'ui',
+    setup: () => {
+      // TODO lazy watch
+      watch(
+        () => getAabbInDrawboard(selection.value),
+        aabb => emit('setTransform', { aabb }),
+        { deep: true },
+      )
+    },
   }
 })

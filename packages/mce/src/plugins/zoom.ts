@@ -41,8 +41,6 @@ const defaultZoomToFitOffset = { left: 0, top: 0, bottom: 0, right: 0 }
 
 export default definePlugin((editor) => {
   const {
-    registerHotkey,
-    registerCommand,
     camera,
     drawboardAabb,
     viewAabb,
@@ -52,23 +50,6 @@ export default definePlugin((editor) => {
   } = editor
 
   registerConfig('zoomToFitOffset', { ...defaultZoomToFitOffset })
-
-  registerCommand([
-    { key: 'zoomIn', handle: zoomIn },
-    { key: 'zoomOut', handle: zoomOut },
-    { key: 'zoomTo100', handle: zoomTo100 },
-    { key: 'zoomToFit', handle: zoomToFit },
-    { key: 'zoomToCover', handle: zoomToCover },
-    { key: 'zoomToSelection', handle: zoomToSelection },
-  ])
-
-  registerHotkey([
-    { key: 'zoomIn', accelerator: 'CmdOrCtrl+=' },
-    { key: 'zoomOut', accelerator: 'CmdOrCtrl+-' },
-    { key: 'zoomTo100', accelerator: 'Alt+º' },
-    { key: 'zoomToFit', accelerator: 'Alt+¡' },
-    { key: 'zoomToSelection', accelerator: 'Alt+™' },
-  ])
 
   function zoomIn(): void {
     camera.value.addZoom(0.25)
@@ -144,30 +125,48 @@ export default definePlugin((editor) => {
     _zoomToFit('contain', true)
   }
 
-  return () => {
-    const {
-      drawboardDom,
-      on,
-      config,
-      selection,
-    } = editor
+  return {
+    name: 'zoom',
+    commands: {
+      zoomIn,
+      zoomOut,
+      zoomTo100,
+      zoomToFit,
+      zoomToCover,
+      zoomToSelection,
+    },
+    hotkeys: [
+      { key: 'zoomIn', accelerator: 'CmdOrCtrl+=' },
+      { key: 'zoomOut', accelerator: 'CmdOrCtrl+-' },
+      { key: 'zoomTo100', accelerator: 'Alt+º' },
+      { key: 'zoomToFit', accelerator: 'Alt+¡' },
+      { key: 'zoomToSelection', accelerator: 'Alt+™' },
+    ],
+    setup: () => {
+      const {
+        drawboardDom,
+        on,
+        config,
+        selection,
+      } = editor
 
-    on('setDoc', zoomToFit)
-    on('setActiveFrame', () => {
-      if (selection.value.length) {
-        zoomToSelection()
-      }
-      else {
+      on('setDoc', zoomToFit)
+      on('setActiveFrame', () => {
+        if (selection.value.length) {
+          zoomToSelection()
+        }
+        else {
+          zoomToFit()
+        }
+      })
+      watch(() => config.value.viewMode, zoomToFit)
+
+      useResizeObserver(drawboardDom, (entries) => {
+        const { left: _left, top: _top, width, height } = entries[0].contentRect
+        const { left = _left, top = _top } = drawboardDom.value?.getBoundingClientRect() ?? {}
+        drawboardAabb.value = { left, top, width, height }
         zoomToFit()
-      }
-    })
-    watch(() => config.value.viewMode, zoomToFit)
-
-    useResizeObserver(drawboardDom, (entries) => {
-      const { left: _left, top: _top, width, height } = entries[0].contentRect
-      const { left = _left, top = _top } = drawboardDom.value?.getBoundingClientRect() ?? {}
-      drawboardAabb.value = { left, top, width, height }
-      zoomToFit()
-    })
+      })
+    },
   }
 })

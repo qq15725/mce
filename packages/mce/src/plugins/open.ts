@@ -14,20 +14,10 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    registerCommand,
-    registerHotkey,
     openFileDialog,
     load,
     setDoc,
   } = editor
-
-  registerCommand([
-    { key: 'open', handle: open },
-  ])
-
-  registerHotkey([
-    { key: 'open', accelerator: 'CmdOrCtrl+o' },
-  ])
 
   async function open() {
     const [file] = await openFileDialog()
@@ -55,5 +45,15 @@ export default definePlugin((editor) => {
         }
       }
     }
+  }
+
+  return {
+    name: 'open',
+    commands: {
+      open,
+    },
+    hotkeys: [
+      { key: 'open', accelerator: 'CmdOrCtrl+o' },
+    ],
   }
 })

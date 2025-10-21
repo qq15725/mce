@@ -4,7 +4,8 @@ import type { App, InjectionKey } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
 import { Observable } from 'modern-idoc'
 import { ref } from 'vue'
-import { presetPlugins } from './preset-plugins'
+import { mixins as presetMixins } from './mixins'
+import { plugins as presetPlugins } from './plugins'
 
 export interface Options extends Mce.Options {
   debug?: boolean
@@ -26,6 +27,7 @@ export class Editor extends Observable<Events> {
   debug = ref(false)
   declare config: RemovableRef<Mce.Config>
   onEmit?: <K extends keyof Events & string>(event: K, ...args: Events[K]) => void
+  plugins = new Map<string, PluginObject>()
 
   constructor(options: Options = {}) {
     super()
@@ -64,17 +66,22 @@ export class Editor extends Observable<Events> {
       ? useLocalStorage<Mce.Config>('config', () => ({} as any))
       : ref({} as any)
 
+    this._setupMixins(
+      presetMixins,
+      options,
+    )
+
     this._setupPlugins([
       ...presetPlugins,
       ...plugins,
     ], options)
   }
 
-  protected _setupPlugins(plugins: Plugin[], options: Options): void {
+  protected _setupMixins(mixins: Mixin[], options: Options): void {
     const installs: any[] = []
 
-    const use = (plugin: Plugin): void => {
-      const result = plugin(this, options)
+    const use = (mixin: Mixin): void => {
+      const result = mixin(this, options)
       switch (typeof result) {
         case 'object':
           if (Array.isArray(result)) {
@@ -91,9 +98,60 @@ export class Editor extends Observable<Events> {
       }
     }
 
-    plugins.map(use)
+    mixins.forEach(use)
 
     installs.forEach(install => (install as any)?.(this, options))
+  }
+
+  protected _setupPlugins(plugins: Plugin[], options: Options): void {
+    const use = (plugin: Plugin): void => {
+      let result: PluginObject
+      if (typeof plugin === 'function') {
+        result = plugin(this, options)
+      }
+      else {
+        result = plugin
+      }
+
+      this.plugins.set(result.name, result)
+
+      const {
+        commands = {},
+        hotkeys = [],
+        loaders = [],
+        exporters = [],
+      } = result
+
+      for (const key in commands) {
+        this.registerCommand(
+          key as any,
+          (commands as any)[key],
+        )
+      }
+      this.registerHotkey(hotkeys)
+      this.registerLoader(loaders)
+      exporters.forEach((v) => {
+        this.registerExporter(v.name, v)
+      })
+    }
+
+    plugins.forEach((p) => {
+      try {
+        use(p)
+      }
+      catch (err: any) {
+        console.error(`Failed to use plugin`, err)
+      }
+    })
+
+    this.plugins.forEach((p) => {
+      try {
+        p.setup?.()
+      }
+      catch (err: any) {
+        console.error(`Failed to setup ${p.name} plugin`, err)
+      }
+    })
   }
 
   install = (app: App): void => {
@@ -105,13 +163,28 @@ export function createEditor(options?: Options): Editor {
   return new Editor(options)
 }
 
-export type Plugin = (editor: Editor, options: Options) =>
+export interface PluginObject {
+  name: string
+  commands?: Record<string, Mce.Command>
+  hotkeys?: Mce.Hotkey[]
+  loaders?: Mce.Loader[]
+  exporters?: Mce.Exporter[]
+  setup?: () => void
+}
+
+export type Plugin = PluginObject | ((editor: Editor, options: Options) => PluginObject)
+
+export function definePlugin(cb: Plugin): Plugin {
+  return cb
+}
+
+export type Mixin = (editor: Editor, options: Options) =>
   | ((editor: Editor, options: Options) => void)
-  | Plugin[]
+  | Mixin[]
   | Record<string, any>
   | undefined
   | void
 
-export function definePlugin(cb: Plugin): Plugin {
+export function defineMixin(cb: Mixin): Mixin {
   return cb
 }

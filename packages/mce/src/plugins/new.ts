@@ -14,18 +14,8 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    registerCommand,
-    registerHotkey,
     setDoc,
   } = editor
-
-  registerCommand([
-    { key: 'new', handle: _new },
-  ])
-
-  registerHotkey([
-    { key: 'new', accelerator: 'Alt+CmdOrCtrl+Dead' },
-  ])
 
   function _new() {
     setDoc({
@@ -35,5 +25,15 @@ export default definePlugin((editor) => {
       },
       children: [],
     })
+  }
+
+  return {
+    name: 'new',
+    commands: {
+      new: _new,
+    },
+    hotkeys: [
+      { key: 'new', accelerator: 'Alt+CmdOrCtrl+Dead' },
+    ],
   }
 })

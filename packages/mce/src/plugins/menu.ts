@@ -273,4 +273,8 @@ export default definePlugin((editor) => {
     systemMenus,
     contextMenus,
   })
+
+  return {
+    name: 'menu',
+  }
 })

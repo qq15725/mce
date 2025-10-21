@@ -491,4 +491,8 @@ export default definePlugin((editor) => {
     auxiliaryLines,
     getAdsorptionPoints,
   })
+
+  return {
+    name: 'auxiliary',
+  }
 })

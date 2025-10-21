@@ -19,22 +19,10 @@ export default definePlugin((editor) => {
     getObb,
     getAabb,
     selection,
-    registerHotkey,
     addElement,
     deleteElement,
-    registerCommand,
     doc,
   } = editor
-
-  registerCommand([
-    { key: 'group', handle: group },
-    { key: 'ungroup', handle: ungroup },
-    { key: 'group/ungroup', handle: groupOrUngroup },
-  ])
-
-  registerHotkey([
-    { key: 'group/ungroup', accelerator: 'CmdOrCtrl+g', editable: false },
-  ])
 
   function group(): void {
     const elements = selection.value
@@ -90,5 +78,17 @@ export default definePlugin((editor) => {
     else if (selection.value.length > 1) {
       group()
     }
+  }
+
+  return {
+    name: 'group',
+    commands: {
+      group,
+      ungroup,
+      'group/ungroup': groupOrUngroup,
+    },
+    hotkeys: [
+      { key: 'group/ungroup', accelerator: 'CmdOrCtrl+g', editable: false },
+    ],
   }
 })

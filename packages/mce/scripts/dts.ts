@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { getPlugins } from './plugins'
+import { getFiles } from './preset'
 
 const typedGlobal = path.resolve(__dirname, '../src/typed-global.d.ts')
 const typedGlobalOut = path.resolve(__dirname, '../dist/typed-global.d.ts')
@@ -8,8 +8,8 @@ const typedPluginsOut = path.resolve(__dirname, '../dist/typed-plugins.d.ts')
 
 const imports: string[] = []
 
-getPlugins().forEach((provider) => {
-  imports.push(`import '${provider.path}'`)
+getFiles().forEach((file) => {
+  imports.push(`import '${file.path}'`)
 })
 
 const content = `/* eslint-disable */

@@ -23,27 +23,9 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    registerHotkey,
-    registerCommand,
     selection,
     root,
   } = editor
-
-  registerCommand([
-    { key: 'selectAll', handle: selectAll },
-    { key: 'deselectAll', handle: deselectAll },
-    { key: 'selectParent', handle: selectParent },
-    { key: 'previousSelection', handle: previousSelection },
-    { key: 'nextSelection', handle: nextSelection },
-  ])
-
-  registerHotkey([
-    { key: 'selectAll', accelerator: 'CmdOrCtrl+a' },
-    { key: 'deselectAll', accelerator: 'Shift+CmdOrCtrl+a' },
-    { key: 'selectParent', accelerator: 'Alt+\\' },
-    { key: 'previousSelection', accelerator: 'Alt+[' },
-    { key: 'nextSelection', accelerator: 'Alt+]' },
-  ])
 
   function selectAll(): void {
     selection.value = [...root.value?.children ?? []] as Element2D[]
@@ -84,5 +66,23 @@ export default definePlugin((editor) => {
     ) {
       selection.value = [nextSibling]
     }
+  }
+
+  return {
+    name: 'select',
+    commands: {
+      selectAll,
+      deselectAll,
+      selectParent,
+      previousSelection,
+      nextSelection,
+    },
+    hotkeys: [
+      { key: 'selectAll', accelerator: 'CmdOrCtrl+a' },
+      { key: 'deselectAll', accelerator: 'Shift+CmdOrCtrl+a' },
+      { key: 'selectParent', accelerator: 'Alt+\\' },
+      { key: 'previousSelection', accelerator: 'Alt+[' },
+      { key: 'nextSelection', accelerator: 'Alt+]' },
+    ],
   }
 })

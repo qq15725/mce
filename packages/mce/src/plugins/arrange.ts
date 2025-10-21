@@ -21,24 +21,8 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    registerCommand,
-    registerHotkey,
     selection,
   } = editor
-
-  registerCommand([
-    { key: 'raiseToFront', handle: raiseToFront },
-    { key: 'raise', handle: raise },
-    { key: 'lower', handle: lower },
-    { key: 'lowerToBack', handle: lowerToBack },
-  ])
-
-  registerHotkey([
-    { key: 'raiseToFront', accelerator: 'Shift+CmdOrCtrl+ArrowUp' },
-    { key: 'raise', accelerator: 'CmdOrCtrl+ArrowUp' },
-    { key: 'lower', accelerator: 'CmdOrCtrl+ArrowDown' },
-    { key: 'lowerToBack', accelerator: 'Shift+CmdOrCtrl+ArrowDown' },
-  ])
 
   function arrange(
     target: Element2D | Element2D[],
@@ -85,5 +69,21 @@ export default definePlugin((editor) => {
 
   function lowerToBack(target: Element2D | Element2D[] = selection.value): void {
     target && arrange(target, 'lowerToBack')
+  }
+
+  return {
+    name: 'arrange',
+    commands: {
+      raiseToFront,
+      raise,
+      lower,
+      lowerToBack,
+    },
+    hotkeys: [
+      { key: 'raiseToFront', accelerator: 'Shift+CmdOrCtrl+ArrowUp' },
+      { key: 'raise', accelerator: 'CmdOrCtrl+ArrowUp' },
+      { key: 'lower', accelerator: 'CmdOrCtrl+ArrowDown' },
+      { key: 'lowerToBack', accelerator: 'Shift+CmdOrCtrl+ArrowDown' },
+    ],
   }
 })

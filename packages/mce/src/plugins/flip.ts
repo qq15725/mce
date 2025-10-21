@@ -11,14 +11,8 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    registerCommand,
     selection,
   } = editor
-
-  registerCommand([
-    { key: 'flipX', handle: flipX },
-    { key: 'flipY', handle: flipY },
-  ])
 
   function flipX() {
     selection.value.forEach((el) => {
@@ -30,5 +24,13 @@ export default definePlugin((editor) => {
     selection.value.forEach((el) => {
       el.style.scaleY = -el.style.scaleY
     })
+  }
+
+  return {
+    name: 'flip',
+    commands: {
+      flipX,
+      flipY,
+    },
   }
 })

@@ -16,8 +16,6 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    registerHotkey,
-    registerCommand,
     deleteElement,
     getAabb,
     getObb,
@@ -26,16 +24,6 @@ export default definePlugin((editor) => {
     isFrame,
     doc,
   } = editor
-
-  registerCommand([
-    { key: 'frame', handle: frame },
-    { key: 'unframe', handle: unframe },
-    { key: 'frame/unframe', handle: frameOrUnframe },
-  ])
-
-  registerHotkey([
-    { key: 'frame/unframe', accelerator: 'CmdOrCtrl+f', editable: false },
-  ])
 
   function frame(): void {
     const elements = selection.value
@@ -93,5 +81,17 @@ export default definePlugin((editor) => {
     else if (selection.value.length > 1) {
       frame()
     }
+  }
+
+  return {
+    name: 'frame',
+    commands: {
+      'frame': frame,
+      'unframe': unframe,
+      'frame/unframe': frameOrUnframe,
+    },
+    hotkeys: [
+      { key: 'frame/unframe', accelerator: 'CmdOrCtrl+f', editable: false },
+    ],
   }
 })

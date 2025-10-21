@@ -16,20 +16,8 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    registerHotkey,
-    registerCommand,
     selection,
   } = editor
-
-  registerCommand([
-    { key: 'hide', handle: hide },
-    { key: 'show', handle: show },
-    { key: 'hide/show', handle: hideOrShow },
-  ])
-
-  registerHotkey([
-    { key: 'hide/show', accelerator: 'CmdOrCtrl+h' },
-  ])
 
   function show(): void {
     selection.value.forEach((el) => {
@@ -47,5 +35,17 @@ export default definePlugin((editor) => {
     selection.value.forEach((el) => {
       el.style.visibility = el.style.visibility === 'hidden' ? 'visible' : 'hidden'
     })
+  }
+
+  return {
+    name: 'visibility',
+    commands: {
+      'hide': hide,
+      'show': show,
+      'hide/show': hideOrShow,
+    },
+    hotkeys: [
+      { key: 'hide/show', accelerator: 'CmdOrCtrl+h' },
+    ],
   }
 })

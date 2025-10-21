@@ -19,38 +19,40 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    registerHotkey,
-    registerCommand,
     load,
     openFileDialog,
     addElement,
   } = editor
 
-  registerHotkey([
-    { key: 'import', accelerator: 'CmdOrCtrl+i' },
-  ])
+  return {
+    name: 'import',
+    commands: {
+      import: async (options = {}) => {
+        const files = await openFileDialog({ multiple: true })
 
-  registerCommand('import', async (options = {}) => {
-    const files = await openFileDialog({ multiple: true })
-
-    return addElement((
-      await Promise.all(
-        files.map(async (file) => {
-          const res = await load(file)
-          let elements
-          if (res.meta?.inEditorIs === 'Doc') {
-            elements = res.children ?? []
-          }
-          else {
-            elements = [res]
-          }
-          return elements
-        }),
-      )
-    ).flat(), {
-      ...options,
-      sizeToFit: true,
-      positionToFit: true,
-    })
-  })
+        return addElement((
+          await Promise.all(
+            files.map(async (file) => {
+              const res = await load(file)
+              let elements
+              if (res.meta?.inEditorIs === 'Doc') {
+                elements = res.children ?? []
+              }
+              else {
+                elements = [res]
+              }
+              return elements
+            }),
+          )
+        ).flat(), {
+          ...options,
+          sizeToFit: true,
+          positionToFit: true,
+        })
+      },
+    },
+    hotkeys: [
+      { key: 'import', accelerator: 'CmdOrCtrl+i' },
+    ],
+  }
 })

@@ -27,18 +27,7 @@ export default definePlugin((editor) => {
     activeFrameAabb,
     selection,
     getAabb,
-    registerCommand,
   } = editor
-
-  registerCommand([
-    { key: 'align', handle: align },
-    { key: 'alignLeft', handle: () => align('left') },
-    { key: 'alignHorizontalCenter', handle: () => align('horizontal-center') },
-    { key: 'alignRight', handle: () => align('right') },
-    { key: 'alignTop', handle: () => align('top') },
-    { key: 'alignVerticalCenter', handle: () => align('vertical-center') },
-    { key: 'alignBottom', handle: () => align('bottom') },
-  ])
 
   function align(direction: Mce.AlignCommandDirection) {
     const box = selection.value.length === 1
@@ -67,5 +56,18 @@ export default definePlugin((editor) => {
           break
       }
     })
+  }
+
+  return {
+    name: 'align',
+    commands: {
+      align,
+      alignLeft: () => align('left'),
+      alignHorizontalCenter: () => align('horizontal-center'),
+      alignRight: () => align('right'),
+      alignTop: () => align('top'),
+      alignVerticalCenter: () => align('vertical-center'),
+      alignBottom: () => align('bottom'),
+    },
   }
 })

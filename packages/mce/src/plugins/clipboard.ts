@@ -30,26 +30,10 @@ declare global {
 export default definePlugin((editor) => {
   const {
     selection,
-    registerHotkey,
-    registerCommand,
     deleteCurrentElements,
     load,
     addElement,
   } = editor
-
-  registerCommand([
-    { key: 'copy', handle: copy },
-    { key: 'cut', handle: cut },
-    { key: 'paste', handle: paste },
-    { key: 'duplicate', handle: duplicate },
-  ])
-
-  registerHotkey([
-    { key: 'copy', accelerator: 'CmdOrCtrl+c', editable: false },
-    { key: 'cut', accelerator: 'CmdOrCtrl+x', editable: false },
-    { key: 'paste', accelerator: 'CmdOrCtrl+v', editable: false },
-    { key: 'duplicate', accelerator: 'CmdOrCtrl+d', editable: false },
-  ])
 
   const copiedData = ref<any>()
 
@@ -163,4 +147,20 @@ export default definePlugin((editor) => {
   Object.assign(editor, {
     copiedData,
   })
+
+  return {
+    name: 'clipboard',
+    commands: {
+      copy,
+      cut,
+      paste,
+      duplicate,
+    },
+    hotkeys: [
+      { key: 'copy', accelerator: 'CmdOrCtrl+c', editable: false },
+      { key: 'cut', accelerator: 'CmdOrCtrl+x', editable: false },
+      { key: 'paste', accelerator: 'CmdOrCtrl+v', editable: false },
+      { key: 'duplicate', accelerator: 'CmdOrCtrl+d', editable: false },
+    ],
+  }
 })

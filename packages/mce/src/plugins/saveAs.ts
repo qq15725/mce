@@ -10,17 +10,12 @@ declare global {
     interface Commands {
       saveAs: (type: keyof Exporters, options?: SaveAsOptions) => Promise<void>
     }
-
-    interface Editor {
-      saveAs: (type: keyof Exporters, options?: SaveAsOptions) => Promise<void>
-    }
   }
 }
 
 export default definePlugin((editor) => {
   const {
     to,
-    registerCommand,
   } = editor
 
   async function saveAs(key: keyof Mce.Exporters, options: Mce.SaveAsOptions = {}): Promise<void> {
@@ -41,11 +36,10 @@ export default definePlugin((editor) => {
     _saveAs(res, `${filename}.${key}`)
   }
 
-  registerCommand([
-    { key: 'saveAs', handle: (type, options) => saveAs(type, options) },
-  ])
-
-  Object.assign(editor, {
-    saveAs,
-  })
+  return {
+    name: 'saveAs',
+    commands: {
+      saveAs: (type, options) => saveAs(type, options),
+    },
+  }
 })

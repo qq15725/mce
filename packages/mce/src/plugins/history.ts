@@ -26,19 +26,8 @@ declare global {
 export default definePlugin((editor) => {
   const {
     doc,
-    registerHotkey,
-    registerCommand,
+    on,
   } = editor
-
-  registerCommand([
-    { key: 'undo', handle: undo },
-    { key: 'redo', handle: redo },
-  ])
-
-  registerHotkey([
-    { key: 'undo', accelerator: 'CmdOrCtrl+z' },
-    { key: 'redo', accelerator: 'Shift+CmdOrCtrl+z' },
-  ])
 
   const canUndo = ref(false)
   const canRedo = ref(false)
@@ -51,6 +40,13 @@ export default definePlugin((editor) => {
     doc.value?.undo()
   }
 
+  on('setDoc', (doc) => {
+    doc.on('history', (um) => {
+      canUndo.value = um.canUndo()
+      canRedo.value = um.canRedo()
+    })
+  })
+
   Object.assign(editor, {
     canUndo,
     canRedo,
@@ -58,16 +54,15 @@ export default definePlugin((editor) => {
     undo,
   })
 
-  return () => {
-    const {
-      on,
-    } = editor
-
-    on('setDoc', (doc) => {
-      doc.on('history', (um) => {
-        canUndo.value = um.canUndo()
-        canRedo.value = um.canRedo()
-      })
-    })
+  return {
+    name: 'history',
+    commands: {
+      undo,
+      redo,
+    },
+    hotkeys: [
+      { key: 'undo', accelerator: 'CmdOrCtrl+z' },
+      { key: 'redo', accelerator: 'Shift+CmdOrCtrl+z' },
+    ],
   }
 })

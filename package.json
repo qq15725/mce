@@ -6,7 +6,7 @@
   "packageManager": "pnpm@10.18.1",
   "scripts": {
     "build": "pnpm -F mce -F @mce/* build",
-    "build:plugins": "pnpm -F mce build:plugins",
+    "build:preset": "pnpm -F mce build:preset",
     "test": "pnpm -r test",
     "lint": "pnpm -r lint",
     "cli": "pnpm -F @mce/cli cli",

@@ -19,20 +19,7 @@ declare global {
 }
 
 export default definePlugin((editor) => {
-  const {
-    registerCommand,
-    registerHotkey,
-  } = editor
-
   const preferencesVisible = ref(false)
-
-  registerCommand([
-    { key: 'preferences', handle: preferences },
-  ])
-
-  registerHotkey([
-    { key: 'preferences', accelerator: 'CmdOrCtrl+,', editable: false, system: true },
-  ])
 
   function preferences() {
     preferencesVisible.value = !preferencesVisible.value
@@ -41,4 +28,14 @@ export default definePlugin((editor) => {
   Object.assign(editor, {
     preferencesVisible,
   })
+
+  return {
+    name: 'preferences',
+    commands: {
+      preferences,
+    },
+    hotkeys: [
+      { key: 'preferences', accelerator: 'CmdOrCtrl+,', editable: false, system: true },
+    ],
+  }
 })

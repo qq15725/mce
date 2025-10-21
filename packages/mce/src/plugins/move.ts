@@ -23,29 +23,8 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    registerCommand,
-    registerHotkey,
     selection,
   } = editor
-
-  registerCommand([
-    { key: 'move', handle: move },
-    { key: 'moveLeft', handle: (distance?: number) => move('left', distance) },
-    { key: 'moveTop', handle: (distance?: number) => move('top', distance) },
-    { key: 'moveRight', handle: (distance?: number) => move('right', distance) },
-    { key: 'moveBottom', handle: (distance?: number) => move('bottom', distance) },
-  ])
-
-  function condition(): boolean {
-    return selection.value.length > 0
-  }
-
-  registerHotkey([
-    { key: 'moveLeft', accelerator: 'ArrowLeft', editable: false, condition },
-    { key: 'moveTop', accelerator: 'ArrowUp', editable: false, condition },
-    { key: 'moveRight', accelerator: 'ArrowRight', editable: false, condition },
-    { key: 'moveBottom', accelerator: 'ArrowDown', editable: false, condition },
-  ])
 
   function move(direction: Mce.MoveCommandDirection, distance = 1): void {
     let prop
@@ -65,5 +44,26 @@ export default definePlugin((editor) => {
     selection.value.forEach((element) => {
       (element.style as any)[prop] += distance
     })
+  }
+
+  function condition(): boolean {
+    return selection.value.length > 0
+  }
+
+  return {
+    name: 'move',
+    commands: {
+      move,
+      moveLeft: (distance?: number) => move('left', distance),
+      moveTop: (distance?: number) => move('top', distance),
+      moveRight: (distance?: number) => move('right', distance),
+      moveBottom: (distance?: number) => move('bottom', distance),
+    },
+    hotkeys: [
+      { key: 'moveLeft', accelerator: 'ArrowLeft', editable: false, condition },
+      { key: 'moveTop', accelerator: 'ArrowUp', editable: false, condition },
+      { key: 'moveRight', accelerator: 'ArrowRight', editable: false, condition },
+      { key: 'moveBottom', accelerator: 'ArrowDown', editable: false, condition },
+    ],
   }
 })
