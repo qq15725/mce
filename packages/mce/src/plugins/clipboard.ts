@@ -30,7 +30,7 @@ declare global {
 export default definePlugin((editor) => {
   const {
     selection,
-    deleteCurrentElements,
+    exec,
     load,
     addElement,
   } = editor
@@ -58,7 +58,7 @@ export default definePlugin((editor) => {
 
   async function cut(): Promise<void> {
     await copy()
-    deleteCurrentElements()
+    exec('delete')
   }
 
   async function paste(): Promise<void> {

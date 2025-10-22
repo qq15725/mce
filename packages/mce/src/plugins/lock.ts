@@ -30,7 +30,7 @@ export default definePlugin((editor) => {
       { command: 'lock/unlock', handle: () => selection.value.forEach(el => isLocked(el) ? unlock(el) : lock(el)) },
     ],
     hotkeys: [
-      { command: 'lock/unlock', key: 'CmdOrCtrl+l', editable: false },
+      { command: 'lock/unlock', key: 'CmdOrCtrl+l' },
     ],
   }
 })

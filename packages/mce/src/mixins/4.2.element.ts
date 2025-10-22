@@ -40,7 +40,6 @@ declare global {
         element: Element2D | undefined,
         event?: MouseEvent | PointerEvent,
       ) => void
-      deleteCurrentElements: () => void
       selectArea: (areaInDrawboard: AxisAlignedBoundingBox) => Element2D[]
     }
 
@@ -258,16 +257,6 @@ export default defineMixin((editor) => {
     }
   }
 
-  function deleteCurrentElements(): void {
-    if (selection.value.length) {
-      selection.value.forEach((element: Element2D) => {
-        deleteElement(element.id)
-      })
-      selection.value = []
-    }
-    hoverElement.value = undefined
-  }
-
   function selectArea(areaInDrawboard: AxisAlignedBoundingBox): Element2D[] {
     const selected = root.value
       ?.children
@@ -294,7 +283,6 @@ export default defineMixin((editor) => {
     getElement,
     resizeElement,
     pointerActivateElement,
-    deleteCurrentElements,
     selectArea,
   })
 })
