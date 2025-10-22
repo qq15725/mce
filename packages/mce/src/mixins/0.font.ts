@@ -30,6 +30,7 @@ export default defineMixin((editor) => {
 
   async function loadFont(source: FontSource, options?: FontLoadOptions): Promise<FontLoadedResult> {
     const res = await fonts.load(source, options)
+    console.log('loadFont', res)
     emit('loadFont', res)
     return res
   }

@@ -66,18 +66,18 @@ export class Editor extends Observable<Events> {
       ? useLocalStorage<Mce.Config>('config', () => ({} as any))
       : ref({} as any)
 
-    this._setupMixins(
+    this._useMixins(
       presetMixins,
       options,
     )
 
-    this._setupPlugins([
+    this.use([
       ...presetPlugins,
       ...plugins,
     ], options)
   }
 
-  protected _setupMixins(mixins: Mixin[], options: Options): void {
+  protected _useMixins(mixins: Mixin[], options: Options): void {
     const installs: any[] = []
 
     const use = (mixin: Mixin): void => {
@@ -103,7 +103,7 @@ export class Editor extends Observable<Events> {
     installs.forEach(install => (install as any)?.(this, options))
   }
 
-  protected _setupPlugins(plugins: Plugin[], options: Options): void {
+  use(plugins: Plugin[], options: Options): void {
     const use = (plugin: Plugin): void => {
       let result: PluginObject
       if (typeof plugin === 'function') {
@@ -136,15 +136,23 @@ export class Editor extends Observable<Events> {
         console.error(`Failed to use plugin`, err)
       }
     })
+  }
 
-    this.plugins.forEach((p) => {
-      try {
-        p.setup?.()
-      }
-      catch (err: any) {
-        console.error(`Failed to setup ${p.name} plugin`, err)
-      }
-    })
+  protected _setuped = false
+
+  setup = () => {
+    if (!this._setuped) {
+      this._setuped = true
+
+      this.plugins.forEach((p) => {
+        try {
+          p.setup?.()
+        }
+        catch (err: any) {
+          console.error(`Failed to setup ${p.name} plugin`, err)
+        }
+      })
+    }
   }
 
   install = (app: App): void => {

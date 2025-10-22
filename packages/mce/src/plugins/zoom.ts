@@ -159,6 +159,7 @@ export default definePlugin((editor) => {
           zoomToFit()
         }
       })
+
       watch(() => config.value.viewMode, zoomToFit)
 
       useResizeObserver(drawboardDom, (entries) => {

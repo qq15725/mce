@@ -34,6 +34,7 @@ import Hover from './Hover.vue'
 import Rulers from './Rulers.vue'
 import Scrollbars from './Scrollbars.vue'
 import Selector from './Selector.vue'
+import Setup from './Setup.vue'
 import Starter from './Starter.vue'
 import Statusbar from './Statusbar.vue'
 import TextEditor from './TextEditor.vue'
@@ -366,6 +367,7 @@ function onScroll() {
     class="mce-drawboard"
     :class="`mce-drawboard--${config.viewMode}`"
   >
+    <Setup />
     <div
       ref="drawboardDom"
       :data-pixel-ratio="renderEngine.pixelRatio"
