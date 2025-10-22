@@ -47,21 +47,11 @@ declare global {
     interface Events {
       addElement: [element: Element2D[]]
     }
-
-    interface Hotkeys {
-      delete: [event: KeyboardEvent]
-    }
-
-    interface Commands {
-      delete: () => void
-    }
   }
 }
 
 export default defineMixin((editor) => {
   const {
-    registerHotkey,
-    registerCommand,
     doc,
     rootAabb,
     activeFrame,
@@ -80,16 +70,6 @@ export default defineMixin((editor) => {
     getGlobalPointer,
     selection,
   } = editor
-
-  registerCommand([
-    { command: 'delete', handle: deleteCurrentElements },
-  ])
-
-  const when = (): boolean => Boolean(selection.value.length > 0)
-
-  registerHotkey([
-    { command: 'delete', key: ['Backspace', 'Delete'], when },
-  ])
 
   function addElement(
     value: Element | Element[],

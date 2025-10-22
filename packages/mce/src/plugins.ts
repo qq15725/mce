@@ -6,6 +6,7 @@ import _align from './plugins/align'
 import _arrange from './plugins/arrange'
 import _auxiliary from './plugins/auxiliary'
 import _clipboard from './plugins/clipboard'
+import _delete from './plugins/delete'
 import _flip from './plugins/flip'
 import _frame from './plugins/frame'
 import _group from './plugins/group'
@@ -34,6 +35,7 @@ export const plugins = [
   _arrange,
   _auxiliary,
   _clipboard,
+  _delete,
   _flip,
   _frame,
   _group,
