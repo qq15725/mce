@@ -12,15 +12,20 @@ import _group from './plugins/group'
 import _history from './plugins/history'
 import _image from './plugins/image'
 import _import from './plugins/import'
+import _lock from './plugins/lock'
 import _menu from './plugins/menu'
 import _move from './plugins/move'
 import _new from './plugins/new'
 import _open from './plugins/open'
+import _pdf from './plugins/pdf'
+import _pptx from './plugins/pptx'
 import _preference from './plugins/preference'
 import _saveAs from './plugins/saveAs'
 import _select from './plugins/select'
 import _text from './plugins/text'
 import _ui from './plugins/ui'
+import _url from './plugins/url'
+import _video from './plugins/video'
 import _visibility from './plugins/visibility'
 import _zoom from './plugins/zoom'
 
@@ -35,15 +40,20 @@ export const plugins = [
   _history,
   _image,
   _import,
+  _lock,
   _menu,
   _move,
   _new,
   _open,
+  _pdf,
+  _pptx,
   _preference,
   _saveAs,
   _select,
   _text,
   _ui,
+  _url,
+  _video,
   _visibility,
   _zoom,
 ]

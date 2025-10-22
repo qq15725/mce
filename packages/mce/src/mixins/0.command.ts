@@ -4,10 +4,6 @@ import { defineMixin } from '../editor'
 
 declare global {
   namespace Mce {
-    interface Commands {
-      //
-    }
-
     type CommandHandle = (...args: any[]) => any
 
     interface Command {
@@ -24,13 +20,10 @@ declare global {
     }
 
     interface Editor {
-      commands: Ref<Map<string, Commands[keyof Commands]>>
-      registerCommand: {
-        <K extends keyof Commands>(command: K, handle: Commands[K]): void
-        <K extends keyof Commands>(commands: { command: K, handle: Commands[K] }[]): void
-      }
-      unregisterCommand: <K extends keyof Commands = keyof Commands>(key: K) => void
-      exec: <K extends keyof Commands>(key: K, ...args: Parameters<Commands[K]>) => ReturnType<Commands[K]>
+      commands: Ref<Map<string, Command>>
+      registerCommand: (value: Command | Command[]) => void
+      unregisterCommand: (command: string) => void
+      exec: <K extends keyof Commands>(command: K & string, ...args: Parameters<Commands[K]>) => ReturnType<Commands[K]>
     }
   }
 }
@@ -41,30 +34,26 @@ export default defineMixin((editor) => {
 
   const commands: Mce.Editor['commands'] = ref(new Map())
 
-  function registerCommand(command: string, handle: Mce.CommandHandle): void
-  function registerCommand(commands: { command: string, handle: Mce.CommandHandle }[]): void
-  function registerCommand(...args: any[]): void {
-    if (Array.isArray(args[0])) {
-      args[0].forEach((item) => {
-        commands.value.set(item.command, item.handle)
-      })
+  const registerCommand: Mce.Editor['registerCommand'] = (value) => {
+    if (Array.isArray(value)) {
+      value.forEach(item => registerCommand(item))
     }
     else {
-      commands.value.set(args[0], args[1])
+      commands.value.set(value.command, value)
     }
   }
 
-  const unregisterCommand: Mce.Editor['unregisterCommand'] = (key) => {
-    commands.value.delete(key)
+  const unregisterCommand: Mce.Editor['unregisterCommand'] = (command) => {
+    commands.value.delete(command)
   }
 
-  const exec: Mce.Editor['exec'] = (key, ...args) => {
-    const command = commands.value.get(key) as any
-    if (!command) {
-      console.warn(`Command "${key}" not found`)
+  const exec: Mce.Editor['exec'] = (command, ...args) => {
+    const item = commands.value.get(command)
+    if (!item) {
+      throw new Error(`Command "${command}" not found`)
     }
-    const res = command(...args)
-    emit(`command:${key}` as any, res)
+    const res = item.handle(...args)
+    emit(`command:${command}` as any, res)
     return res
   }
 

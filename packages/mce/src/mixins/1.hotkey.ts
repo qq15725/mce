@@ -38,7 +38,7 @@ declare global {
     interface Editor {
       hotkeysData: WritableComputedRef<HotkeyData[]>
       hotkeys: Ref<Map<string, Hotkey>>
-      registerHotkey: (hotkey: Hotkey | Hotkey[]) => void
+      registerHotkey: (value: Hotkey | Hotkey[]) => void
       unregisterHotkey: (command: string) => void
       getKbd: (command: string) => string
     }
@@ -71,16 +71,16 @@ export default defineMixin((editor) => {
   const hotkeysData = registerConfig('hotkeys', defaultHotkeys)
   const hotkeys = ref(new Map<string, Mce.Hotkey>())
 
-  function registerHotkey(hotkey: Mce.Hotkey | Mce.Hotkey[]): void {
-    if (Array.isArray(hotkey)) {
-      hotkey.forEach(item => registerHotkey(item))
+  function registerHotkey(value: Mce.Hotkey | Mce.Hotkey[]): void {
+    if (Array.isArray(value)) {
+      value.forEach(item => registerHotkey(item))
     }
     else {
       const {
         when: _when,
         handle: _handle,
         ...hotkeyData
-      } = hotkey
+      } = value
 
       const {
         command,
@@ -91,7 +91,7 @@ export default defineMixin((editor) => {
         hotkeyData,
       ]
 
-      hotkeys.value.set(command, hotkey)
+      hotkeys.value.set(command, value)
     }
   }
 
@@ -210,7 +210,7 @@ export default defineMixin((editor) => {
                 hotkey.handle(e)
               }
               else {
-                (commands.value.get(command) as any)?.()
+                commands.value.get(command)?.handle()
               }
               editor.emit(`hotkey:${command}` as any, e)
             }

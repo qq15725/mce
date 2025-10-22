@@ -67,7 +67,7 @@ async function startTyping(e?: PointerEvent): Promise<boolean> {
   return editor.pointerdown(e)
 }
 
-onBeforeMount(() => registerCommand('startTyping', startTyping))
+onBeforeMount(() => registerCommand({ command: 'startTyping', handle: startTyping }))
 onBeforeUnmount(() => unregisterCommand('startTyping'))
 
 defineExpose({

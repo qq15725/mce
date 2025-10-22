@@ -13,16 +13,16 @@ declare global {
       onProgress?: ExporterProgress
     }
 
-    type Exporter = (options: ExporterOptions) => any | Promise<any>
+    interface Exporter {
+      name: string
+      handle: (options: ExporterOptions) => any | Promise<any>
+    }
 
     interface Editor {
       exporters: Ref<Map<string, Exporter>>
-      registerExporter: {
-        (key: string, exporter: Exporter): void
-        (exporters: { key: string, handle: Exporter }[]): void
-      }
-      unregisterExporter: (key: keyof Exporters) => void
-      to: <K extends keyof Exporters>(key: K, options?: ExporterOptions) => Exporters[K]
+      registerExporter: (value: Exporter | Exporter[]) => void
+      unregisterExporter: (name: string) => void
+      to: <K extends keyof Exporters>(name: K, options?: ExporterOptions) => Exporters[K]
     }
   }
 }
@@ -30,21 +30,21 @@ declare global {
 export default defineMixin((editor) => {
   const exporters: Mce.Editor['exporters'] = ref(new Map<string, Mce.Exporter>())
 
-  const registerExporter: Mce.Editor['registerExporter'] = (...args: any[]) => {
-    if (Array.isArray(args[0])) {
-      args[0].forEach(v => exporters.value.set(v.key, v.handle))
+  const registerExporter: Mce.Editor['registerExporter'] = (value) => {
+    if (Array.isArray(value)) {
+      value.forEach(item => registerExporter(item))
     }
     else {
-      exporters.value.set(args[0], args[1])
+      exporters.value.set(value.name, value)
     }
   }
 
-  const unregisterExporter: Mce.Editor['unregisterExporter'] = (key) => {
-    exporters.value.delete(key)
+  const unregisterExporter: Mce.Editor['unregisterExporter'] = (name) => {
+    exporters.value.delete(name)
   }
 
-  const to: Mce.Editor['to'] = (key, options = {}) => {
-    return exporters.value.get(key)?.(options)
+  const to: Mce.Editor['to'] = (name, options = {}) => {
+    return exporters.value.get(name)?.handle(options)
   }
 
   Object.assign(editor, {

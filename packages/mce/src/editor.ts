@@ -122,14 +122,10 @@ export class Editor extends Observable<Events> {
         exporters = [],
       } = result
 
-      commands.forEach((v) => {
-        this.registerCommand(v.command as any, v.handle as any)
-      })
+      this.registerCommand(commands)
       this.registerHotkey(hotkeys)
       this.registerLoader(loaders)
-      exporters.forEach((v) => {
-        this.registerExporter(v.name, v)
-      })
+      this.registerExporter(exporters)
     }
 
     plugins.forEach((p) => {

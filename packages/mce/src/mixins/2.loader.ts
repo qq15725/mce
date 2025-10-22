@@ -15,7 +15,7 @@ declare global {
 
     interface Editor {
       loaders: Ref<Map<string, Loader>>
-      registerLoader: (loader: Loader | Loader[]) => void
+      registerLoader: (value: Loader | Loader[]) => void
       unregisterLoader: (name: string) => void
       load: <T = NormalizedElement>(source: any) => Promise<T>
       openFileDialog: (options?: { multiple?: boolean }) => Promise<File[]>
@@ -30,12 +30,12 @@ export default defineMixin((editor) => {
 
   const loaders = ref(new Map<string, Mce.Loader>())
 
-  const registerLoader: Mce.Editor['registerLoader'] = (loader) => {
-    if (Array.isArray(loader)) {
-      loader.forEach(v => registerLoader(v))
+  const registerLoader: Mce.Editor['registerLoader'] = (value) => {
+    if (Array.isArray(value)) {
+      value.forEach(v => registerLoader(v))
     }
     else {
-      loaders.value.set(loader.name, loader)
+      loaders.value.set(value.name, value)
     }
   }
 

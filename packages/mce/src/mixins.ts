@@ -14,17 +14,9 @@ import _1_hotkey from './mixins/1.hotkey'
 import _1_upload from './mixins/1.upload'
 import _2_box from './mixins/2.box'
 import _2_exporter from './mixins/2.exporter'
-import _2_exporter_0_json from './mixins/2.exporter/0.json'
-import _2_exporter_image from './mixins/2.exporter/image'
-import _2_exporter_pdf from './mixins/2.exporter/pdf'
-import _2_exporter_pptx from './mixins/2.exporter/pptx'
-import _2_exporter_video from './mixins/2.exporter/video'
+import _2_exporter_json from './mixins/2.exporter/json'
 import _2_loader from './mixins/2.loader'
-import _2_loader_0_url from './mixins/2.loader/0.url'
-import _2_loader_image from './mixins/2.loader/image'
 import _2_loader_json from './mixins/2.loader/json'
-import _2_loader_pptx from './mixins/2.loader/pptx'
-import _2_loader_txt from './mixins/2.loader/txt'
 import _3_view from './mixins/3.view'
 import _4_0_text from './mixins/4.0.text'
 import _4_1_lock from './mixins/4.1.lock'
@@ -46,17 +38,9 @@ export const mixins = [
   _1_upload,
   _2_box,
   _2_exporter,
-  _2_exporter_0_json,
-  _2_exporter_image,
-  _2_exporter_pdf,
-  _2_exporter_pptx,
-  _2_exporter_video,
+  _2_exporter_json,
   _2_loader,
-  _2_loader_0_url,
-  _2_loader_image,
   _2_loader_json,
-  _2_loader_pptx,
-  _2_loader_txt,
   _3_view,
   _4_0_text,
   _4_1_lock,

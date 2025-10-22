@@ -35,7 +35,9 @@ const {
 const transformable = useTemplateRef('transformableRef')
 
 onBeforeMount(() => {
-  registerCommand('startTransform', e => Boolean(transformable.value?.start(e)))
+  registerCommand([
+    { command: 'startTransform', handle: e => Boolean(transformable.value?.start(e)) },
+  ])
 })
 
 onBeforeUnmount(() => {
