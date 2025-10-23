@@ -30,45 +30,51 @@ const elements = computed(() => {
 
 <template>
   <div class="mce-timeline">
-    <div class="mce-timeline__container">
-      <div class="mce-timeline__header">
-        <Trackhead
-          v-for="(node, index) in elements" :key="index"
-          :node="node"
-        />
-      </div>
+    <!-- toolbar -->
 
-      <div class="mce-timeline__main">
+    <div class="mce-timeline__main">
+      <div class="mce-timeline__ruler">
         <Ruler
           v-model="currentTime"
           :zoom="msPerPx"
-        />
-
-        <div
-          class="mce-timeline__tracks"
-          :style="{
-            width: `${endTime * msPerPx}px`,
-          }"
-        >
-          <Track
-            v-for="(node, index) in elements" :key="index"
-            :node="node"
-            :zoom="msPerPx"
-          >
-            <Segment
-              :node="node"
-              :zoom="msPerPx"
-              :active="selection.some(v => v.equal(node))"
-              @click="selection = [node]"
-            />
-          </Track>
-        </div>
-
-        <Playhead
-          v-model="currentTime"
-          :zoom="msPerPx"
+          style="position: relative;"
         />
       </div>
+
+      <div class="mce-timeline__track-wrapper">
+        <div class="mce-timeline__track-headers">
+          <Trackhead
+            v-for="(node, index) in elements" :key="index"
+            :node="node"
+          />
+        </div>
+
+        <div class="mce-timeline__track-bodys">
+          <div
+            :style="{
+              width: `${endTime * msPerPx}px`,
+            }"
+          >
+            <Track
+              v-for="(node, index) in elements" :key="index"
+              :node="node"
+              :zoom="msPerPx"
+            >
+              <Segment
+                :node="node"
+                :zoom="msPerPx"
+                :active="selection.some(v => v.equal(node))"
+                @click="selection = [node]"
+              />
+            </Track>
+          </div>
+        </div>
+      </div>
+
+      <Playhead
+        v-model="currentTime"
+        :zoom="msPerPx"
+      />
     </div>
   </div>
 </template>
@@ -84,39 +90,51 @@ const elements = computed(() => {
     flex-direction: column;
     width: 100%;
 
-    &__container {
+    &__main {
       display: flex;
+      flex-direction: column;
       min-height: 0;
       flex: 1;
       overflow: auto;
       overflow: overlay;
     }
 
-    &__header {
-      padding-top: 34px;
+    &__ruler {
+      position: relative;
+      width: 100%;
+      height: 30px;
+      min-height: 30px;
+      padding-left: 56px;
+    }
+
+    &__track-wrapper {
+      position: relative;
+      display: flex;
+      min-width: 0;
+      flex: 1;
+      overflow-y: auto;
+      overflow-y: overlay;
+    }
+
+    &__track-headers {
       display: flex;
       flex-direction: column-reverse;
       align-items: center;
-      width: var(--timeline-track-header-width, 56px);
+      width: 56px;
       height: max-content;
+      padding-left: 4px;
     }
 
-    &__main {
-      display: flex;
-      flex-direction: column;
+    &__track-bodys {
       position: relative;
-      min-width: 0;
-      flex: 1;
-      height: max-content;
-      min-height: 100%;
-    }
-
-    &__tracks {
-      position: relative;
-      margin-top: 34px;
       display: flex;
       flex-direction: column-reverse;
+      justify-content: start;
       gap: 8px;
+      flex: 1;
+      height: max-content;
+      overflow-x: auto;
+      overflow-x: overlay;
     }
   }
 </style>

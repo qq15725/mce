@@ -11,7 +11,7 @@ const currentTime = defineModel<number>({ default: 0 })
 
 const style = computed(() => {
   return {
-    transform: `translate(${(Math.ceil(currentTime.value * props.zoom))}px, 0px)`,
+    transform: `translate(${(Math.ceil(currentTime.value * props.zoom)) + 54}px, 0px)`,
   }
 })
 </script>
