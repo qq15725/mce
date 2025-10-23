@@ -54,14 +54,13 @@ export default defineMixin((editor) => {
     doc,
     rootAabb,
     activeFrame,
-    hoverElement,
     emit,
     textFontSizeToFit,
     textToFit,
     log,
     root,
     isFrame,
-    isLocked,
+    isLock,
     getObbInDrawboard,
     config,
     getAncestorFrame,
@@ -270,7 +269,7 @@ export default defineMixin((editor) => {
         return 'isVisibleInTree' in node
           && node.isVisibleInTree()
           && isOverlappingObb(areaInDrawboard, getObbInDrawboard(node))
-          && !isLocked(node)
+          && !isLock(node)
       }) ?? []
     selection.value = selected
     return selected

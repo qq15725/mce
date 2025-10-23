@@ -1,0 +1,47 @@
+import { render } from 'modern-canvas'
+import { definePlugin } from '../editor'
+
+declare global {
+  namespace Mce {
+    interface Exporters {
+      gif: Blob
+    }
+  }
+}
+
+export default definePlugin((editor) => {
+  const {
+    fonts,
+    to,
+  } = editor
+
+  return {
+    name: 'gif',
+    exporters: [
+      {
+        name: 'gif',
+        handle: async (options) => {
+          const { Encoder } = await import('modern-gif')
+          const { onProgress, ...restOptions } = options
+          const data = to('json', restOptions)
+          const { startTime, endTime } = data.meta
+          const width = Math.floor(data.style.width)
+          const height = Math.floor(data.style.height)
+          const encoder = new Encoder({ width, height })
+          await render({
+            data,
+            width,
+            height,
+            fonts,
+            keyframes: Array.from({ length: ~~((endTime - startTime) / 100) }, (_, i) => startTime + i * 100),
+            onFrame: async (data, { duration, progress }) => {
+              await encoder.encode({ data: data as any, delay: duration })
+              onProgress?.(~~(progress * 100), 100)
+            },
+          })
+          return await encoder.flush('blob')
+        },
+      },
+    ],
+  }
+})

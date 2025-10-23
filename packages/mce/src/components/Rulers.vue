@@ -7,15 +7,6 @@ defineOptions({
   inheritAttrs: false,
 })
 
-const props = withDefaults(
-  defineProps<{
-    size?: number
-  }>(),
-  {
-    size: 16,
-  },
-)
-
 const {
   camera,
   getAabbInDrawboard,
@@ -27,17 +18,21 @@ const activeAabb = computed(() => getAabbInDrawboard(selection.value))
 
 <template>
   <Ruler
-    v-bind="props"
+    :size="16"
     :zoom="camera.zoom.y"
     vertical
-    :offset="camera.position.y"
-    :aabb="activeAabb"
+    inset
+    refline
+    :position="camera.position.y"
+    :selected="activeAabb"
   />
 
   <Ruler
-    v-bind="props"
+    :size="16"
+    inset
+    refline
     :zoom="camera.zoom.x"
-    :offset="camera.position.x"
-    :aabb="activeAabb"
+    :position="camera.position.x"
+    :selected="activeAabb"
   />
 </template>

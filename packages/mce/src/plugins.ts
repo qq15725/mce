@@ -9,6 +9,7 @@ import _clipboard from './plugins/clipboard'
 import _delete from './plugins/delete'
 import _flip from './plugins/flip'
 import _frame from './plugins/frame'
+import _gif from './plugins/gif'
 import _group from './plugins/group'
 import _history from './plugins/history'
 import _image from './plugins/image'
@@ -16,6 +17,7 @@ import _import from './plugins/import'
 import _lock from './plugins/lock'
 import _menu from './plugins/menu'
 import _move from './plugins/move'
+import _mp4 from './plugins/mp4'
 import _new from './plugins/new'
 import _open from './plugins/open'
 import _pdf from './plugins/pdf'
@@ -26,7 +28,6 @@ import _select from './plugins/select'
 import _text from './plugins/text'
 import _ui from './plugins/ui'
 import _url from './plugins/url'
-import _video from './plugins/video'
 import _visibility from './plugins/visibility'
 import _zoom from './plugins/zoom'
 
@@ -38,6 +39,7 @@ export const plugins = [
   _delete,
   _flip,
   _frame,
+  _gif,
   _group,
   _history,
   _image,
@@ -45,6 +47,7 @@ export const plugins = [
   _lock,
   _menu,
   _move,
+  _mp4,
   _new,
   _open,
   _pdf,
@@ -55,7 +58,6 @@ export const plugins = [
   _text,
   _ui,
   _url,
-  _video,
   _visibility,
   _zoom,
 ]

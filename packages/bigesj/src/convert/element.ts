@@ -28,10 +28,15 @@ export async function convertElement(
   const element: NormalizedElement = {
     id: idGenerator(),
     name: el.name ?? el.title ?? el.id,
-    style, // 过滤掉部分属性
+    style: {
+      // TODO 过滤掉部分属性
+      ...style,
+      visibility: el.editable === false ? 'hidden' : 'visible',
+    },
     meta: {
       inPptIs: 'Shape',
       inEditorIs: 'Element',
+      lock: el.lock === true,
     },
     children: [],
   }
@@ -42,6 +47,12 @@ export async function convertElement(
     ;(element as any).duration = parsed.duration
     element.children!.push(...parsed.animations as any)
     if (context) {
+      parsed.animations.forEach((animation) => {
+        context.endTime = Math.max(
+          context.endTime,
+          parsed.delay + animation.delay + animation.duration,
+        )
+      })
       context.endTime = Math.max(context.endTime, parsed.delay + parsed.duration)
     }
   }
@@ -110,7 +121,8 @@ export async function convertElement(
         style: await convertTextStyle(el),
         effects: await convertTextEffects(el),
         // plugins: [deformation(el.deformation?.type?.endsWith("byWord") ? -1 : 999, () => el.deformation)],
-      }
+        drawMode: 'texture',
+      } as any
       break
     }
     case 'com':

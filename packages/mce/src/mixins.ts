@@ -11,6 +11,7 @@ import _0_font from './mixins/0.font'
 import _0_i18n from './mixins/0.i18n'
 import _1_frame from './mixins/1.frame'
 import _1_hotkey from './mixins/1.hotkey'
+import _1_timeline from './mixins/1.timeline'
 import _1_upload from './mixins/1.upload'
 import _2_box from './mixins/2.box'
 import _2_exporter from './mixins/2.exporter'
@@ -35,6 +36,7 @@ export const mixins = [
   _0_i18n,
   _1_frame,
   _1_hotkey,
+  _1_timeline,
   _1_upload,
   _2_box,
   _2_exporter,

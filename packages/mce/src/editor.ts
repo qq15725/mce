@@ -120,12 +120,19 @@ export class Editor extends Observable<Events> {
         hotkeys = [],
         loaders = [],
         exporters = [],
+        events,
       } = result
 
       this.registerCommand(commands)
       this.registerHotkey(hotkeys)
       this.registerLoader(loaders)
       this.registerExporter(exporters)
+
+      if (events) {
+        for (const k in events) {
+          this.on(k, events[k])
+        }
+      }
     }
 
     plugins.forEach((p) => {
@@ -166,6 +173,8 @@ export function createEditor(options?: Options): Editor {
 
 export interface PluginObject {
   name: string
+  ignore?: boolean | (() => boolean)
+  events?: { [K in keyof Events]: (...args: Events[K]) => void }
   commands?: Mce.Command[]
   hotkeys?: Mce.Hotkey[]
   loaders?: Mce.Loader[]

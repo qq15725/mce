@@ -4,6 +4,4 @@ import { useEditor } from '../composables'
 useEditor().setup()
 </script>
 
-<template>
-  <div />
-</template>
+<template />

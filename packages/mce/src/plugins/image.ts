@@ -79,9 +79,9 @@ export default definePlugin((editor) => {
       { command: 'drawImage', handle: drawImage },
     ],
     exporters: [
-      { name: 'jpeg', handle: createExporter('jpeg') },
-      { name: 'png', handle: createExporter('png') },
-      { name: 'webp', handle: createExporter('webp') },
+      createExporter('jpeg'),
+      createExporter('png'),
+      createExporter('webp'),
     ],
     loaders: [
       {

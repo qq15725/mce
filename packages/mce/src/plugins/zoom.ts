@@ -47,6 +47,7 @@ export default definePlugin((editor) => {
     config,
     currentAabb,
     registerConfig,
+    selection,
   } = editor
 
   registerConfig('zoomToFitOffset', { ...defaultZoomToFitOffset })
@@ -142,23 +143,22 @@ export default definePlugin((editor) => {
       { command: 'zoomToFit', key: 'Alt+¡' },
       { command: 'zoomToSelection', key: 'Alt+™' },
     ],
-    setup: () => {
-      const {
-        drawboardDom,
-        on,
-        config,
-        selection,
-      } = editor
-
-      on('setDoc', zoomToFit)
-      on('setActiveFrame', () => {
+    events: {
+      setDoc: zoomToFit,
+      setActiveFrame: () => {
         if (selection.value.length) {
           zoomToSelection()
         }
         else {
           zoomToFit()
         }
-      })
+      },
+    },
+    setup: () => {
+      const {
+        drawboardDom,
+        config,
+      } = editor
 
       watch(() => config.value.viewMode, zoomToFit)
 

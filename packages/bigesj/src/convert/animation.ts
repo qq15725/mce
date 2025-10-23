@@ -341,6 +341,7 @@ export function convertAnimation(
 ) {
   const {
     name,
+    delay = 0,
     duration,
     iterations,
     mode,
@@ -394,9 +395,9 @@ export function convertAnimation(
   }
 
   return {
-    delay: 0,
     id: idGenerator(),
     name: animation.name ?? animation.title ?? animation.id,
+    delay,
     duration: name ? duration * (iterations || 1) : 0,
     effectMode: mode === '逐字' || mode === '逐行' ? 'sibling' : 'parent',
     keyframes: keyframes ?? [],
@@ -438,27 +439,42 @@ export function parseAnimations(
     _animOut = el.animations?.find((v: any) => v.category === 'out')
   }
 
-  const delay = _animIn?.delay ?? 0
-
-  const animIn = _animIn
-    ? convertAnimation(el, { ..._animIn, delay: 0 }, 'in')
-    : undefined
-
-  const animStay = _animStay
-    ? convertAnimation(el, { ..._animStay, delay: _animStay.delay - delay }, 'stay')
-    : undefined
-
-  const animOut = _animOut
-    ? convertAnimation(el, { ..._animOut, delay: _animOut.delay - delay }, 'out')
-    : undefined
-
-  const duration = animOut && !!animOut.keyframes
-    ? animOut.delay - delay + animOut.duration
+  const startTime = _animIn?.delay ?? 0
+  const endTime = _animOut
+    ? (_animOut.delay - startTime) + _animOut.duration
     : 0
 
+  const animations = []
+  if (_animIn) {
+    animations.push(
+      convertAnimation(el, {
+        ..._animIn,
+        delay: 0,
+      }, 'in'),
+    )
+  }
+
+  if (_animStay) {
+    animations.push(
+      convertAnimation(el, {
+        ..._animStay,
+        delay: _animStay.delay - startTime,
+      }, 'stay'),
+    )
+  }
+
+  if (_animOut) {
+    animations.push(
+      convertAnimation(el, {
+        ..._animOut,
+        delay: _animOut.delay - startTime,
+      }, 'out'),
+    )
+  }
+
   return {
-    delay,
-    duration,
-    animations: [animIn, animStay, animOut].filter(Boolean).filter(v => !!v?.keyframes),
+    delay: startTime,
+    duration: endTime - startTime,
+    animations: animations.filter(v => !!v?.keyframes),
   }
 }

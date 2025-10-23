@@ -13,9 +13,11 @@ declare global {
       onProgress?: ExporterProgress
     }
 
+    type ExporterHandle = (options: ExporterOptions) => any | Promise<any>
+
     interface Exporter {
       name: string
-      handle: (options: ExporterOptions) => any | Promise<any>
+      handle: ExporterHandle
     }
 
     interface Editor {

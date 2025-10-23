@@ -2,26 +2,35 @@
 import type { AxisAlignedBoundingBox } from '../../types'
 import { vResizeObserver } from '@vueuse/components'
 import { useDebounceFn } from '@vueuse/core'
-import { computed, onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, useAttrs, useTemplateRef, watch } from 'vue'
 import Tooltip from './Tooltip.vue'
+
+defineOptions({
+  inheritAttrs: false,
+})
 
 const props = withDefaults(
   defineProps<{
     size?: number
     vertical?: boolean
     zoom?: number
-    offset?: number
-    aabb?: AxisAlignedBoundingBox
+    position?: number
+    selected?: AxisAlignedBoundingBox
     pixelRatio?: number
+    inset?: boolean
+    refline?: boolean
   }>(),
   {
     size: 20,
     zoom: 1,
-    offset: 0,
+    position: 0,
     pixelRatio: window.devicePixelRatio || 1,
   },
 )
 
+const attrs = useAttrs()
+
+const model = defineModel<number>({ default: 0 })
 const pixelRatio = computed(() => props.pixelRatio)
 const tipText = ref<string>()
 const tipPos = ref({ x: 0, y: 0 })
@@ -32,21 +41,21 @@ const offscreenCanvas = 'OffscreenCanvas' in window
 const ctx = offscreenCanvas.getContext('2d') as CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
 const bbox = ref<AxisAlignedBoundingBox>()
 
-function drawAabb() {
-  if (!props.aabb?.width || !props.aabb?.height)
+function drawSelected() {
+  if (!props.selected?.width || !props.selected?.height)
     return
   ctx.fillStyle = '#6165FD20'
-  const offset = props.vertical ? props.aabb.top : props.aabb.left
-  const length = props.vertical ? props.aabb.height : props.aabb.width
+  const offset = props.vertical ? props.selected.top : props.selected.left
+  const length = props.vertical ? props.selected.height : props.selected.width
   ctx.fillRect(offset, 0, length, props.size)
 }
 
-function drawAxis(offset: [number, number], length: number, size: number, color: string) {
+function drawAxis(point: number[], length: number, size: number, color: string) {
   ctx.lineWidth = size
   ctx.strokeStyle = color
   ctx.beginPath()
-  ctx.moveTo(offset[0], offset[1])
-  ctx.lineTo(offset[0] + length, offset[1])
+  ctx.moveTo(point[0], point[1])
+  ctx.lineTo(point[0] + length, point[1])
   ctx.stroke()
 }
 
@@ -93,13 +102,26 @@ const unit = computed(() => {
   }
   return niceFraction * 10 ** exponent
 })
-const start = computed(() => ~~(((props.size - props.offset) / props.zoom) / unit.value) * unit.value)
-const end = computed(() => start.value + ~~(((props.vertical ? bbox.value?.height : bbox.value?.width) ?? 0) / props.zoom))
+
+const start = computed(() => {
+  let position = -props.position
+  if (props.inset) {
+    position += props.size
+  }
+  return Math.ceil(position / props.zoom / unit.value) * unit.value
+})
+
+const end = computed(() => {
+  const len = (props.vertical ? bbox.value?.height : bbox.value?.width) ?? 0
+  return start.value + Math.ceil(len / props.zoom)
+})
+
 function logic2ui(num: number) {
-  return ~~(num * props.zoom + props.offset)
+  return ~~(num * props.zoom + props.position)
 }
+
 function ui2logic(num: number) {
-  return ~~((num - props.offset) / props.zoom)
+  return ~~((num - props.position) / props.zoom)
 }
 
 let color: string | undefined
@@ -115,24 +137,32 @@ function render() {
   ctx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height)
   ctx.save()
   ctx.scale(pixelRatio.value, pixelRatio.value)
+
   if (props.vertical) {
     ctx.scale(1, -1)
     ctx.translate(0, 0)
     ctx.rotate(-Math.PI / 2)
   }
 
-  drawAabb()
+  drawSelected()
 
-  drawAxis([props.size, props.size], Math.max(cvs.width, cvs.height), 2, color!)
+  let point
+  if (props.inset) {
+    point = [props.size, props.size]
+  }
+  else {
+    point = props.vertical
+      ? [props.size, 0]
+      : [0, props.size]
+  }
+  drawAxis(point, Math.max(cvs.width, cvs.height), 2, color!)
 
   const drawPrimary = (tick: number, label: string) => {
     drawTick(tick, 10)
     drawText(label, tick + 2, 4, 8, color!)
   }
 
-  const drawSecondary = (tick: number) => {
-    drawTick(tick, 4)
-  }
+  const drawSecondary = (tick: number) => drawTick(tick, 4)
 
   ctx.lineWidth = 1
   ctx.strokeStyle = color!
@@ -145,6 +175,7 @@ function render() {
       drawSecondary(logic2ui(tick))
     }
   }
+
   ctx.stroke()
 
   ctx.restore()
@@ -162,7 +193,7 @@ function render() {
 }
 
 watch(
-  [canvas, () => props.zoom, () => props.offset, () => props.aabb],
+  [canvas, () => props.zoom, () => props.position, () => props.selected],
   () => {
     render()
   },
@@ -208,12 +239,29 @@ function getTick(e: MouseEvent) {
   )
 }
 
-function onMove(e: MouseEvent, temp = false) {
+function onMousedown(e: MouseEvent) {
   const tick = getTick(e)
-  if (temp) {
+  model.value = tick
+  if (props.refline) {
+    savedLines.value.push(tick)
+  }
+  const move = (e: MouseEvent) => {
+    model.value = getTick(e)
+  }
+  const up = () => {
+    window.removeEventListener('mousemove', move)
+    window.removeEventListener('mouseup', up)
+  }
+  window.addEventListener('mousemove', move)
+  window.addEventListener('mouseup', up)
+}
+
+function onMousemove(e: MouseEvent, temp = false) {
+  const tick = getTick(e)
+  if (props.refline && temp) {
     tempLine.value = tick
   }
-  tipText.value = `${tick}px`
+  tipText.value = `${tick}`
   tipPos.value = { x: e.clientX, y: e.clientY }
 }
 
@@ -222,35 +270,46 @@ function onLeave() {
   tipText.value = undefined
 }
 
-function onClick(e: MouseEvent) {
-  savedLines.value.push(getTick(e))
-}
-
-function onDblclick(index: number) {
+function onReflineDblclick(index: number) {
   savedLines.value.splice(index, 1)
 }
 
-const dragLineIndex = ref<number>()
-
-function dragMove(e: MouseEvent) {
-  if (typeof dragLineIndex.value === 'number') {
-    savedLines.value[dragLineIndex.value] = getTick(e)
-  }
-}
-
-function stopDrag() {
-  window.removeEventListener('mousemove', dragMove)
-}
-
-function startDrag(e: MouseEvent, index: number) {
+function onReflineMousedown(e: MouseEvent, index: number) {
+  e.stopPropagation()
   e.preventDefault()
-  dragLineIndex.value = index
-  window.addEventListener('mousemove', dragMove)
-  window.addEventListener('mouseup', stopDrag)
+  const move = (e: MouseEvent) => {
+    savedLines.value[index] = getTick(e)
+  }
+  const up = () => {
+    window.removeEventListener('mousemove', move)
+    window.removeEventListener('mouseup', up)
+  }
+  window.addEventListener('mousemove', move)
+  window.addEventListener('mouseup', up)
 }
 </script>
 
 <template>
+  <div
+    v-resize-observer="resize"
+    class="mce-ruler"
+    :style="{
+      width: props.vertical ? `${props.size}px` : '100%',
+      height: props.vertical ? '100%' : `${props.size}px`,
+    }"
+    v-bind="attrs"
+    @mousedown="onMousedown"
+    @mousemove="onMousemove($event, true)"
+    @mouseleave="onLeave"
+  >
+    <canvas
+      ref="canvasTpl"
+      class="mce-ruler__canvas"
+      :width="props.size"
+      :height="props.size"
+    />
+  </div>
+
   <div
     v-for="(item, index) in lines" :key="index"
     class="mce-ruler-refline"
@@ -265,30 +324,11 @@ function startDrag(e: MouseEvent, index: number) {
       [props.vertical ? 'top' : 'left']: `${logic2ui(item)}px`,
       [props.vertical ? 'left' : 'top']: 0,
     }"
-    @dblclick="onDblclick(index)"
-    @mousedown.stop="startDrag($event, index)"
-    @mousemove="onMove"
+    @dblclick="onReflineDblclick(index)"
+    @mousedown="onReflineMousedown($event, index)"
+    @mousemove="() => tipText = `${item}`"
     @mouseleave="onLeave"
   />
-
-  <div
-    v-resize-observer="resize"
-    class="mce-ruler"
-    :style="{
-      width: props.vertical ? `${props.size}px` : '100%',
-      height: props.vertical ? '100%' : `${props.size}px`,
-    }"
-  >
-    <canvas
-      ref="canvasTpl"
-      class="mce-ruler__canvas"
-      :width="props.size"
-      :height="props.size"
-      @mousemove="onMove($event, true)"
-      @mouseleave="onLeave"
-      @click="onClick"
-    />
-  </div>
 
   <Tooltip
     :model-value="!!tipText"
@@ -335,6 +375,7 @@ function startDrag(e: MouseEvent, index: number) {
 
   &--temp {
     border-color: rgba(var(--mce-theme-primary), .3);
+    pointer-events: none !important;
   }
 }
 </style>

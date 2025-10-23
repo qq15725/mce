@@ -70,8 +70,6 @@ export default defineMixin((editor) => {
       doc.value?.destroy()
       doc.value = _doc
       renderEngine.value.root.appendChild(_doc.root)
-      renderEngine.value.timeline.endTime = _doc.root.meta.endTime || 0
-      renderEngine.value.timeline.loop = true
       setActiveFrame(0)
       emit('setDoc', _doc)
     }
@@ -110,6 +108,15 @@ export default defineMixin((editor) => {
 
     if (doc) {
       setDoc(doc)
+    }
+    else {
+      setDoc({
+        style: {
+          width: 1920,
+          height: 1080,
+        },
+        children: [],
+      })
     }
   }
 })

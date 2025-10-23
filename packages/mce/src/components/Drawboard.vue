@@ -35,9 +35,9 @@ import Rulers from './Rulers.vue'
 import Scrollbars from './Scrollbars.vue'
 import Selector from './Selector.vue'
 import Setup from './Setup.vue'
-import Starter from './Starter.vue'
 import Statusbar from './Statusbar.vue'
 import TextEditor from './TextEditor.vue'
+import Timeline from './timeline/Timeline.vue'
 
 const props = defineProps({
   ...makeMceStrategyProps({
@@ -81,7 +81,7 @@ const {
   isFrame,
   selectArea,
   exec,
-  isLocked,
+  isLock,
   selection,
   getAabbInDrawboard,
   drawboardAabb,
@@ -304,7 +304,7 @@ function onPointerdown(event: PointerInputEvent): void {
       selection.value = selected
 
       if (ctxState) {
-        if (selected[0] && !isLocked(selected[0])) {
+        if (selected[0] && !isLock(selected[0])) {
           switch (ctxState) {
             case 'typing': {
               await exec('startTyping', _event)
@@ -397,7 +397,6 @@ function onScroll() {
           <slot name="selector" :box="box" />
         </template>
       </Selector>
-      <Rulers v-if="config.ruler" />
       <Scrollbars v-if="config.scrollbar" />
       <Floatbar
         v-if="$slots.floatbar"
@@ -412,9 +411,10 @@ function onScroll() {
         <slot name="bottombar" />
       </Bottombar>
       <GoBackSelectedArea />
-      <Starter v-if="false" />
       <slot />
     </div>
+    <Rulers v-if="config.ruler" />
+    <Timeline />
     <Statusbar v-if="config.statusbar" />
     <div
       ref="overlayContainerTpl"

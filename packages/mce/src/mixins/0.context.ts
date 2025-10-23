@@ -2,7 +2,7 @@ import type { Cursor, Node, Vector2Data } from 'modern-canvas'
 import type { ComputedRef, Ref } from 'vue'
 import type { Doc, Workspace } from '../models'
 import type { AxisAlignedBoundingBox } from '../types'
-import { Camera2D, DrawboardEffect, Engine } from 'modern-canvas'
+import { Camera2D, DrawboardEffect, Engine, Timeline } from 'modern-canvas'
 import { Fonts } from 'modern-font'
 import { computed, markRaw, ref } from 'vue'
 import { defineMixin } from '../editor'
@@ -12,6 +12,7 @@ declare global {
     interface Editor {
       fonts: Fonts
       renderEngine: Ref<Engine>
+      timeline: Ref<Timeline>
       camera: Ref<Camera2D>
       drawboardEffect: Ref<DrawboardEffect>
       setCursor: (mode: Cursor | undefined) => void
@@ -39,17 +40,22 @@ export default defineMixin((editor) => {
   } = editor
 
   const fonts = markRaw(new Fonts()) as Fonts
+  const timeline = ref(new Timeline({ startTime: 0, endTime: 0, loop: true, paused: true }))
   const _renderEngine = new Engine({
     pixelRatio: 2,
     fonts,
-    autoStart: true,
+    timeline: timeline.value as any,
+    fps: 0,
+    speed: 0,
   })
   markRaw(_renderEngine.renderer)
+
   const camera = ref(new Camera2D({ internalMode: 'front' }))
   const drawboardEffect = ref(new DrawboardEffect({ internalMode: 'back', effectMode: 'before' }))
   _renderEngine.root.append(camera.value as any)
   _renderEngine.root.append(drawboardEffect.value as any)
   const renderEngine = ref(_renderEngine)
+  renderEngine.value.start()
 
   const drawboardDom = ref<HTMLElement>()
   const drawboardAabb = ref({ left: 0, top: 0, width: 0, height: 0 })
@@ -86,6 +92,7 @@ export default defineMixin((editor) => {
   Object.assign(editor, {
     fonts,
     renderEngine,
+    timeline,
     camera,
     drawboardEffect,
     root,

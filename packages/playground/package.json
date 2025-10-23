@@ -13,13 +13,13 @@
     "type-check": "vue-tsc --build"
   },
   "devDependencies": {
-    "mce": "workspace:*",
     "@mce/bigesj": "workspace:*",
     "@mce/gaoding": "workspace:*",
     "@tsconfig/node22": "^22.0.2",
     "@vitejs/plugin-vue": "^6.0.1",
     "@vue/tsconfig": "^0.8.1",
+    "mce": "workspace:*",
     "npm-run-all2": "^8.0.4",
-    "vite-plugin-vue-devtools": "^8.0.2"
+    "vite-plugin-vue-devtools": "^8.0.3"
   }
 }

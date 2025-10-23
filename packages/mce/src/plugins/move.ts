@@ -27,7 +27,7 @@ export default definePlugin((editor) => {
   } = editor
 
   function move(direction: Mce.MoveCommandDirection, distance = 1): void {
-    let prop
+    let prop: 'left' | 'top'
     switch (direction) {
       case 'left':
       case 'top':
@@ -42,7 +42,7 @@ export default definePlugin((editor) => {
         break
     }
     selection.value.forEach((element) => {
-      (element.style as any)[prop] += distance
+      element.style[prop] += distance
     })
   }
 
