@@ -3,7 +3,7 @@ import { definePlugin } from '../editor'
 
 declare global {
   namespace Mce {
-    interface SaveAsOptions extends ExporterOptions {
+    interface SaveAsOptions extends ExportOptions {
       filename?: string
     }
 

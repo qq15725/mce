@@ -14,9 +14,9 @@ import _1_hotkey from './mixins/1.hotkey'
 import _1_timeline from './mixins/1.timeline'
 import _1_upload from './mixins/1.upload'
 import _2_box from './mixins/2.box'
-import _2_exporter from './mixins/2.exporter'
-import _2_exporter_json from './mixins/2.exporter/json'
-import _2_loader from './mixins/2.loader'
+import _2_export from './mixins/2.export'
+import _2_export_json from './mixins/2.export/json'
+import _2_load from './mixins/2.load'
 import _2_loader_json from './mixins/2.loader/json'
 import _3_view from './mixins/3.view'
 import _4_0_text from './mixins/4.0.text'
@@ -39,9 +39,9 @@ export const mixins = [
   _1_timeline,
   _1_upload,
   _2_box,
-  _2_exporter,
-  _2_exporter_json,
-  _2_loader,
+  _2_export,
+  _2_export_json,
+  _2_load,
   _2_loader_json,
   _3_view,
   _4_0_text,

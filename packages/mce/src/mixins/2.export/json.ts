@@ -43,15 +43,18 @@ export default defineMixin((editor) => {
         scale,
       } = options
 
-      let elements: Element2D[]
-      if (selected === true) {
-        elements = selection.value
-      }
-      else if (Array.isArray(selected)) {
+      let elements: Element2D[] = []
+      if (Array.isArray(selected)) {
         elements = selected
       }
       else {
-        elements = (root.value?.children ?? []) as Element2D[]
+        if (selected === true) {
+          elements = selection.value
+        }
+
+        if (elements.length === 0) {
+          elements = (root.value?.children ?? []) as Element2D[]
+        }
       }
 
       const box = getAabb(elements, 'frame')

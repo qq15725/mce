@@ -44,7 +44,7 @@ export default definePlugin((editor, options) => {
             keyframes: Array.from({ length: ~~((endTime - startTime) / 100) }, (_, i) => startTime + i * 100),
             onFrame: async (data, { duration, progress }) => {
               await encoder.encode({ data: data as any, delay: duration })
-              onProgress?.(~~(progress * 100), 100)
+              onProgress?.(progress)
             },
           })
           return await encoder.flush('blob')

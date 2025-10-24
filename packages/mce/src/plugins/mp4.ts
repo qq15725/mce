@@ -70,7 +70,7 @@ export default definePlugin((editor) => {
               })
               bitmap.close()
               timestamp += duration
-              onProgress?.(~~(progress * 100), 100)
+              onProgress?.(progress)
             },
             keyframes: Array.from({ length: ~~((endTime - startTime) / spf) }, (_, i) => startTime + i * spf),
           })

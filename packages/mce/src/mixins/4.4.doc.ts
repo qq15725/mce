@@ -25,7 +25,7 @@ declare global {
   }
 }
 
-export default defineMixin((editor) => {
+export default defineMixin((editor, options) => {
   const {
     workspace,
     doc,
@@ -101,7 +101,7 @@ export default defineMixin((editor) => {
     clearDoc,
   })
 
-  return (_, options) => {
+  return () => {
     const {
       doc,
     } = options

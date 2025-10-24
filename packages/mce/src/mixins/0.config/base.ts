@@ -33,7 +33,7 @@ declare global {
   }
 }
 
-export default defineMixin((editor) => {
+export default defineMixin((editor, options) => {
   const {
     registerConfig,
     config,
@@ -58,7 +58,7 @@ export default defineMixin((editor) => {
   // DB
   registerConfig('localDb', false)
 
-  return (editor, options) => {
+  return () => {
     const {
       camera,
       drawboardEffect,

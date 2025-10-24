@@ -116,6 +116,12 @@ export async function convertElement(
     }
     case 'text': {
       element.meta!.inPptIs = 'Shape'
+      if (style.writingMode === 'horizontal-tb') {
+        element.style!.width = Math.ceil(style.width + style.letterSpacing)
+      }
+      else {
+        element.style!.height = Math.ceil(style.height + style.letterSpacing)
+      }
       element.text = {
         content: await convertTextContent(el),
         style: await convertTextStyle(el),

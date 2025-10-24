@@ -5,15 +5,15 @@ import { defineMixin } from '../editor'
 
 declare global {
   namespace Mce {
-    type ExporterProgress = (current: number, total: number) => void
+    type ExportOnProgress = (progress: number) => void
 
-    interface ExporterOptions {
+    interface ExportOptions {
       scale?: number
       selected?: boolean | Element2D[]
-      onProgress?: ExporterProgress
+      onProgress?: ExportOnProgress
     }
 
-    type ExporterHandle = (options: ExporterOptions) => any | Promise<any>
+    type ExporterHandle = (options: ExportOptions) => any | Promise<any>
 
     interface Exporter {
       name: string
@@ -24,13 +24,18 @@ declare global {
       exporters: Ref<Map<string, Exporter>>
       registerExporter: (value: Exporter | Exporter[]) => void
       unregisterExporter: (name: string) => void
-      to: <K extends keyof Exporters>(name: K, options?: ExporterOptions) => Exporters[K]
+      export: <K extends keyof Exporters>(name: K, options?: ExportOptions) => Exporters[K]
+      to: <K extends keyof Exporters>(name: K, options?: ExportOptions) => Exporters[K]
+      exporting: Ref<boolean>
+      exportProgress: Ref<number>
     }
   }
 }
 
 export default defineMixin((editor) => {
   const exporters: Mce.Editor['exporters'] = ref(new Map<string, Mce.Exporter>())
+  const exporting = ref(false)
+  const exportProgress = ref(0)
 
   const registerExporter: Mce.Editor['registerExporter'] = (value) => {
     if (Array.isArray(value)) {
@@ -46,13 +51,32 @@ export default defineMixin((editor) => {
   }
 
   const to: Mce.Editor['to'] = (name, options = {}) => {
-    return exporters.value.get(name)?.handle(options)
+    const res = exporters.value.get(name)?.handle({
+      ...options,
+      onProgress: (progress) => {
+        exportProgress.value = progress
+        options.onProgress?.(progress)
+      },
+    })
+    if (res instanceof Promise) {
+      exportProgress.value = 0
+      exporting.value = true
+      return res.finally(() => {
+        exporting.value = false
+      })
+    }
+    else {
+      return res
+    }
   }
 
   Object.assign(editor, {
     exporters,
+    exporting,
+    exportProgress,
     registerExporter,
     unregisterExporter,
+    export: to,
     to,
   })
 })

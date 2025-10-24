@@ -24,7 +24,7 @@ const editor = new Editor({
   frameGap: 48,
   typographyStrategy: 'autoHeight',
   handleShape: 'rect',
-  zoomToFitOffset: { left: 0, top: 0, right: 0, bottom: 0 },
+  zoomToFitOffset: { left: 100, top: 100, right: 100, bottom: 100 },
   defaultFont: { family: 'SourceHanSansCN-Normal', src: '/SourceHanSansCN-Normal.woff' },
   localDb: false,
   gifWorkerUrl,

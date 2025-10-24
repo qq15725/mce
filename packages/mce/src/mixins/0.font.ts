@@ -20,7 +20,7 @@ declare global {
   }
 }
 
-export default defineMixin((editor) => {
+export default defineMixin((editor, options) => {
   const {
     emit,
     fonts,
@@ -59,7 +59,7 @@ export default defineMixin((editor) => {
     waitUntilFontLoad,
   })
 
-  return (_, options) => {
+  return () => {
     const {
       defaultFont,
     } = options

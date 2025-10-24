@@ -29,6 +29,8 @@ export class Editor extends Observable<Events> {
   onEmit?: <K extends keyof Events & string>(event: K, ...args: Events[K]) => void
   plugins = new Map<string, PluginObject>()
 
+  protected _setups: (() => void)[] = []
+
   constructor(options: Options = {}) {
     super()
 
@@ -66,6 +68,8 @@ export class Editor extends Observable<Events> {
       ? useLocalStorage<Mce.Config>('config', () => ({} as any))
       : ref({} as any)
 
+    this._setups = []
+
     this._useMixins(
       presetMixins,
       options,
@@ -78,8 +82,6 @@ export class Editor extends Observable<Events> {
   }
 
   protected _useMixins(mixins: Mixin[], options: Options): void {
-    const installs: any[] = []
-
     const use = (mixin: Mixin): void => {
       const result = mixin(this, options)
       switch (typeof result) {
@@ -93,14 +95,14 @@ export class Editor extends Observable<Events> {
           break
         case 'function':
         default:
-          installs.push(result)
+          if (result) {
+            this._setups.push(result)
+          }
           break
       }
     }
 
     mixins.forEach(use)
-
-    installs.forEach(install => (install as any)?.(this, options))
   }
 
   use(plugins: Plugin[], options: Options): void {
@@ -151,6 +153,15 @@ export class Editor extends Observable<Events> {
     if (!this._setuped) {
       this._setuped = true
 
+      this._setups.forEach((setup) => {
+        try {
+          setup()
+        }
+        catch (err: any) {
+          console.error(`Failed to setup mixin`, err)
+        }
+      })
+
       this.plugins.forEach((p) => {
         try {
           p.setup?.()
@@ -189,7 +200,7 @@ export function definePlugin(cb: Plugin): Plugin {
 }
 
 export type Mixin = (editor: Editor, options: Options) =>
-  | ((editor: Editor, options: Options) => void)
+  | (() => void)
   | Mixin[]
   | Record<string, any>
   | undefined
