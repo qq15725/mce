@@ -2,6 +2,7 @@
 import bigesj from '@mce/bigesj'
 import gaoding from '@mce/gaoding'
 import { Drawboard, Editor } from 'mce'
+import gifWorkerUrl from 'modern-gif/worker?url'
 import 'mce/styles'
 
 const editor = new Editor({
@@ -26,6 +27,7 @@ const editor = new Editor({
   zoomToFitOffset: { left: 0, top: 0, right: 0, bottom: 0 },
   defaultFont: { family: 'SourceHanSansCN-Normal', src: '/SourceHanSansCN-Normal.woff' },
   localDb: false,
+  gifWorkerUrl,
 })
 
 // editor.on('setDoc', () => {

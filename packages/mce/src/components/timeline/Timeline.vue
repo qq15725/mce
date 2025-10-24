@@ -57,8 +57,6 @@ const elements = computed(() => {
           >
             <Track
               v-for="(node, index) in elements" :key="index"
-              :node="node"
-              :zoom="msPerPx"
             >
               <Segment
                 :node="node"

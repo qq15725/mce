@@ -1,19 +1,27 @@
-import { render } from 'modern-canvas'
+import { assets, render } from 'modern-canvas'
 import { definePlugin } from '../editor'
 
 declare global {
   namespace Mce {
+    interface Options {
+      gifWorkerUrl?: string
+    }
+
     interface Exporters {
       gif: Blob
     }
   }
 }
 
-export default definePlugin((editor) => {
+export default definePlugin((editor, options) => {
   const {
     fonts,
     to,
   } = editor
+
+  const gifWorkerUrl = options.gifWorkerUrl
+
+  assets.gifWorkerUrl = gifWorkerUrl
 
   return {
     name: 'gif',
@@ -27,7 +35,7 @@ export default definePlugin((editor) => {
           const { startTime, endTime } = data.meta
           const width = Math.floor(data.style.width)
           const height = Math.floor(data.style.height)
-          const encoder = new Encoder({ width, height })
+          const encoder = new Encoder({ width, height, workerUrl: gifWorkerUrl })
           await render({
             data,
             width,

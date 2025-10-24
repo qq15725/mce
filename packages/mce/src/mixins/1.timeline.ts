@@ -44,8 +44,17 @@ export default defineMixin((editor) => {
       }
 
       if (node instanceof Element2D) {
-        if (node.foreground._animatedTexture) {
-          range.endTime = Math.max(range.endTime, node.globalStartTime + node.foreground._animatedTexture.duration)
+        if (node.background.animatedTexture) {
+          range.endTime = Math.max(range.endTime, node.globalStartTime + node.background.animatedTexture.duration)
+        }
+        if (node.foreground.animatedTexture) {
+          range.endTime = Math.max(range.endTime, node.globalStartTime + node.foreground.animatedTexture.duration)
+        }
+        if (node.fill.animatedTexture) {
+          range.endTime = Math.max(range.endTime, node.globalStartTime + node.fill.animatedTexture.duration)
+        }
+        if (node.outline.animatedTexture) {
+          range.endTime = Math.max(range.endTime, node.globalStartTime + node.outline.animatedTexture.duration)
         }
       }
 

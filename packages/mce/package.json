@@ -64,6 +64,19 @@
     "test": "vitest",
     "typecheck": "vue-tsc --noEmit"
   },
+  "dependencies": {
+    "@floating-ui/vue": "^1.1.9",
+    "@vueuse/components": "^14.0.0",
+    "@vueuse/core": "^14.0.0",
+    "diff": "^8.0.2",
+    "file-saver": "^2.0.5",
+    "lodash-es": "^4.17.21",
+    "modern-canvas": "^0.12.13",
+    "modern-font": "^0.4.4",
+    "modern-idoc": "^0.10.4",
+    "modern-text": "^1.9.1",
+    "yjs": "^13.6.27"
+  },
   "peerDependencies": {
     "lottie-web": "^5",
     "modern-gif": "^2",
@@ -96,19 +109,6 @@
     "yoga-layout": {
       "optional": true
     }
-  },
-  "dependencies": {
-    "@floating-ui/vue": "^1.1.9",
-    "@vueuse/components": "^14.0.0",
-    "@vueuse/core": "^14.0.0",
-    "diff": "^8.0.2",
-    "file-saver": "^2.0.5",
-    "lodash-es": "^4.17.21",
-    "modern-canvas": "^0.12.10",
-    "modern-font": "^0.4.4",
-    "modern-idoc": "^0.10.1",
-    "modern-text": "^1.9.1",
-    "yjs": "^13.6.27"
   },
   "devDependencies": {
     "@types/file-saver": "^2.0.7",

@@ -4,22 +4,24 @@ import { defineMixin } from '../../editor'
 
 declare global {
   namespace Mce {
-    interface Exporters {
-      json: {
-        style: {
-          width: number
-          height: number
-          scaleX: number
-          scaleY: number
-        }
-        children: NormalizedElement[]
-        meta: {
-          inPptIs: 'Pptx'
-          inCanvasIs: 'Node2D'
-          startTime: number
-          endTime: number
-        }
+    interface JsonData {
+      style: {
+        width: number
+        height: number
+        scaleX: number
+        scaleY: number
       }
+      children: NormalizedElement[]
+      meta: {
+        inPptIs: 'Pptx'
+        inCanvasIs: 'Node2D'
+        startTime: number
+        endTime: number
+      }
+    }
+
+    interface Exporters {
+      json: JsonData
     }
   }
 }

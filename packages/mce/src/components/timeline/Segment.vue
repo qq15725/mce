@@ -144,6 +144,7 @@ const style = computed(() => {
       position: absolute;
       top: 0;
       width: 8px;
+      cursor: col-resize;
 
       &:before {
         background-color: rgb(var(--mce-theme-surface));
@@ -156,13 +157,13 @@ const style = computed(() => {
       &--front {
         border-bottom-left-radius: 2px;
         border-top-left-radius: 2px;
-        left: -4px;
+        left: 0;
       }
 
       &--end {
         border-bottom-right-radius: 2px;
         border-top-right-radius: 2px;
-        right: -4px;
+        right: 0;
       }
     }
 

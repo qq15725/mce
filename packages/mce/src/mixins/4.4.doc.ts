@@ -1,4 +1,4 @@
-import type { Document, NormalizedDocument } from 'modern-idoc'
+import type { Document } from 'modern-idoc'
 import { throttle } from 'lodash-es'
 import { defineMixin } from '../editor'
 import { Doc } from '../models'
@@ -6,7 +6,7 @@ import { Doc } from '../models'
 declare global {
   namespace Mce {
     interface Editor {
-      getDoc: () => NormalizedDocument
+      getDoc: () => JsonData
       setDoc: (doc: Document | string) => Promise<Doc>
       loadDoc: (source: any) => Promise<Doc>
       clearDoc: () => void
@@ -40,11 +40,19 @@ export default defineMixin((editor) => {
     load,
   } = editor
 
-  function getDoc(): NormalizedDocument {
+  const clearDoc: Mce.Editor['clearDoc'] = () => {
+    renderEngine.value.root.removeChildren()
+    renderEngine.value.root.children.length = 0 // TODO
+    doc.value = undefined
+    selection.value = []
+    emit('clearDoc')
+  }
+
+  const getDoc: Mce.Editor['getDoc'] = () => {
     return to('json')
   }
 
-  async function setDoc(source: Document | string): Promise<Doc> {
+  const setDoc: Mce.Editor['setDoc'] = async (source) => {
     state.value = 'loading'
 
     const _doc = new Doc(typeof source === 'string' ? source : source.id)
@@ -80,18 +88,10 @@ export default defineMixin((editor) => {
     return _doc
   }
 
-  async function loadDoc(source: any): Promise<Doc> {
+  const loadDoc: Mce.Editor['loadDoc'] = async (source) => {
     const _doc = await setDoc(await load(source))
     emit('loadDoc', _doc, source)
     return _doc
-  }
-
-  function clearDoc(): void {
-    renderEngine.value.root.removeChildren()
-    renderEngine.value.root.children.length = 0 // TODO
-    doc.value = undefined
-    selection.value = []
-    emit('clearDoc')
   }
 
   Object.assign(editor, {

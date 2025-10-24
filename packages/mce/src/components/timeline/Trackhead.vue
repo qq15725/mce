@@ -20,7 +20,6 @@ defineProps<{
 <style lang="scss">
   .mce-trackhead {
     display: flex;
-    margin-bottom: 8px;
     height: 22px;
     min-height: 22px;
     align-items: center;
