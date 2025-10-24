@@ -19,12 +19,15 @@ const props = withDefaults(
     pixelRatio?: number
     inset?: boolean
     refline?: boolean
+    axis?: boolean
+    format?: (tick: number) => string
   }>(),
   {
-    size: 20,
+    size: 16,
     zoom: 1,
     position: 0,
     pixelRatio: window.devicePixelRatio || 1,
+    axis: true,
   },
 )
 
@@ -146,16 +149,18 @@ function render() {
 
   drawSelected()
 
-  let point
-  if (props.inset) {
-    point = [props.size, props.size]
+  if (props.axis) {
+    let point
+    if (props.inset) {
+      point = [props.size, props.size]
+    }
+    else {
+      point = props.vertical
+        ? [props.size, 0]
+        : [0, props.size]
+    }
+    drawAxis(point, Math.max(cvs.width, cvs.height), 2, color!)
   }
-  else {
-    point = props.vertical
-      ? [props.size, 0]
-      : [0, props.size]
-  }
-  drawAxis(point, Math.max(cvs.width, cvs.height), 2, color!)
 
   const drawPrimary = (tick: number, label: string) => {
     drawTick(tick, 10)
@@ -169,7 +174,7 @@ function render() {
   ctx.beginPath()
   for (let tick = start.value; tick <= end.value; tick += unit.value) {
     if (tick % (unit.value * 10) === 0) {
-      drawPrimary(logic2ui(tick), String(tick))
+      drawPrimary(logic2ui(tick), props.format?.(tick) ?? String(tick))
     }
     else if (tick % unit.value === 0) {
       drawSecondary(logic2ui(tick))

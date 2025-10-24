@@ -26,7 +26,6 @@ const style = computed(() => {
   return {
     width: box.width,
     transform: `matrix(1, 0, 0, 1, ${box.left}, ${box.top})`,
-    backgroundColor: `rgb(var(--timeline-segment-color__${props.node.meta.inEditorIs}, 0, 0, 0))`,
   }
 })
 </script>
@@ -34,6 +33,10 @@ const style = computed(() => {
 <template>
   <div
     class="mce-segment"
+    :class="[
+      `mce-segment--${node.meta.inEditorIs}`,
+      active && `mce-segment--active`,
+    ]"
     :style="style"
   >
     <div v-if="active" class="mce-segment__edge mce-segment__edge--front" />
@@ -56,6 +59,11 @@ const style = computed(() => {
     flex-wrap: nowrap;
     color: white;
     border-radius: 2px;
+    background-color: #cc9641;
+
+    &--active {
+      outline: 1px solid rgb(var(--mce-theme-on-surface));
+    }
 
     &__animation {
       position: absolute;
@@ -143,7 +151,7 @@ const style = computed(() => {
       pointer-events: auto;
       position: absolute;
       top: 0;
-      width: 8px;
+      width: 4px;
       cursor: col-resize;
 
       &:before {

@@ -26,6 +26,15 @@ const elements = computed(() => {
     return false
   }) ?? []
 })
+
+function formatTick(input: number) {
+  input = Math.floor(input / 1000)
+  const m = Math.floor(input / 60)
+  const s = input % 60
+  const mm = String(m).padStart(2, '0')
+  const ss = String(s).padStart(2, '0')
+  return `${mm}:${ss}`
+}
 </script>
 
 <template>
@@ -38,6 +47,8 @@ const elements = computed(() => {
           v-model="currentTime"
           :zoom="msPerPx"
           style="position: relative;"
+          :axis="false"
+          :format="formatTick"
         />
       </div>
 
@@ -62,7 +73,7 @@ const elements = computed(() => {
                 :node="node"
                 :zoom="msPerPx"
                 :active="selection.some(v => v.equal(node))"
-                @click="selection = [node]"
+                @mousedown.stop="selection = [node]"
               />
             </Track>
           </div>
@@ -71,6 +82,7 @@ const elements = computed(() => {
 
       <Playhead
         v-model="currentTime"
+        :offset="60"
         :zoom="msPerPx"
       />
     </div>
@@ -87,6 +99,7 @@ const elements = computed(() => {
     display: flex;
     flex-direction: column;
     width: 100%;
+    border-top: 1px solid rgba(var(--mce-theme-on-background), .1);
 
     &__main {
       display: flex;

@@ -18,7 +18,6 @@ const activeAabb = computed(() => getAabbInDrawboard(selection.value))
 
 <template>
   <Ruler
-    :size="16"
     :zoom="camera.zoom.y"
     vertical
     inset
@@ -28,7 +27,6 @@ const activeAabb = computed(() => getAabbInDrawboard(selection.value))
   />
 
   <Ruler
-    :size="16"
     inset
     refline
     :zoom="camera.zoom.x"

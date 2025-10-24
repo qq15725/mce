@@ -3,15 +3,17 @@ import { computed } from 'vue'
 
 const props = withDefaults(defineProps<{
   zoom?: number
+  offset?: number
 }>(), {
   zoom: 1,
+  offset: 0,
 })
 
 const currentTime = defineModel<number>({ default: 0 })
 
 const style = computed(() => {
   return {
-    transform: `translate(${(Math.ceil(currentTime.value * props.zoom)) + 54}px, 0px)`,
+    transform: `translate(${(Math.ceil(currentTime.value * props.zoom)) + props.offset}px, 0px)`,
   }
 })
 </script>
@@ -35,6 +37,7 @@ const style = computed(() => {
     width: 10px;
     z-index: 6;
     color: rgb(var(--mce-theme-on-surface));
+    cursor: col-resize;
 
     &__header {
       position: relative;
