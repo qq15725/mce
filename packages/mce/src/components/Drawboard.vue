@@ -14,6 +14,7 @@ import {
   useTemplateRef,
 } from 'vue'
 import { useEditor } from '../composables/editor'
+import { createIcons, IconsSymbol } from '../composables/icons'
 import { provideOverlay } from '../composables/overlay'
 import {
   defaultActiveStrategy,
@@ -68,6 +69,8 @@ if (props.editor) {
 else {
   editor = useEditor()
 }
+
+provide(IconsSymbol, createIcons())
 
 const {
   config,
@@ -433,6 +436,11 @@ function onScroll() {
   --mce-theme-on-surface-variant: 255, 255, 255;
   --mce-theme-background: 240, 242, 245;
   --mce-theme-on-background: 56, 56, 56;
+  --mce-border-color: 0, 0, 0;
+  --mce-border-opacity: .08;
+  --mce-high-emphasis-opacity: 1;
+  --mce-medium-emphasis-opacity: 0.5;
+  --mce-low-emphasis-opacity: 0.3;
   --mce-shadow: 0 8px 32px 2px rgba(0, 0, 0, 0.08), 0 0 1px rgba(0, 0, 0, 0.2);
 }
 

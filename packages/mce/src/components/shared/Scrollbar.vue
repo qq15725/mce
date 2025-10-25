@@ -177,11 +177,11 @@ onBeforeUnmount(() => {
   &__thumb {
     position: absolute;
     border-radius: calc(infinity * 1px);
-    background-color: rgba(var(--mce-theme-on-background), .3);
+    background-color: rgba(var(--mce-theme-on-background), var(--mce-low-emphasis-opacity));
 
     &--active,
     &:hover {
-      background-color: rgba(var(--mce-theme-on-background), .4);
+      background-color: rgba(var(--mce-theme-on-background), var(--mce-medium-emphasis-opacity));
     }
   }
 }

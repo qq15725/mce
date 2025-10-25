@@ -1,4 +1,6 @@
 export * from './editor'
+export * from './icon'
+export * from './icons'
 export * from './menu'
 export * from './overlay'
 export * from './strategy'

@@ -2,6 +2,7 @@
 import { Animation, Element2D } from 'modern-canvas'
 import { computed } from 'vue'
 import { useEditor } from '../../composables'
+import Icon from '../shared/Icon.vue'
 import Ruler from '../shared/Ruler.vue'
 import Playhead from './Playhead.vue'
 import Segment from './Segment.vue'
@@ -39,7 +40,11 @@ function formatTick(input: number) {
 
 <template>
   <div class="mce-timeline">
-    <!-- toolbar -->
+    <div class="mce-timeline__toolbar">
+      <div class="mce-timeline__play">
+        <Icon icon="$play" />
+      </div>
+    </div>
 
     <div class="mce-timeline__main">
       <div class="mce-timeline__ruler">
@@ -95,13 +100,28 @@ function formatTick(input: number) {
     height: 220px;
     color: rgb(var(--mce-theme-on-surface));
     background-color: rgb(var(--mce-theme-surface));
-    border-top: 1px solid rgb(var(--mce-border-color));
     display: flex;
     flex-direction: column;
     width: 100%;
-    border-top: 1px solid rgba(var(--mce-theme-on-background), .1);
+    border-top: 1px solid rgba(var(--mce-border-color), var(--mce-border-opacity));
+    border-bottom: 1px solid rgba(var(--mce-border-color), var(--mce-border-opacity));
+
+    &__toolbar {
+      display: flex;
+      align-items: center;
+      height: 32px;
+      border-bottom: 1px solid rgba(var(--mce-border-color), var(--mce-border-opacity));
+    }
+
+    &__play {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      cursor: pointer;
+    }
 
     &__main {
+      position: relative;
       display: flex;
       flex-direction: column;
       min-height: 0;

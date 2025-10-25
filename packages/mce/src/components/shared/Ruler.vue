@@ -356,8 +356,10 @@ function onReflineMousedown(e: MouseEvent, index: number) {
     display: block;
     pointer-events: auto;
     cursor: pointer;
-    background-color: rgba(var(--mce-theme-surface), 1);
-    color: rgba(var(--mce-theme-on-background), .3);
+    background-color: rgba(var(--mce-theme-surface), .1);
+    color: rgba(var(--mce-theme-on-background), var(--mce-low-emphasis-opacity));
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
   }
 }
 
@@ -365,7 +367,7 @@ function onReflineMousedown(e: MouseEvent, index: number) {
   position: absolute;
   border-style: dashed;
   border-width: 0;
-  border-color: rgba(var(--mce-theme-primary), 1);
+  border-color: rgb(var(--mce-theme-primary));
   pointer-events: auto !important;
 
   &--vertical {
@@ -379,7 +381,7 @@ function onReflineMousedown(e: MouseEvent, index: number) {
   }
 
   &--temp {
-    border-color: rgba(var(--mce-theme-primary), .3);
+    border-color: rgba(var(--mce-theme-primary), var(--mce-low-emphasis-opacity));
     pointer-events: none !important;
   }
 }
