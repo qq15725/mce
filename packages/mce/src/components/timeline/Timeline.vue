@@ -126,7 +126,7 @@ function toggle() {
 <style lang="scss">
   .mce-timeline {
     position: relative;
-    height: 220px;
+    height: 160px;
     color: rgb(var(--mce-theme-on-surface));
     background-color: rgb(var(--mce-theme-surface));
     display: flex;
@@ -138,7 +138,7 @@ function toggle() {
     &__toolbar {
       display: flex;
       align-items: center;
-      height: 32px;
+      height: 24px;
       border-bottom: 1px solid rgba(var(--mce-border-color), var(--mce-border-opacity));
     }
 
@@ -162,8 +162,8 @@ function toggle() {
     &__ruler {
       position: relative;
       width: 100%;
-      height: 30px;
-      min-height: 30px;
+      height: 24px;
+      min-height: 24px;
       padding-left: 56px;
     }
 
