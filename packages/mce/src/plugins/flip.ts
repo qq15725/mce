@@ -3,8 +3,8 @@ import { definePlugin } from '../editor'
 declare global {
   namespace Mce {
     interface Commands {
-      flipX: () => void
-      flipY: () => void
+      flipHorizontal: () => void
+      flipVertical: () => void
     }
   }
 }
@@ -14,13 +14,13 @@ export default definePlugin((editor) => {
     selection,
   } = editor
 
-  function flipX() {
+  function flipHorizontal() {
     selection.value.forEach((el) => {
       el.style.scaleX = -el.style.scaleX
     })
   }
 
-  function flipY() {
+  function flipVertical() {
     selection.value.forEach((el) => {
       el.style.scaleY = -el.style.scaleY
     })
@@ -29,8 +29,12 @@ export default definePlugin((editor) => {
   return {
     name: 'flip',
     commands: [
-      { command: 'flipX', handle: flipX },
-      { command: 'flipY', handle: flipY },
+      { command: 'flipHorizontal', handle: flipHorizontal },
+      { command: 'flipVertical', handle: flipVertical },
+    ],
+    hotkeys: [
+      { command: 'flipHorizontal', key: 'Shift+h' },
+      { command: 'flipVertical', key: 'Shift+v' },
     ],
   }
 })

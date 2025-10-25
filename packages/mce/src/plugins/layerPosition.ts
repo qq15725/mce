@@ -59,7 +59,7 @@ export default definePlugin((editor) => {
   }
 
   return {
-    name: 'align',
+    name: 'layerPosition',
     commands: [
       { command: 'align', handle: align },
       { command: 'alignLeft', handle: () => align('left') },
@@ -68,6 +68,14 @@ export default definePlugin((editor) => {
       { command: 'alignTop', handle: () => align('top') },
       { command: 'alignVerticalCenter', handle: () => align('vertical-center') },
       { command: 'alignBottom', handle: () => align('bottom') },
+    ],
+    hotkeys: [
+      { command: 'alignLeft', key: 'Alt+a' },
+      { command: 'alignHorizontalCenter', key: 'Alt+h' },
+      { command: 'alignRight', key: 'Alt+d' },
+      { command: 'alignTop', key: 'Alt+w' },
+      { command: 'alignVerticalCenter', key: 'Alt+v' },
+      { command: 'alignBottom', key: 'Alt+s' },
     ],
   }
 })

@@ -69,7 +69,7 @@ const { floatingStyles, update } = useFloating(target, contentEl, {
   middleware: [
     offset(() => props.offset ?? 0),
     flip(),
-    shift({ padding: 20 }),
+    shift({ padding: 200 }),
   ],
 })
 

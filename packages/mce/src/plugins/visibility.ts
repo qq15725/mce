@@ -45,7 +45,7 @@ export default definePlugin((editor) => {
       { command: 'hide/show', handle: hideOrShow },
     ],
     hotkeys: [
-      { command: 'hide/show', key: 'CmdOrCtrl+h' },
+      { command: 'hide/show', key: 'Shift+CmdOrCtrl+h' },
     ],
   }
 })

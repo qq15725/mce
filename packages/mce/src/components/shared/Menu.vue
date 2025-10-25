@@ -209,6 +209,8 @@ defineExpose({
   padding: 4px;
   border-radius: 4px;
   gap: 2px;
+  max-height: inherit;
+  overflow-y: auto;
 
   &__divider {
     border-bottom: 1px solid rgba(var(--mce-theme-surface), .12);

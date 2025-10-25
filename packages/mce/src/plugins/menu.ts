@@ -5,273 +5,196 @@ import { definePlugin } from '../editor'
 declare global {
   namespace Mce {
     interface Editor {
-      systemMenus: ComputedRef<any[]>
-      contextMenus: ComputedRef<any[]>
+      mainMenu: ComputedRef<any[]>
+      contextMenu: ComputedRef<any[]>
     }
-
-    type MenuKey
-      = | 'edit'
-        | 'undo'
-        | 'redo'
-        | 'cut'
-        | 'copy'
-        | 'paste'
-        | 'duplicate'
-        | 'delete'
-        // ------
-        | 'layer'
-        | 'frame/unframe'
-        | 'group/ungroup'
-        | 'hide/show'
-        | 'lock/unlock'
-        // -----
-        | 'arrange'
-        | 'raiseToFront'
-        | 'raise'
-        | 'lower'
-        | 'lowerToBack'
-        // -----
-        | 'flip'
-        | 'flipX'
-        | 'flipY'
-        // -----
-        | 'align'
-        | 'alignLeft'
-        | 'alignHorizontalCenter'
-        | 'alignRight'
-        | 'alignTop'
-        | 'alignVerticalCenter'
-        | 'alignBottom'
   }
 }
 
 export default definePlugin((editor) => {
   const {
-    copiedData,
-    selection,
     canUndo,
     canRedo,
+    copiedData,
+    selection,
     textSelection,
   } = editor
 
   const hasSelected = computed(() => selection.value.length > 0)
 
-  const editMenus1 = computed(() => [
+  const exportMenu = computed(() => ({
+    key: 'export',
+    children: [
+      { key: 'saveAs:png' },
+      { key: 'saveAs:jpeg' },
+      { key: 'saveAs:webp' },
+      { key: 'saveAs:svg' },
+      { key: 'saveAs:gif' },
+      { key: 'saveAs:mp4' },
+      { key: 'saveAs:pdf' },
+      { key: 'saveAs:pptx' },
+      { key: 'saveAs:json' },
+    ],
+  }))
+
+  const fileMenu = computed(() => ({
+    key: 'file',
+    children: [
+      { key: 'new' },
+      { key: 'open' },
+      { type: 'divider' },
+      { key: 'import' },
+      exportMenu.value,
+      { type: 'divider' },
+      { key: 'preferences' },
+    ],
+  }))
+
+  const historyMenus = computed(() => [
     { key: 'undo', disabled: !canUndo.value },
     { key: 'redo', disabled: !canRedo.value },
   ])
 
-  const editMenus2 = computed(() => [
-    { key: 'cut', disabled: !hasSelected.value },
+  const editMenus1 = computed(() => [
     { key: 'copy', disabled: !hasSelected.value },
+    { key: 'cut', disabled: !hasSelected.value },
     { key: 'paste', disabled: !copiedData.value },
-    { type: 'divider' },
     { key: 'duplicate', disabled: !hasSelected.value },
     { key: 'delete', disabled: !hasSelected.value },
   ])
 
-  const editMenus = computed(() => [
-    {
-      key: 'edit',
-      children: [
-        ...editMenus1.value,
-        { type: 'divider' },
-        ...editMenus2.value,
-      ],
-    },
+  const selectMenu = computed(() => ({
+    key: 'select',
+    children: [
+      { key: 'selectAll' },
+      { key: 'deselectAll', disabled: !hasSelected.value },
+      { key: 'selectParent', disabled: !hasSelected.value },
+      { key: 'previousSelection' },
+      { key: 'nextSelection' },
+    ],
+  }))
+
+  const editMenu = computed(() => ({
+    key: 'edit',
+    children: [
+      ...historyMenus.value,
+      { type: 'divider' },
+      ...editMenus1.value,
+      { type: 'divider' },
+      ...selectMenu.value.children,
+    ],
+  }))
+
+  const viewMenu = computed(() => ({
+    key: 'view',
+    children: [
+      { key: 'zoomIn' },
+      { key: 'zoomOut' },
+      { key: 'zoomTo100' },
+      { key: 'zoomToFit' },
+      { key: 'zoomToSelection', disabled: !hasSelected.value },
+    ],
+  }))
+
+  const objectMenu1 = computed(() => [
+    { key: 'group/ungroup', disabled: !hasSelected.value },
+    { key: 'frame/unframe', disabled: !hasSelected.value },
   ])
 
-  const layerMenus1 = computed(() => [
-    { key: 'frame/unframe', disabled: !hasSelected.value },
-    { key: 'group/ungroup', disabled: !hasSelected.value },
-    { type: 'divider' },
+  const layerOrderMenu = computed(() => ({
+    key: 'layerOrder',
+    children: [
+      { key: 'bringToFront' },
+      { key: 'bringForward' },
+      { key: 'sendBackward' },
+      { key: 'sendToBack' },
+    ],
+  }))
+
+  const flipMenu = computed(() => ({
+    key: 'flip',
+    children: [
+      { key: 'flipHorizontal' },
+      { key: 'flipVertical' },
+    ],
+  }))
+
+  const objectMenu2 = computed(() => [
     { key: 'hide/show', disabled: !hasSelected.value },
     { key: 'lock/unlock', disabled: !hasSelected.value },
   ])
 
-  const layerMenus2 = computed(() => [
-    {
-      key: 'arrange',
-      children: [
-        { key: 'raiseToFront' },
-        { key: 'raise' },
-        { key: 'lower' },
-        { key: 'lowerToBack' },
-      ],
-    },
-    {
-      key: 'flip',
-      children: [
-        { key: 'flipX' },
-        { key: 'flipY' },
-      ],
-    },
-    {
-      key: 'align',
-      children: [
-        { key: 'alignLeft' },
-        { key: 'alignHorizontalCenter' },
-        { key: 'alignRight' },
-        { type: 'divider' },
-        { key: 'alignTop' },
-        { key: 'alignVerticalCenter' },
-        { key: 'alignBottom' },
-      ],
-    },
+  const objectMenu = computed(() => ({
+    key: 'object',
+    children: [
+      ...objectMenu1.value,
+      { type: 'divider' },
+      ...layerOrderMenu.value.children,
+      { type: 'divider' },
+      ...flipMenu.value.children,
+      { type: 'divider' },
+      ...objectMenu2.value,
+    ],
+  }))
+
+  const alignMenus = computed(() => [
+    { key: 'alignLeft' },
+    { key: 'alignHorizontalCenter' },
+    { key: 'alignRight' },
+    { key: 'alignTop' },
+    { key: 'alignVerticalCenter' },
+    { key: 'alignBottom' },
   ])
 
-  const layerMenus = computed(() => [
-    {
-      key: 'layer',
-      children: [
-        ...layerMenus1.value,
-        { type: 'divider' },
-        ...layerMenus2.value,
-      ],
-    },
+  const layerPositionMenu = computed(() => ({
+    key: 'layerPosition',
+    children: [
+      ...alignMenus.value,
+    ],
+  }))
+
+  const mainMenu = computed(() => [
+    fileMenu.value,
+    editMenu.value,
+    viewMenu.value,
+    objectMenu.value,
+    layerPositionMenu.value,
   ])
 
-  const selectMenus = computed(() => [
-    {
-      key: 'select',
-      children: [
-        { key: 'selectAll' },
-        { key: 'deselectAll', disabled: !hasSelected.value },
-        { key: 'selectParent', disabled: !hasSelected.value },
-        { type: 'divider' },
-        { key: 'previousSelection' },
-        { key: 'nextSelection' },
-      ],
-    },
-  ])
-
-  const viewMenus = computed(() => [
-    {
-      key: 'view',
-      children: [
-        { key: 'zoomIn' },
-        { key: 'zoomOut' },
-        { key: 'zoomTo100' },
-        { key: 'zoomToFit' },
-        { key: 'zoomToSelection', disabled: !hasSelected.value },
-      ],
-    },
-  ])
-
-  const exportMenus = computed(() => [
-    {
-      key: 'export',
-      children: [
-        { key: 'saveAs:png' },
-        { key: 'saveAs:jpeg' },
-        { key: 'saveAs:webp' },
-        { key: 'saveAs:svg' },
-        { key: 'saveAs:gif' },
-        { key: 'saveAs:mp4' },
-        { key: 'saveAs:pdf' },
-        { key: 'saveAs:pptx' },
-        { key: 'saveAs:json' },
-      ],
-    },
-  ])
-
-  const fileMenus = computed(() => [
-    {
-      key: 'file',
-      children: [
-        { key: 'new' },
-        { key: 'open' },
-        { type: 'divider' },
-        { key: 'import' },
-        ...exportMenus.value,
-        { type: 'divider' },
-        { key: 'preferences' },
-      ],
-    },
-  ])
-
-  const insertMenus = computed(() => [
-    {
-      key: 'insert',
-      children: [
-        { key: 'insertText' },
-      ],
-    },
-  ])
-
-  const systemMenus = computed(() => [
-    ...fileMenus.value,
-    ...editMenus.value,
-    ...insertMenus.value,
-    ...layerMenus.value,
-    ...selectMenus.value,
-    ...viewMenus.value,
-  ])
-
-  const contextMenus = computed(() => {
-    if (selection.value.length === 1) {
+  const contextMenu = computed(() => {
+    if (selection.value.length > 0) {
       if (textSelection.value) {
         return [
           ...editMenus1.value,
-          { type: 'divider' },
-          ...editMenus2.value,
         ]
       }
       else {
         return [
           ...editMenus1.value,
           { type: 'divider' },
-          ...editMenus2.value,
+          ...objectMenu1.value,
+          ...objectMenu2.value,
           { type: 'divider' },
-          ...layerMenus.value,
+          layerOrderMenu.value,
+          layerPositionMenu.value,
+          flipMenu.value,
           { type: 'divider' },
-          ...selectMenus.value,
-          { type: 'divider' },
-          ...viewMenus.value,
-          { type: 'divider' },
-          ...exportMenus.value,
+          exportMenu.value,
         ]
       }
     }
-    else if (selection.value.length > 1) {
-      return [
-        ...editMenus1.value,
-        { type: 'divider' },
-        ...editMenus2.value,
-        { type: 'divider' },
-        ...layerMenus1.value,
-        { type: 'divider' },
-        ...selectMenus.value,
-        { type: 'divider' },
-        ...viewMenus.value,
-        { type: 'divider' },
-        ...exportMenus.value,
-      ]
-    }
     else {
       return [
-        ...editMenus1.value,
+        editMenus1.value[2],
         { type: 'divider' },
-        ...editMenus2.value,
-        { type: 'divider' },
-        ...selectMenus.value,
-        { type: 'divider' },
-        ...viewMenus.value,
-        { type: 'divider' },
-        ...insertMenus.value,
-        { type: 'divider' },
-        { key: 'new' },
-        { key: 'open' },
-        { type: 'divider' },
-        { key: 'import' },
-        ...exportMenus.value,
+        ...mainMenu.value,
       ]
     }
   })
 
   Object.assign(editor, {
-    systemMenus,
-    contextMenus,
+    mainMenu,
+    contextMenu,
   })
 
   return {

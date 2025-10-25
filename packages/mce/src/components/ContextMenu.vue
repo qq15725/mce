@@ -5,7 +5,8 @@ import Menu from './shared/Menu.vue'
 
 const {
   drawboardDom,
-  contextMenus,
+  drawboardAabb,
+  contextMenu,
   exec,
   getKbd,
   t,
@@ -60,7 +61,10 @@ defineExpose({
     class="mce-context-menu"
     :target="position"
     location="bottom-start"
-    :items="contextMenus"
+    :items="contextMenu"
+    :style="{
+      maxHeight: `${drawboardAabb.height * .8}px`,
+    }"
     @click:item="onClickItem"
   >
     <template #title="{ item }">
