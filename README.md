@@ -18,7 +18,7 @@
   </a>
 </p>
 
-<p align="center">Modern canvas editor, based modern-canvas and Vue.js. only the ESM.</p>
+<p align="center">The headless canvas editor framework. only the ESM.</p>
 
 ## 📦 Install
 

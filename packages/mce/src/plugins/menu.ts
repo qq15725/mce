@@ -201,6 +201,8 @@ export default definePlugin((editor) => {
         editMenus1.value[2],
         { type: 'divider' },
         ...mainMenu.value,
+        { type: 'divider' },
+        exportMenu.value,
       ]
     }
   })
