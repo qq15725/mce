@@ -42,7 +42,6 @@ onBeforeUnmount(() => {
   unregisterCommand('startTransform')
 })
 
-const _currentObb = computed(() => getObbInDrawboard(selection.value))
 const parentObbs = computed(() => {
   if (selection.value.length !== 1) {
     return []
@@ -56,10 +55,15 @@ const parentObbs = computed(() => {
   })
   return obbs
 })
-const selectedElementBoxes = computed(() => {
-  if (selection.value.length <= 1) {
+
+const selectionObbs = computed(() => {
+  if (
+    state.value !== 'selecting'
+    && selection.value.length === 1
+  ) {
     return []
   }
+
   return selection.value.map((el) => {
     return {
       name: el.name,
@@ -67,11 +71,13 @@ const selectedElementBoxes = computed(() => {
     }
   })
 })
-const currentObb = computed({
-  get: () => _currentObb.value,
+
+const _selectionObb = computed(() => getObbInDrawboard(selection.value))
+const selectionObb = computed({
+  get: () => _selectionObb.value,
   set: (val: OrientedBoundingBox) => {
     const zoom = camera.value.zoom
-    const oldBox = _currentObb.value
+    const oldBox = _selectionObb.value
     const offsetBox = {
       left: Math.round((val.left - oldBox.left) / zoom.x),
       top: Math.round((val.top - oldBox.top) / zoom.y),
@@ -120,17 +126,11 @@ const currentObb = computed({
   },
 })
 
-function getTipText(type: 'resize' | 'rotate') {
+function tip() {
   const obb = selection.value.length === 1
     ? selection.value[0].style
     : getObb(selection.value)
-
-  if (type === 'rotate') {
-    return `${Math.floor(obb.rotate ?? 0)}°`
-  }
-  else {
-    return `${Math.floor(obb.width)} x ${Math.floor(obb.height)}`
-  }
+  return `${Number(obb.width.toFixed(2))} × ${Number(obb.height.toFixed(2))}`
 }
 
 defineExpose({
@@ -141,7 +141,7 @@ defineExpose({
 <template>
   <div
     v-for="(obb, index) in parentObbs" :key="index"
-    class="mce-parent-element-box"
+    class="mce-parent-element-obb"
     :style="{
       borderColor: 'currentColor',
       ...boundingBoxToStyle(obb),
@@ -150,38 +150,34 @@ defineExpose({
 
   <div
     v-if="state === 'selecting'"
-    class="mce-select-range-box"
+    class="mce-selected-area"
     :style="{
       borderColor: 'currentcolor',
       ...boundingBoxToStyle(props.selectedArea),
     }"
   />
 
-  <template v-if="!state || state === 'selecting'">
-    <div
-      v-for="(item, index) in selectedElementBoxes"
-      :key="index"
-      class="mce-selected-element-box"
-      :data-name="item.name"
-      :style="{
-        borderColor: 'currentcolor',
-        ...boundingBoxToStyle(item.box),
-      }"
-    />
-  </template>
+  <div
+    v-for="(item, index) in selectionObbs"
+    :key="index"
+    class="mce-element-obb"
+    :style="{
+      borderColor: 'currentcolor',
+      ...boundingBoxToStyle(item.box),
+    }"
+  />
 
   <Transformable
-    v-if="currentObb.width && currentObb.height"
+    v-if="selectionObb.width && selectionObb.height"
     ref="transformableRef"
-    v-model="currentObb"
+    v-model="selectionObb"
     :visibility="state !== 'selecting' ? 'auto' : 'none'"
     :moveable="selection[0] && !isLock(selection[0])"
     :resize-strategy="props.resizeStrategy"
     :handle-shape="config.handleShape"
-    handle-strategy="point"
-    class="mce-current-box"
+    class="mce-selection-obb"
     :border-style="selection.length > 1 ? 'dashed' : 'solid'"
-    :get-tip-text="getTipText"
+    :tip="tip"
     @move="() => !state && (state = 'transforming')"
     @end="() => state === 'transforming' && (state = undefined)"
   >
@@ -190,18 +186,18 @@ defineExpose({
     </template>
   </Transformable>
 
-  <template v-if="currentObb.width && currentObb.height && $slots.default">
+  <template v-if="selectionObb.width && selectionObb.height && $slots.default">
     <div
       style="position: absolute;"
-      :style="boundingBoxToStyle(currentObb)"
+      :style="boundingBoxToStyle(selectionObb)"
     >
-      <slot :box="currentObb" />
+      <slot :box="selectionObb" />
     </div>
   </template>
 </template>
 
 <style lang="scss">
-.mce-parent-element-box {
+.mce-parent-element-obb {
   position: absolute;
   pointer-events: none;
   border-width: 1px;
@@ -210,7 +206,7 @@ defineExpose({
   opacity: .5;
 }
 
-.mce-select-range-box {
+.mce-selected-area {
   position: absolute;
   border-width: 1px;
   border-style: solid;
@@ -218,12 +214,12 @@ defineExpose({
   background-color: rgba(var(--mce-theme-primary), .1);
 }
 
-.mce-current-box {
+.mce-selection-obb {
   position: absolute;
   color: rgba(var(--mce-theme-primary), 1);
 }
 
-.mce-selected-element-box {
+.mce-element-obb {
   position: absolute;
   border-width: 1px;
   border-style: solid;

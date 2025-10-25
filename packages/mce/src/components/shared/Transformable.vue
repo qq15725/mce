@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { OrientedBoundingBox } from '../../types'
 import { computed, getCurrentInstance, nextTick, onMounted, ref, useModel } from 'vue'
-import Tooltip from './Tooltip.vue'
 
 interface Point {
   x: number
@@ -47,7 +46,7 @@ const props = withDefaults(defineProps<{
   handles?: Handle[]
   initialSize?: boolean
   borderStyle?: 'solid' | 'dashed'
-  getTipText?: (type: 'rotate' | 'resize') => string
+  tip?: (type: 'size') => number
 }>(), {
   tag: 'div',
   moveable: true,
@@ -187,9 +186,11 @@ const style = computed(() => {
     transform: `matrix(${cos}, ${sin}, ${-sin}, ${cos}, ${left}, ${top})`,
   }
 })
-const tipTarget = ref<any>()
-const tipText = ref<string>()
 const isAutoVisibilityTransforming = computed(() => props.visibility === 'auto' && transforming.value)
+const tip = computed(() => {
+  return props.tip?.('size')
+    ?? `${Math.floor(model.value.width)} × ${Math.floor(model.value.height)}`
+})
 
 function start(event?: MouseEvent, index?: number): boolean {
   if (event && event.button !== undefined && event.button !== 0) {
@@ -392,23 +393,11 @@ function start(event?: MouseEvent, index?: number): boolean {
 
     model.value = newValue
     emit('move', newValue, oldValue)
-
-    if (!isMove) {
-      tipTarget.value = handlesRef.value?.[index!]
-      if (isRotate) {
-        tipText.value = props.getTipText?.('rotate') ?? `${Math.floor(newValue.rotate)}°`
-      }
-      else {
-        tipText.value = props.getTipText?.('resize') ?? `${Math.floor(newValue.width)} x ${Math.floor(newValue.height)}`
-      }
-    }
   }
 
   function onEnd(): void {
     window.removeEventListener('pointermove', onMove)
     window.removeEventListener('pointerup', onEnd, true)
-    tipTarget.value = undefined
-    tipText.value = undefined
     transforming.value = false
     emit('end', model.value)
   }
@@ -619,15 +608,9 @@ defineExpose({
       </g>
     </svg>
 
-    <Tooltip
-      v-if="tipTarget && tipText"
-      model-value
-      :target="tipTarget"
-    >
-      <div style="font-size: 12px; text-wrap: nowrap">
-        {{ tipText }}
-      </div>
-    </Tooltip>
+    <div class="mce-transformable__tip">
+      {{ tip }}
+    </div>
   </Component>
 </template>
 
@@ -635,6 +618,7 @@ defineExpose({
 .mce-transformable {
   left: 0;
   top: 0;
+  color: rgb(var(--mce-theme-primary));
 
   &__svg {
     position: absolute;
@@ -661,6 +645,19 @@ defineExpose({
     stroke-width: 1px;
     fill: transparent;
     stroke: transparent;
+  }
+
+  &__tip {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, calc(100% + 8px));
+    background-color: rgb(var(--mce-theme-primary));
+    color: rgb(var(--mce-theme-on-primary));
+    font-size: 12px;
+    padding: 2px 4px;
+    border-radius: 3px;
+    text-wrap: nowrap;
   }
 }
 </style>
