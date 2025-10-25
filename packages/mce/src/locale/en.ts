@@ -40,7 +40,6 @@ export default {
   'view': 'View',
   'ruler': 'Ruler',
   'scrollbar': 'Scrollbar',
-  'bottombar': 'Bottombar',
   'timeline': 'Timeline',
   'statusbar': 'Statusbar',
   'zoom': 'Zoom',

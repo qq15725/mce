@@ -102,7 +102,6 @@ export default definePlugin((editor) => {
     children: [
       { key: 'ruler', checked: config.value.ruler },
       { key: 'scrollbar', checked: config.value.scrollbar },
-      { key: 'bottombar', checked: config.value.bottombar },
       { key: 'timeline', checked: config.value.timeline },
       { key: 'statusbar', checked: config.value.statusbar },
       { type: 'divider' },

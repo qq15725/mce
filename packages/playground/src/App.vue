@@ -74,7 +74,6 @@ const editor = new Editor({
         'view': '视图',
         'ruler': '标尺',
         'scrollbar': '滚动条',
-        'bottombar': '底栏',
         'timeline': '时间线',
         'statusbar': '状态栏',
         'zoom': '缩放',
