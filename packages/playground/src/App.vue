@@ -24,7 +24,7 @@ const editor = new Editor({
   frameGap: 48,
   typographyStrategy: 'autoHeight',
   handleShape: 'rect',
-  zoomToFitOffset: { left: 100, top: 100, right: 100, bottom: 100 },
+  zoomToFitOffset: { left: 50, top: 50, right: 50, bottom: 50 },
   defaultFont: { family: 'SourceHanSansCN-Normal', src: '/SourceHanSansCN-Normal.woff' },
   localDb: false,
   gifWorkerUrl,
@@ -33,7 +33,7 @@ const editor = new Editor({
     messages: {
       'zh-Hans': {
         'cancel': '取消',
-        'constrainToAxis': 'Constrain to axis',
+        'constrainToAxis': '约束到轴',
         'loading': '加载中...',
         'selecting': '选择中...',
         'selectObject': '选择对象',
