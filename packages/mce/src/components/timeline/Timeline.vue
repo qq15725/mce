@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { Animation, Element2D } from 'modern-canvas'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useEditor } from '../../composables'
 import Icon from '../shared/Icon.vue'
 import Ruler from '../shared/Ruler.vue'
@@ -13,6 +13,7 @@ const {
   root,
   msPerPx,
   currentTime,
+  timeline,
   endTime,
   selection,
 } = useEditor()
@@ -36,13 +37,41 @@ function formatTick(input: number) {
   const ss = String(s).padStart(2, '0')
   return `${mm}:${ss}`
 }
+
+const paused = ref(true)
+let requestId: number | undefined
+
+function toggle() {
+  if (paused.value) {
+    paused.value = false
+    let prevTime: number | undefined
+    function loop(time?: number) {
+      if (prevTime !== undefined) {
+        timeline.value.addTime(time - prevTime)
+      }
+      prevTime = time
+      requestId = requestAnimationFrame(loop)
+    }
+    loop()
+  }
+  else {
+    paused.value = true
+    if (requestId !== undefined) {
+      cancelAnimationFrame(requestId)
+      requestId = undefined
+    }
+  }
+}
 </script>
 
 <template>
   <div class="mce-timeline">
     <div class="mce-timeline__toolbar">
-      <div class="mce-timeline__play">
-        <Icon icon="$play" />
+      <div
+        class="mce-timeline__play"
+        @click="toggle"
+      >
+        <Icon :icon="paused ? '$play' : '$pause'" />
       </div>
     </div>
 

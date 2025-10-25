@@ -7,6 +7,11 @@ import { aliases, svg } from '../iconsets/mdi-svg'
 export interface IconAliases {
   [name: string]: IconValue
   play: IconValue
+  pause: IconValue
+  gps: IconValue
+  menuRight: IconValue
+  mouseLeftClick: IconValue
+  mouseRightClick: IconValue
 }
 
 export interface IconsOptions {

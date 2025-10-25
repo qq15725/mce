@@ -94,7 +94,7 @@ export function useIcon(props: MaybeRefOrGetter<IconValue | undefined>) {
       }
     }
     if (!icon)
-      consoleWarn(`Could not find aliased icon "${iconAlias}"`)
+      console.warn(`Could not find aliased icon "${iconAlias}"`)
     if (Array.isArray(icon)) {
       return {
         component: MceSvgIcon,
