@@ -23,6 +23,7 @@ declare global {
       ruler: boolean
       scrollbar: boolean
       bottombar: boolean
+      timeline: boolean
       statusbar: boolean
       wheelZoom: boolean
       frameGap: number
@@ -50,6 +51,7 @@ export default defineMixin((editor, options) => {
   registerConfig('ruler', false)
   registerConfig('scrollbar', false)
   registerConfig('bottombar', false)
+  registerConfig('timeline', false)
   registerConfig('statusbar', false)
   registerConfig('wheelZoom', false)
   registerConfig('frameGap', 48)

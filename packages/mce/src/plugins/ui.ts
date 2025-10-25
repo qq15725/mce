@@ -20,10 +20,21 @@ export default definePlugin((editor) => {
     selection,
     getAabbInDrawboard,
     emit,
+    config,
   } = editor
 
   return {
     name: 'ui',
+    commands: [
+      { command: 'ruler', handle: () => config.value.ruler = !config.value.ruler },
+      { command: 'scrollbar', handle: () => config.value.scrollbar = !config.value.scrollbar },
+      { command: 'bottombar', handle: () => config.value.bottombar = !config.value.bottombar },
+      { command: 'statusbar', handle: () => config.value.statusbar = !config.value.statusbar },
+      { command: 'timeline', handle: () => config.value.timeline = !config.value.timeline },
+    ],
+    hotkeys: [
+      { command: 'ruler', key: 'Shift+r' },
+    ],
     setup: () => {
       // TODO lazy watch
       watch(

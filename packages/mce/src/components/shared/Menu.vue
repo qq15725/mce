@@ -30,6 +30,7 @@ export interface MenuItem {
   key: string
   handle?: (event: MouseEvent) => void
   type?: 'divider'
+  checked?: boolean
   disabled?: boolean
   children?: MenuItem[]
 }
@@ -156,20 +157,25 @@ defineExpose({
               ]"
               @click="e => onClickItem(item, index, e)"
             >
+              <div class="mce-list-item__prepend">
+                <Icon
+                  v-if="item.checked"
+                  icon="$check"
+                />
+              </div>
+
               <div class="mce-list-item__title">
                 <slot name="title" :item="item">
                   {{ item.key }}
                 </slot>
               </div>
 
-              <template v-if="item.children?.length">
-                <div
-                  v-if="item.children?.length"
-                  class="mce-list-item__append"
-                >
-                  <Icon icon="$menuRight" />
-                </div>
-              </template>
+              <div
+                v-if="item.children?.length"
+                class="mce-list-item__append"
+              >
+                <Icon icon="$menuRight" />
+              </div>
             </div>
           </div>
         </template>
@@ -183,7 +189,7 @@ defineExpose({
         :model-value="opened > -1"
         :target="menuItemRefs?.[opened]"
         :attach="false"
-        :offset="8"
+        :offset="16"
         @update:model-value="opened = -1"
         @click:item="(_item, _event) => emit('click:item', _item, _event)"
       >
@@ -206,8 +212,8 @@ defineExpose({
   background-color: rgb(var(--mce-theme-on-surface));
   color: rgb(var(--mce-theme-surface));
   box-shadow: var(--mce-shadow);
-  padding: 4px;
-  border-radius: 4px;
+  padding: 8px;
+  border-radius: 8px;
   gap: 2px;
   max-height: inherit;
   overflow-y: auto;
@@ -236,6 +242,14 @@ defineExpose({
     pointer-events: none;
     user-select: none;
     opacity: .4;
+  }
+
+  &__prepend {
+    width: 12px;
+    height: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   &__title {

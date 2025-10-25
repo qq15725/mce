@@ -12,6 +12,7 @@ export interface IconAliases {
   menuRight: IconValue
   mouseLeftClick: IconValue
   mouseRightClick: IconValue
+  check: IconValue
 }
 
 export interface IconsOptions {

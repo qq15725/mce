@@ -18,6 +18,7 @@ export default definePlugin((editor) => {
     copiedData,
     selection,
     textSelection,
+    config,
   } = editor
 
   const hasSelected = computed(() => selection.value.length > 0)
@@ -69,8 +70,8 @@ export default definePlugin((editor) => {
       { key: 'selectAll' },
       { key: 'deselectAll', disabled: !hasSelected.value },
       { key: 'selectParent', disabled: !hasSelected.value },
-      { key: 'previousSelection' },
-      { key: 'nextSelection' },
+      { key: 'previousSelection', disabled: !hasSelected.value },
+      { key: 'nextSelection', disabled: !hasSelected.value },
     ],
   }))
 
@@ -85,14 +86,27 @@ export default definePlugin((editor) => {
     ],
   }))
 
-  const viewMenu = computed(() => ({
-    key: 'view',
+  const zoomMenu = computed(() => ({
+    key: 'zoom',
     children: [
       { key: 'zoomIn' },
       { key: 'zoomOut' },
       { key: 'zoomTo100' },
       { key: 'zoomToFit' },
       { key: 'zoomToSelection', disabled: !hasSelected.value },
+    ],
+  }))
+
+  const viewMenu = computed(() => ({
+    key: 'view',
+    children: [
+      { key: 'ruler', checked: config.value.ruler },
+      { key: 'scrollbar', checked: config.value.scrollbar },
+      { key: 'bottombar', checked: config.value.bottombar },
+      { key: 'timeline', checked: config.value.timeline },
+      { key: 'statusbar', checked: config.value.statusbar },
+      { type: 'divider' },
+      ...zoomMenu.value.children,
     ],
   }))
 
@@ -104,18 +118,18 @@ export default definePlugin((editor) => {
   const layerOrderMenu = computed(() => ({
     key: 'layerOrder',
     children: [
-      { key: 'bringToFront' },
-      { key: 'bringForward' },
-      { key: 'sendBackward' },
-      { key: 'sendToBack' },
+      { key: 'bringToFront', disabled: !hasSelected.value },
+      { key: 'bringForward', disabled: !hasSelected.value },
+      { key: 'sendBackward', disabled: !hasSelected.value },
+      { key: 'sendToBack', disabled: !hasSelected.value },
     ],
   }))
 
   const flipMenu = computed(() => ({
     key: 'flip',
     children: [
-      { key: 'flipHorizontal' },
-      { key: 'flipVertical' },
+      { key: 'flipHorizontal', disabled: !hasSelected.value },
+      { key: 'flipVertical', disabled: !hasSelected.value },
     ],
   }))
 
@@ -138,12 +152,12 @@ export default definePlugin((editor) => {
   }))
 
   const alignMenus = computed(() => [
-    { key: 'alignLeft' },
-    { key: 'alignHorizontalCenter' },
-    { key: 'alignRight' },
-    { key: 'alignTop' },
-    { key: 'alignVerticalCenter' },
-    { key: 'alignBottom' },
+    { key: 'alignLeft', disabled: !hasSelected.value },
+    { key: 'alignHorizontalCenter', disabled: !hasSelected.value },
+    { key: 'alignRight', disabled: !hasSelected.value },
+    { key: 'alignTop', disabled: !hasSelected.value },
+    { key: 'alignVerticalCenter', disabled: !hasSelected.value },
+    { key: 'alignBottom', disabled: !hasSelected.value },
   ])
 
   const layerPositionMenu = computed(() => ({

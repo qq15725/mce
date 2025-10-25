@@ -417,7 +417,7 @@ function onScroll() {
       <slot />
     </div>
     <Rulers v-if="config.ruler" />
-    <Timeline />
+    <Timeline v-if="config.timeline" />
     <Statusbar v-if="config.statusbar" />
     <div
       ref="overlayContainerTpl"
