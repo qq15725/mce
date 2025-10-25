@@ -30,7 +30,7 @@ export const MceSvgIcon = defineComponent({
   props: makeIconProps(),
   setup(props, { attrs }) {
     return () => {
-      return createVNode(props.tag, mergeProps(attrs, { style: null }), {
+      return createVNode(props.tag as any, mergeProps(attrs, { style: null }), {
         default: () => [
           createElementVNode('svg', {
             'class': 'mce-icon__svg',
@@ -63,10 +63,10 @@ export const MceComponentIcon = defineComponent({
   props: makeIconProps(),
   setup(props, { slots }) {
     return () => {
-      return createVNode(props.tag, null, {
+      return createVNode(props.tag as any, null, {
         default: () => [
           props.icon
-            ? createVNode(props.icon, null, null)
+            ? createVNode(props.icon as any, null, null)
             : slots.default?.(),
         ],
       })
@@ -86,7 +86,7 @@ export function useIcon(props: MaybeRefOrGetter<IconValue | undefined>) {
         component: MceComponentIcon,
       }
     }
-    let icon = iconAlias
+    let icon: any = iconAlias
     if (typeof icon === 'string') {
       icon = icon.trim()
       if (icon.startsWith('$')) {

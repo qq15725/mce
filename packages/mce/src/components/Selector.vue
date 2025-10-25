@@ -52,7 +52,7 @@ const parentObbs = computed(() => {
     if (ancestor instanceof Element2D) {
       obbs.push(getObbInDrawboard(ancestor as Element2D))
     }
-    return undefined
+    return false
   })
   return obbs
 })
@@ -114,7 +114,7 @@ const currentObb = computed({
         ) {
           obbToFit(ancestor)
         }
-        return undefined
+        return false
       })
     })
   },

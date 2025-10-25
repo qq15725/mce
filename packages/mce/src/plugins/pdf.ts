@@ -27,7 +27,7 @@ export default definePlugin((editor) => {
           return await new Pdf({
             ...doc,
             fonts,
-          }).toBlob()
+          } as any).toBlob()
         },
       },
     ],

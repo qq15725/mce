@@ -1,5 +1,4 @@
-import type { InjectionKey } from 'vue'
-
+import type { Component, InjectionKey } from 'vue'
 import type { IconValue } from './icon'
 import { merge } from 'lodash-es'
 import { aliases, svg } from '../iconsets/mdi-svg'
@@ -13,6 +12,10 @@ export interface IconAliases {
   mouseLeftClick: IconValue
   mouseRightClick: IconValue
   check: IconValue
+}
+
+export interface IconSet {
+  component: Component
 }
 
 export interface IconsOptions {

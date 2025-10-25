@@ -181,7 +181,7 @@ export default defineMixin((editor) => {
           !['Meta', 'Control', 'Alt', 'Shift'].includes(e.key) && e.key,
         ]
           .filter(Boolean)
-          .map(v => v.toLowerCase())
+          .map(v => (v as string).toLowerCase())
           .sort()
           .join('+')
 
@@ -203,7 +203,7 @@ export default defineMixin((editor) => {
                 }
               })
               .filter(Boolean)
-              .map(v => v.toLowerCase())
+              .map(v => (v as string).toLowerCase())
               .sort()
               .join('+')
 

@@ -35,7 +35,7 @@ export default defineMixin((editor) => {
   // }
 
   function getAncestor(element?: Element2D): Element2D | undefined {
-    return element?.findAncestor<Element2D>(node => node instanceof Element2D ? node : undefined)
+    return element?.findAncestor<Element2D>(node => node instanceof Element2D)
   }
 
   const hoverElement = ref<Element2D>()

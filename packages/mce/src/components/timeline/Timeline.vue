@@ -45,7 +45,7 @@ function play() {
   paused.value = false
   let prevTime: number | undefined
   function loop(time?: number) {
-    if (prevTime !== undefined) {
+    if (prevTime !== undefined && time !== undefined) {
       timeline.value.addTime(time - prevTime)
     }
     prevTime = time

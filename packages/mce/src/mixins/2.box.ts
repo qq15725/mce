@@ -77,11 +77,11 @@ export default defineMixin((editor) => {
             x: oldAabb.left + oldAabb.width / 2,
             y: oldAabb.top + oldAabb.height / 2,
           })
-          const origin = child.getTransformOrigin()
+          const pivot = child.pivot
           const style = child.style
           const offset = [
-            localCenter.x - origin.x,
-            localCenter.y - origin.y,
+            localCenter.x - pivot.x,
+            localCenter.y - pivot.y,
           ]
 
           const transform = new Transform2D()

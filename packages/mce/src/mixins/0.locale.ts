@@ -47,9 +47,9 @@ export default defineMixin((editor, options) => {
     }, locale)
 
     return {
-      locale: _locale,
-      localeMessages: messages[_locale],
-      fallbackMessages: messages[_fallback],
+      locale: _locale as string,
+      localeMessages: (messages as any)[_locale] as Record<string, any>,
+      fallbackMessages: (messages as any)[_fallback] as Record<string, any>,
     }
   })
 
@@ -57,10 +57,10 @@ export default defineMixin((editor, options) => {
     const { locale, localeMessages, fallbackMessages } = messages.value
 
     const value = options.t?.(key, fallback)
-      ?? localeMessages?.[key]
-      ?? fallbackMessages?.[key]
-      ?? localeMessages?.[fallback]
-      ?? fallbackMessages?.[fallback]
+      ?? localeMessages?.[key ?? -1]
+      ?? fallbackMessages?.[key ?? -1]
+      ?? localeMessages?.[fallback ?? -1]
+      ?? fallbackMessages?.[fallback ?? -1]
 
     if (value === undefined) {
       console.warn(`[mce] Not found '${key}' key in '${locale}' locale messages.`)

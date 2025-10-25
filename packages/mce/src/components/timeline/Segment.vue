@@ -11,7 +11,7 @@ const props = withDefaults(defineProps<{
 })
 
 const style = computed(() => {
-  const box = { left: 0, top: 0, width: 0, height: 0 } as const
+  const box: Record<string, any> = { left: 0, top: 0, width: 0, height: 0 }
 
   box.left = props.node.delay * props.zoom
   box.width = props.node.duration * props.zoom

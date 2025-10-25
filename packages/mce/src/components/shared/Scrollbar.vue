@@ -86,7 +86,7 @@ const actived = ref(false)
 // })
 const AMOUNT_STEP = 50
 const AMOUNT_REPEAR_DELAY = 50
-let clearId: NodeJS.Timeout
+let clearId: any
 function startAmount(e: PointerEvent) {
   const el = e.target as HTMLElement
   let direction = 0
