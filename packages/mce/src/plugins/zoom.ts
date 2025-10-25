@@ -139,9 +139,9 @@ export default definePlugin((editor) => {
     hotkeys: [
       { command: 'zoomIn', key: 'CmdOrCtrl+=' },
       { command: 'zoomOut', key: 'CmdOrCtrl+-' },
-      { command: 'zoomTo100', key: 'Alt+º' },
-      { command: 'zoomToFit', key: 'Alt+¡' },
-      { command: 'zoomToSelection', key: 'Alt+™' },
+      { command: 'zoomTo100', key: 'CmdOrCtrl+º' },
+      { command: 'zoomToFit', key: 'Shift+¡' },
+      { command: 'zoomToSelection', key: 'Shift+™' },
     ],
     events: {
       setDoc: zoomToFit,

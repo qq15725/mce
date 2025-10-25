@@ -203,8 +203,8 @@ defineExpose({
 .mce-list {
   display: flex;
   flex-direction: column;
-  background-color: rgba(var(--mce-theme-on-surface), 1);
-  color: rgba(var(--mce-theme-surface), 1);
+  background-color: rgb(var(--mce-theme-on-surface));
+  color: rgb(var(--mce-theme-surface));
   box-shadow: var(--mce-shadow);
   padding: 4px;
   border-radius: 4px;

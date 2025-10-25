@@ -81,6 +81,7 @@ defineExpose({
   }
 
   &__kbd {
+    letter-spacing: .08em;
     margin-left: 24px;
     opacity: .3;
   }

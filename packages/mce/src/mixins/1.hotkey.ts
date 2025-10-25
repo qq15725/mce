@@ -117,6 +117,7 @@ export default defineMixin((editor) => {
     'Enter': '⏎',
     'Escape': 'Esc',
 
+    '=': '+',
     'º': '0',
     '¡': '1',
     '™': '2',
@@ -153,7 +154,7 @@ export default defineMixin((editor) => {
         default:
           return (kbdMap as any)[key] ?? key.charAt(0).toUpperCase() + key.slice(1)
       }
-    }).join(' ')
+    }).join('')
   }
 
   Object.assign(editor, {
