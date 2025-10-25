@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { Animation, Element2D } from 'modern-canvas'
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, ref } from 'vue'
 import { useEditor } from '../../composables'
 import Icon from '../shared/Icon.vue'
 import Ruler from '../shared/Ruler.vue'
@@ -41,27 +41,37 @@ function formatTick(input: number) {
 const paused = ref(true)
 let requestId: number | undefined
 
-function toggle() {
-  if (paused.value) {
-    paused.value = false
-    let prevTime: number | undefined
-    function loop(time?: number) {
-      if (prevTime !== undefined) {
-        timeline.value.addTime(time - prevTime)
-      }
-      prevTime = time
-      requestId = requestAnimationFrame(loop)
+function play() {
+  paused.value = false
+  let prevTime: number | undefined
+  function loop(time?: number) {
+    if (prevTime !== undefined) {
+      timeline.value.addTime(time - prevTime)
     }
-    loop()
+    prevTime = time
+    requestId = requestAnimationFrame(loop)
   }
-  else {
-    paused.value = true
-    if (requestId !== undefined) {
-      cancelAnimationFrame(requestId)
-      requestId = undefined
-    }
+  loop()
+}
+
+function pause() {
+  paused.value = true
+  if (requestId !== undefined) {
+    cancelAnimationFrame(requestId)
+    requestId = undefined
   }
 }
+
+function toggle() {
+  if (paused.value) {
+    play()
+  }
+  else {
+    pause()
+  }
+}
+
+onBeforeUnmount(pause)
 </script>
 
 <template>
