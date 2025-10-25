@@ -44,8 +44,9 @@ const isActive = computed(() => {
     align-items: center;
     gap: 4px;
     color: rgba(var(--mce-theme-surface), 1);
-    background-color: rgba(var(--mce-theme-on-background), .3);
+    background-color: rgba(var(--mce-theme-on-background), var(--mce-medium-emphasis-opacity));
     transform: translateX(-50%);
+    backdrop-filter: blur(var(--mce-blur));
     border-radius: 8px;
     font-size: 14px;
     cursor: pointer;

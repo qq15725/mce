@@ -358,8 +358,7 @@ function onReflineMousedown(e: MouseEvent, index: number) {
     cursor: pointer;
     background-color: rgba(var(--mce-theme-surface), .1);
     color: rgba(var(--mce-theme-on-background), var(--mce-low-emphasis-opacity));
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(var(--mce-blur));
   }
 }
 

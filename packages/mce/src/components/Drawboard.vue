@@ -442,6 +442,7 @@ function onScroll() {
   --mce-medium-emphasis-opacity: 0.5;
   --mce-low-emphasis-opacity: 0.3;
   --mce-shadow: 0 8px 32px 2px rgba(0, 0, 0, 0.08), 0 0 1px rgba(0, 0, 0, 0.2);
+  --mce-blur: 8px;
 }
 
 .mce-drawboard {
@@ -450,8 +451,8 @@ function onScroll() {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background-color: rgba(var(--mce-theme-surface), 1);
-  color: rgba(var(--mce-theme-on-surface), 1);
+  background-color: rgb(var(--mce-theme-surface));
+  color: rgb(var(--mce-theme-on-surface));
   overflow: hidden;
   user-select: none;
 

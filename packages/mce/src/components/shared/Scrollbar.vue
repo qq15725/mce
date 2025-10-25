@@ -178,6 +178,7 @@ onBeforeUnmount(() => {
     position: absolute;
     border-radius: calc(infinity * 1px);
     background-color: rgba(var(--mce-theme-on-background), var(--mce-low-emphasis-opacity));
+    backdrop-filter: blur(var(--mce-blur));
 
     &--active,
     &:hover {
