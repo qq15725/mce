@@ -40,7 +40,7 @@ export default {
   'view': 'View',
   'zoomIn': 'Zoom in',
   'zoomOut': 'Zoom out',
-  'zoomTo100': 'Zoom to 100',
+  'zoomTo100': 'Zoom to 100%',
   'zoomToFit': 'Zoom to fit',
   'zoomToSelection': 'Zoom to selection',
   'object': 'Object',
