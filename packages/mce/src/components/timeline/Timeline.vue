@@ -105,6 +105,7 @@ onBeforeUnmount(pause)
 <template>
   <div
     class="mce-timeline"
+    @wheel.prevent
   >
     <div class="mce-timeline__toolbar">
       <div
