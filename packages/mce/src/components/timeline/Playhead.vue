@@ -2,10 +2,10 @@
 import { computed } from 'vue'
 
 const props = withDefaults(defineProps<{
-  zoom?: number
+  msPerPx?: number
   offset?: number
 }>(), {
-  zoom: 1,
+  msPerPx: 1,
   offset: 0,
 })
 
@@ -13,7 +13,7 @@ const currentTime = defineModel<number>({ default: 0 })
 
 const style = computed(() => {
   return {
-    transform: `translate(${(Math.ceil(currentTime.value * props.zoom)) + props.offset}px, 0px)`,
+    transform: `translate(${(Math.ceil(currentTime.value / props.msPerPx)) + props.offset}px, 0px)`,
   }
 })
 </script>

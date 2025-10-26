@@ -23,7 +23,7 @@ export default defineMixin((editor) => {
     renderEngine,
   } = editor
 
-  const msPerPx = ref(0.1)
+  const msPerPx = ref(10)
   const currentTime = computed({
     get: () => timeline.value.currentTime,
     set: (val) => {

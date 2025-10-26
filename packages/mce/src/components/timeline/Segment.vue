@@ -4,17 +4,17 @@ import { computed } from 'vue'
 
 const props = withDefaults(defineProps<{
   node: TimelineNode
-  zoom?: number
+  msPerPx?: number
   active?: boolean
 }>(), {
-  zoom: 1,
+  msPerPx: 1,
 })
 
 const style = computed(() => {
   const box: Record<string, any> = { left: 0, top: 0, width: 0, height: 0 }
 
-  box.left = props.node.delay * props.zoom
-  box.width = props.node.duration * props.zoom
+  box.left = props.node.delay / props.msPerPx
+  box.width = props.node.duration / props.msPerPx
 
   if (box.width) {
     box.width = `${box.width}px`

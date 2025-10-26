@@ -17,20 +17,42 @@ const activeAabb = computed(() => getAabbInDrawboard(selection.value))
 </script>
 
 <template>
-  <Ruler
-    :zoom="camera.zoom.y"
-    vertical
-    inset
-    refline
-    :position="camera.position.y"
-    :selected="activeAabb"
-  />
+  <div class="mce-rulers">
+    <Ruler
+      refline
+      :zoom="camera.zoom.y"
+      :position="camera.position.y"
+      :selected="activeAabb"
+      vertical
+    />
 
-  <Ruler
-    inset
-    refline
-    :zoom="camera.zoom.x"
-    :position="camera.position.x"
-    :selected="activeAabb"
-  />
+    <Ruler
+      refline
+      :zoom="camera.zoom.x"
+      :position="camera.position.x"
+      :selected="activeAabb"
+    />
+
+    <div class="mce-rulers__left-top" />
+  </div>
 </template>
+
+<style lang="scss">
+  .mce-rulers {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+
+    &__left-top {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 16px;
+      height: 16px;
+      background-color: rgb(var(--mce-theme-surface));
+    }
+  }
+</style>

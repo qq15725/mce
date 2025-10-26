@@ -15,19 +15,23 @@ const props = withDefaults(
     vertical?: boolean
     zoom?: number
     position?: number
+    unit?: number
+    unitFractions?: number[]
     selected?: AxisAlignedBoundingBox
     pixelRatio?: number
-    inset?: boolean
     refline?: boolean
     axis?: boolean
-    format?: (tick: number) => string
+    labelFormat?: (tick: number) => string
   }>(),
   {
     size: 16,
     zoom: 1,
     position: 0,
+    unit: 50,
+    unitFractions: () => [1, 2, 5, 10],
     pixelRatio: window.devicePixelRatio || 1,
     axis: true,
+    labelFormat: (tick: number) => String(tick),
   },
 )
 
@@ -88,43 +92,37 @@ function drawText(content: string, tick: number, top: number, size: number, colo
 }
 
 const unit = computed(() => {
-  const baseUnit = 5
-  let idealUnit = baseUnit / props.zoom
-  idealUnit = Math.max(idealUnit, 1)
+  const idealUnit = Math.max(props.unit / props.zoom, 1)
+  const unitFractions = props.unitFractions
   const exponent = Math.floor(Math.log10(idealUnit))
   const fraction = idealUnit / 10 ** exponent
-  let niceFraction = 10
-  if (fraction <= 1) {
-    niceFraction = 1
-  }
-  else if (fraction <= 2) {
-    niceFraction = 2
-  }
-  else if (fraction <= 5) {
-    niceFraction = 5
+  let niceFraction = unitFractions[unitFractions.length - 1]
+  for (const cur of unitFractions) {
+    if (fraction <= cur) {
+      niceFraction = cur
+      break
+    }
   }
   return niceFraction * 10 ** exponent
 })
 
 const start = computed(() => {
-  let position = -props.position
-  if (props.inset) {
-    position += props.size
-  }
-  return Math.ceil(position / props.zoom / unit.value) * unit.value
+  const value = -props.position / props.zoom
+  return Math.floor(value / unit.value) * unit.value
 })
 
 const end = computed(() => {
   const len = (props.vertical ? bbox.value?.height : bbox.value?.width) ?? 0
-  return start.value + Math.ceil(len / props.zoom)
+  const value = len / props.zoom
+  return start.value + Math.ceil(value / unit.value) * unit.value
 })
 
-function logic2ui(num: number) {
-  return ~~(num * props.zoom + props.position)
+function numToPx(num: number) {
+  return Math.round(num * props.zoom + props.position)
 }
 
-function ui2logic(num: number) {
-  return ~~((num - props.position) / props.zoom)
+function pxToNum(px: number) {
+  return Math.round((px - props.position) / props.zoom)
 }
 
 let color: string | undefined
@@ -150,15 +148,9 @@ function render() {
   drawSelected()
 
   if (props.axis) {
-    let point
-    if (props.inset) {
-      point = [props.size, props.size]
-    }
-    else {
-      point = props.vertical
-        ? [props.size, 0]
-        : [0, props.size]
-    }
+    const point = props.vertical
+      ? [props.size, 0]
+      : [0, props.size]
     drawAxis(point, Math.max(cvs.width, cvs.height), 2, color!)
   }
 
@@ -172,12 +164,15 @@ function render() {
   ctx.lineWidth = 1
   ctx.strokeStyle = color!
   ctx.beginPath()
-  for (let tick = start.value; tick <= end.value; tick += unit.value) {
-    if (tick % (unit.value * 10) === 0) {
-      drawPrimary(logic2ui(tick), props.format?.(tick) ?? String(tick))
+
+  let inc = unit.value / 10
+  inc = (inc > 0 ? 1 : -1) * Math.max(1, Math.abs(inc))
+  for (let tick = start.value; tick <= end.value; tick += inc) {
+    if (tick % unit.value === 0) {
+      drawPrimary(numToPx(tick), props.labelFormat(tick))
     }
-    else if (tick % unit.value === 0) {
-      drawSecondary(logic2ui(tick))
+    else if (tick % inc === 0) {
+      drawSecondary(numToPx(tick))
     }
   }
 
@@ -237,7 +232,7 @@ const lines = computed(() => {
 })
 
 function getTick(e: MouseEvent) {
-  return ui2logic(
+  return pxToNum(
     props.vertical
       ? e.clientY - bbox.value!.top
       : e.clientX - bbox.value!.left,
@@ -266,7 +261,7 @@ function onMousemove(e: MouseEvent, temp = false) {
   if (props.refline && temp) {
     tempLine.value = tick
   }
-  tipText.value = `${tick}`
+  tipText.value = props.labelFormat(`${tick}`)
   tipPos.value = { x: e.clientX, y: e.clientY }
 }
 
@@ -326,7 +321,7 @@ function onReflineMousedown(e: MouseEvent, index: number) {
     :style="{
       [props.vertical ? 'height' : 'width']: '0',
       [props.vertical ? 'width' : 'height']: '100%',
-      [props.vertical ? 'top' : 'left']: `${logic2ui(item)}px`,
+      [props.vertical ? 'top' : 'left']: `${numToPx(item)}px`,
       [props.vertical ? 'left' : 'top']: 0,
     }"
     @dblclick="onReflineDblclick(index)"
@@ -356,7 +351,7 @@ function onReflineMousedown(e: MouseEvent, index: number) {
     display: block;
     pointer-events: auto;
     cursor: pointer;
-    background-color: rgba(var(--mce-theme-surface), .1);
+    background-color: rgb(var(--mce-theme-surface));
     color: rgba(var(--mce-theme-on-background), var(--mce-low-emphasis-opacity));
     backdrop-filter: blur(var(--mce-blur));
   }

@@ -18,6 +18,8 @@ const {
   selection,
 } = useEditor()
 
+const fps = ref(1000 / 30)
+
 const elements = computed(() => {
   return root.value?.findAll<Element2D>((node) => {
     if (node instanceof Element2D) {
@@ -29,13 +31,39 @@ const elements = computed(() => {
   }) ?? []
 })
 
-function formatTick(input: number) {
-  input = Math.floor(input / 1000)
-  const m = Math.floor(input / 60)
-  const s = input % 60
-  const mm = String(m).padStart(2, '0')
-  const ss = String(s).padStart(2, '0')
-  return `${mm}:${ss}`
+function rulerLabelFormat(frames: number) {
+  if (frames % 30 === 0) {
+    const m = Math.floor(frames / 30 / 60)
+    const s = Math.floor(frames / 30) % 60
+    const mm = String(m).padStart(2, '0')
+    const ss = String(s).padStart(2, '0')
+    return `${mm}:${ss}`
+  }
+  return `${Math.floor(frames % 30)}f`
+}
+
+const wheelSensitivity = 0.02
+const position = ref(0)
+
+function onWheel(e: WheelEvent) {
+  if (e.ctrlKey) {
+    const isTouchPad = (e as any).wheelDeltaY
+      ? Math.abs(Math.abs((e as any).wheelDeltaY) - Math.abs(3 * e.deltaY)) < 3
+      : e.deltaMode === 0
+
+    if (!isTouchPad) {
+      e.preventDefault()
+      const zoom = msPerPx.value
+      const logCur = Math.log(zoom)
+      const logDelta = -e.deltaY * wheelSensitivity
+      const logNew = logCur + logDelta
+      msPerPx.value = Math.exp(logNew)
+    }
+  }
+  else {
+    e.preventDefault()
+    position.value = Math.min(0, position.value - e.deltaX)
+  }
 }
 
 const paused = ref(true)
@@ -75,7 +103,9 @@ onBeforeUnmount(pause)
 </script>
 
 <template>
-  <div class="mce-timeline">
+  <div
+    class="mce-timeline"
+  >
     <div class="mce-timeline__toolbar">
       <div
         class="mce-timeline__play"
@@ -88,26 +118,31 @@ onBeforeUnmount(pause)
     <div class="mce-timeline__main">
       <div class="mce-timeline__ruler">
         <Ruler
-          v-model="currentTime"
+          :model-value="currentTime / fps"
           :zoom="msPerPx"
+          :unit="100"
           style="position: relative;"
+          :position="position"
           :axis="false"
-          :format="formatTick"
+          :label-format="rulerLabelFormat"
         />
       </div>
 
       <div class="mce-timeline__track-wrapper">
-        <div class="mce-timeline__track-headers">
+        <div class="mce-timeline__trackhead">
           <Trackhead
             v-for="(node, index) in elements" :key="index"
             :node="node"
           />
         </div>
 
-        <div class="mce-timeline__track-bodys">
+        <div
+          class="mce-timeline__track"
+          @wheel="onWheel"
+        >
           <div
             :style="{
-              width: `${endTime * msPerPx}px`,
+              width: `${endTime / msPerPx}px`,
             }"
           >
             <Track
@@ -115,7 +150,7 @@ onBeforeUnmount(pause)
             >
               <Segment
                 :node="node"
-                :zoom="msPerPx"
+                :ms-per-px="msPerPx"
                 :active="selection.some(v => v.equal(node))"
                 @mousedown.stop="selection = [node]"
               />
@@ -127,7 +162,7 @@ onBeforeUnmount(pause)
       <Playhead
         v-model="currentTime"
         :offset="60"
-        :zoom="msPerPx"
+        :ms-per-px="msPerPx"
       />
     </div>
   </div>
@@ -186,16 +221,17 @@ onBeforeUnmount(pause)
       overflow-y: overlay;
     }
 
-    &__track-headers {
+    &__trackhead {
       display: flex;
       flex-direction: column-reverse;
       align-items: center;
       width: 56px;
       height: max-content;
+      min-height: 100%;
       padding-left: 4px;
     }
 
-    &__track-bodys {
+    &__track {
       position: relative;
       display: flex;
       flex-direction: column-reverse;
@@ -203,6 +239,7 @@ onBeforeUnmount(pause)
       gap: 8px;
       flex: 1;
       height: max-content;
+      min-height: 100%;
       overflow-x: auto;
       overflow-x: overlay;
     }
