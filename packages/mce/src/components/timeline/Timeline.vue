@@ -31,7 +31,8 @@ const elements = computed(() => {
   }) ?? []
 })
 
-function rulerLabelFormat(frames: number) {
+function rulerLabelFormat(ms: number) {
+  const frames = ms / 1000 * fps.value
   if (frames % 30 === 0) {
     const m = Math.floor(frames / 30 / 60)
     const s = Math.floor(frames / 30) % 60
@@ -119,9 +120,10 @@ onBeforeUnmount(pause)
     <div class="mce-timeline__main">
       <div class="mce-timeline__ruler">
         <Ruler
-          :model-value="currentTime / fps"
-          :zoom="msPerPx"
+          v-model="currentTime"
+          :zoom="1 / msPerPx"
           :unit="100"
+          :unit-fractions="[1, 3]"
           style="position: relative;"
           :position="position"
           :axis="false"
