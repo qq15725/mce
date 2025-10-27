@@ -12,7 +12,7 @@
     "cli": "pnpm -F @mce/cli cli",
     "stub": "pnpm -F @mce/cli stub",
     "dev": "MODE=local pnpm -F playground dev",
-    "publish": "pnpm -r publish --no-git-checks --access public",
+    "publish": "pnpm -r publish --no-git-checks",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
     "release": "bumpp package.json packages/*/package.json --commit \"release: v%s\" --push --all --tag"
   },
