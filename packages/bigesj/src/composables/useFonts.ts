@@ -25,7 +25,6 @@ function levenshteinDistance(a: string, b: string): number {
 
 export function useFonts() {
   const {
-    fonts,
     loadFont: baseLoadFont,
   } = useEditor()
 
@@ -126,24 +125,9 @@ export function useFonts() {
   }
 
   return {
-    fonts,
     bigeFonts,
-    initFonts: async () => {
-      try {
-        await loadBigeFonts()
-      }
-      catch (error) {
-        console.error(error)
-      }
-    },
     searchBigeFont,
     loadBigeFonts,
     loadFont,
-    waitUntilFontLoad: async () => {
-      while (!fonts.fallbackFont) {
-        await new Promise(resolve => setTimeout(resolve, 100))
-      }
-      return await fonts.waitUntilLoad()
-    },
   }
 }

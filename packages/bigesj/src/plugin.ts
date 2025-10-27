@@ -2,7 +2,7 @@ import type { Node } from 'modern-canvas'
 import { gunzipSync } from 'fflate'
 import { definePlugin } from 'mce'
 import { Element2D } from 'modern-canvas'
-import { onBeforeMount, onBeforeUnmount } from 'vue'
+import { onBeforeUnmount } from 'vue'
 import { useFonts } from './composables'
 import { convertDoc } from './convert'
 
@@ -31,7 +31,7 @@ export const plugin = definePlugin((editor) => {
         },
       },
     ],
-    setup: () => {
+    setup: async () => {
       const {
         on,
         off,
@@ -39,7 +39,7 @@ export const plugin = definePlugin((editor) => {
       } = editor
 
       const {
-        initFonts,
+        loadBigeFonts,
         loadFont,
       } = useFonts()
 
@@ -76,16 +76,15 @@ export const plugin = definePlugin((editor) => {
         root.value && preloadNodes([root.value])
       }
 
-      onBeforeMount(async () => {
-        on('setDoc', preload)
-        on('addElement', preloadNodes)
-        await initFonts()
-      })
-
       onBeforeUnmount(() => {
         off('setDoc', preload)
         off('addElement', preloadNodes)
       })
+
+      on('setDoc', preload)
+      on('addElement', preloadNodes)
+
+      await loadBigeFonts()
     },
   }
 })

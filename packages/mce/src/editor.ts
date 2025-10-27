@@ -29,7 +29,7 @@ export class Editor extends Observable<Events> {
   onEmit?: <K extends keyof Events & string>(event: K, ...args: Events[K]) => void
   plugins = new Map<string, PluginObject>()
 
-  protected _setups: (() => void)[] = []
+  protected _setups: (() => void | Promise<void>)[] = []
 
   constructor(options: Options = {}) {
     super()
@@ -149,27 +149,28 @@ export class Editor extends Observable<Events> {
 
   protected _setuped = false
 
-  setup = () => {
+  setup = async () => {
     if (!this._setuped) {
       this._setuped = true
 
-      this._setups.forEach((setup) => {
-        try {
-          setup()
-        }
-        catch (err: any) {
-          console.error(`Failed to setup mixin`, err)
-        }
-      })
-
-      this.plugins.forEach((p) => {
-        try {
-          p.setup?.()
-        }
-        catch (err: any) {
-          console.error(`Failed to setup ${p.name} plugin`, err)
-        }
-      })
+      await Promise.all([
+        ...this._setups.map(async (setup) => {
+          try {
+            await setup()
+          }
+          catch (err: any) {
+            console.error(`Failed to setup mixin`, err)
+          }
+        }),
+        ...[...this.plugins.values()].map(async (p) => {
+          try {
+            await p.setup?.()
+          }
+          catch (err: any) {
+            console.error(`Failed to setup ${p.name} plugin`, err)
+          }
+        }),
+      ])
 
       this.emit('ready')
     }
@@ -192,7 +193,7 @@ export interface PluginObject {
   hotkeys?: Mce.Hotkey[]
   loaders?: Mce.Loader[]
   exporters?: Mce.Exporter[]
-  setup?: () => void
+  setup?: () => void | Promise<void>
 }
 
 export type Plugin = PluginObject | ((editor: Editor, options: Options) => PluginObject)
@@ -202,7 +203,7 @@ export function definePlugin(cb: Plugin): Plugin {
 }
 
 export type Mixin = (editor: Editor, options: Options) =>
-  | (() => void)
+  | (() => (void | Promise<void>))
   | Mixin[]
   | Record<string, any>
   | undefined

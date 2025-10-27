@@ -119,6 +119,10 @@ const editor = new Editor({
 //   })
 // })
 
+editor.on('ready', () => {
+  console.log('ready')
+})
+
 window.editor = editor
 window.doc = editor.doc
 </script>
