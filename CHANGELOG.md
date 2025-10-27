@@ -1,3 +1,13 @@
+## [0.1.2](https://github.com/qq15725/mce/compare/v0.1.1...v0.1.2) (2025-10-27)
+
+
+### Features
+
+* editor add `ready` event ([fb558da](https://github.com/qq15725/mce/commit/fb558da6d7320ef1d88b6a5323c3756b9e0fa63c))
+* rename activeFrame to currentFrame ([63581f3](https://github.com/qq15725/mce/commit/63581f3d5a4c3863695c500bfa07c6e06c450634))
+
+
+
 ## [0.1.1](https://github.com/qq15725/mce/compare/v0.1.0...v0.1.1) (2025-10-27)
 
 
