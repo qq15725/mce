@@ -53,7 +53,7 @@ export default defineMixin((editor) => {
   const {
     doc,
     rootAabb,
-    activeFrame,
+    currentFrame,
     emit,
     textFontSizeToFit,
     textToFit,
@@ -95,7 +95,7 @@ export default defineMixin((editor) => {
 
     if (!frame) {
       if (config.value.viewMode === 'frame') {
-        frame = activeFrame.value
+        frame = currentFrame.value
       }
       else {
         const element = selection.value[0]

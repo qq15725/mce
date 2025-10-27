@@ -84,7 +84,7 @@ function isLeftTopLine(line: Line) {
 
 export default definePlugin((editor) => {
   const {
-    activeFrame,
+    currentFrame,
     selection,
     state,
     getObbInDrawboard,
@@ -146,7 +146,7 @@ export default definePlugin((editor) => {
     const elements = [
       ...(parnet.value?.children ?? root.value?.children ?? []),
     ]
-    if (activeFrame.value && parnet.value?.equal(activeFrame.value)) {
+    if (currentFrame.value && parnet.value?.equal(currentFrame.value)) {
       elements.push(parnet.value)
     }
     return elements

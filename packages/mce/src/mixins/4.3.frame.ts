@@ -9,7 +9,7 @@ declare global {
       duplicateFrame: (index?: number) => void
       moveFrame: (fromIndex: number, toIndex: number) => void
       deleteFrame: (index?: number) => void
-      setActiveFrame: (index?: number) => void
+      setCurrentFrame: (index?: number) => void
     }
 
     interface Events {
@@ -17,7 +17,7 @@ declare global {
       duplicateFrame: [index: number]
       moveFrame: [fromIndex: number, toIndex: number]
       deleteFrame: [index: number]
-      setActiveFrame: [index: number, oldIndex: number]
+      setCurrentFrame: [index: number, oldIndex: number]
     }
   }
 }
@@ -27,7 +27,7 @@ export default defineMixin((editor) => {
     doc,
     root,
     rootAabb,
-    activeFrameIndex,
+    currentFrameIndex,
     frameThumbs,
     emit,
     selection,
@@ -52,16 +52,16 @@ export default defineMixin((editor) => {
     element.style.height ||= rootAabb.value.height
 
     const index = toIndex ?? (
-      activeFrameIndex.value > -1
-        ? activeFrameIndex.value + 1
+      currentFrameIndex.value > -1
+        ? currentFrameIndex.value + 1
         : frames.value.length - 1
     )
     doc.value?.addElement(element, { index })
-    setActiveFrame(index)
+    setCurrentFrame(index)
     emit('addFrame', index)
   }
 
-  function duplicateFrame(index = activeFrameIndex.value): void {
+  function duplicateFrame(index = currentFrameIndex.value): void {
     const page = root.value?.children[index]
     if (!page)
       return
@@ -82,11 +82,11 @@ export default defineMixin((editor) => {
       0,
       frameThumbs.value.splice(fromIndex, 1)[0],
     )
-    setActiveFrame(toIndex)
+    setCurrentFrame(toIndex)
     emit('moveFrame', fromIndex, toIndex)
   }
 
-  function deleteFrame(index = activeFrameIndex.value): void {
+  function deleteFrame(index = currentFrameIndex.value): void {
     if (!root.value || root.value.children.length === 1) {
       return
     }
@@ -95,21 +95,21 @@ export default defineMixin((editor) => {
       return
     doc.value?.deleteElement(id)
     frameThumbs.value.splice(index, 1)
-    setActiveFrame(index)
+    setCurrentFrame(index)
     emit('deleteFrame', index)
   }
 
-  function setActiveFrame(index = activeFrameIndex.value): void {
+  function setCurrentFrame(index = currentFrameIndex.value): void {
     index = Math.max(0, Math.min(frames.value.length - 1, index))
-    const oldIndex = activeFrameIndex.value
-    activeFrameIndex.value = index
+    const oldIndex = currentFrameIndex.value
+    currentFrameIndex.value = index
     if (config.value.viewMode === 'edgeless') {
       selection.value = [frames.value[index]]
     }
     else {
       selection.value = []
     }
-    emit('setActiveFrame', index, oldIndex)
+    emit('setCurrentFrame', index, oldIndex)
   }
 
   Object.assign(editor, {
@@ -117,6 +117,6 @@ export default defineMixin((editor) => {
     duplicateFrame,
     moveFrame,
     deleteFrame,
-    setActiveFrame,
+    setCurrentFrame,
   })
 })

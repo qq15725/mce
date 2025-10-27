@@ -22,7 +22,7 @@ export default defineMixin((editor) => {
   const {
     renderEngine,
     frames,
-    activeFrameAabb,
+    currentFrameAabb,
     camera,
     frameThumbs,
     log,
@@ -74,7 +74,7 @@ export default defineMixin((editor) => {
 
   function renderFrameThumb(target: HTMLCanvasElement): void {
     const view = renderEngine.value.view
-    const aabb = activeFrameAabb.value
+    const aabb = currentFrameAabb.value
     const pixelRatio = renderEngine.value.pixelRatio ?? 1
     if (!view)
       return
@@ -134,7 +134,7 @@ export default defineMixin((editor) => {
       doc.root.on('appendChild', onAppendChild)
     })
 
-    on('setActiveFrame', (_index: number, oldIndex: number) => {
+    on('setCurrentFrame', (_index: number, oldIndex: number) => {
       if (config.value.frameScreenshot) {
         captureFrameScreenshot(oldIndex)
       }

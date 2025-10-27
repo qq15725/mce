@@ -32,7 +32,7 @@ export default defineMixin((editor, options) => {
     renderEngine,
     emit,
     selection,
-    setActiveFrame,
+    setCurrentFrame,
     state,
     to,
     waitUntilFontLoad,
@@ -78,7 +78,7 @@ export default defineMixin((editor, options) => {
       doc.value?.destroy()
       doc.value = _doc
       renderEngine.value.root.appendChild(_doc.root)
-      setActiveFrame(0)
+      setCurrentFrame(0)
       emit('setDoc', _doc)
     }
     finally {

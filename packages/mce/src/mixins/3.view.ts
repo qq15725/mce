@@ -17,13 +17,13 @@ export default defineMixin((editor) => {
   const {
     renderEngine,
     rootAabb,
-    activeFrameAabb,
+    currentFrameAabb,
     config,
   } = editor
 
   const viewAabb = computed(() => {
     return config.value.viewMode === 'frame'
-      ? activeFrameAabb.value
+      ? currentFrameAabb.value
       : rootAabb.value
   })
 
@@ -68,7 +68,7 @@ export default defineMixin((editor) => {
   return () => {
     const {
       root,
-      activeFrame,
+      currentFrame,
       on,
       exec,
     } = editor
@@ -78,7 +78,7 @@ export default defineMixin((editor) => {
         case 'frame':
           root.value?.children.forEach((child) => {
             if (child instanceof Element2D) {
-              child.visible = child.equal(activeFrame.value)
+              child.visible = child.equal(currentFrame.value)
             }
           })
           break
@@ -94,7 +94,7 @@ export default defineMixin((editor) => {
     }
 
     watch(() => config.value.viewMode, onViewMode)
-    on('setActiveFrame', onViewMode)
+    on('setCurrentFrame', onViewMode)
     on('setDoc', onViewMode)
   }
 })

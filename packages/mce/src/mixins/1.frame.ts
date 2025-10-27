@@ -16,9 +16,9 @@ declare global {
     interface Editor {
       frameThumbs: Ref<FrameThumb[]>
       frames: ComputedRef<Element2D[]>
-      activeFrameIndex: Ref<number>
-      activeFrame: ComputedRef<Element2D | undefined>
-      activeFrameAabb: ComputedRef<AxisAlignedBoundingBox>
+      currentFrameIndex: Ref<number>
+      currentFrame: ComputedRef<Element2D | undefined>
+      currentFrameAabb: ComputedRef<AxisAlignedBoundingBox>
       isFrame: (node: Node) => node is Element2D
       getAncestorFrame: (element?: Element2D) => Element2D | undefined
     }
@@ -32,10 +32,10 @@ export default defineMixin((editor) => {
   } = editor
 
   const frames = computed(() => root.value?.children.filter(isFrame) ?? [])
-  const activeFrameIndex = ref<number>(-1)
-  const activeFrame = computed(() => frames.value[activeFrameIndex.value])
-  const activeFrameAabb = computed(() => {
-    const { left = 0, top = 0, width = 0, height = 0 } = activeFrame.value?.style ?? {}
+  const currentFrameIndex = ref<number>(-1)
+  const currentFrame = computed(() => frames.value[currentFrameIndex.value])
+  const currentFrameAabb = computed(() => {
+    const { left = 0, top = 0, width = 0, height = 0 } = currentFrame.value?.style ?? {}
     return { left, top, width, height }
   })
   const frameThumbs = ref<Mce.FrameThumb[]>([])
@@ -53,9 +53,9 @@ export default defineMixin((editor) => {
   Object.assign(editor, {
     frames,
     frameThumbs,
-    activeFrameIndex,
-    activeFrame,
-    activeFrameAabb,
+    currentFrameIndex,
+    currentFrame,
+    currentFrameAabb,
     isFrame,
     getAncestorFrame,
   })
@@ -69,7 +69,7 @@ export default defineMixin((editor) => {
       return selection.value.length === 1 && selection.value[0]
     }, (element) => {
       if (element && isFrame(element)) {
-        activeFrameIndex.value = frames.value.findIndex(v => v.equal(element))
+        currentFrameIndex.value = frames.value.findIndex(v => v.equal(element))
       }
     })
   }

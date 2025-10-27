@@ -145,7 +145,7 @@ export default definePlugin((editor) => {
     ],
     events: {
       setDoc: zoomToFit,
-      setActiveFrame: () => {
+      setCurrentFrame: () => {
         if (selection.value.length) {
           zoomToSelection()
         }

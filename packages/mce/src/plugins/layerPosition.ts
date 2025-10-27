@@ -24,14 +24,14 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    activeFrameAabb,
+    currentFrameAabb,
     selection,
     getAabb,
   } = editor
 
   function align(direction: Mce.AlignCommandDirection) {
     const box = selection.value.length === 1
-      ? activeFrameAabb.value
+      ? currentFrameAabb.value
       : getAabb(selection.value)
 
     selection.value.forEach((el) => {
