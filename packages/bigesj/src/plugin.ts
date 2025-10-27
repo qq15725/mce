@@ -43,10 +43,6 @@ export const plugin = definePlugin((editor) => {
         loadFont,
       } = useFonts()
 
-      onBeforeMount(async () => {
-        await initFonts()
-      })
-
       function preloadNode(node: Node) {
         if (node instanceof Element2D) {
           if (node.style.fontFamily) {
@@ -66,7 +62,7 @@ export const plugin = definePlugin((editor) => {
         }
       }
 
-      function preloadDescendant(node: Node[]) {
+      function preloadNodes(node: Node[]) {
         node.forEach((child) => {
           preloadNode(child)
           child.findOne((descendant) => {
@@ -77,18 +73,18 @@ export const plugin = definePlugin((editor) => {
       }
 
       async function preload() {
-        await initFonts()
-        root.value && preloadDescendant([root.value])
+        root.value && preloadNodes([root.value])
       }
 
-      onBeforeMount(() => {
+      onBeforeMount(async () => {
         on('setDoc', preload)
-        on('addElement', preloadDescendant)
+        on('addElement', preloadNodes)
+        await initFonts()
       })
 
       onBeforeUnmount(() => {
         off('setDoc', preload)
-        off('addElement', preloadDescendant)
+        off('addElement', preloadNodes)
       })
     },
   }

@@ -126,7 +126,7 @@ const selectionObb = computed({
   },
 })
 
-function tip() {
+function tipFormat() {
   const obb = selection.value.length === 1
     ? selection.value[0].style
     : getObb(selection.value)
@@ -177,7 +177,7 @@ defineExpose({
     :handle-shape="config.handleShape"
     class="mce-selection-obb"
     :border-style="selection.length > 1 ? 'dashed' : 'solid'"
-    :tip="tip"
+    :tip-format="tipFormat"
     @move="() => !state && (state = 'transforming')"
     @end="() => state === 'transforming' && (state = undefined)"
   >

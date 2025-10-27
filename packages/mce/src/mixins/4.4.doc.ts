@@ -109,14 +109,5 @@ export default defineMixin((editor, options) => {
     if (doc) {
       setDoc(doc)
     }
-    else {
-      setDoc({
-        style: {
-          width: 1920,
-          height: 1080,
-        },
-        children: [],
-      })
-    }
   }
 })

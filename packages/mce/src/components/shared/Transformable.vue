@@ -46,7 +46,7 @@ const props = withDefaults(defineProps<{
   handles?: Handle[]
   initialSize?: boolean
   borderStyle?: 'solid' | 'dashed'
-  tip?: (type: 'size') => string
+  tipFormat?: (type: 'size') => string
 }>(), {
   tag: 'div',
   moveable: true,
@@ -187,10 +187,7 @@ const style = computed(() => {
   }
 })
 const isAutoVisibilityTransforming = computed(() => props.visibility === 'auto' && transforming.value)
-const tip = computed(() => {
-  return props.tip?.('size')
-    ?? `${Math.floor(model.value.width)} × ${Math.floor(model.value.height)}`
-})
+const tip = computed(() => props.tipFormat?.('size'))
 
 function start(event?: MouseEvent, index?: number): boolean {
   if (event && event.button !== undefined && event.button !== 0) {
@@ -608,7 +605,7 @@ defineExpose({
       </g>
     </svg>
 
-    <div class="mce-transformable__tip">
+    <div v-if="tip" class="mce-transformable__tip">
       {{ tip }}
     </div>
   </Component>

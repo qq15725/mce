@@ -170,6 +170,8 @@ export class Editor extends Observable<Events> {
           console.error(`Failed to setup ${p.name} plugin`, err)
         }
       })
+
+      this.emit('ready')
     }
   }
 
