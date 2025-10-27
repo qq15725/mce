@@ -163,7 +163,6 @@ onBeforeUnmount(pause)
               :unit-fractions="[1, 3]"
               style="position: relative;"
               :position="position[0]"
-              :axis="false"
               :label-format="rulerLabelFormat"
             />
           </div>

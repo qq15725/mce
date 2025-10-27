@@ -2,7 +2,16 @@
 import type { AxisAlignedBoundingBox } from '../../types'
 import { vResizeObserver } from '@vueuse/components'
 import { useDebounceFn } from '@vueuse/core'
-import { computed, onBeforeUnmount, onMounted, ref, useAttrs, useTemplateRef, watch } from 'vue'
+import {
+  computed,
+  onBeforeUnmount,
+  onMounted,
+  reactive,
+  ref,
+  useAttrs,
+  useTemplateRef,
+  watch,
+} from 'vue'
 import Tooltip from './Tooltip.vue'
 
 defineOptions({
@@ -20,6 +29,7 @@ const props = withDefaults(
     selected?: AxisAlignedBoundingBox
     pixelRatio?: number
     refline?: boolean
+    axis?: boolean
     labelFormat?: (tick: number) => string
   }>(),
   {
@@ -44,6 +54,10 @@ const offscreenCanvas = 'OffscreenCanvas' in window
   : document.createElement('canvas')
 const ctx = offscreenCanvas.getContext('2d') as CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
 const box = ref<AxisAlignedBoundingBox>()
+const colors = reactive({
+  text: '#000',
+  border: '#000',
+})
 
 function drawSelected() {
   if (!props.selected?.width || !props.selected?.height)
@@ -52,6 +66,15 @@ function drawSelected() {
   const offset = props.vertical ? props.selected.top : props.selected.left
   const length = props.vertical ? props.selected.height : props.selected.width
   ctx.fillRect(offset, 0, length, props.size)
+}
+
+function drawAxis(start: number[], end: number[], size: number, color: string) {
+  ctx.lineWidth = size
+  ctx.strokeStyle = color
+  ctx.beginPath()
+  ctx.moveTo(start[0], start[1])
+  ctx.lineTo(end[0], end[1])
+  ctx.stroke()
 }
 
 function drawTick(tick: number, len: number, direction = 1) {
@@ -63,8 +86,7 @@ function drawTick(tick: number, len: number, direction = 1) {
   ctx.lineTo(x2, y2)
 }
 
-function drawText(content: string, tick: number, top: number, size: number, color: string) {
-  ctx.fillStyle = color
+function drawText(content: string, tick: number, top: number, size: number) {
   ctx.font = `${size}px sans-serif`
   ctx.textAlign = 'left'
   ctx.textBaseline = 'bottom'
@@ -113,15 +135,11 @@ function pxToNum(px: number) {
   return Math.round((px - props.position) / props.zoom)
 }
 
-let color: string | undefined
-
 function render() {
   const cvs = canvas.value
 
   if (!cvs || !offscreenCanvas.width || !offscreenCanvas.height)
     return
-
-  color ??= getComputedStyle(canvas.value).color
 
   ctx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height)
   ctx.save()
@@ -135,28 +153,46 @@ function render() {
 
   drawSelected()
 
+  if (props.axis) {
+    drawAxis(
+      [0, props.size],
+      [props.vertical ? cvs.height : cvs.width, props.size],
+      2,
+      colors.border,
+    )
+  }
+
   const drawPrimary = (tick: number, label: string) => {
     drawTick(tick, 10)
-    drawText(label, tick + 2, 4, 8, color!)
+    drawText(label, tick + 2, 4, 8)
   }
 
   const drawSecondary = (tick: number) => drawTick(tick, 4)
 
-  ctx.lineWidth = 1
-  ctx.strokeStyle = color!
-  ctx.beginPath()
-
   let inc = unit.value / 10
   inc = (inc > 0 ? 1 : -1) * Math.max(1, Math.abs(inc))
+
+  ctx.beginPath()
+  ctx.lineWidth = 1
+  ctx.strokeStyle = colors.text
+  ctx.fillStyle = colors.text
   for (let tick = start.value; tick <= end.value; tick += inc) {
     if (tick % unit.value === 0) {
       drawPrimary(numToPx(tick), props.labelFormat(tick))
+    }
+  }
+  ctx.stroke()
+  ctx.beginPath()
+  ctx.lineWidth = 1
+  ctx.strokeStyle = colors.border
+  for (let tick = start.value; tick <= end.value; tick += inc) {
+    if (tick % unit.value === 0) {
+      //
     }
     else if (tick % inc === 0) {
       drawSecondary(numToPx(tick))
     }
   }
-
   ctx.stroke()
 
   ctx.restore()
@@ -193,7 +229,15 @@ const resize = useDebounceFn(() => {
   render()
 }, 50)
 
-onMounted(resize)
+onMounted(() => {
+  resize()
+  const dom = canvas.value
+  if (dom) {
+    const style = window.getComputedStyle(dom)
+    colors.text = style.getPropertyValue('--text-color').trim()
+    colors.border = style.getPropertyValue('--border-color').trim()
+  }
+})
 
 onBeforeUnmount(() => {
   offscreenCanvas.width = 0
@@ -265,10 +309,10 @@ defineExpose({
   <div
     v-resize-observer="resize"
     class="mce-ruler"
-    :style="{
-      width: props.vertical ? `${props.size}px` : '100%',
-      height: props.vertical ? '100%' : `${props.size}px`,
-    }"
+    :class="[
+      `mce-ruler--${props.vertical ? 'vertical' : 'horizontal'}`,
+    ]"
+    :style="{ '--size': `${props.size}px` }"
     v-bind="attrs"
     @mousedown="onMousedown"
     @mousemove="onMousemove($event, true)"
@@ -315,12 +359,27 @@ defineExpose({
 
 <style lang="scss">
 .mce-ruler {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  --text-color: rgba(var(--mce-theme-on-background), var(--mce-low-emphasis-opacity));
+  --border-color: rgba(var(--mce-border-color), var(--mce-border-opacity));
+
+  &--vertical {
+    width: var(--size);
+  }
+
+  &--horizontal {
+    height: var(--size);
+  }
+
   &__canvas {
     display: block;
     pointer-events: auto;
     cursor: pointer;
     background-color: rgb(var(--mce-theme-surface));
-    color: rgba(var(--mce-theme-on-background), var(--mce-low-emphasis-opacity));
     backdrop-filter: blur(var(--mce-blur));
   }
 }

@@ -47,7 +47,7 @@ const editor = new Editor({
         'file': '文件',
         'new': '新建',
         'open': '打开',
-        'preferences': '个性化',
+        'preferences': '设置',
         'import': '导入',
         'export': '导出',
         'saveAs:png': '另存为 PNG',
