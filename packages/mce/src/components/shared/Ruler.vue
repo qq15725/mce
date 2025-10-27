@@ -20,7 +20,6 @@ const props = withDefaults(
     selected?: AxisAlignedBoundingBox
     pixelRatio?: number
     refline?: boolean
-    axis?: boolean
     labelFormat?: (tick: number) => string
   }>(),
   {
@@ -30,7 +29,6 @@ const props = withDefaults(
     unit: 50,
     unitFractions: () => [1, 2, 5, 10],
     pixelRatio: window.devicePixelRatio || 1,
-    axis: true,
     labelFormat: (tick: number) => String(tick),
   },
 )
@@ -54,15 +52,6 @@ function drawSelected() {
   const offset = props.vertical ? props.selected.top : props.selected.left
   const length = props.vertical ? props.selected.height : props.selected.width
   ctx.fillRect(offset, 0, length, props.size)
-}
-
-function drawAxis(point: number[], length: number, size: number, color: string) {
-  ctx.lineWidth = size
-  ctx.strokeStyle = color
-  ctx.beginPath()
-  ctx.moveTo(point[0], point[1])
-  ctx.lineTo(point[0] + length, point[1])
-  ctx.stroke()
 }
 
 function drawTick(tick: number, len: number, direction = 1) {
@@ -145,13 +134,6 @@ function render() {
   }
 
   drawSelected()
-
-  if (props.axis) {
-    const point = props.vertical
-      ? [props.size, 0]
-      : [0, props.size]
-    drawAxis(point, Math.max(cvs.width, cvs.height), 2, color!)
-  }
 
   const drawPrimary = (tick: number, label: string) => {
     drawTick(tick, 10)
@@ -333,10 +315,6 @@ defineExpose({
 
 <style lang="scss">
 .mce-ruler {
-  position: absolute;
-  left: 0;
-  top: 0;
-
   &__canvas {
     display: block;
     pointer-events: auto;

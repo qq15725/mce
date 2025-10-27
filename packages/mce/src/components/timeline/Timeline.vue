@@ -257,8 +257,8 @@ onBeforeUnmount(pause)
       flex: 1;
       overflow: hidden;
       flex-direction: column;
-      padding-left: 48px;
       border-left: 1px solid rgba(var(--mce-border-color), var(--mce-border-opacity));
+      padding-left: 48px;
 
       &-wrapper {
         position: relative;

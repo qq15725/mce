@@ -18,20 +18,28 @@ const activeAabb = computed(() => getAabbInDrawboard(selection.value))
 
 <template>
   <div class="mce-rulers">
-    <Ruler
-      refline
-      :zoom="camera.zoom.y"
-      :position="camera.position.y"
-      :selected="activeAabb"
-      vertical
-    />
+    <div
+      class="mce-rulers__ruler mce-rulers__ruler--vertical"
+    >
+      <Ruler
+        refline
+        :zoom="camera.zoom.y"
+        :position="camera.position.y"
+        :selected="activeAabb"
+        vertical
+      />
+    </div>
 
-    <Ruler
-      refline
-      :zoom="camera.zoom.x"
-      :position="camera.position.x"
-      :selected="activeAabb"
-    />
+    <div
+      class="mce-rulers__ruler mce-rulers__ruler--horizontal"
+    >
+      <Ruler
+        refline
+        :zoom="camera.zoom.x"
+        :position="camera.position.x"
+        :selected="activeAabb"
+      />
+    </div>
 
     <div class="mce-rulers__left-top" />
   </div>
@@ -46,12 +54,33 @@ const activeAabb = computed(() => getAabbInDrawboard(selection.value))
     bottom: 0;
     pointer-events: none;
 
+    &__ruler {
+      position: absolute;
+      left: 0;
+      top: 0;
+
+      &--vertical {
+        width: 17px;
+        height: 100%;
+        border-right: 1px solid rgba(var(--mce-border-color), var(--mce-border-opacity));
+      }
+
+      &--horizontal {
+        width: 100%;
+        height: 17px;
+        border-bottom: 1px solid rgba(var(--mce-border-color), var(--mce-border-opacity));
+      }
+    }
+
     &__left-top {
       position: absolute;
       left: 0;
       top: 0;
-      width: 16px;
-      height: 16px;
+      width: 17px;
+      height: 17px;
+      border: 1px solid rgba(var(--mce-border-color), var(--mce-border-opacity));
+      border-top-width: 0;
+      border-left-width: 0;
       background-color: rgb(var(--mce-theme-surface));
     }
   }
