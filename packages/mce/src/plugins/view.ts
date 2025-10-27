@@ -9,6 +9,7 @@ declare global {
       scrollbar: []
       timeline: []
       statusbar: []
+      frameOutline: []
     }
 
     interface Commands {
@@ -28,7 +29,8 @@ export default definePlugin((editor) => {
       { command: 'view', handle: view => config.value[view] = !config.value[view] },
     ],
     hotkeys: [
-      { command: 'view:ruler', key: 'Shift+r' },
+      { command: 'view:pixelGrid', key: 'Shift+"' },
+      { command: 'view:ruler', key: 'Shift+R' },
     ],
   }
 })

@@ -41,6 +41,9 @@ async function onPointerdown(ev: PointerEvent) {
     v-show="frame.visible"
     :style="boundingBoxToStyle(getObbInDrawboard(frame))"
     class="mce-frame"
+    :class="[
+      config.frameOutline && 'mce-frame--outline',
+    ]"
   >
     <div
       v-show="config.viewMode === 'edgeless'"
@@ -64,7 +67,10 @@ async function onPointerdown(ev: PointerEvent) {
 <style lang="scss">
 .mce-frame {
   position: absolute;
-  border: 1px solid #0000002b;
+
+  &--outline {
+    outline: 1px solid #0000002b;
+  }
 
   &__name {
     position: absolute;

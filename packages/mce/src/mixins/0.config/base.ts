@@ -26,6 +26,7 @@ declare global {
       timeline: boolean
       statusbar: boolean
       wheelZoom: boolean
+      frameOutline: boolean
       frameGap: number
       typographyStrategy: TypographyStrategy
       handleShape: HandleShape
@@ -54,6 +55,7 @@ export default defineMixin((editor, options) => {
   registerConfig('timeline', false)
   registerConfig('statusbar', false)
   registerConfig('wheelZoom', false)
+  registerConfig('frameOutline', false)
   registerConfig('frameGap', 48)
   registerConfig('typographyStrategy', 'autoHeight')
   registerConfig('handleShape', 'rect')

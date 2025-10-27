@@ -146,6 +146,7 @@ onBeforeUnmount(pause)
           <div
             :style="{
               width: `${endTime / msPerPx}px`,
+              transform: `translateX(${position}px)`,
             }"
           >
             <Track
@@ -164,7 +165,7 @@ onBeforeUnmount(pause)
 
       <Playhead
         v-model="currentTime"
-        :offset="60"
+        :offset="56"
         :ms-per-px="msPerPx"
       />
     </div>
