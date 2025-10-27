@@ -1,27 +1,10 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-
-const props = withDefaults(defineProps<{
-  msPerPx?: number
-  offset?: number
-}>(), {
-  msPerPx: 1,
-  offset: 0,
-})
-
-const currentTime = defineModel<number>({ default: 0 })
-
-const style = computed(() => {
-  return {
-    transform: `translate(${(Math.ceil(currentTime.value / props.msPerPx)) + props.offset}px, 0px)`,
-  }
-})
+//
 </script>
 
 <template>
   <div
     class="mce-payhead"
-    :style="style"
   >
     <header class="mce-payhead__header" />
     <main class="mce-payhead__main" />

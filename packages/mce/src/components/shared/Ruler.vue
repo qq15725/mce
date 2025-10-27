@@ -37,7 +37,6 @@ const props = withDefaults(
 
 const attrs = useAttrs()
 
-const model = defineModel<number>({ default: 0 })
 const pixelRatio = computed(() => props.pixelRatio)
 const tipText = ref<string>()
 const tipPos = ref({ x: 0, y: 0 })
@@ -46,7 +45,7 @@ const offscreenCanvas = 'OffscreenCanvas' in window
   ? new OffscreenCanvas(props.size, props.size)
   : document.createElement('canvas')
 const ctx = offscreenCanvas.getContext('2d') as CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
-const bbox = ref<AxisAlignedBoundingBox>()
+const box = ref<AxisAlignedBoundingBox>()
 
 function drawSelected() {
   if (!props.selected?.width || !props.selected?.height)
@@ -112,7 +111,7 @@ const start = computed(() => {
 })
 
 const end = computed(() => {
-  const len = (props.vertical ? bbox.value?.height : bbox.value?.width) ?? 0
+  const len = (props.vertical ? box.value?.height : box.value?.width) ?? 0
   const value = len / props.zoom
   return start.value + Math.ceil(value / unit.value) * unit.value
 })
@@ -203,19 +202,16 @@ watch(
 const resize = useDebounceFn(() => {
   if (!canvas.value)
     return
-
-  const box = (canvas.value.parentElement as HTMLElement).getBoundingClientRect()
-  offscreenCanvas.width = canvas.value.width = box.width * pixelRatio.value
-  offscreenCanvas.height = canvas.value.height = box.height * pixelRatio.value
-  canvas.value.style.width = `${box.width}px`
-  canvas.value.style.height = `${box.height}px`
-  bbox.value = box
+  const _box = (canvas.value.parentElement as HTMLElement).getBoundingClientRect()
+  offscreenCanvas.width = canvas.value.width = _box.width * pixelRatio.value
+  offscreenCanvas.height = canvas.value.height = _box.height * pixelRatio.value
+  canvas.value.style.width = `${_box.width}px`
+  canvas.value.style.height = `${_box.height}px`
+  box.value = _box
   render()
 }, 50)
 
-onMounted(() => {
-  resize()
-})
+onMounted(resize)
 
 onBeforeUnmount(() => {
   offscreenCanvas.width = 0
@@ -234,26 +230,16 @@ const lines = computed(() => {
 function getTick(e: MouseEvent) {
   return pxToNum(
     props.vertical
-      ? e.clientY - bbox.value!.top
-      : e.clientX - bbox.value!.left,
+      ? e.clientY - box.value!.top
+      : e.clientX - box.value!.left,
   )
 }
 
 function onMousedown(e: MouseEvent) {
   const tick = getTick(e)
-  model.value = tick
   if (props.refline) {
     savedLines.value.push(tick)
   }
-  const move = (e: MouseEvent) => {
-    model.value = getTick(e)
-  }
-  const up = () => {
-    window.removeEventListener('mousemove', move)
-    window.removeEventListener('mouseup', up)
-  }
-  window.addEventListener('mousemove', move)
-  window.addEventListener('mouseup', up)
 }
 
 function onMousemove(e: MouseEvent, temp = false) {
@@ -287,6 +273,10 @@ function onReflineMousedown(e: MouseEvent, index: number) {
   window.addEventListener('mousemove', move)
   window.addEventListener('mouseup', up)
 }
+
+defineExpose({
+  box,
+})
 </script>
 
 <template>

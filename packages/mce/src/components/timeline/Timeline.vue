@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { Animation, Element2D } from 'modern-canvas'
-import { computed, onBeforeUnmount, ref } from 'vue'
+import { computed, onBeforeUnmount, ref, useTemplateRef } from 'vue'
 import { useEditor } from '../../composables'
 import Icon from '../shared/Icon.vue'
 import Ruler from '../shared/Ruler.vue'
@@ -19,6 +19,7 @@ const {
 } = useEditor()
 
 const fps = ref(1000 / 30)
+const ruler = useTemplateRef('rulerTpl')
 
 const elements = computed(() => {
   return root.value?.findAll<Element2D>((node) => {
@@ -31,16 +32,15 @@ const elements = computed(() => {
   }) ?? []
 })
 
-function rulerLabelFormat(ms: number) {
-  const frames = ms / 1000 * fps.value
-  if (frames % 30 === 0) {
-    const m = Math.floor(frames / 30 / 60)
-    const s = Math.floor(frames / 30) % 60
+function rulerLabelFormat(f: number) {
+  if (f % 30 === 0) {
+    const m = Math.floor(f / 30 / 60)
+    const s = Math.floor(f / 30) % 60
     const mm = String(m).padStart(2, '0')
     const ss = String(s).padStart(2, '0')
     return `${mm}:${ss}`
   }
-  return `${Math.floor(frames % 30)}f`
+  return `${Math.floor(f % 30)}f`
 }
 
 const wheelSensitivity = 0.02
@@ -65,6 +65,20 @@ function onWheel(e: WheelEvent) {
     e.preventDefault()
     position.value = Math.min(0, position.value - e.deltaX)
   }
+}
+
+function onMousedown(e: MouseEvent) {
+  const box = ruler.value.box
+  currentTime.value = (e.clientX - box.x + position.value) * msPerPx.value
+  const move = (e: MouseEvent) => {
+    currentTime.value = (e.clientX - box.x + position.value) * msPerPx.value
+  }
+  const up = () => {
+    window.removeEventListener('mousemove', move)
+    window.removeEventListener('mouseup', up)
+  }
+  window.addEventListener('mousemove', move)
+  window.addEventListener('mouseup', up)
 }
 
 const paused = ref(true)
@@ -120,14 +134,15 @@ onBeforeUnmount(pause)
     <div class="mce-timeline__main">
       <div class="mce-timeline__ruler">
         <Ruler
-          v-model="currentTime"
-          :zoom="1 / msPerPx"
+          ref="rulerTpl"
+          :zoom="1 / msPerPx * fps"
           :unit="100"
           :unit-fractions="[1, 3]"
           style="position: relative;"
           :position="position"
           :axis="false"
           :label-format="rulerLabelFormat"
+          @mousedown="onMousedown"
         />
       </div>
 
@@ -142,6 +157,7 @@ onBeforeUnmount(pause)
         <div
           class="mce-timeline__track"
           @wheel="onWheel"
+          @mousedown="onMousedown"
         >
           <div
             :style="{
@@ -164,9 +180,10 @@ onBeforeUnmount(pause)
       </div>
 
       <Playhead
-        v-model="currentTime"
-        :offset="56"
-        :ms-per-px="msPerPx"
+        :style="{
+          transform: `translate(${(Math.ceil(currentTime / msPerPx)) + 56}px, 0px)`,
+        }"
+        @mousedown="onMousedown"
       />
     </div>
   </div>

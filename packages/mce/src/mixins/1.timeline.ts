@@ -1,5 +1,5 @@
 import type { Node } from 'modern-canvas'
-import type { ComputedRef, Ref } from 'vue'
+import type { Ref, WritableComputedRef } from 'vue'
 import { assets, clamp, Element2D, TimelineNode } from 'modern-canvas'
 import { computed, ref } from 'vue'
 import { defineMixin } from '../editor'
@@ -8,7 +8,7 @@ declare global {
   namespace Mce {
     interface Editor {
       msPerPx: Ref<number>
-      currentTime: ComputedRef<number>
+      currentTime: WritableComputedRef<number>
       startTime: ComputedRef<number>
       endTime: ComputedRef<number>
       getTimeRange: (node: Node | Node[]) => { startTime: number, endTime: number }
