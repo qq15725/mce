@@ -16,7 +16,7 @@ export default definePlugin((editor) => {
   } = editor
 
   return {
-    name: 'mp4',
+    name: 'mce:mp4',
     exporters: [
       {
         name: 'mp4',

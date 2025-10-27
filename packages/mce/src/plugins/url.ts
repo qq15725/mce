@@ -15,7 +15,7 @@ export default definePlugin(() => {
   }
 
   return {
-    name: 'url',
+    name: 'mce:url',
     loaders: [
       {
         name: 'url',

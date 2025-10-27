@@ -84,7 +84,7 @@ export default definePlugin((editor) => {
   }
 
   return {
-    name: 'frame',
+    name: 'mce:frame',
     commands: [
       { command: 'frame', handle: frame },
       { command: 'unframe', handle: unframe },

@@ -28,6 +28,7 @@ import _select from './plugins/select'
 import _text from './plugins/text'
 import _ui from './plugins/ui'
 import _url from './plugins/url'
+import _view from './plugins/view'
 import _visibility from './plugins/visibility'
 import _zoom from './plugins/zoom'
 
@@ -58,6 +59,7 @@ export const plugins = [
   _text,
   _ui,
   _url,
+  _view,
   _visibility,
   _zoom,
 ]

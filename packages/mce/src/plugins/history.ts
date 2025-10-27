@@ -55,7 +55,7 @@ export default definePlugin((editor) => {
   })
 
   return {
-    name: 'history',
+    name: 'mce:history',
     commands: [
       { command: 'undo', handle: undo },
       { command: 'redo', handle: redo },

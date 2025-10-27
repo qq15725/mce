@@ -493,6 +493,6 @@ export default definePlugin((editor) => {
   })
 
   return {
-    name: 'auxiliary',
+    name: 'mce:auxiliary',
   }
 })

@@ -44,7 +44,7 @@ export default definePlugin((editor) => {
   const RE = /\.txt$/i
 
   return {
-    name: 'text',
+    name: 'mce:text',
     commands: [
       { command: 'insertText', handle: insertText },
       { command: 'drawText', handle: drawText },

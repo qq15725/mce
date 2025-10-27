@@ -24,7 +24,7 @@ export default definePlugin((editor, options) => {
   assets.gifWorkerUrl = gifWorkerUrl
 
   return {
-    name: 'gif',
+    name: 'mce:gif',
     exporters: [
       {
         name: 'gif',

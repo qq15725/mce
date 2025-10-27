@@ -149,7 +149,7 @@ export default definePlugin((editor) => {
   })
 
   return {
-    name: 'clipboard',
+    name: 'mce:clipboard',
     commands: [
       { command: 'copy', handle: copy },
       { command: 'cut', handle: cut },

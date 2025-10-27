@@ -38,7 +38,7 @@ export default definePlugin((editor) => {
   }
 
   return {
-    name: 'visibility',
+    name: 'mce:visibility',
     commands: [
       { command: 'hide', handle: hide },
       { command: 'show', handle: show },

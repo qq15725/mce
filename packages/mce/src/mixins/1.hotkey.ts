@@ -65,7 +65,6 @@ function isInputEvent(event?: KeyboardEvent): boolean {
 export default defineMixin((editor) => {
   const {
     registerConfig,
-    commands,
   } = editor
 
   const hotkeysData = registerConfig('hotkeys', defaultHotkeys)
@@ -166,6 +165,10 @@ export default defineMixin((editor) => {
   })
 
   return () => {
+    const {
+      exec,
+    } = editor
+
     useEventListener(
       isClient ? window : undefined,
       'keydown',
@@ -213,7 +216,7 @@ export default defineMixin((editor) => {
                 hotkey.handle(e)
               }
               else {
-                commands.value.get(command)?.handle()
+                exec(command)
               }
               editor.emit(`hotkey:${command}` as any, e)
             }

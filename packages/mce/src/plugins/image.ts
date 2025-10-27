@@ -73,7 +73,7 @@ export default definePlugin((editor) => {
   }
 
   return {
-    name: 'image',
+    name: 'mce:image',
     commands: [
       { command: 'insertImage', handle: insertImage },
       { command: 'drawImage', handle: drawImage },

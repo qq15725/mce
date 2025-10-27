@@ -127,7 +127,7 @@ export default definePlugin((editor) => {
   }
 
   return {
-    name: 'zoom',
+    name: 'mce:zoom',
     commands: [
       { command: 'zoomIn', handle: zoomIn },
       { command: 'zoomOut', handle: zoomOut },

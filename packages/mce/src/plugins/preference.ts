@@ -30,7 +30,7 @@ export default definePlugin((editor) => {
   })
 
   return {
-    name: 'preferences',
+    name: 'mce:preferences',
     commands: [
       { command: 'preferences', handle: preferences },
     ],

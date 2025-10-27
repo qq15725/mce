@@ -32,7 +32,7 @@ export default definePlugin((editor) => {
   const when = (): boolean => Boolean(selection.value.length > 0)
 
   return {
-    name: 'delete',
+    name: 'mce:delete',
     commands: [
       { command: 'delete', handle: _delete },
     ],

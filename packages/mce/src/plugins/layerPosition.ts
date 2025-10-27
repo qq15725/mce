@@ -59,7 +59,7 @@ export default definePlugin((editor) => {
   }
 
   return {
-    name: 'layerPosition',
+    name: 'mce:layerPosition',
     commands: [
       { command: 'align', handle: align },
       { command: 'alignLeft', handle: () => align('left') },

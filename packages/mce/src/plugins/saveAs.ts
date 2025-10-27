@@ -37,7 +37,7 @@ export default definePlugin((editor) => {
   }
 
   return {
-    name: 'saveAs',
+    name: 'mce:saveAs',
     commands: [
       { command: 'saveAs', handle: saveAs },
     ],

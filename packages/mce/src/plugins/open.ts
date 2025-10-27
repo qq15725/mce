@@ -48,7 +48,7 @@ export default definePlugin((editor) => {
   }
 
   return {
-    name: 'open',
+    name: 'mce:open',
     commands: [
       { command: 'open', handle: open },
     ],

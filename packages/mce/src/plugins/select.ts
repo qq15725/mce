@@ -69,7 +69,7 @@ export default definePlugin((editor) => {
   }
 
   return {
-    name: 'select',
+    name: 'mce:select',
     commands: [
       { command: 'selectAll', handle: selectAll },
       { command: 'deselectAll', handle: deselectAll },

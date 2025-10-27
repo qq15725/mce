@@ -49,7 +49,7 @@ export default definePlugin((editor) => {
   }
 
   return {
-    name: 'import',
+    name: 'mce:import',
     commands: [
       { command: 'import', handle: _import },
     ],

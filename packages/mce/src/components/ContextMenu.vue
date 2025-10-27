@@ -43,9 +43,7 @@ onBeforeUnmount(() => {
 })
 
 function onClickItem(item: any) {
-  const key = item.key
-  const [name, ...params] = key.split(':')
-  ;(exec as any)(name, ...params)
+  ;(exec as any)(item.key)
 }
 
 defineExpose({

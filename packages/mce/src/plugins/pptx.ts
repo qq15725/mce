@@ -20,7 +20,7 @@ export default definePlugin((editor) => {
   const RE = /\.pptx$/i
 
   return {
-    name: 'pptx',
+    name: 'mce:pptx',
     exporters: [
       {
         name: 'pptx',

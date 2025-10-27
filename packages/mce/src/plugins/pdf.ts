@@ -15,7 +15,7 @@ export default definePlugin((editor) => {
   } = editor
 
   return {
-    name: 'pdf',
+    name: 'mce:pdf',
     exporters: [
       {
         name: 'pdf',

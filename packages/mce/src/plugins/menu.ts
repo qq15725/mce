@@ -100,10 +100,12 @@ export default definePlugin((editor) => {
   const viewMenu = computed(() => ({
     key: 'view',
     children: [
-      { key: 'ruler', checked: config.value.ruler },
-      { key: 'scrollbar', checked: config.value.scrollbar },
-      { key: 'timeline', checked: config.value.timeline },
-      { key: 'statusbar', checked: config.value.statusbar },
+      { key: 'view:checkerboard', checked: config.value.checkerboard },
+      { key: 'view:pixelGrid', checked: config.value.pixelGrid },
+      { key: 'view:ruler', checked: config.value.ruler },
+      { key: 'view:scrollbar', checked: config.value.scrollbar },
+      { key: 'view:timeline', checked: config.value.timeline },
+      { key: 'view:statusbar', checked: config.value.statusbar },
       { type: 'divider' },
       ...zoomMenu.value.children,
     ],
@@ -213,6 +215,6 @@ export default definePlugin((editor) => {
   })
 
   return {
-    name: 'menu',
+    name: 'mce:menu',
   }
 })

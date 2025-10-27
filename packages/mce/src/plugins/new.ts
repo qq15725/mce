@@ -28,7 +28,7 @@ export default definePlugin((editor) => {
   }
 
   return {
-    name: 'new',
+    name: 'mce:new',
     commands: [
       { command: 'new', handle: _new },
     ],

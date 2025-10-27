@@ -81,7 +81,7 @@ export default definePlugin((editor) => {
   }
 
   return {
-    name: 'group',
+    name: 'mce:group',
     commands: [
       { command: 'group', handle: group },
       { command: 'ungroup', handle: ungroup },

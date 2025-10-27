@@ -27,7 +27,7 @@ export default definePlugin((editor) => {
   }
 
   return {
-    name: 'flip',
+    name: 'mce:flip',
     commands: [
       { command: 'flipHorizontal', handle: flipHorizontal },
       { command: 'flipVertical', handle: flipVertical },

@@ -72,7 +72,7 @@ export default definePlugin((editor) => {
   }
 
   return {
-    name: 'layerOrder',
+    name: 'mce:layerOrder',
     commands: [
       { command: 'bringToFront', handle: bringToFront },
       { command: 'bringForward', handle: bringForward },

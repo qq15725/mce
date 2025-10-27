@@ -23,7 +23,7 @@ export default definePlugin((editor) => {
   } = editor
 
   return {
-    name: 'lock',
+    name: 'mce:lock',
     commands: [
       { command: 'lock', handle: () => selection.value.forEach(lock) },
       { command: 'unlock', handle: () => selection.value.forEach(unlock) },

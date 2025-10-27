@@ -1,0 +1,34 @@
+import { definePlugin } from '../editor'
+
+declare global {
+  namespace Mce {
+    interface Views {
+      checkerboard: []
+      pixelGrid: []
+      ruler: []
+      scrollbar: []
+      timeline: []
+      statusbar: []
+    }
+
+    interface Commands {
+      view: <T extends keyof Views>(view: T, ...args: Views[T]) => Promise<boolean>
+    }
+  }
+}
+
+export default definePlugin((editor) => {
+  const {
+    config,
+  } = editor
+
+  return {
+    name: 'mce:view',
+    commands: [
+      { command: 'view', handle: view => config.value[view] = !config.value[view] },
+    ],
+    hotkeys: [
+      { command: 'view:ruler', key: 'Shift+r' },
+    ],
+  }
+})

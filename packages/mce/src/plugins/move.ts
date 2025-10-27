@@ -51,7 +51,7 @@ export default definePlugin((editor) => {
   }
 
   return {
-    name: 'move',
+    name: 'mce:move',
     commands: [
       { command: 'move', handle: move },
       { command: 'moveLeft', handle: (distance?: number) => move('left', distance) },

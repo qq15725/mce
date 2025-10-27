@@ -48,12 +48,16 @@ export default defineMixin((editor) => {
   }
 
   const exec: Mce.Editor['exec'] = (command, ...args) => {
-    const item = commands.value.get(command)
+    const [name, arg1] = command.split(':')
+    if (arg1 !== undefined) {
+      args.unshift(arg1)
+    }
+    const item = commands.value.get(name)
     if (!item) {
-      throw new Error(`Command "${command}" not found`)
+      throw new Error(`Command "${name}" not found`)
     }
     const res = item.handle(...args)
-    emit(`command:${command}` as any, res)
+    emit(`command:${name}` as any, res)
     return res
   }
 
