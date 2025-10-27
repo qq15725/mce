@@ -50,7 +50,7 @@ export default defineMixin((editor) => {
   const exec: Mce.Editor['exec'] = (command, ...args) => {
     const [name, arg1] = command.split(':')
     if (arg1 !== undefined) {
-      args.unshift(arg1)
+      (args as any).unshift(arg1)
     }
     const item = commands.value.get(name)
     if (!item) {

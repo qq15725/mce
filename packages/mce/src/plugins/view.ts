@@ -26,7 +26,7 @@ export default definePlugin((editor) => {
   return {
     name: 'mce:view',
     commands: [
-      { command: 'view', handle: view => config.value[view] = !config.value[view] },
+      { command: 'view', handle: view => (config.value as any)[view] = !(config.value as any)[view] },
     ],
     hotkeys: [
       { command: 'view:pixelGrid', key: 'Shift+"' },

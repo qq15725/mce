@@ -60,17 +60,19 @@ function onWheel(e: WheelEvent) {
 }
 
 function onMousedown(e: MouseEvent) {
-  const box = ruler.value.box
-  currentTime.value = (e.clientX - box.x + position.value[0]) * msPerPx.value
-  const move = (e: MouseEvent) => {
-    currentTime.value = (e.clientX - box.x + position.value[0]) * msPerPx.value
+  const box = ruler.value?.box
+  if (box) {
+    currentTime.value = (e.clientX - box.left + position.value[0]) * msPerPx.value
+    const move = (e: MouseEvent) => {
+      currentTime.value = (e.clientX - box.left + position.value[0]) * msPerPx.value
+    }
+    const up = () => {
+      window.removeEventListener('mousemove', move)
+      window.removeEventListener('mouseup', up)
+    }
+    window.addEventListener('mousemove', move)
+    window.addEventListener('mouseup', up)
   }
-  const up = () => {
-    window.removeEventListener('mousemove', move)
-    window.removeEventListener('mouseup', up)
-  }
-  window.addEventListener('mousemove', move)
-  window.addEventListener('mouseup', up)
 }
 
 function rulerLabelFormat(f: number) {

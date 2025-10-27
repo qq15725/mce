@@ -46,7 +46,7 @@ const props = withDefaults(defineProps<{
   handles?: Handle[]
   initialSize?: boolean
   borderStyle?: 'solid' | 'dashed'
-  tip?: (type: 'size') => number
+  tip?: (type: 'size') => string
 }>(), {
   tag: 'div',
   moveable: true,

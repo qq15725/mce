@@ -2,9 +2,9 @@ import type { FontLoadedResult } from 'modern-font'
 import { useEditor } from 'mce'
 import { ref } from 'vue'
 
-export type HttpFont = Record<string, any>
+export type BigeFont = Record<string, any>
 
-const httpFonts = ref<HttpFont[]>([])
+export const bigeFonts = ref<BigeFont[]>([])
 
 function levenshteinDistance(a: string, b: string): number {
   const matrix: number[][] = []
@@ -31,18 +31,18 @@ export function useFonts() {
 
   const fontPromises = ref(new Map<string, Promise<FontLoadedResult>>())
 
-  async function loadHttpFonts(): Promise<HttpFont[]> {
-    let result = httpFonts.value
+  async function loadBigeFonts(): Promise<BigeFont[]> {
+    let result = bigeFonts.value
     if (!result.length) {
       result = await fetch('/new/design/fonts')
         .then(rep => rep.json())
         .then(res => res.data.datalist)
-      httpFonts.value = result
+      bigeFonts.value = result
     }
     return result
   }
 
-  function searchHttpFont(keyword: string, fonts: HttpFont[] = httpFonts.value): HttpFont | undefined {
+  function searchBigeFont(keyword: string, fonts: BigeFont[] = bigeFonts.value): BigeFont | undefined {
     const idIndexMap = new Map<string, number>(fonts.map((item, index) => [item.id, index]))
     const nameIndexMap = new Map<string, number>(
       fonts.flatMap((item, index) => {
@@ -100,7 +100,7 @@ export function useFonts() {
     for (const name of names) {
       let promise = fontPromises.value.get(name)
       if (!promise) {
-        const font = searchHttpFont(name)
+        const font = searchBigeFont(name)
         if (font) {
           promise = fontPromises.value.get(font.en_name)
           if (!promise) {
@@ -115,7 +115,7 @@ export function useFonts() {
               family: names,
               src: font.fonturl,
             })
-            names.forEach(name => fontPromises.value.set(name, promise))
+            names.forEach(name => fontPromises.value.set(name, promise!))
             fontPromises.value.set(String(name), promise)
           }
         }
@@ -127,17 +127,17 @@ export function useFonts() {
 
   return {
     fonts,
-    httpFonts,
+    bigeFonts,
     initFonts: async () => {
       try {
-        await loadHttpFonts()
+        await loadBigeFonts()
       }
       catch (error) {
         console.error(error)
       }
     },
-    searchHttpFont,
-    loadHttpFonts,
+    searchBigeFont,
+    loadBigeFonts,
     loadFont,
     waitUntilFontLoad: async () => {
       while (!fonts.fallbackFont) {

@@ -1,5 +1,5 @@
 import type { Node } from 'modern-canvas'
-import type { Ref, WritableComputedRef } from 'vue'
+import type { ComputedRef, Ref, WritableComputedRef } from 'vue'
 import { assets, clamp, Element2D, TimelineNode } from 'modern-canvas'
 import { computed, ref } from 'vue'
 import { defineMixin } from '../editor'

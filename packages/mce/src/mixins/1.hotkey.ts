@@ -216,7 +216,7 @@ export default defineMixin((editor) => {
                 hotkey.handle(e)
               }
               else {
-                exec(command)
+                (exec as any)(command)
               }
               editor.emit(`hotkey:${command}` as any, e)
             }

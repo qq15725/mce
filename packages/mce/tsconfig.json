@@ -1,10 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "declarationDir": "./dist",
-    "types": [
-      "vite/client",
-    ]
+    "declarationDir": "./dist"
   },
   "include": [
     "src/**/*.ts",

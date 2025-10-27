@@ -273,7 +273,7 @@ function onMousemove(e: MouseEvent, temp = false) {
   if (props.refline && temp) {
     tempLine.value = tick
   }
-  tipText.value = props.labelFormat(`${tick}`)
+  tipText.value = props.labelFormat(tick)
   tipPos.value = { x: e.clientX, y: e.clientY }
 }
 

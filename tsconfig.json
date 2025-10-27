@@ -21,6 +21,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "skipDefaultLibCheck": true,
-    "removeComments": false
+    "removeComments": false,
+    "types": ["vite/client"]
   }
 }
