@@ -1,3 +1,12 @@
+## [0.1.3](https://github.com/qq15725/mce/compare/v0.1.2...v0.1.3) (2025-10-27)
+
+
+### Features
+
+* ready in async setup after ([e986ef5](https://github.com/qq15725/mce/commit/e986ef53c445bcef6c60d3428624213365e46e21))
+
+
+
 ## [0.1.2](https://github.com/qq15725/mce/compare/v0.1.1...v0.1.2) (2025-10-27)
 
 
