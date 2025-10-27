@@ -18,7 +18,6 @@
     position: absolute;
     top: 0;
     width: 10px;
-    z-index: 6;
     color: rgb(var(--mce-theme-on-surface));
     cursor: col-resize;
 

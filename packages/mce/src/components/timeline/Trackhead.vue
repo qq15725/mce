@@ -23,7 +23,6 @@ defineProps<{
     height: 22px;
     min-height: 22px;
     align-items: center;
-    justify-content: center;
     color: rgba(var(--mce-theme-on-surface), .6);
     font-size: 12px;
     width: 100%;
