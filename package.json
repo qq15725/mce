@@ -17,15 +17,15 @@
     "release": "bumpp package.json packages/*/package.json --commit \"release: v%s\" --push --all --tag"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^6.0.0",
+    "@antfu/eslint-config": "^6.1.0",
     "@types/node": "^24.9.1",
     "bumpp": "^10.3.1",
     "conventional-changelog-cli": "^5.0.0",
     "eslint": "^9.38.0",
     "typescript": "^5.9.3",
     "vite": "^7.1.12",
-    "vitest": "^4.0.2",
+    "vitest": "^4.0.3",
     "vue": "^3.5.22",
-    "vue-tsc": "^3.1.1"
+    "vue-tsc": "^3.1.2"
   }
 }
