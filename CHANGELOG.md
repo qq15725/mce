@@ -1,3 +1,55 @@
+## [0.1.1](https://github.com/qq15725/mce/compare/v0.1.0...v0.1.1) (2025-10-27)
+
+
+### Bug Fixes
+
+* animation ([a8e57eb](https://github.com/qq15725/mce/commit/a8e57eb4c9023d6ed5ccddb1727439493c36ed20))
+* animation ([860d739](https://github.com/qq15725/mce/commit/860d7396037d3d1f7f35a2f83f34b8c92d853038))
+* gif ([ba4fabc](https://github.com/qq15725/mce/commit/ba4fabcd639d2bc5a821cbb6c0a9aa11faeb97df))
+* ruler ([fbd6ef2](https://github.com/qq15725/mce/commit/fbd6ef28a7feeea5728126f45c78bafd62bad18c))
+* ruler ([7944b0f](https://github.com/qq15725/mce/commit/7944b0f4bb7448f024570f6807c9d720c8934f36))
+* ruler ([fe5abc9](https://github.com/qq15725/mce/commit/fe5abc9df178b8fbc3bec4ca1191c1ef34cb1b2a))
+* ruler ([16fe7c7](https://github.com/qq15725/mce/commit/16fe7c71bc8cbcfee7f79c10dbed9b14113afac0))
+* rulers ([e04cb79](https://github.com/qq15725/mce/commit/e04cb79afaba445027d9ee9679c40ddc20b5068d))
+* timeline ([9bb9001](https://github.com/qq15725/mce/commit/9bb90017f0d4d114dbb6b982167cf9f7f4607a8e))
+* timeline ([e8cc230](https://github.com/qq15725/mce/commit/e8cc230907d35bd74e5f28d030a11140df9fd746))
+* timeline ([a9ec72f](https://github.com/qq15725/mce/commit/a9ec72fd3317ad2dd18dfd86b028704e6344e327))
+* timeline play ([f19feff](https://github.com/qq15725/mce/commit/f19feff6bbfdd62a1624c0f74ecf02825a10eef4))
+
+
+### Features
+
+* commands ([4dcf802](https://github.com/qq15725/mce/commit/4dcf8026135611e7d71687378359f34a85264a58))
+* commands ([296beb6](https://github.com/qq15725/mce/commit/296beb6dd541100f0c74ab7d56cf7f7a2507aac3))
+* delete plugin ([5582e5c](https://github.com/qq15725/mce/commit/5582e5cea4349631926e83e4e0ff5ada9e15fe38))
+* hotkeys ([dcafede](https://github.com/qq15725/mce/commit/dcafede545e592e4c8fc50a387f271714c0f666a))
+* icons ([bed2dc0](https://github.com/qq15725/mce/commit/bed2dc09b489598854bba4966a447b3e2982726c))
+* loaders / exporters ([e860760](https://github.com/qq15725/mce/commit/e860760f1b846323168f4301095273c80dd1eabe))
+* locale ([383b4db](https://github.com/qq15725/mce/commit/383b4db1f84c6b6627c74d693595d389ebba59dc))
+* menu ([71c70ed](https://github.com/qq15725/mce/commit/71c70ed5c8542ea18530ca66a0afd92d425fc082))
+* menu ([c29cc78](https://github.com/qq15725/mce/commit/c29cc78485b4ff193d044d59542a6642d87b8999))
+* menu ([0f53b3e](https://github.com/qq15725/mce/commit/0f53b3e4286301768ada3d00669a19e88240dd8f))
+* menu ([22c2a78](https://github.com/qq15725/mce/commit/22c2a783f0e731ba787e81f55289bb12d8628185))
+* plugin system ([14f324d](https://github.com/qq15725/mce/commit/14f324d89b6280a942d73d3fb84177c05de7af65))
+* rename pkg ([ed542c2](https://github.com/qq15725/mce/commit/ed542c2167a25e2d38580263117646565cf6ca15))
+* shamefully-hoist ([87ab547](https://github.com/qq15725/mce/commit/87ab54776f11c19993f74cec7f870d147a164692))
+* sub pkg ([40ecbe7](https://github.com/qq15725/mce/commit/40ecbe7c037d334917f851db0c03b500eaf7de21))
+* sub pkg ([5a4214b](https://github.com/qq15725/mce/commit/5a4214b923db1230adcf16e484bfd26513c482c6))
+* sub pkg ([4595bff](https://github.com/qq15725/mce/commit/4595bffa8d6c0a67cde67e4b94719718a6b8f828))
+* third party ([42e496a](https://github.com/qq15725/mce/commit/42e496a257841768ea6c0bf1e5bd603d9c99ca8a))
+* third party ([3548061](https://github.com/qq15725/mce/commit/3548061341d4ccab8369e075e8e92d0fee4f6a5b))
+* timeline ([72207f7](https://github.com/qq15725/mce/commit/72207f7692f263c36ee009303e18732b8b984893))
+* timeline ([a9a992d](https://github.com/qq15725/mce/commit/a9a992d642b3a75f350553696c156276913ccf04))
+* timeline ([934d5eb](https://github.com/qq15725/mce/commit/934d5eb4351fdaf744f4c506dbcdab7e98a5a81e))
+* timeline ([ca2c338](https://github.com/qq15725/mce/commit/ca2c338ef61d13368e9f4c191c231abc5a2db948))
+* timeline play ([0f21358](https://github.com/qq15725/mce/commit/0f21358329fcfbc33eda02049657d22f5f1b67a9))
+* transformable ([8e68197](https://github.com/qq15725/mce/commit/8e68197959e8833fc439697a0789e82969e80c9a))
+* up dep ([2580f6c](https://github.com/qq15725/mce/commit/2580f6c04b5d67f2a07b6a9d0500ec13982e4d6b))
+* update ([699b7b9](https://github.com/qq15725/mce/commit/699b7b92e89d66a7646e6ede6f81bb4a21f10807))
+* view plugin ([7762c78](https://github.com/qq15725/mce/commit/7762c782a4985e7ee5bea1962bba5a5fe3a0e9be))
+
+
+
 # [0.1.0](https://github.com/qq15725/mce/compare/v0.0.29...v0.1.0) (2025-10-20)
 
 
