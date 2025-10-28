@@ -268,9 +268,7 @@ function onPointerdown(event: PointerInputEvent): void {
       )
   }
 
-  function onMove(event: PointerInputEvent) {
-    current = { x: event.clientX, y: event.clientY }
-
+  function onEngineMove(event: PointerInputEvent) {
     if (inSelected) {
       if (canStartDrag()) {
         dragging = true
@@ -289,7 +287,13 @@ function onPointerdown(event: PointerInputEvent): void {
           })
         }
       }
-      else {
+    }
+  }
+
+  function onMove(event: PointerEvent) {
+    current = { x: event.clientX, y: event.clientY }
+    if (!inSelected) {
+      if (!element || isFrame(element)) {
         onSelectArea()
       }
     }
@@ -321,12 +325,14 @@ function onPointerdown(event: PointerInputEvent): void {
       onHover(event)
     }
 
-    renderEngine.value.off('pointermove', onMove)
+    renderEngine.value.off('pointermove', onEngineMove)
+    document.removeEventListener('pointermove', onMove)
     document.removeEventListener('pointerup', onUp)
     isUp = true
   }
 
-  renderEngine.value.on('pointermove', onMove)
+  renderEngine.value.on('pointermove', onEngineMove)
+  document.addEventListener('pointermove', onMove)
   document.addEventListener('pointerup', onUp)
 }
 
