@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useEditor } from '../composables/editor'
-import ProgressIndicator from './ProgressIndicator.vue'
 import Icon from './shared/Icon.vue'
+import ProgressIndicator from './shared/ProgressIndicator.vue'
 
 const {
   state,
@@ -99,7 +99,7 @@ const {
   font-size: 12px;
   line-height: 1;
   width: 100%;
-  height: 24px;
+  height: 100%;
   padding: 0 8px;
   background-color: rgba(var(--mce-theme-surface), 1);
   color: rgba(var(--mce-theme-on-surface), 1);

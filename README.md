@@ -30,7 +30,7 @@ npm i mce
 
 ```vue
 <script setup lang="ts">
-  import { Drawboard, Editor } from 'mce'
+  import { Editor, EditorTemplate, LayoutItem } from 'mce'
   import 'mce/styles'
 
   const editor = new Editor({
@@ -42,7 +42,6 @@ npm i mce
     camera: true,
     ruler: true,
     scrollbar: true,
-    bottombar: true,
     statusbar: true,
     wheelZoom: false,
     frameGap: 48,
@@ -85,23 +84,30 @@ npm i mce
 
 <template>
   <div style="width: 100vw; height: 100vh">
-    <Drawboard :editor="editor">
-      <template #selector="{ box }">
-        Selector
-      </template>
+    <EditorTemplate :editor="editor">
+      <template #selector="{ box }" />
+      <template #transformer="{ box }" />
+      <template #floatbar />
+      <template #drawboard />
 
-      <template #transformer="{ box }">
-        <text>Transformer(in SVG)</text>
-      </template>
+      <LayoutItem
+        :model-value="true"
+        position="top"
+        :size="56"
+      />
 
-      <template #floatbar>
-        Floatbar
-      </template>
+      <LayoutItem
+        :model-value="true"
+        position="left"
+        :size="380"
+      />
 
-      <template #bottombar>
-        Bottombar
-      </template>
-    </Drawboard>
+      <LayoutItem
+        :model-value="true"
+        position="right"
+        :size="260"
+      />
+    </EditorTemplate>
   </div>
 </template>
 ```
@@ -111,12 +117,12 @@ slot sub component
 ```vue
 <script setup lang="ts">
   import { useEditor } from 'mce'
-  const { activeElement } = useEditor()
+  const { selection } = useEditor()
 </script>
 
 <template>
   <div>
-    {{ activeElement }}
+    {{ selection }}
   </div>
 </template>
 ```

@@ -13,7 +13,7 @@ import {
   ref,
   useTemplateRef,
 } from 'vue'
-import { useEditor } from '../composables/editor'
+import { provideEditor, useEditor } from '../composables/editor'
 import { createIcons, IconsSymbol } from '../composables/icons'
 import { provideOverlay } from '../composables/overlay'
 import {
@@ -25,7 +25,6 @@ import {
 import { Editor } from '../editor'
 import { isPointInsideAabb } from '../utils/box'
 import Auxiliary from './Auxiliary.vue'
-import Bottombar from './Bottombar.vue'
 import ContextMenu from './ContextMenu.vue'
 import Drawing from './Drawing.vue'
 import Floatbar from './Floatbar.vue'
@@ -36,6 +35,9 @@ import Rulers from './Rulers.vue'
 import Scrollbars from './Scrollbars.vue'
 import Selector from './Selector.vue'
 import Setup from './Setup.vue'
+import Layout from './shared/Layout.vue'
+import LayoutItem from './shared/LayoutItem.vue'
+import Main from './shared/Main.vue'
 import Statusbar from './Statusbar.vue'
 import TextEditor from './TextEditor.vue'
 import Timeline from './timeline/Timeline.vue'
@@ -57,14 +59,13 @@ defineSlots<{
   selector?: (props: { box: OrientedBoundingBox }) => void
   transformer?: (props: { box: Partial<OrientedBoundingBox> }) => void
   floatbar?: () => void
-  bottombar?: () => void
+  drawboard?: () => void
   default?: () => void
 }>()
 
 let editor
 if (props.editor) {
-  provide(Editor.injectionKey, props.editor)
-  editor = props.editor
+  editor = provideEditor(props.editor)
 }
 else {
   editor = useEditor()
@@ -366,68 +367,82 @@ function onScroll() {
 </script>
 
 <template>
-  <div
-    class="mce-drawboard"
-    :class="`mce-drawboard--${config.viewMode}`"
-  >
+  <Layout class="mce-editor">
     <Setup />
-    <div
-      ref="drawboardDom"
-      :data-pixel-ratio="renderEngine.pixelRatio"
-      class="mce-drawboard__main"
-      @dblclick="emit('dblclick:drawboard', $event)"
-      @scroll="onScroll"
-      @wheel.prevent
+
+    <Main>
+      <div
+        ref="drawboardDom"
+        class="mce-editor__drawboard"
+        :data-pixel-ratio="renderEngine.pixelRatio"
+        @dblclick="emit('dblclick:drawboard', $event)"
+        @scroll="onScroll"
+        @wheel.prevent
+      >
+        <canvas
+          ref="canvasTpl"
+          class="mce-editor__canvas"
+        />
+        <TextEditor ref="textEditorTpl" />
+        <Auxiliary />
+        <Hover />
+        <Frames />
+        <Drawing />
+        <Selector
+          ref="selectorTpl"
+          :selected-area="selectedArea"
+          :resize-strategy="selection[0] ? props.resizeStrategy(selection[0]) : undefined"
+        >
+          <template #transformable="{ box }">
+            <slot name="transformer" :box="box" />
+          </template>
+          <template #default="{ box }">
+            <slot name="selector" :box="box" />
+          </template>
+        </Selector>
+        <Scrollbars v-if="config.scrollbar" />
+        <Floatbar
+          v-if="$slots.floatbar"
+          :target="state === 'typing'
+            ? textEditor?.textEditor
+            : selector?.transformable?.$el"
+        >
+          <slot name="floatbar" />
+        </Floatbar>
+        <ContextMenu />
+        <GoBackSelectedArea />
+        <Rulers v-if="config.ruler" />
+        <slot name="drawboard" />
+      </div>
+    </Main>
+
+    <slot />
+
+    <LayoutItem
+      v-model="config.statusbar"
+      position="bottom"
+      :size="24"
     >
-      <canvas
-        ref="canvasTpl"
-        class="mce-drawboard__canvas"
-      />
-      <TextEditor ref="textEditorTpl" />
-      <Auxiliary />
-      <Hover />
-      <Frames />
-      <Drawing />
-      <Selector
-        ref="selectorTpl"
-        :selected-area="selectedArea"
-        :resize-strategy="selection[0] ? props.resizeStrategy(selection[0]) : undefined"
-      >
-        <template #transformable="{ box }">
-          <slot name="transformer" :box="box" />
-        </template>
-        <template #default="{ box }">
-          <slot name="selector" :box="box" />
-        </template>
-      </Selector>
-      <Scrollbars v-if="config.scrollbar" />
-      <Floatbar
-        v-if="$slots.floatbar"
-        :target="state === 'typing'
-          ? textEditor?.textEditor
-          : selector?.transformable?.$el"
-      >
-        <slot name="floatbar" />
-      </Floatbar>
-      <ContextMenu />
-      <Bottombar v-if="config.bottombar">
-        <slot name="bottombar" />
-      </Bottombar>
-      <GoBackSelectedArea />
-      <slot />
-    </div>
-    <Rulers v-if="config.ruler" />
-    <Timeline v-if="config.timeline" />
-    <Statusbar v-if="config.statusbar" />
+      <Statusbar />
+    </LayoutItem>
+
+    <LayoutItem
+      v-model="config.timeline"
+      position="bottom"
+      :size="160"
+    >
+      <Timeline />
+    </LayoutItem>
+
     <div
       ref="overlayContainerTpl"
-      class="mce-drawboard__overlay-container"
+      class="mce-editor__overlay-container"
     />
-  </div>
+  </Layout>
 </template>
 
 <style lang="scss">
-.mce-drawboard {
+.mce-editor {
   --mce-theme-primary: 97, 101, 253;
   --mce-theme-on-primary: 247, 247, 248;
   --mce-theme-surface: 255, 255, 255;
@@ -445,7 +460,7 @@ function onScroll() {
   --mce-blur: 8px;
 }
 
-.mce-drawboard {
+.mce-editor {
   position: relative;
   width: 100%;
   height: 100%;
@@ -470,10 +485,10 @@ function onScroll() {
     pointer-events: none;
   }
 
-  &__main {
+  &__drawboard {
     position: relative;
     width: 100%;
-    flex: 1;
+    height: 100%;
     overflow: hidden;
 
     & > * {

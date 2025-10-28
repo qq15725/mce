@@ -76,7 +76,7 @@ const { floatingStyles, update } = useFloating(target, contentEl, {
 const style = computed(() => {
   return {
     ...floatingStyles.value,
-    zIndex: overlayItem.index.value,
+    zIndex: 2000 + overlayItem.index.value,
   }
 })
 

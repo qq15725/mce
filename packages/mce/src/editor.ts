@@ -181,10 +181,6 @@ export class Editor extends Observable<Events> {
   }
 }
 
-export function createEditor(options?: Options): Editor {
-  return new Editor(options)
-}
-
 export interface PluginObject {
   name: string
   ignore?: boolean | (() => boolean)

@@ -1,4 +1,5 @@
 export * from './box'
+export * from './console'
 export * from './constants'
 export * from './create'
 export * from './helper'

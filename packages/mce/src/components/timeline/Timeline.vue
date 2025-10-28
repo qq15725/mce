@@ -203,14 +203,12 @@ onBeforeUnmount(pause)
 <style lang="scss">
   .mce-timeline {
     position: relative;
-    height: 160px;
     color: rgb(var(--mce-theme-on-surface));
     background-color: rgb(var(--mce-theme-surface));
     display: flex;
     flex-direction: column;
     width: 100%;
-    border-top: 1px solid rgba(var(--mce-border-color), var(--mce-border-opacity));
-    border-bottom: 1px solid rgba(var(--mce-border-color), var(--mce-border-opacity));
+    height: 100%;
 
     &__toolbar {
       display: flex;
