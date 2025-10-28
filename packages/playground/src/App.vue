@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import bigesj from '@mce/bigesj'
 import gaoding from '@mce/gaoding'
-import { Editor, EditorTemplate, LayoutItem } from 'mce'
+import { Editor, EditorLayout, EditorLayoutItem } from 'mce'
 import gifWorkerUrl from 'modern-gif/worker?url'
 import 'mce/styles'
 
@@ -128,29 +128,14 @@ window.doc = editor.doc
 
 <template>
   <div style="width: 100vw; height: 100vh">
-    <EditorTemplate :editor="editor">
+    <EditorLayout :editor="editor">
       <template #selector="{ box }" />
       <template #transformer="{ box }" />
       <template #floatbar />
       <template #drawboard />
-
-      <LayoutItem
-        model-value
-        position="top"
-        :size="56"
-      />
-
-      <LayoutItem
-        model-value
-        position="left"
-        :size="380"
-      />
-
-      <LayoutItem
-        model-value
-        position="right"
-        :size="260"
-      />
-    </EditorTemplate>
+      <EditorLayoutItem model-value position="top" :size="56" />
+      <EditorLayoutItem model-value position="left" :size="380" />
+      <EditorLayoutItem model-value position="right" :size="260" />
+    </EditorLayout>
   </div>
 </template>

@@ -1,8 +1,8 @@
 import './typed-global.d.ts'
 import './typed-plugins.d.ts'
 
-export { default as EditorTemplate } from './components/EditorTemplate.vue'
-export { default as LayoutItem } from './components/shared/LayoutItem.vue'
+export { default as EditorLayout } from './components/EditorLayout.vue'
+export { default as EditorLayoutItem } from './components/shared/LayoutItem.vue'
 export { default as Transformable } from './components/shared/Transformable.vue'
 export * from './composables'
 export * from './editor'
