@@ -1,3 +1,18 @@
+# [0.2.0](https://github.com/qq15725/mce/compare/v0.1.4...v0.2.0) (2025-10-28)
+
+
+### Bug Fixes
+
+* select area ([dee0847](https://github.com/qq15725/mce/commit/dee0847ff0e8b69c015fae05039bb414372c2f59))
+
+
+### Features
+
+* layout ([2681171](https://github.com/qq15725/mce/commit/2681171bfe3d1fb603291766287ee6a41dd700a6))
+* layout ([45a013c](https://github.com/qq15725/mce/commit/45a013cd07b3d571f798421473ab7d550d547db5))
+
+
+
 ## [0.1.4](https://github.com/qq15725/mce/compare/v0.1.3...v0.1.4) (2025-10-28)
 
 
