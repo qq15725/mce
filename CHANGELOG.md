@@ -1,3 +1,12 @@
+## [0.1.4](https://github.com/qq15725/mce/compare/v0.1.3...v0.1.4) (2025-10-28)
+
+
+### Bug Fixes
+
+* external deps ([9fb9c5b](https://github.com/qq15725/mce/commit/9fb9c5b289169ba5d45146e6111cfc945fce854c))
+
+
+
 ## [0.1.3](https://github.com/qq15725/mce/compare/v0.1.2...v0.1.3) (2025-10-27)
 
 
