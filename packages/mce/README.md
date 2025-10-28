@@ -91,19 +91,19 @@ npm i mce
       <template #drawboard />
 
       <LayoutItem
-        :model-value="true"
+        model-value
         position="top"
         :size="56"
       />
 
       <LayoutItem
-        :model-value="true"
+        model-value
         position="left"
         :size="380"
       />
 
       <LayoutItem
-        :model-value="true"
+        model-value
         position="right"
         :size="260"
       />
