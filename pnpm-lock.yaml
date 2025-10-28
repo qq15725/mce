@@ -48,6 +48,18 @@ importers:
       mce:
         specifier: workspace:*
         version: link:../mce
+      modern-canvas:
+        specifier: ^0.12.15
+        version: 0.12.15(lottie-web@5.13.0)(modern-gif@2.0.4)(yoga-layout@3.2.1)
+      modern-font:
+        specifier: ^0.4.4
+        version: 0.4.4
+      modern-idoc:
+        specifier: ^0.10.4
+        version: 0.10.4
+      vue:
+        specifier: ^3.5.22
+        version: 3.5.22(typescript@5.9.3)
 
   packages/gaoding:
     devDependencies:

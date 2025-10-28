@@ -54,7 +54,11 @@
     "fflate": "^0.8.2"
   },
   "devDependencies": {
-    "mce": "workspace:*"
+    "mce": "workspace:*",
+    "modern-canvas": "^0.12.15",
+    "modern-font": "^0.4.4",
+    "modern-idoc": "^0.10.4",
+    "vue": "^3.5.22"
   },
   "peerDependencies": {
     "mce": "^0"
