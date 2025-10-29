@@ -1,3 +1,12 @@
+## [0.2.1](https://github.com/qq15725/mce/compare/v0.2.0...v0.2.1) (2025-10-29)
+
+
+### Bug Fixes
+
+* text render ([874a9f4](https://github.com/qq15725/mce/commit/874a9f4a4850c1d602b1dd516955a8f37c99cbb9))
+
+
+
 # [0.2.0](https://github.com/qq15725/mce/compare/v0.1.4...v0.2.0) (2025-10-28)
 
 
