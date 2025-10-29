@@ -14,7 +14,7 @@ export function bidTidLoader(editor: Editor, api: Record<string, any>): Mce.Load
           (source.bid ? api.bid : api.tid).replace('%d', id),
         )
           .then(rep => rep.json())
-          .then(res => JSON.parse(res.content))
+          .then(res => JSON.parse(res.data.content))
       }
       let maxTime = 0
       const docs = await Promise.all(

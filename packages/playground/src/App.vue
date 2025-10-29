@@ -18,7 +18,7 @@ const editor = new Editor({
   camera: true,
   ruler: true,
   scrollbar: true,
-  timeline: true,
+  timeline: false,
   statusbar: true,
   wheelZoom: false,
   frameOutline: true,
@@ -124,6 +124,13 @@ editor.on('ready', () => {
 
 window.editor = editor
 window.doc = editor.doc
+
+const searchParams = new URL(window.location.href).searchParams
+const tid = searchParams.get('tid')
+const bid = searchParams.get('bid')
+if (tid || bid) {
+  editor.loadDoc({ tid, bid })
+}
 </script>
 
 <template>
