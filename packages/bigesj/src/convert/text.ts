@@ -51,10 +51,7 @@ export async function convertTextStyle(
   return style
 }
 
-export async function convertTextEffects(
-  el: BigeElementText,
-  ctx?: CanvasRenderingContext2D,
-): Promise<Partial<StyleObject>[] | undefined> {
+export async function convertTextEffects(el: BigeElementText): Promise<Partial<StyleObject>[] | undefined> {
   const effects = el.textEffects ?? []
   if (!effects.length) {
     return undefined
@@ -83,26 +80,15 @@ export async function convertTextEffects(
       }
       if (filling) {
         const { color, imageContent, gradient } = filling
-        if (!imageContent?.image) {
-          if (gradient) {
-            result.color = `linear-gradient(${90 - gradient.angle}deg, ${gradient.stops.map((stop: any) => `${stop.color} ${stop.offset * 100}%`).join(',')})`
-          }
-          else if (color) {
-            result.color = color
-          }
+        if (imageContent?.image) {
+          // TODO
+          // const { image, repeat } = imageContent
         }
-        else {
-          const { image: src, repeat } = imageContent
-          const blob = await fetch(src).then(rep => rep.blob())
-          const _src = URL.createObjectURL(blob)
-          const img = await new Promise<HTMLImageElement>((resolve) => {
-            const img = new Image()
-            img.crossOrigin = 'anonymous'
-            img.onload = () => resolve(img)
-            img.src = _src
-          })
-          result.color = ctx?.createPattern(img, repeat ? 'repeat' : 'no-repeat') as any
-          URL.revokeObjectURL(_src)
+        else if (gradient) {
+          result.color = `linear-gradient(${90 - gradient.angle}deg, ${gradient.stops.map((stop: any) => `${stop.color} ${stop.offset * 100}%`).join(',')})`
+        }
+        else if (color) {
+          result.color = color
         }
       }
       return result
@@ -124,8 +110,9 @@ export function getTextContents(el: BigeElementText): BigeElementText['contents'
         content = content.replace(/ |\r\n|\n\r|[\n\r\t\v]/g, ' ')
         content = content.replace(/<br\/>/g, '\n')
         let newContent = ''
+        let cIndex = 0
         for (const char of Array.from(content)) {
-          if (fIndex === 0 && char === ' ') {
+          if (fIndex === 0 && cIndex === 0 && char === ' ') {
             // 首行空格移除
           }
           else if (prevChar === ' ' && char === ' ') {
@@ -135,6 +122,7 @@ export function getTextContents(el: BigeElementText): BigeElementText['contents'
             newContent += char
           }
           prevChar = char
+          cIndex++
         }
         return {
           ...f,
@@ -151,17 +139,23 @@ export async function convertTextContent(
 ): Promise<NormalizedTextContent> {
   const { fetchToText } = useSharedTextAssets()
 
-  const contents = getTextContents(el)
+  const bigeContents = getTextContents(el)
 
-  const content: NormalizedParagraph[] = []
-  for (let i = 0, len = contents.length; i < len; i++) {
-    const _paragraphs = contents[i]
+  const paragraphs: NormalizedParagraph[] = []
+  for (let i = 0, len = bigeContents.length; i < len; i++) {
+    const bigeParagraphs = bigeContents[i]
     const paragraph: NormalizedParagraph = {
       fragments: [],
     }
-    content.push(paragraph)
-    for (let i = 0, len = _paragraphs.length; i < len; i++) {
-      const fragment = { ..._paragraphs[i] }
+    paragraphs.push(paragraph)
+    for (let i = 0, len = bigeParagraphs.length; i < len; i++) {
+      const fragment: Record<string, any> = {}
+      const raw = bigeParagraphs[i]
+      for (const key in raw) {
+        if (key !== 'id' && raw[key] !== '') {
+          ;(fragment as any)[key] = raw[key]
+        }
+      }
 
       if (fragment.fontSize) {
         fragment.fontSize = Math.floor(fragment.fontSize)
@@ -169,6 +163,7 @@ export async function convertTextContent(
 
       fragment.content = normalizeCRLF(fragment.content)
 
+      // highlight
       if (fragment.highlight) {
         fragment.highlightImage = await fetchToText(fragment.highlight.image)
         if (isByWord) {
@@ -191,6 +186,7 @@ export async function convertTextContent(
         delete fragment.highlight
       }
 
+      // listStyle
       if (!isByWord) {
         if (fragment.listMode) {
           paragraph.listStyleType = 'disc'
@@ -201,9 +197,18 @@ export async function convertTextContent(
         }
       }
 
-      paragraph.fragments.push(fragment)
+      const prev = paragraph.fragments[paragraph.fragments.length - 1]
+      if (
+        prev && Object.keys(prev).length === 1 && prev.content
+        && Object.keys(fragment).length === 1 && fragment.content
+      ) {
+        prev.content += fragment.content
+      }
+      else {
+        paragraph.fragments.push(fragment as any)
+      }
     }
   }
 
-  return content
+  return paragraphs
 }

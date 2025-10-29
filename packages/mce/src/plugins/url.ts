@@ -21,7 +21,10 @@ export default definePlugin(() => {
         name: 'url',
         test: (source) => {
           return typeof source === 'string'
-            && source.startsWith('http')
+            && (
+              source.startsWith('http')
+              || imageExtRe.test(source)
+            )
         },
         load: async (source: string) => {
           if (imageExtRe.test(source) || await isImage(source)) {

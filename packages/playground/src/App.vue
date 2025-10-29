@@ -105,6 +105,7 @@ const editor = new Editor({
         'alignTop': '贴顶部',
         'alignVerticalCenter': '垂直居中',
         'alignBottom': '贴底部',
+        'exporting': '导出中...',
       },
     },
   },
@@ -141,7 +142,7 @@ if (tid || bid) {
       <template #floatbar />
       <template #drawboard />
       <EditorLayoutItem model-value position="top" :size="56" />
-      <EditorLayoutItem model-value position="left" :size="380" />
+      <EditorLayoutItem model-value position="left" :size="240" />
       <EditorLayoutItem model-value position="right" :size="260" />
     </EditorLayout>
   </div>

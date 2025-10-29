@@ -71,4 +71,5 @@ export default {
   'alignTop': 'Align top',
   'alignVerticalCenter': 'Align vertical center',
   'alignBottom': 'Align bottom',
+  'exporting': 'Exporting',
 }

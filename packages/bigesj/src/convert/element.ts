@@ -12,7 +12,20 @@ export async function convertElement(
     endTime: number
   },
 ): Promise<NormalizedElement> {
-  const style = el.style ?? el
+  const style = { ...(el.style ?? el) }
+
+  const meta: Record<string, any> = {
+    inPptIs: 'Shape',
+    inEditorIs: 'Element',
+  }
+
+  const element: NormalizedElement = {
+    id: idGenerator(),
+    name: el.name ?? el.title ?? el.id,
+    style,
+    meta,
+    children: [],
+  }
 
   if (style.borderRadius) {
     style.borderRadius = (style.borderRadius * 0.01) * Math.max(style.height, style.width)
@@ -25,20 +38,12 @@ export async function convertElement(
     style.top = parent.style.height * percentageToPx(el.groupStyle.top)
   }
 
-  const element: NormalizedElement = {
-    id: idGenerator(),
-    name: el.name ?? el.title ?? el.id,
-    style: {
-      // TODO 过滤掉部分属性
-      ...style,
-      visibility: el.editable === false ? 'hidden' : 'visible',
-    },
-    meta: {
-      inPptIs: 'Shape',
-      inEditorIs: 'Element',
-      lock: el.lock === true,
-    },
-    children: [],
+  if (el.editable === false) {
+    style.visibility = 'hidden'
+  }
+
+  if (el.lock === true) {
+    meta.lock = true
   }
 
   if (el.animations?.length) {
@@ -59,14 +64,14 @@ export async function convertElement(
 
   switch (el.type) {
     case 'image':
-      element.meta!.inPptIs = 'Picture'
+      meta.inPptIs = 'Picture'
       element.foreground = {
         image: el.url,
         fillWithShape: true,
       }
       if (el.maskUrl) {
         // TODO maskUrl
-        // element.style!.maskImage = el.maskUrl
+        // style.maskImage = el.maskUrl
       }
       if (el.cropping) {
         const width = el.style.width
@@ -99,7 +104,7 @@ export async function convertElement(
       }
       break
     case 'svg': {
-      element.meta!.inPptIs = 'Picture'
+      meta.inPptIs = 'Picture'
       let doc = el.doc
       if (!doc) {
         doc = await fetch(el.url).then(rep => rep.text())
@@ -115,12 +120,12 @@ export async function convertElement(
       break
     }
     case 'text': {
-      element.meta!.inPptIs = 'Shape'
+      meta.inPptIs = 'Shape'
       if (style.writingMode === 'horizontal-tb') {
-        element.style!.width = Math.ceil(style.width + style.letterSpacing)
+        style.width = Math.ceil(style.width + style.letterSpacing)
       }
       else {
-        element.style!.height = Math.ceil(style.height + style.letterSpacing)
+        style.height = Math.ceil(style.height + style.letterSpacing)
       }
       element.text = {
         content: await convertTextContent(el),
@@ -132,7 +137,7 @@ export async function convertElement(
       break
     }
     case 'com':
-      element.meta!.inPptIs = 'GroupShape'
+      meta.inPptIs = 'GroupShape'
       element.children = await Promise.all(
         el.children.map((child: any) => convertElement(child, el, context)),
       )

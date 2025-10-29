@@ -369,16 +369,17 @@ defineExpose({
 
   &--vertical {
     width: var(--size);
+    cursor: ew-resize;
   }
 
   &--horizontal {
     height: var(--size);
+    cursor: ns-resize;
   }
 
   &__canvas {
     display: block;
     pointer-events: auto;
-    cursor: pointer;
     background-color: rgb(var(--mce-theme-surface));
     backdrop-filter: blur(var(--mce-blur));
   }

@@ -49,8 +49,8 @@ importers:
         specifier: workspace:*
         version: link:../mce
       modern-canvas:
-        specifier: ^0.12.17
-        version: 0.12.17(lottie-web@5.13.0)(modern-gif@2.0.4)(yoga-layout@3.2.1)
+        specifier: ^0.12.19
+        version: 0.12.19(lottie-web@5.13.0)(modern-gif@2.0.4)(yoga-layout@3.2.1)
       modern-font:
         specifier: ^0.4.4
         version: 0.4.4
@@ -91,8 +91,8 @@ importers:
         specifier: ^5
         version: 5.13.0
       modern-canvas:
-        specifier: ^0.12.17
-        version: 0.12.17(lottie-web@5.13.0)(modern-gif@2.0.4)(yoga-layout@3.2.1)
+        specifier: ^0.12.19
+        version: 0.12.19(lottie-web@5.13.0)(modern-gif@2.0.4)(yoga-layout@3.2.1)
       modern-font:
         specifier: ^0.4.4
         version: 0.4.4
@@ -100,8 +100,8 @@ importers:
         specifier: ^0.10.5
         version: 0.10.5
       modern-text:
-        specifier: ^1.9.2
-        version: 1.9.2
+        specifier: ^1.10.1
+        version: 1.10.1
       typescript:
         specifier: '>=4.7'
         version: 5.9.3
@@ -1486,8 +1486,8 @@ packages:
   earcut@3.0.2:
     resolution: {integrity: sha512-X7hshQbLyMJ/3RPhyObLARM2sNxxmRALLKx1+NVFFnQ9gKzmCrxm9+uLIAdBcvc8FNLpctqlQ2V6AE92Ol9UDQ==}
 
-  electron-to-chromium@1.5.242:
-    resolution: {integrity: sha512-msZ7SYGFpXkm/iUizlMrm/FPNeYo8uSltQccLVFO3fV4RN2JWGdG7Aatztxtw3uDWp3DkupfkrosLjUnhY+iOw==}
+  electron-to-chromium@1.5.243:
+    resolution: {integrity: sha512-ZCphxFW3Q1TVhcgS9blfut1PX8lusVi2SvXQgmEEnK4TCmE1JhH2JkjJN+DNt0pJJwfBri5AROBnz2b/C+YU9g==}
 
   empathic@2.0.0:
     resolution: {integrity: sha512-i6UzDscO/XfAcNYD75CfICkmfLedpyPDdozrLMmQc5ORaQcdMoc21OnlEylMIqI7U8eniKrPMxxtj8k0vhmJhA==}
@@ -2211,8 +2211,8 @@ packages:
   mlly@1.8.0:
     resolution: {integrity: sha512-l8D9ODSRWLe2KHJSifWGwBqpTZXIXTeo8mlKjY+E2HAakaTeNpqAyBZ8GSqLzHgw4XmHmC8whvpjJNMbFZN7/g==}
 
-  modern-canvas@0.12.17:
-    resolution: {integrity: sha512-sFrEvvAlveLgFHBY719fmIFPYTH8x8BhyIetDtjqvtAe3gYAEdSWlI2SGHIPZjLbD7f2sVKmCbmTwzLA0Ot+BA==}
+  modern-canvas@0.12.19:
+    resolution: {integrity: sha512-uScW3cCaNQNjTZH1YHid/LrbKRvAIm8qd/MefPOpjHWsrG1KAYHg6F1Doc5mUiVcAb4XxWtBPYjHQBeGEoUHVQ==}
     peerDependencies:
       lottie-web: ^5
       modern-gif: ^2
@@ -2254,8 +2254,8 @@ packages:
   modern-pdf@1.3.2:
     resolution: {integrity: sha512-/i0KQeZNMz1JyMabZhuXVfBHb6ZZ4M5K0oR9v06qdsUpgN21AvJYeQKVyF/S13GCoprJF+vTMZI6W8MGkianig==}
 
-  modern-text@1.9.2:
-    resolution: {integrity: sha512-I2g8wqHoHyTZzQq5oe4xLZJlV0+3n0KpT90NW5lC1Z4GU212mBjLUiPeY356ehhoH+WDC5/armi/X6t9cZHKzg==}
+  modern-text@1.10.1:
+    resolution: {integrity: sha512-hRewTLvdZSfgZofjaOXmN9KFPcCzjJwhKxjJS0QZK7TwVgKmsidqcCOEqXNTZQGG/vBMob6YCKJ0TrD4Twy8vQ==}
 
   mp4box@2.1.1:
     resolution: {integrity: sha512-gttYFNmlCjredsdnxqNC6ho0bx6zEwOqAwSKZNQXtsBqvSN1CjtzlTLY9Kfhvt14Co8Iu+qMuOOpnPIRjvvFtw==}
@@ -4092,7 +4092,7 @@ snapshots:
     dependencies:
       baseline-browser-mapping: 2.8.20
       caniuse-lite: 1.0.30001751
-      electron-to-chromium: 1.5.242
+      electron-to-chromium: 1.5.243
       node-releases: 2.0.26
       update-browserslist-db: 1.1.4(browserslist@4.27.0)
 
@@ -4336,7 +4336,7 @@ snapshots:
 
   earcut@3.0.2: {}
 
-  electron-to-chromium@1.5.242: {}
+  electron-to-chromium@1.5.243: {}
 
   empathic@2.0.0: {}
 
@@ -5280,14 +5280,14 @@ snapshots:
       pkg-types: 1.3.1
       ufo: 1.6.1
 
-  modern-canvas@0.12.17(lottie-web@5.13.0)(modern-gif@2.0.4)(yoga-layout@3.2.1):
+  modern-canvas@0.12.19(lottie-web@5.13.0)(modern-gif@2.0.4)(yoga-layout@3.2.1):
     dependencies:
       colord: 2.9.3
       earcut: 3.0.2
       modern-font: 0.4.4
       modern-idoc: 0.10.5
       modern-path2d: 1.4.10
-      modern-text: 1.9.2
+      modern-text: 1.10.1
     optionalDependencies:
       lottie-web: 5.13.0
       modern-gif: 2.0.4
@@ -5334,9 +5334,9 @@ snapshots:
       modern-font: 0.4.4
       modern-idoc: 0.9.11
       modern-path2d: 1.4.10
-      modern-text: 1.9.2
+      modern-text: 1.10.1
 
-  modern-text@1.9.2:
+  modern-text@1.10.1:
     dependencies:
       diff: 8.0.2
       modern-font: 0.4.4
