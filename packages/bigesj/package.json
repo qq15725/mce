@@ -55,9 +55,9 @@
   },
   "devDependencies": {
     "mce": "workspace:*",
-    "modern-canvas": "^0.12.16",
+    "modern-canvas": "^0.12.17",
     "modern-font": "^0.4.4",
-    "modern-idoc": "^0.10.4",
+    "modern-idoc": "^0.10.5",
     "vue": "^3.5.22"
   },
   "peerDependencies": {

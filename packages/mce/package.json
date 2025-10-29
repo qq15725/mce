@@ -71,10 +71,10 @@
     "diff": "^8.0.2",
     "file-saver": "^2.0.5",
     "lodash-es": "^4.17.21",
-    "modern-canvas": "^0.12.16",
+    "modern-canvas": "^0.12.17",
     "modern-font": "^0.4.4",
-    "modern-idoc": "^0.10.4",
-    "modern-text": "^1.9.1",
+    "modern-idoc": "^0.10.5",
+    "modern-text": "^1.9.2",
     "yjs": "^13.6.27"
   },
   "peerDependencies": {

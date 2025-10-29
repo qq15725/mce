@@ -49,14 +49,14 @@ importers:
         specifier: workspace:*
         version: link:../mce
       modern-canvas:
-        specifier: ^0.12.16
-        version: 0.12.16(lottie-web@5.13.0)(modern-gif@2.0.4)(yoga-layout@3.2.1)
+        specifier: ^0.12.17
+        version: 0.12.17(lottie-web@5.13.0)(modern-gif@2.0.4)(yoga-layout@3.2.1)
       modern-font:
         specifier: ^0.4.4
         version: 0.4.4
       modern-idoc:
-        specifier: ^0.10.4
-        version: 0.10.4
+        specifier: ^0.10.5
+        version: 0.10.5
       vue:
         specifier: ^3.5.22
         version: 3.5.22(typescript@5.9.3)
@@ -91,17 +91,17 @@ importers:
         specifier: ^5
         version: 5.13.0
       modern-canvas:
-        specifier: ^0.12.16
-        version: 0.12.16(lottie-web@5.13.0)(modern-gif@2.0.4)(yoga-layout@3.2.1)
+        specifier: ^0.12.17
+        version: 0.12.17(lottie-web@5.13.0)(modern-gif@2.0.4)(yoga-layout@3.2.1)
       modern-font:
         specifier: ^0.4.4
         version: 0.4.4
       modern-idoc:
-        specifier: ^0.10.4
-        version: 0.10.4
+        specifier: ^0.10.5
+        version: 0.10.5
       modern-text:
-        specifier: ^1.9.1
-        version: 1.9.1
+        specifier: ^1.9.2
+        version: 1.9.2
       typescript:
         specifier: '>=4.7'
         version: 5.9.3
@@ -1486,8 +1486,8 @@ packages:
   earcut@3.0.2:
     resolution: {integrity: sha512-X7hshQbLyMJ/3RPhyObLARM2sNxxmRALLKx1+NVFFnQ9gKzmCrxm9+uLIAdBcvc8FNLpctqlQ2V6AE92Ol9UDQ==}
 
-  electron-to-chromium@1.5.241:
-    resolution: {integrity: sha512-ILMvKX/ZV5WIJzzdtuHg8xquk2y0BOGlFOxBVwTpbiXqWIH0hamG45ddU4R3PQ0gYu+xgo0vdHXHli9sHIGb4w==}
+  electron-to-chromium@1.5.242:
+    resolution: {integrity: sha512-msZ7SYGFpXkm/iUizlMrm/FPNeYo8uSltQccLVFO3fV4RN2JWGdG7Aatztxtw3uDWp3DkupfkrosLjUnhY+iOw==}
 
   empathic@2.0.0:
     resolution: {integrity: sha512-i6UzDscO/XfAcNYD75CfICkmfLedpyPDdozrLMmQc5ORaQcdMoc21OnlEylMIqI7U8eniKrPMxxtj8k0vhmJhA==}
@@ -2211,8 +2211,8 @@ packages:
   mlly@1.8.0:
     resolution: {integrity: sha512-l8D9ODSRWLe2KHJSifWGwBqpTZXIXTeo8mlKjY+E2HAakaTeNpqAyBZ8GSqLzHgw4XmHmC8whvpjJNMbFZN7/g==}
 
-  modern-canvas@0.12.16:
-    resolution: {integrity: sha512-pYs5xplTH3fCFjSLqzqa530fMFimzS9IHJfyXkhRoBlPs6pZVFLyZ547Q0x4tSZq3hqOwbPdiEkaxOIH2JyM1Q==}
+  modern-canvas@0.12.17:
+    resolution: {integrity: sha512-sFrEvvAlveLgFHBY719fmIFPYTH8x8BhyIetDtjqvtAe3gYAEdSWlI2SGHIPZjLbD7f2sVKmCbmTwzLA0Ot+BA==}
     peerDependencies:
       lottie-web: ^5
       modern-gif: ^2
@@ -2231,8 +2231,8 @@ packages:
   modern-gif@2.0.4:
     resolution: {integrity: sha512-q3Nf6X3kpnGwiKLzTzOjsbvM16/kPcfy0JrrC79TmuKLCWiOkwb0ztuVhZnqGCizSr4o84gFOaBeGDVaE/Bcgw==}
 
-  modern-idoc@0.10.4:
-    resolution: {integrity: sha512-zgiz4xW7uAwHolmPFvDtQIU2EvoHGBL783NwihyEW1NnZo1qHo1XE+C6ZLy3x3VbCJfzvgNlZFBuA/rMMM2NEA==}
+  modern-idoc@0.10.5:
+    resolution: {integrity: sha512-k/2uwXP/XzjIua193E+9dihqFQPes70JWO99tZ2Wohaga7Sll9W1CtxmQC2N6gvr2NK3mDliJdxjwjbWd6DOlA==}
 
   modern-idoc@0.9.11:
     resolution: {integrity: sha512-9mEbErEzDyqq/vIZgpP8gEqTfY7VJWiDqlViEKUgS2sYDO8d83PSq182G1Lz2iwz7azRAZfYb0MArR0V6iLKGQ==}
@@ -2254,8 +2254,8 @@ packages:
   modern-pdf@1.3.2:
     resolution: {integrity: sha512-/i0KQeZNMz1JyMabZhuXVfBHb6ZZ4M5K0oR9v06qdsUpgN21AvJYeQKVyF/S13GCoprJF+vTMZI6W8MGkianig==}
 
-  modern-text@1.9.1:
-    resolution: {integrity: sha512-lt8TUql0oquGP9SbHMUdsjNhjMnGTDx21uqKVHni+IhOY4UB1v4moLMDRFk0rEReXlKrlmtiICriLfpSn9Kyrw==}
+  modern-text@1.9.2:
+    resolution: {integrity: sha512-I2g8wqHoHyTZzQq5oe4xLZJlV0+3n0KpT90NW5lC1Z4GU212mBjLUiPeY356ehhoH+WDC5/armi/X6t9cZHKzg==}
 
   mp4box@2.1.1:
     resolution: {integrity: sha512-gttYFNmlCjredsdnxqNC6ho0bx6zEwOqAwSKZNQXtsBqvSN1CjtzlTLY9Kfhvt14Co8Iu+qMuOOpnPIRjvvFtw==}
@@ -4092,7 +4092,7 @@ snapshots:
     dependencies:
       baseline-browser-mapping: 2.8.20
       caniuse-lite: 1.0.30001751
-      electron-to-chromium: 1.5.241
+      electron-to-chromium: 1.5.242
       node-releases: 2.0.26
       update-browserslist-db: 1.1.4(browserslist@4.27.0)
 
@@ -4336,7 +4336,7 @@ snapshots:
 
   earcut@3.0.2: {}
 
-  electron-to-chromium@1.5.241: {}
+  electron-to-chromium@1.5.242: {}
 
   empathic@2.0.0: {}
 
@@ -5280,14 +5280,14 @@ snapshots:
       pkg-types: 1.3.1
       ufo: 1.6.1
 
-  modern-canvas@0.12.16(lottie-web@5.13.0)(modern-gif@2.0.4)(yoga-layout@3.2.1):
+  modern-canvas@0.12.17(lottie-web@5.13.0)(modern-gif@2.0.4)(yoga-layout@3.2.1):
     dependencies:
       colord: 2.9.3
       earcut: 3.0.2
       modern-font: 0.4.4
-      modern-idoc: 0.10.4
+      modern-idoc: 0.10.5
       modern-path2d: 1.4.10
-      modern-text: 1.9.1
+      modern-text: 1.9.2
     optionalDependencies:
       lottie-web: 5.13.0
       modern-gif: 2.0.4
@@ -5301,7 +5301,7 @@ snapshots:
     dependencies:
       modern-palette: 2.0.0
 
-  modern-idoc@0.10.4:
+  modern-idoc@0.10.5:
     dependencies:
       colord: 2.9.3
       nanoid: 5.1.6
@@ -5318,7 +5318,7 @@ snapshots:
   modern-openxml@1.9.0:
     dependencies:
       fflate: 0.8.2
-      modern-idoc: 0.10.4
+      modern-idoc: 0.10.5
       modern-path2d: 1.4.10
 
   modern-palette@2.0.0: {}
@@ -5334,13 +5334,13 @@ snapshots:
       modern-font: 0.4.4
       modern-idoc: 0.9.11
       modern-path2d: 1.4.10
-      modern-text: 1.9.1
+      modern-text: 1.9.2
 
-  modern-text@1.9.1:
+  modern-text@1.9.2:
     dependencies:
       diff: 8.0.2
       modern-font: 0.4.4
-      modern-idoc: 0.10.4
+      modern-idoc: 0.10.5
       modern-path2d: 1.4.10
 
   mp4box@2.1.1: {}
