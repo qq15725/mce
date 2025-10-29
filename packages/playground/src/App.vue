@@ -7,8 +7,8 @@ import 'mce/styles'
 
 const editor = new Editor({
   plugins: [
-    bigesj,
-    gaoding,
+    bigesj({ font: true }),
+    gaoding(),
   ],
   theme: 'system',
   language: 'en',

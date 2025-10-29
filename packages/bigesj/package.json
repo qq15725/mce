@@ -55,7 +55,7 @@
   },
   "devDependencies": {
     "mce": "workspace:*",
-    "modern-canvas": "^0.12.15",
+    "modern-canvas": "^0.12.16",
     "modern-font": "^0.4.4",
     "modern-idoc": "^0.10.4",
     "vue": "^3.5.22"

@@ -4,7 +4,7 @@ import { ref } from 'vue'
 
 export type BigeFont = Record<string, any>
 
-export const bigeFonts = ref<BigeFont[]>([])
+const bigeFonts = ref<BigeFont[]>([])
 
 function levenshteinDistance(a: string, b: string): number {
   const matrix: number[][] = []
@@ -30,10 +30,10 @@ export function useFonts() {
 
   const fontPromises = ref(new Map<string, Promise<FontLoadedResult>>())
 
-  async function loadBigeFonts(): Promise<BigeFont[]> {
+  async function loadBigeFonts(url: string): Promise<BigeFont[]> {
     let result = bigeFonts.value
     if (!result.length) {
-      result = await fetch('/new/design/fonts')
+      result = await fetch(url)
         .then(rep => rep.json())
         .then(res => res.data.datalist)
       bigeFonts.value = result

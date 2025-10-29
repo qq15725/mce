@@ -1,7 +1,9 @@
 import { definePlugin } from 'mce'
 
-export const plugin = definePlugin((_editor) => {
-  return {
-    name: 'gaoding',
-  }
-})
+export function plugin() {
+  return definePlugin((_editor) => {
+    return {
+      name: 'gaoding',
+    }
+  })
+}
