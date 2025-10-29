@@ -1,3 +1,12 @@
+## [0.2.2](https://github.com/qq15725/mce/compare/v0.2.1...v0.2.2) (2025-10-29)
+
+
+### Bug Fixes
+
+* bug ([8ddeeda](https://github.com/qq15725/mce/commit/8ddeeda42e795008588c1c14576cac6e18a018fc))
+
+
+
 ## [0.2.1](https://github.com/qq15725/mce/compare/v0.2.0...v0.2.1) (2025-10-29)
 
 
