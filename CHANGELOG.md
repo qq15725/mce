@@ -1,3 +1,13 @@
+## [0.2.5](https://github.com/qq15725/mce/compare/v0.2.4...v0.2.5) (2025-10-31)
+
+
+### Bug Fixes
+
+* remove preference / fix yjs ([9618dd9](https://github.com/qq15725/mce/commit/9618dd94b86ac61dc51b8ab2027e18424e2f5314))
+* text fill render / download file name / bige doc parse ([662a668](https://github.com/qq15725/mce/commit/662a668ed122b8b4e7fd6ac08c430a8bd0b80206))
+
+
+
 ## [0.2.4](https://github.com/qq15725/mce/compare/v0.2.3...v0.2.4) (2025-10-29)
 
 
