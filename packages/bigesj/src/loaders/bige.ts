@@ -1,10 +1,7 @@
-import type { Editor } from 'mce'
 import { gunzipSync } from 'fflate'
 import { convertDoc } from '../convert'
 
-export function bigeLoader(editor: Editor): Mce.Loader {
-  const { config } = editor
-
+export function bigeLoader(): Mce.Loader {
   return {
     name: 'bigesj:bige',
     accept: '.bige',
