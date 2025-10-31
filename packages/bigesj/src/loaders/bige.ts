@@ -19,7 +19,6 @@ export function bigeLoader(editor: Editor): Mce.Loader {
             gunzipSync(new Uint8Array(await file.arrayBuffer())),
           ),
         ).content,
-        config.value.frameGap,
       )
     },
   }

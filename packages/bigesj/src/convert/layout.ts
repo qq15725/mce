@@ -41,9 +41,17 @@ export async function convertLayout(
     name: isFrame ? `Frame ${id}` : layout.name,
     style, // TODO 过滤掉部分属性
     background,
-    children: await Promise.all(
-      layout.elements.map((element: any) => convertElement(element, undefined, context)),
-    ),
+    children: (await Promise.all(
+      layout.elements.map(async (element: any) => {
+        try {
+          return await convertElement(element, undefined, context)
+        }
+        catch (e) {
+          console.warn(e)
+          return undefined
+        }
+      }),
+    )).filter(Boolean),
     meta: {
       inPptIs: isFrame ? 'Slide' : 'GroupShape',
       inEditorIs: isFrame ? 'Frame' : 'Element',

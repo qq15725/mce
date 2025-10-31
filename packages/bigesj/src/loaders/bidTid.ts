@@ -29,7 +29,7 @@ export function bidTidLoader(editor: Editor, api: Record<string, any>): Mce.Load
           if (included !== undefined) {
             bdoc.layouts = bdoc.layouts.filter((_: any, index: number) => included.includes(index))
           }
-          const idoc = await convertDoc(bdoc, config.value.frameGap)
+          const idoc = await convertDoc(bdoc)
           maxTime = Math.max(maxTime, idoc.meta?.maxTime ?? 0)
           return idoc
         }),

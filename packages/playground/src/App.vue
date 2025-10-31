@@ -21,7 +21,7 @@ const editor = new Editor({
   timeline: false,
   statusbar: true,
   wheelZoom: false,
-  frameOutline: true,
+  frameOutline: false,
   frameGap: 48,
   typographyStrategy: 'autoHeight',
   handleShape: 'rect',

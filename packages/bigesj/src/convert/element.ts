@@ -1,6 +1,8 @@
 import type { NormalizedElement } from 'modern-idoc'
 import { idGenerator } from 'modern-idoc'
 import { parseAnimations } from './animation'
+import { convertImageElementToUrl } from './image'
+import { convertSvgElementToUrl } from './svg'
 import { convertTextContent, convertTextEffects, convertTextStyle } from './text'
 
 const percentageToPx = (per: string) => (Number.parseFloat(per) || 0) / 100
@@ -66,12 +68,11 @@ export async function convertElement(
     case 'image':
       meta.inPptIs = 'Picture'
       element.foreground = {
-        image: el.url,
+        image: await convertImageElementToUrl(el),
         fillWithShape: true,
       }
-      if (el.maskUrl) {
-        // TODO maskUrl
-        // style.maskImage = el.maskUrl
+      if (el.clipUrl) {
+        meta.rawForegroundImage = el.url
       }
       if (el.cropping) {
         const width = el.style.width
@@ -105,16 +106,8 @@ export async function convertElement(
       break
     case 'svg': {
       meta.inPptIs = 'Picture'
-      let doc = el.doc
-      if (!doc) {
-        doc = await fetch(el.url).then(rep => rep.text())
-      }
-      // fix
-      doc = doc.replace(new RegExp(`#el-${el.id} `, 'gi'), '')
-      doc = doc.replace('width="100%"', `width="${style.width * 2}"`)
-      doc = doc.replace('height="100%"', `height="${style.height * 2}"`)
       element.foreground = {
-        image: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(doc)}`,
+        image: await convertSvgElementToUrl(el),
         fillWithShape: true,
       }
       break
@@ -138,9 +131,17 @@ export async function convertElement(
     }
     case 'com':
       meta.inPptIs = 'GroupShape'
-      element.children = await Promise.all(
-        el.children.map((child: any) => convertElement(child, el, context)),
-      )
+      element.children = (await Promise.all(
+        el.children.map(async (child: any) => {
+          try {
+            return await convertElement(child, el, context)
+          }
+          catch (e) {
+            console.warn(e)
+            return undefined
+          }
+        }),
+      )).filter(Boolean)
       break
     case 'pic':
     case 'mosaic':

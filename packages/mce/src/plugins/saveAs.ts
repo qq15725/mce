@@ -16,11 +16,12 @@ declare global {
 export default definePlugin((editor) => {
   const {
     to,
+    root,
   } = editor
 
   const saveAs: Mce.Commands['saveAs'] = async (key, options = {}) => {
     const {
-      filename = 'download',
+      filename = root.value?.meta.name ?? 'download',
       ...restOptions
     } = options
 

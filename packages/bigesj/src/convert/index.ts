@@ -1,4 +1,7 @@
 export * from './animation'
 export * from './doc'
 export * from './element'
+export * from './image'
 export * from './layout'
+export * from './svg'
+export * from './text'

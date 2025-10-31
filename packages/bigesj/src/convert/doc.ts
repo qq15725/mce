@@ -1,7 +1,7 @@
 import type { NormalizedDocument } from 'modern-idoc'
 import { convertLayout } from './layout'
 
-export async function convertDoc(doc: Record<string, any>, gap = 48): Promise<NormalizedDocument> {
+export async function convertDoc(doc: Record<string, any>, gap = 0): Promise<NormalizedDocument> {
   const {
     layouts,
     metas = {},
