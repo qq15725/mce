@@ -177,6 +177,10 @@ export class Doc extends Model {
     return !transaction.origin || transaction.origin === this._yDoc.clientID
   }
 
+  protected _debug(..._args: any[]) {
+    // console.log(..._args)
+  }
+
   protected _onChildrenChange(
     event: Y.YMapEvent<Y.Map<unknown>>,
     transaction: Y.Transaction,
@@ -184,6 +188,8 @@ export class Doc extends Model {
     if (this._isSelfTransaction(transaction)) {
       return
     }
+
+    this._debug('_onChildrenChange', event)
 
     const { keysChanged, changes } = event
 
@@ -362,6 +368,9 @@ export class Doc extends Model {
       if (this._isSelfTransaction(transaction)) {
         return
       }
+
+      this._debug('_proxyProps', event, obj)
+
       this.transact(() => {
         const { keysChanged, changes } = event
         keysChanged.forEach((key) => {
@@ -379,7 +388,7 @@ export class Doc extends Model {
               // for vue reactive
               this.undoManager.stopCapturing()
               ;(obj as any)[key] = undefined
-              obj.requestUpdate(key, undefined, oldValue)
+              obj.requestUpdate(key, (obj as any)[key], oldValue)
               break
           }
         })
@@ -403,6 +412,9 @@ export class Doc extends Model {
       if (this._isSelfTransaction(transaction)) {
         return
       }
+
+      this._debug('_proxyChildren', event, node)
+
       const children = node.children
       let retain = 0
       event.changes.delta.forEach((action) => {

@@ -22,7 +22,6 @@ import _new from './plugins/new'
 import _open from './plugins/open'
 import _pdf from './plugins/pdf'
 import _pptx from './plugins/pptx'
-import _preference from './plugins/preference'
 import _saveAs from './plugins/saveAs'
 import _select from './plugins/select'
 import _text from './plugins/text'
@@ -53,7 +52,6 @@ export const plugins = [
   _open,
   _pdf,
   _pptx,
-  _preference,
   _saveAs,
   _select,
   _text,

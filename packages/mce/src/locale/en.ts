@@ -12,7 +12,6 @@ export default {
   'file': 'File',
   'new': 'New',
   'open': 'Open',
-  'preferences': 'Preferences',
   'import': 'Import',
   'export': 'Export',
   'saveAs:png': 'Save as PNG',
