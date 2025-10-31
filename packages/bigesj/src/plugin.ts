@@ -32,7 +32,7 @@ export function plugin(options: PluginOptions = {}) {
     return {
       name: 'bigesj',
       loaders: [
-        bigeLoader(editor),
+        bigeLoader(),
         bidTidLoader(editor, _api),
       ],
       setup: async () => {
