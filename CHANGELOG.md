@@ -1,3 +1,17 @@
+## [0.2.7](https://github.com/qq15725/mce/compare/v0.2.6...v0.2.7) (2025-11-02)
+
+
+### Bug Fixes
+
+* getDoc ([98135a9](https://github.com/qq15725/mce/commit/98135a9c0f193ad874652bec51054820004a1924))
+
+
+### Features
+
+* convert doc ([701a2d6](https://github.com/qq15725/mce/commit/701a2d68930fc97d692bde60a438a7ccf353c0fd))
+
+
+
 ## [0.2.6](https://github.com/qq15725/mce/compare/v0.2.5...v0.2.6) (2025-10-31)
 
 
