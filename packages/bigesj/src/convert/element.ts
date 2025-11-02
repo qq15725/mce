@@ -134,7 +134,6 @@ export async function convertElement(
         style: await convertTextStyle(el),
         effects: await convertTextEffects(el),
         // plugins: [deformation(el.deformation?.type?.endsWith("byWord") ? -1 : 999, () => el.deformation)],
-        drawMode: 'texture',
       } as any
       break
     }
