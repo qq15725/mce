@@ -16,6 +16,9 @@ export async function convertElement(
 ): Promise<NormalizedElement> {
   const style = { ...(el.style ?? el) }
 
+  delete style.bottom
+  delete style.right
+
   const meta: Record<string, any> = {
     inPptIs: 'Shape',
     inEditorIs: 'Element',

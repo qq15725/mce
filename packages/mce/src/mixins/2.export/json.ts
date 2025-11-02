@@ -1,10 +1,12 @@
 import type { Element2D } from 'modern-canvas'
 import type { NormalizedElement } from 'modern-idoc'
+import { idGenerator } from 'modern-idoc'
 import { defineMixin } from '../../editor'
 
 declare global {
   namespace Mce {
     interface JsonData {
+      id: string
       style: {
         width: number
         height: number
@@ -43,6 +45,7 @@ export default defineMixin((editor) => {
         scale,
       } = options
 
+      let id = idGenerator()
       let elements: Element2D[] = []
       if (Array.isArray(selected)) {
         elements = selected
@@ -52,14 +55,18 @@ export default defineMixin((editor) => {
           elements = selection.value
         }
 
-        if (elements.length === 0) {
-          elements = (root.value?.children ?? []) as Element2D[]
+        if (elements.length === 0 && root.value) {
+          if (root.value.meta.id) {
+            id = root.value.meta.id
+          }
+          elements = root.value.children as Element2D[]
         }
       }
 
       const box = getAabb(elements, 'frame')
 
       return {
+        id,
         style: {
           width: box.width,
           height: box.height,
