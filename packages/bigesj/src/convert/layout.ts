@@ -15,8 +15,21 @@ export async function convertLayout(
     ...(layout.style ?? layout),
   }
 
+  delete style.right
+  delete style.bottom
   if (isFrame) {
     style.overflow = 'hidden'
+  }
+
+  const meta: Record<string, any> = {
+    inPptIs: isFrame ? 'Slide' : 'GroupShape',
+    inEditorIs: isFrame ? 'Frame' : 'Element',
+  }
+  if (layout.id) {
+    meta.rawId = layout.id
+  }
+  if (layout.name) {
+    meta.rawName = layout.name
   }
 
   let background: NormalizedBackground | undefined
@@ -52,9 +65,6 @@ export async function convertLayout(
         }
       }),
     )).filter(Boolean),
-    meta: {
-      inPptIs: isFrame ? 'Slide' : 'GroupShape',
-      inEditorIs: isFrame ? 'Frame' : 'Element',
-    },
+    meta,
   } as NormalizedElement
 }

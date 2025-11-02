@@ -1,4 +1,5 @@
 import type { NormalizedDocument } from 'modern-idoc'
+import { idGenerator } from 'modern-idoc'
 import { convertLayout } from './layout'
 
 export async function convertDoc(doc: Record<string, any>, gap = 0): Promise<NormalizedDocument> {
@@ -47,6 +48,7 @@ export async function convertDoc(doc: Record<string, any>, gap = 0): Promise<Nor
   }, { minX: 0, minY: 0, maxX: 0, maxY: 0 })
 
   return {
+    id: idGenerator(),
     name: metas.name || 'doc',
     style: {
       width: metas?.width ?? minmax.maxX - minmax.minX,

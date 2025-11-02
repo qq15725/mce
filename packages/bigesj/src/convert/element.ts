@@ -23,6 +23,12 @@ export async function convertElement(
     inPptIs: 'Shape',
     inEditorIs: 'Element',
   }
+  if (el.id) {
+    meta.rawId = el.id
+  }
+  if (el.name) {
+    meta.rawName = el.name
+  }
 
   const element: NormalizedElement = {
     id: idGenerator(),
