@@ -32,8 +32,16 @@ npm i mce
 <script setup lang="ts">
   import { Editor, EditorLayout, EditorLayoutItem } from 'mce'
   import 'mce/styles'
+  import openxml from '@mce/openxml'
+  import pdf from '@mce/pdf'
+  import svg from '@mce/svg'
 
   const editor = new Editor({
+    plugins: [
+      openxml(),
+      pdf(),
+      svg(),
+    ],
     theme: 'system',
     language: 'en',
     viewMode: 'edgeless',

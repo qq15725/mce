@@ -22,7 +22,7 @@ export function plugin() {
     const RE = /\.pptx$/i
 
     return {
-      name: 'mce:pptx',
+      name: 'mce:openxml',
       exporters: [
         {
           name: 'pptx',

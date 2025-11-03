@@ -19,23 +19,14 @@ export default definePlugin((editor) => {
     selection,
     textSelection,
     config,
+    exporters,
   } = editor
 
   const hasSelected = computed(() => selection.value.length > 0)
 
   const exportMenu = computed(() => ({
     key: 'export',
-    children: [
-      { key: 'saveAs:png' },
-      { key: 'saveAs:jpeg' },
-      { key: 'saveAs:webp' },
-      { key: 'saveAs:svg' },
-      { key: 'saveAs:gif' },
-      { key: 'saveAs:mp4' },
-      { key: 'saveAs:pdf' },
-      { key: 'saveAs:pptx' },
-      { key: 'saveAs:json' },
-    ],
+    children: [...exporters.value.keys()].map(v => ({ key: `saveAs:${v}` })),
   }))
 
   const fileMenu = computed(() => ({
