@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import bigesj from '@mce/bigesj'
 import gaoding from '@mce/gaoding'
+import openxml from '@mce/openxml'
+import pdf from '@mce/pdf'
+import svg from '@mce/svg'
 import { Editor, EditorLayout, EditorLayoutItem } from 'mce'
 import gifWorkerUrl from 'modern-gif/worker?url'
 import 'mce/styles'
@@ -9,6 +12,9 @@ const editor = new Editor({
   plugins: [
     bigesj({ font: true }),
     gaoding(),
+    openxml(),
+    pdf(),
+    svg(),
   ],
   theme: 'system',
   language: 'en',

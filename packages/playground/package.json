@@ -15,6 +15,9 @@
   "devDependencies": {
     "@mce/bigesj": "workspace:*",
     "@mce/gaoding": "workspace:*",
+    "@mce/svg": "workspace:*",
+    "@mce/pdf": "workspace:*",
+    "@mce/openxml": "workspace:*",
     "@tsconfig/node22": "^22.0.2",
     "@vitejs/plugin-vue": "^6.0.1",
     "@vue/tsconfig": "^0.8.1",

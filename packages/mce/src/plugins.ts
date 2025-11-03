@@ -21,7 +21,6 @@ import _mp4 from './plugins/mp4'
 import _new from './plugins/new'
 import _open from './plugins/open'
 import _pdf from './plugins/pdf'
-import _pptx from './plugins/pptx'
 import _saveAs from './plugins/saveAs'
 import _select from './plugins/select'
 import _text from './plugins/text'
@@ -51,7 +50,6 @@ export const plugins = [
   _new,
   _open,
   _pdf,
-  _pptx,
   _saveAs,
   _select,
   _text,

@@ -1,8 +1,8 @@
 {
-  "name": "@mce/bigesj",
+  "name": "@mce/svg",
   "type": "module",
   "version": "0.2.7",
-  "description": "Plugin for mce",
+  "description": "SVG plugin for mce",
   "author": "wxm",
   "license": "MIT",
   "homepage": "https://github.com/qq15725/mce",
@@ -15,6 +15,7 @@
   },
   "keywords": [
     "mce",
+    "svg",
     "plugin"
   ],
   "sideEffects": true,
@@ -51,14 +52,10 @@
     "lint": "eslint src"
   },
   "dependencies": {
-    "fflate": "^0.8.2"
+    "modern-idoc-svg": "^0.1.0"
   },
   "devDependencies": {
-    "mce": "workspace:*",
-    "modern-canvas": "^0.12.21",
-    "modern-font": "^0.4.4",
-    "modern-idoc": "^0.10.5",
-    "vue": "^3.5.22"
+    "mce": "workspace:*"
   },
   "peerDependencies": {
     "mce": "^0"

@@ -71,18 +71,16 @@
     "diff": "^8.0.2",
     "file-saver": "^2.0.5",
     "lodash-es": "^4.17.21",
-    "modern-canvas": "^0.12.20",
+    "modern-canvas": "^0.12.21",
     "modern-font": "^0.4.4",
     "modern-idoc": "^0.10.5",
-    "modern-text": "^1.10.2",
+    "modern-text": "^1.10.3",
     "yjs": "^13.6.27"
   },
   "peerDependencies": {
     "lottie-web": "^5",
     "modern-gif": "^2",
     "modern-mp4": "^0",
-    "modern-openxml": "^1",
-    "modern-pdf": "^1",
     "typescript": ">=4.7",
     "vue": "^3.5.0",
     "yoga-layout": "^3"
@@ -95,12 +93,6 @@
       "optional": true
     },
     "modern-mp4": {
-      "optional": true
-    },
-    "modern-openxml": {
-      "optional": true
-    },
-    "modern-pdf": {
       "optional": true
     },
     "typescript": {
@@ -117,8 +109,6 @@
     "jiti": "^2.6.1",
     "modern-gif": "^2.0.4",
     "modern-mp4": "^0.2.0",
-    "modern-openxml": "^1.9.0",
-    "modern-pdf": "^1.3.2",
-    "sass-embedded": "^1.93.2"
+    "sass-embedded": "^1.93.3"
   }
 }
