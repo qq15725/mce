@@ -39,6 +39,7 @@ const isActive = defineModel<boolean>()
 const opened = ref<number>(-1)
 const overlay = useTemplateRef('overlayTpl')
 const menuItemRefs = useTemplateRef('menuItemTplRefs')
+const hasPrepend = computed(() => Boolean(props.items?.some(v => 'checked' in v)))
 
 const uid = useId()
 const parent = inject(MceMenuSymbol, null)
@@ -157,7 +158,7 @@ defineExpose({
               ]"
               @click="e => onClickItem(item, index, e)"
             >
-              <div class="mce-list-item__prepend">
+              <div v-if="hasPrepend" class="mce-list-item__prepend">
                 <Icon
                   v-if="item.checked"
                   icon="$check"
