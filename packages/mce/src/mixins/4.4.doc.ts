@@ -27,7 +27,6 @@ declare global {
 
 export default defineMixin((editor, options) => {
   const {
-    workspace,
     doc,
     renderEngine,
     emit,
@@ -74,7 +73,6 @@ export default defineMixin((editor, options) => {
         }
       })
       _doc.on('update', throttle((update, origin) => emit('updateDoc', update, origin), 200))
-      workspace.value?.addDoc(_doc)
       doc.value?.destroy()
       doc.value = _doc
       renderEngine.value.root.appendChild(_doc.root)
