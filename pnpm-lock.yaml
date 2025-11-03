@@ -164,23 +164,33 @@ importers:
         specifier: workspace:*
         version: link:../mce
 
-  packages/playground:
+  packages/svg:
+    dependencies:
+      modern-idoc-svg:
+        specifier: ^0.1.0
+        version: 0.1.0
+    devDependencies:
+      mce:
+        specifier: workspace:*
+        version: link:../mce
+
+  playground:
     devDependencies:
       '@mce/bigesj':
         specifier: workspace:*
-        version: link:../bigesj
+        version: link:../packages/bigesj
       '@mce/gaoding':
         specifier: workspace:*
-        version: link:../gaoding
+        version: link:../packages/gaoding
       '@mce/openxml':
         specifier: workspace:*
-        version: link:../openxml
+        version: link:../packages/openxml
       '@mce/pdf':
         specifier: workspace:*
-        version: link:../pdf
+        version: link:../packages/pdf
       '@mce/svg':
         specifier: workspace:*
-        version: link:../svg
+        version: link:../packages/svg
       '@tsconfig/node22':
         specifier: ^22.0.2
         version: 22.0.2
@@ -192,23 +202,13 @@ importers:
         version: 0.8.1(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
       mce:
         specifier: workspace:*
-        version: link:../mce
+        version: link:../packages/mce
       npm-run-all2:
         specifier: ^8.0.4
         version: 8.0.4
       vite-plugin-vue-devtools:
         specifier: ^8.0.3
         version: 8.0.3(vite@7.1.12(@types/node@24.10.0)(jiti@2.6.1)(sass-embedded@1.93.3)(sass@1.93.3)(yaml@2.8.1))(vue@3.5.22(typescript@5.9.3))
-
-  packages/svg:
-    dependencies:
-      modern-idoc-svg:
-        specifier: ^0.1.0
-        version: 0.1.0
-    devDependencies:
-      mce:
-        specifier: workspace:*
-        version: link:../mce
 
 packages:
 

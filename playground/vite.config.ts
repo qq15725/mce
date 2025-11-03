@@ -37,14 +37,14 @@ export default defineConfig(() => {
       resolve: {
         alias: {
           '@': fileURLToPath(new URL('./src', import.meta.url)),
-          '@mce/bigesj': fileURLToPath(new URL('../bigesj/src/index.ts', import.meta.url)),
-          '@mce/gaoding': fileURLToPath(new URL('../gaoding/src/index.ts', import.meta.url)),
-          '@mce/mp4': fileURLToPath(new URL('../mp4/src/index.ts', import.meta.url)),
-          '@mce/openxml': fileURLToPath(new URL('../openxml/src/index.ts', import.meta.url)),
-          '@mce/pdf': fileURLToPath(new URL('../pdf/src/index.ts', import.meta.url)),
-          '@mce/svg': fileURLToPath(new URL('../svg/src/index.ts', import.meta.url)),
-          'mce/styles': fileURLToPath(new URL('../mce/src/index.ts', import.meta.url)),
-          'mce': fileURLToPath(new URL('../mce/src/index.ts', import.meta.url)),
+          '@mce/bigesj': fileURLToPath(new URL('../packages/bigesj/src/index.ts', import.meta.url)),
+          '@mce/gaoding': fileURLToPath(new URL('../packages/gaoding/src/index.ts', import.meta.url)),
+          '@mce/mp4': fileURLToPath(new URL('../packages/mp4/src/index.ts', import.meta.url)),
+          '@mce/openxml': fileURLToPath(new URL('../packages/openxml/src/index.ts', import.meta.url)),
+          '@mce/pdf': fileURLToPath(new URL('../packages/pdf/src/index.ts', import.meta.url)),
+          '@mce/svg': fileURLToPath(new URL('../packages/svg/src/index.ts', import.meta.url)),
+          'mce/styles': fileURLToPath(new URL('../packages/mce/src/index.ts', import.meta.url)),
+          'mce': fileURLToPath(new URL('../packages/mce/src/index.ts', import.meta.url)),
         },
       },
     }
