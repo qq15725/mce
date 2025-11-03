@@ -9,8 +9,6 @@
     "build:preset": "pnpm -F mce build:preset",
     "test": "pnpm -r test",
     "lint": "pnpm -r lint",
-    "cli": "pnpm -F @mce/cli cli",
-    "stub": "pnpm -F @mce/cli stub",
     "dev": "MODE=local pnpm -F playground dev",
     "publish": "pnpm -r publish --no-git-checks --access public",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
