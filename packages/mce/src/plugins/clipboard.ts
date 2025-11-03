@@ -15,7 +15,7 @@ declare global {
     }
 
     interface Commands {
-      copy: () => Promise<void>
+      copy: (data?: any) => Promise<void>
       cut: () => Promise<void>
       paste: () => Promise<void>
       duplicate: () => Promise<void>
@@ -37,22 +37,34 @@ export default definePlugin((editor) => {
 
   const copiedData = ref<any>()
 
-  async function copy(): Promise<void> {
-    const data = selection.value.length === 1
-      ? [selection.value[0].toJSON()]
-      : selection.value.map(v => v.toJSON())
+  const copy: Mce.Commands['copy'] = async (data) => {
+    if (data === undefined) {
+      data = selection.value.length === 1
+        ? [selection.value[0].toJSON()]
+        : selection.value.map(v => v.toJSON())
+    }
     if (SUPPORTS_CLIPBOARD) {
-      const type = 'text/html'
-      await navigator!.clipboard.write([
-        new ClipboardItem({
-          [type]: new Blob([
-            `<mce-clipboard>${JSON.stringify(data)}</mce-clipboard>`,
-          ], { type }),
-        }),
-      ])
+      if (Array.isArray(data)) {
+        const type = 'text/html'
+        await navigator!.clipboard.write([
+          new ClipboardItem({
+            [type]: new Blob([
+              `<mce-clipboard>${JSON.stringify(data)}</mce-clipboard>`,
+            ], { type }),
+          }),
+        ])
+      }
+      else if (typeof data === 'string') {
+        const type = 'text/plain'
+        await navigator!.clipboard.write([
+          new ClipboardItem({ [type]: new Blob([data], { type }) }),
+        ])
+      }
     }
     else {
-      copiedData.value = data
+      if (Array.isArray(data)) {
+        copiedData.value = data
+      }
     }
   }
 

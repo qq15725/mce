@@ -28,6 +28,7 @@ export default definePlugin((editor, options) => {
     exporters: [
       {
         name: 'gif',
+        saveAs: true,
         handle: async (options) => {
           const { Encoder } = await import('modern-gif')
           const { onProgress, ...restOptions } = options

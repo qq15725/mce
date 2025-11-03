@@ -17,6 +17,8 @@ declare global {
 
     interface Exporter {
       name: string
+      copyAs?: boolean | ((exported: any) => string)
+      saveAs?: boolean | ((exported: any) => Blob)
       handle: ExporterHandle
     }
 

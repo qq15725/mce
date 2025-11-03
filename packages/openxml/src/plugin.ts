@@ -26,6 +26,7 @@ export function plugin() {
       exporters: [
         {
           name: 'pptx',
+          saveAs: true,
           handle: async (options) => {
             const doc = await to('json', options)
 

@@ -17,6 +17,7 @@ export default definePlugin((editor) => {
   const {
     to,
     root,
+    exporters,
   } = editor
 
   const saveAs: Mce.Commands['saveAs'] = async (key, options = {}) => {
@@ -29,6 +30,11 @@ export default definePlugin((editor) => {
       selected: true,
       ...restOptions,
     })
+
+    const exporter = exporters.value.get(key)
+    if (exporter && typeof exporter.saveAs === 'function') {
+      res = exporter.saveAs(res)
+    }
 
     if (!(res instanceof Blob)) {
       res = new Blob([JSON.stringify(res)], { type: 'application/json' })

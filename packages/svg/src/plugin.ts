@@ -1,10 +1,10 @@
 import { definePlugin } from 'mce'
-import { docToSvgBlob } from 'modern-idoc-svg'
+import { docToSvgString } from 'modern-idoc-svg'
 
 declare global {
   namespace Mce {
     interface Exporters {
-      svg: Blob
+      svg: string
     }
   }
 }
@@ -21,10 +21,11 @@ export function plugin() {
       exporters: [
         {
           name: 'svg',
+          copyAs: true,
+          saveAs: (exported: any) => new Blob([exported], { type: 'image/svg+xml' }),
           handle: async (options) => {
             const doc = await to('json', options)
-
-            return docToSvgBlob({ ...doc, fonts } as any)
+            return docToSvgString({ ...doc, fonts } as any)
           },
         },
       ],

@@ -26,7 +26,9 @@ export default definePlugin((editor) => {
 
   const exportMenu = computed(() => ({
     key: 'export',
-    children: [...exporters.value.keys()].map(v => ({ key: `saveAs:${v}` })),
+    children: [...exporters.value.values()]
+      .filter(v => Boolean(v.saveAs))
+      .map(v => ({ key: `saveAs:${v.name}` })),
   }))
 
   const fileMenu = computed(() => ({
@@ -47,6 +49,13 @@ export default definePlugin((editor) => {
 
   const editMenus1 = computed(() => [
     { key: 'copy', disabled: !hasSelected.value },
+    {
+      key: 'copyAs',
+      disabled: !hasSelected.value,
+      children: [...exporters.value.values()]
+        .filter(v => Boolean(v.copyAs))
+        .map(v => ({ key: `copyAs:${v.name}` })),
+    },
     { key: 'cut', disabled: !hasSelected.value },
     { key: 'paste', disabled: !copiedData.value },
     { key: 'duplicate', disabled: !hasSelected.value },

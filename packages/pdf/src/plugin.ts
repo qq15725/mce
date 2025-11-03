@@ -21,9 +21,9 @@ export function plugin() {
       exporters: [
         {
           name: 'pdf',
+          saveAs: true,
           handle: async (options) => {
             const doc = await to('json', options)
-
             return await new Pdf({
               ...doc,
               fonts,

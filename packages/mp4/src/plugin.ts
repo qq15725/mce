@@ -22,6 +22,7 @@ export function plugin() {
       exporters: [
         {
           name: 'mp4',
+          saveAs: true,
           handle: async (options) => {
             const { onProgress, ...restOptions } = options
             const data = to('json', restOptions)

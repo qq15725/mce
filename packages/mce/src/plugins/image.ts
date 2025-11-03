@@ -52,6 +52,7 @@ export default definePlugin((editor) => {
   function createExporter(name: string): Mce.Exporter {
     return {
       name,
+      saveAs: true,
       handle: async (options) => {
         const doc = await to('json', options)
 

@@ -39,6 +39,8 @@ export default defineMixin((editor) => {
 
   registerExporter({
     name: 'json',
+    copyAs: (exported: Mce.JsonData) => JSON.stringify(exported),
+    saveAs: (exported: Mce.JsonData) => new Blob([JSON.stringify(exported)], { type: 'application/json' }),
     handle: (options) => {
       const {
         selected = false,
