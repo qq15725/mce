@@ -1,3 +1,23 @@
+# [0.3.0](https://github.com/qq15725/mce/compare/v0.2.7...v0.3.0) (2025-11-03)
+
+
+### Bug Fixes
+
+* doc init ([693d825](https://github.com/qq15725/mce/commit/693d825e75c17117794c8eba25bb6c4d2fb1eb28))
+* dynamic export menu ([19ff553](https://github.com/qq15725/mce/commit/19ff553054d9834877ab399765b12e9daab143a5))
+* menu ([f1e93e8](https://github.com/qq15725/mce/commit/f1e93e887557f71bfc6674b556b8d6ce4db7870d))
+
+
+### Features
+
+* copyAs ([a52f8d1](https://github.com/qq15725/mce/commit/a52f8d1cdef1225b48cab2c6bf52cb6e18a2a723))
+* loader ([2b8b7eb](https://github.com/qq15725/mce/commit/2b8b7eb19edb96977c698c18d5f4792be5dc369b))
+* rm workspace ([783d399](https://github.com/qq15725/mce/commit/783d3991044cb77cd489bef8a62ebf4d40dc255d))
+* split mp4 plugin ([87d9b0d](https://github.com/qq15725/mce/commit/87d9b0d595cd9d80f1bb986e79ae069c0fd89b1a))
+* split svg / openxml / pdf plugins ([68f1446](https://github.com/qq15725/mce/commit/68f144662ac95015aba562d2a1505f13263df0e3))
+
+
+
 ## [0.2.7](https://github.com/qq15725/mce/compare/v0.2.6...v0.2.7) (2025-11-02)
 
 
