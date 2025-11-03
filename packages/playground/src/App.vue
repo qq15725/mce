@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import bigesj from '@mce/bigesj'
 import gaoding from '@mce/gaoding'
+import mp4 from '@mce/mp4'
 import openxml from '@mce/openxml'
 import pdf from '@mce/pdf'
 import svg from '@mce/svg'
@@ -12,6 +13,7 @@ const editor = new Editor({
   plugins: [
     bigesj({ font: true }),
     gaoding(),
+    mp4(),
     openxml(),
     pdf(),
     svg(),

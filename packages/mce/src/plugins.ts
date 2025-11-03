@@ -17,7 +17,6 @@ import _layerPosition from './plugins/layerPosition'
 import _lock from './plugins/lock'
 import _menu from './plugins/menu'
 import _move from './plugins/move'
-import _mp4 from './plugins/mp4'
 import _new from './plugins/new'
 import _open from './plugins/open'
 import _saveAs from './plugins/saveAs'
@@ -45,7 +44,6 @@ export const plugins = [
   _lock,
   _menu,
   _move,
-  _mp4,
   _new,
   _open,
   _saveAs,

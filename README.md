@@ -32,12 +32,14 @@ npm i mce
 <script setup lang="ts">
   import { Editor, EditorLayout, EditorLayoutItem } from 'mce'
   import 'mce/styles'
+  import mp4 from '@mce/mp4'
   import openxml from '@mce/openxml'
   import pdf from '@mce/pdf'
   import svg from '@mce/svg'
 
   const editor = new Editor({
     plugins: [
+      mp4(),
       openxml(),
       pdf(),
       svg(),

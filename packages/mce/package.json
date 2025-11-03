@@ -80,7 +80,6 @@
   "peerDependencies": {
     "lottie-web": "^5",
     "modern-gif": "^2",
-    "modern-mp4": "^0",
     "typescript": ">=4.7",
     "vue": "^3.5.0",
     "yoga-layout": "^3"
@@ -90,9 +89,6 @@
       "optional": true
     },
     "modern-gif": {
-      "optional": true
-    },
-    "modern-mp4": {
       "optional": true
     },
     "typescript": {
@@ -108,7 +104,6 @@
     "@vitejs/plugin-vue": "^6.0.1",
     "jiti": "^2.6.1",
     "modern-gif": "^2.0.4",
-    "modern-mp4": "^0.2.0",
     "sass-embedded": "^1.93.3"
   }
 }
