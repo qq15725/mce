@@ -14,7 +14,7 @@ export function bidTidLoader(editor: Editor, api: Record<string, any>): Mce.Load
           (source.bid ? api.bid : api.tid).replace('%d', id),
         )
           .then(rep => rep.json())
-          .then(res => JSON.parse(res.data.content))
+          .then(res => res.data)
       }
       let maxTime = 0
       const docs = await Promise.all(
@@ -24,14 +24,17 @@ export function bidTidLoader(editor: Editor, api: Record<string, any>): Mce.Load
             text2 = text2.substring(0, text2.length - 1)
           }
           const included = text2 ? text2.split(',').map(v => Number(v)) : undefined
-          const bdoc = await load(id)
+          const bigeDoc = await load(id)
+          const { content: _content, ...raw } = bigeDoc
+          const content = JSON.parse(_content)
           // TODO 新数据结构存的version是2
           if (included !== undefined) {
-            bdoc.layouts = bdoc.layouts.filter((_: any, index: number) => included.includes(index))
+            content.layouts = content.layouts.filter((_: any, index: number) => included.includes(index))
           }
-          const idoc = await convertDoc(bdoc)
-          maxTime = Math.max(maxTime, idoc.meta?.maxTime ?? 0)
-          return idoc
+          const doc = await convertDoc(content)
+          doc.meta!.raw = raw
+          maxTime = Math.max(maxTime, doc.meta?.maxTime ?? 0)
+          return doc
         }),
       )
       const doc = { ...docs[0], id: text, children: [] as any[] }
