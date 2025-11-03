@@ -130,12 +130,19 @@ importers:
       modern-gif:
         specifier: ^2.0.4
         version: 2.0.4
-      modern-mp4:
-        specifier: ^0.2.0
-        version: 0.2.0(mp4box@2.1.1)
       sass-embedded:
         specifier: ^1.93.3
         version: 1.93.3
+
+  packages/mp4:
+    dependencies:
+      modern-mp4:
+        specifier: ^0.2.0
+        version: 0.2.0(mp4box@2.1.1)
+    devDependencies:
+      mce:
+        specifier: workspace:*
+        version: link:../mce
 
   packages/openxml:
     dependencies:
@@ -168,6 +175,9 @@ importers:
       '@mce/openxml':
         specifier: workspace:*
         version: link:../openxml
+      '@mce/pdf':
+        specifier: workspace:*
+        version: link:../pdf
       '@mce/svg':
         specifier: workspace:*
         version: link:../svg
