@@ -144,7 +144,7 @@ export default definePlugin((editor) => {
 
   const boxes = computed(() => {
     const elements = [
-      ...(parnet.value?.children ?? root.value?.children ?? []),
+      ...(parnet.value?.children ?? root.value.children),
     ]
     if (currentFrame.value && parnet.value?.equal(currentFrame.value)) {
       elements.push(parnet.value)

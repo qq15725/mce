@@ -1,11 +1,11 @@
 import type { Cursor, Node, Vector2Data } from 'modern-canvas'
 import type { ComputedRef, Ref } from 'vue'
-import type { Doc } from '../models'
 import type { AxisAlignedBoundingBox } from '../types'
 import { Camera2D, DrawboardEffect, Engine, Timeline } from 'modern-canvas'
 import { Fonts } from 'modern-font'
 import { computed, markRaw, ref } from 'vue'
 import { defineMixin } from '../editor'
+import { Doc } from '../models'
 
 declare global {
   namespace Mce {
@@ -19,8 +19,8 @@ declare global {
       drawboardDom: Ref<HTMLElement | undefined>
       drawboardAabb: Ref<AxisAlignedBoundingBox>
       drawboardPointer: Ref<Vector2Data | undefined>
-      root: ComputedRef<Node | undefined>
-      doc: Ref<Doc | undefined>
+      doc: Ref<Doc>
+      root: ComputedRef<Node>
       state: Ref<State | undefined>
       setState: (state: State, context?: StateContext) => void
       stateContext: Ref<StateContext | undefined>
@@ -58,8 +58,8 @@ export default defineMixin((editor) => {
 
   const drawboardDom = ref<HTMLElement>()
   const drawboardAabb = ref({ left: 0, top: 0, width: 0, height: 0 })
-  const doc = ref<Doc>()
-  const root = computed(() => doc.value?.root)
+  const doc = ref(new Doc())
+  const root = computed(() => doc.value.root)
   const drawboardPointer = ref<Vector2Data>()
   const state = ref<Mce.State>()
   const stateContext = ref<Mce.StateContext>()

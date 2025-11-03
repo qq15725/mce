@@ -235,7 +235,7 @@ export default defineMixin((editor) => {
     return _aabb
   }
 
-  const rootAabb = computed(() => getAabb(root.value?.children ?? []))
+  const rootAabb = computed(() => getAabb(root.value.children))
   const currentAabb = computed(() => getAabb(selection.value))
 
   Object.assign(editor, {

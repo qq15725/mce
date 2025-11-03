@@ -31,7 +31,6 @@ export default defineMixin((editor, options) => {
     renderEngine,
     emit,
     selection,
-    setCurrentFrame,
     state,
     to,
     waitUntilFontLoad,
@@ -42,7 +41,8 @@ export default defineMixin((editor, options) => {
   const clearDoc: Mce.Editor['clearDoc'] = () => {
     renderEngine.value.root.removeChildren()
     renderEngine.value.root.children.length = 0 // TODO
-    doc.value = undefined
+    doc.value.destroy()
+    doc.value = new Doc()
     selection.value = []
     emit('clearDoc')
   }
@@ -51,32 +51,34 @@ export default defineMixin((editor, options) => {
     return to('json')
   }
 
-  const setDoc: Mce.Editor['setDoc'] = async (source) => {
-    state.value = 'loading'
+  async function initDoc(doc: Doc, source?: Document | string) {
+    await doc.load(async () => {
+      if (config.value.localDb) {
+        try {
+          await doc.loadIndexeddb()
+        }
+        catch (e) {
+          console.error(e)
+        }
+      }
+      if (source && typeof source !== 'string') {
+        doc.set(source)
+      }
+    })
+    doc.on('update', throttle((update, origin) => emit('updateDoc', update, origin), 200))
+    renderEngine.value.root.appendChild(doc.root)
+  }
 
+  const setDoc: Mce.Editor['setDoc'] = async (source) => {
     const _doc = new Doc(typeof source === 'string' ? source : source.id)
+
+    state.value = 'loading'
 
     try {
       await waitUntilFontLoad()
       clearDoc()
-      await _doc.load(async () => {
-        if (config.value.localDb) {
-          try {
-            await _doc.loadIndexeddb()
-          }
-          catch (e) {
-            console.error(e)
-          }
-        }
-        if (typeof source !== 'string') {
-          _doc.set(source)
-        }
-      })
-      _doc.on('update', throttle((update, origin) => emit('updateDoc', update, origin), 200))
-      doc.value?.destroy()
+      await initDoc(_doc, source)
       doc.value = _doc
-      renderEngine.value.root.appendChild(_doc.root)
-      setCurrentFrame(0)
       emit('setDoc', _doc)
     }
     finally {
@@ -101,11 +103,14 @@ export default defineMixin((editor, options) => {
 
   return () => {
     const {
-      doc,
+      doc: source,
     } = options
 
-    if (doc) {
-      setDoc(doc)
+    if (source) {
+      setDoc(source)
+    }
+    else {
+      initDoc(doc.value)
     }
   }
 })

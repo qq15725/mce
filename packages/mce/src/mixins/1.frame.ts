@@ -31,7 +31,7 @@ export default defineMixin((editor) => {
     getAncestor,
   } = editor
 
-  const frames = computed(() => root.value?.children.filter(isFrame) ?? [])
+  const frames = computed(() => root.value.children.filter(isFrame) ?? [])
   const currentFrameIndex = ref<number>(-1)
   const currentFrame = computed(() => frames.value[currentFrameIndex.value])
   const currentFrameAabb = computed(() => {

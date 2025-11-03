@@ -4,7 +4,7 @@ import type { Transaction, YArrayEvent, YMapEvent } from 'yjs'
 import type { ModelEvents } from './Model'
 import { Element2D, Node } from 'modern-canvas'
 import { normalizeElement, property } from 'modern-idoc'
-import { markRaw, nextTick, reactive } from 'vue'
+import { markRaw, reactive } from 'vue'
 import * as Y from 'yjs'
 import { Model } from './Model'
 
@@ -153,10 +153,6 @@ export class Doc extends Model {
   override async load(initFn?: () => void | Promise<void>): Promise<this> {
     return super.load(async () => {
       await initFn?.()
-      if (!this._yChildren.size) {
-        this.init()
-        await nextTick()
-      }
       this._proxyProps(this.root, this._yProps)
       const meta = this._yProps.get('meta') as any
       if (meta) {
@@ -218,23 +214,6 @@ export class Doc extends Model {
     this.undoManager.clear()
     this.indexeddb?.clearData()
     return this
-  }
-
-  init(): void {
-    this.addElement({
-      id: 'Frame',
-      name: 'Frame',
-      style: {
-        width: 960,
-        height: 540,
-        backgroundColor: '#FFFFFF',
-        overflow: 'hidden',
-      },
-      meta: {
-        inEditorIs: 'Frame',
-        inPptIs: 'Slide',
-      },
-    })
   }
 
   protected _addElement(element: Element, options: AddElementOptions = {}): Node {

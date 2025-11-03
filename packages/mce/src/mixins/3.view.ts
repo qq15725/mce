@@ -76,14 +76,14 @@ export default defineMixin((editor) => {
     function onViewMode() {
       switch (config.value.viewMode) {
         case 'frame':
-          root.value?.children.forEach((child) => {
+          root.value.children.forEach((child) => {
             if (child instanceof Element2D) {
               child.visible = child.equal(currentFrame.value)
             }
           })
           break
         case 'edgeless':
-          root.value?.children.forEach((child) => {
+          root.value.children.forEach((child) => {
             if (child instanceof Element2D) {
               child.visible = true
             }

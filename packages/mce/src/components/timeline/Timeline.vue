@@ -25,14 +25,14 @@ const position = ref([0, 0])
 const wheelSensitivity = 0.02
 
 const elements = computed(() => {
-  return root.value?.findAll<Element2D>((node) => {
+  return root.value.findAll<Element2D>((node) => {
     if (node instanceof Element2D) {
       if (node.children.some(child => child instanceof Animation)) {
         return true
       }
     }
     return false
-  }) ?? []
+  })
 })
 
 function onWheel(e: WheelEvent) {

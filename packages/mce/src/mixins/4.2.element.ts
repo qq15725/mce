@@ -114,10 +114,10 @@ export default defineMixin((editor) => {
     const left = rootAabb.value.left + rootAabb.value.width + config.value.frameGap
     const isArray = Array.isArray(value)
 
-    const elements = doc.value!.transact(() => {
+    const elements = doc.value.transact(() => {
       const values = isArray ? value : [value]
       const elements = values.map((element) => {
-        const el = doc.value!.addElement(element, { parentId: frame?.id, regenId }) as Element2D
+        const el = doc.value.addElement(element, { parentId: frame?.id, regenId }) as Element2D
 
         if (frame) {
           const { width, height } = frame.style
@@ -190,7 +190,7 @@ export default defineMixin((editor) => {
     if (id === selection.value[0]?.id) {
       selection.value = []
     }
-    doc.value?.deleteElement(id)
+    doc.value.deleteElement(id)
   }
 
   function updateElement(id: string, properties: Record<string, any>): void {
@@ -198,7 +198,7 @@ export default defineMixin((editor) => {
   }
 
   function getElement(id: string): Element2D | undefined {
-    return doc.value?.nodeMap?.get(id) as Element2D | undefined
+    return doc.value.nodeMap.get(id) as Element2D | undefined
   }
 
   function resizeElement(

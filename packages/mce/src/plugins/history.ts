@@ -33,11 +33,11 @@ export default definePlugin((editor) => {
   const canRedo = ref(false)
 
   function redo(): void {
-    doc.value?.redo()
+    doc.value.redo()
   }
 
   function undo(): void {
-    doc.value?.undo()
+    doc.value.undo()
   }
 
   on('setDoc', (doc) => {

@@ -37,7 +37,7 @@ export default definePlugin((editor) => {
       cloned.style.top = (cloned.style.top ?? 0) - aabb.top
       return cloned
     })
-    doc.value?.transact(() => {
+    doc.value.transact(() => {
       addElement({
         style: { ...aabb },
         children,
@@ -63,7 +63,7 @@ export default definePlugin((editor) => {
       cloned.style.top = obb.top
       return cloned
     })
-    doc.value?.transact(() => {
+    doc.value.transact(() => {
       deleteElement(element.id)
       addElement(items, {
         active: true,

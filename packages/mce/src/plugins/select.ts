@@ -28,7 +28,7 @@ export default definePlugin((editor) => {
   } = editor
 
   function selectAll(): void {
-    selection.value = [...root.value?.children ?? []] as Element2D[]
+    selection.value = [...root.value.children] as Element2D[]
   }
 
   function deselectAll() {

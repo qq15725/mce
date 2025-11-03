@@ -21,7 +21,7 @@ export default definePlugin((editor) => {
 
   const saveAs: Mce.Commands['saveAs'] = async (key, options = {}) => {
     const {
-      filename = root.value?.meta.name ?? 'download',
+      filename = root.value.meta.name ?? 'download',
       ...restOptions
     } = options
 
