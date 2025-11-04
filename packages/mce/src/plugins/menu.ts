@@ -55,8 +55,8 @@ export default definePlugin((editor, options) => {
       { key: 'open' },
       { type: 'divider' },
       { key: 'import' },
-      exportMenu.value,
-    ],
+      exportMenu.value.children.length && exportMenu.value,
+    ].filter(Boolean),
   }))
 
   const historyMenus = computed(() => [
@@ -64,20 +64,22 @@ export default definePlugin((editor, options) => {
     { key: 'redo', disabled: !canRedo.value },
   ])
 
+  const copyAsMenu = computed(() => ({
+    key: 'copyAs',
+    disabled: !hasSelected.value,
+    children: [...exporters.value.values()]
+      .filter(v => Boolean(v.copyAs))
+      .map(v => ({ key: `copyAs:${v.name}` })),
+  }))
+
   const editMenus1 = computed(() => [
     { key: 'copy', disabled: !hasSelected.value },
-    {
-      key: 'copyAs',
-      disabled: !hasSelected.value,
-      children: [...exporters.value.values()]
-        .filter(v => Boolean(v.copyAs))
-        .map(v => ({ key: `copyAs:${v.name}` })),
-    },
+    copyAsMenu.value.children.length && copyAsMenu.value,
     { key: 'cut', disabled: !hasSelected.value },
     { key: 'paste' },
     { key: 'duplicate', disabled: !hasSelected.value },
     { key: 'delete', disabled: !hasSelected.value },
-  ])
+  ].filter(Boolean))
 
   const selectMenu = computed(() => ({
     key: 'select',

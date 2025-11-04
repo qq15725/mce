@@ -14,6 +14,7 @@ import _history from './plugins/history'
 import _html from './plugins/html'
 import _image from './plugins/image'
 import _import from './plugins/import'
+import _json from './plugins/json'
 import _layerOrder from './plugins/layerOrder'
 import _layerPosition from './plugins/layerPosition'
 import _lock from './plugins/lock'
@@ -43,6 +44,7 @@ export const plugins = [
   _html,
   _image,
   _import,
+  _json,
   _layerOrder,
   _layerPosition,
   _lock,
