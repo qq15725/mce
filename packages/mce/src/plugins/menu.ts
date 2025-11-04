@@ -29,7 +29,6 @@ export default definePlugin((editor, options) => {
   const {
     canUndo,
     canRedo,
-    copiedData,
     selection,
     textSelection,
     config,
@@ -75,7 +74,7 @@ export default definePlugin((editor, options) => {
         .map(v => ({ key: `copyAs:${v.name}` })),
     },
     { key: 'cut', disabled: !hasSelected.value },
-    { key: 'paste', disabled: !copiedData.value },
+    { key: 'paste' },
     { key: 'duplicate', disabled: !hasSelected.value },
     { key: 'delete', disabled: !hasSelected.value },
   ])
@@ -217,7 +216,7 @@ export default definePlugin((editor, options) => {
     }
     else {
       return [
-        editMenus1.value[2],
+        { key: 'paste' },
         { type: 'divider' },
         ...mainMenu.value,
         { type: 'divider' },

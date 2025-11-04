@@ -23,26 +23,6 @@ export function plugin() {
 
     return {
       name: 'mce:openxml',
-      exporters: [
-        {
-          name: 'pptx',
-          saveAs: true,
-          handle: async (options) => {
-            const doc = await to('json', options)
-
-            return new Blob([
-              (
-                await docToPptx({
-                  ...doc as any,
-                  fonts,
-                })
-              ) as any,
-            ], {
-              type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-            })
-          },
-        },
-      ],
       loaders: [
         {
           name: 'pptx',
@@ -98,6 +78,26 @@ export function plugin() {
             ;(idoc.meta as any).inEditorIs = 'Doc'
 
             return idoc
+          },
+        },
+      ],
+      exporters: [
+        {
+          name: 'pptx',
+          saveAs: true,
+          handle: async (options) => {
+            const doc = await to('json', options)
+
+            return new Blob([
+              (
+                await docToPptx({
+                  ...doc as any,
+                  fonts,
+                })
+              ) as any,
+            ], {
+              type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            })
           },
         },
       ],

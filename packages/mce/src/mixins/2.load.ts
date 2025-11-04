@@ -1,6 +1,7 @@
 import type { NormalizedElement } from 'modern-idoc'
 import type { Ref } from 'vue'
 import { useFileDialog } from '@vueuse/core'
+import { idGenerator } from 'modern-idoc'
 import { ref } from 'vue'
 import { defineMixin } from '../editor'
 
@@ -10,13 +11,14 @@ declare global {
       name: string
       accept?: string
       test: (source: any) => boolean | Promise<boolean>
-      load: (source: any) => Promise<NormalizedElement | undefined>
+      load: (source: any) => Promise<NormalizedElement | NormalizedElement[]>
     }
 
     interface Editor {
       loaders: Ref<Map<string, Loader>>
       registerLoader: (value: Loader | Loader[]) => void
       unregisterLoader: (name: string) => void
+      canLoad: (source: any) => Promise<boolean>
       load: <T = NormalizedElement>(source: any) => Promise<T>
       openFileDialog: (options?: { multiple?: boolean }) => Promise<File[]>
     }
@@ -43,13 +45,28 @@ export default defineMixin((editor) => {
     loaders.value.delete(key)
   }
 
+  const canLoad: Mce.Editor['canLoad'] = async (source) => {
+    for (const loader of loaders.value.values()) {
+      if (await loader.test(source)) {
+        return true
+      }
+    }
+    return false
+  }
+
   const load: Mce.Editor['load'] = async (source) => {
     state.value = 'loading'
     let result: any | undefined
     try {
       for (const loader of loaders.value.values()) {
         if (await loader.test(source)) {
-          result = await loader.load(source)
+          const res = await loader.load(source)
+          if (Array.isArray(res)) {
+            result = { id: idGenerator(), children: res }
+          }
+          else {
+            result = res
+          }
           break
         }
       }
@@ -57,10 +74,10 @@ export default defineMixin((editor) => {
     finally {
       state.value = undefined
     }
-    if (result === undefined) {
+    if (!result) {
       throw new Error(`Failed to load source "${source}"`)
     }
-    return result
+    return result!
   }
 
   const openFileDialog: Mce.Editor['openFileDialog'] = (options = {}) => {
@@ -90,6 +107,7 @@ export default defineMixin((editor) => {
     loaders,
     registerLoader,
     unregisterLoader,
+    canLoad,
     load,
     openFileDialog,
   })

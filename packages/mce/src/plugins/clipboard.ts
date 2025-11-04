@@ -1,9 +1,10 @@
 import type { Element } from 'modern-idoc'
 import type { Ref } from 'vue'
 import { cloneDeep } from 'lodash-es'
+import { IN_BROWSER } from 'modern-canvas'
 import { ref } from 'vue'
 import { definePlugin } from '../editor'
-import { createTextElement, SUPPORTS_CLIPBOARD } from '../utils'
+import { SUPPORTS_CLIPBOARD } from '../utils'
 
 declare global {
   namespace Mce {
@@ -31,6 +32,7 @@ export default definePlugin((editor) => {
   const {
     selection,
     exec,
+    canLoad,
     load,
     addElement,
   } = editor
@@ -46,11 +48,10 @@ export default definePlugin((editor) => {
     if (SUPPORTS_CLIPBOARD) {
       if (Array.isArray(data)) {
         const type = 'text/html'
+        const content = `<mce-clipboard>${JSON.stringify(data)}</mce-clipboard>`
         await navigator!.clipboard.write([
           new ClipboardItem({
-            [type]: new Blob([
-              `<mce-clipboard>${JSON.stringify(data)}</mce-clipboard>`,
-            ], { type }),
+            [type]: new Blob([content], { type }),
           }),
         ])
       }
@@ -73,81 +74,62 @@ export default definePlugin((editor) => {
     exec('delete')
   }
 
+  let lock = false
+  function pasteLock(): { lock: boolean, unlock: () => void } {
+    if (!lock) {
+      lock = true
+    }
+    return {
+      lock,
+      unlock: () => lock = false,
+    }
+  }
+
+  async function onPaste(source?: ClipboardItem[]): Promise<void> {
+    const items = source ?? await navigator.clipboard.read()
+    const elements: Element[] = []
+    for (const item of items) {
+      for (const type of item.types) {
+        const blob = await item.getType(type)
+        if (await canLoad(blob)) {
+          elements.push(await load(blob))
+        }
+        else {
+          console.warn(`Unhandled clipboard ${blob.type}`, await blob.text())
+        }
+      }
+    }
+    addElement(elements, {
+      inPointerPosition: true,
+      active: true,
+      regenId: true,
+    })
+  }
+
   async function paste(): Promise<void> {
-    if (SUPPORTS_CLIPBOARD) {
-      const items: ClipboardItems = await navigator!.clipboard.read()
-      const elements: Element[] = []
-      for (const item of items) {
-        for (const type of item.types) {
-          const blob = await item.getType(type)
-          if (blob.type.startsWith('image/')) {
-            elements.push(await load(blob))
-          }
-          else {
-            switch (blob.type) {
-              case 'text/plain':
-                elements.push(createTextElement(await blob.text()))
-                break
-              case 'text/html': {
-                const dom = new DOMParser().parseFromString(await blob.text(), 'text/html')
-
-                const mce = dom.querySelector('mce-clipboard')
-                if (mce) {
-                  const els = JSON.parse(mce.textContent) as any[]
-                  if (Array.isArray(els)) {
-                    elements.push(...els)
-                  }
-                }
-
-                const gd = dom.querySelector('span[data-app="editor-next"]')
-                if (gd) {
-                  const json = decodeURIComponent(
-                    new TextDecoder('utf-8', { fatal: false }).decode(
-                      new Uint8Array(
-                        atob(
-                          gd
-                            .getAttribute('data-clipboard')
-                            ?.replace(/\s+/g, '') ?? '',
-                        )
-                          .split('')
-                          .map(c => c.charCodeAt(0)),
-                      ),
-                    ),
-                  )
-
-                  const blob = new Blob([json], {
-                    type: 'application/json',
-                  })
-
-                  elements.push(await load(blob))
-                }
-                break
-              }
-              case 'application/json':
-                elements.push(await load(blob))
-                break
-              default:
-                console.warn(`Unhandled clipboard ${blob.type}`, await blob.text())
-                break
-            }
+    await new Promise(r => setTimeout(r, 0))
+    const { lock, unlock } = pasteLock()
+    if (!lock) {
+      try {
+        if (SUPPORTS_CLIPBOARD) {
+          await onPaste()
+        }
+        else if (copiedData.value) {
+          if (Array.isArray(copiedData.value)) {
+            addElement(copiedData.value?.map(el => cloneDeep(el)) ?? [], {
+              inPointerPosition: true,
+              active: true,
+              regenId: true,
+            })
           }
         }
       }
-
-      addElement(elements, {
-        inPointerPosition: true,
-        active: true,
-        regenId: true,
-      })
-    }
-    else if (copiedData.value) {
-      if (Array.isArray(copiedData.value)) {
-        addElement(copiedData.value?.map(el => cloneDeep(el)) ?? [], {
-          inPointerPosition: true,
-          active: true,
-          regenId: true,
-        })
+      finally {
+        unlock()
       }
+    }
+    else {
+      unlock()
     }
   }
 
@@ -171,8 +153,37 @@ export default definePlugin((editor) => {
     hotkeys: [
       { command: 'copy', key: 'CmdOrCtrl+c', editable: false },
       { command: 'cut', key: 'CmdOrCtrl+x', editable: false },
-      { command: 'paste', key: 'CmdOrCtrl+v', editable: false },
+      { command: 'paste', key: 'CmdOrCtrl+v', editable: false, preventDefault: false },
       { command: 'duplicate', key: 'CmdOrCtrl+d', editable: false },
     ],
+    setup: () => {
+      if (IN_BROWSER) {
+        window.addEventListener('paste', async (e) => {
+          const items = e.clipboardData?.items
+          if (items?.length) {
+            pasteLock()
+            const clipboardItems: ClipboardItem[] = []
+            for (const item of items) {
+              switch (item.kind) {
+                case 'file': {
+                  const file = item.getAsFile()
+                  if (file) {
+                    clipboardItems.push(
+                      new ClipboardItem({
+                        [file.type]: file,
+                      }),
+                    )
+                  }
+                  break
+                }
+              }
+            }
+            await onPaste(
+              clipboardItems.length ? clipboardItems : undefined,
+            )
+          }
+        })
+      }
+    },
   }
 })

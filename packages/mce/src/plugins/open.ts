@@ -15,26 +15,13 @@ declare global {
 export default definePlugin((editor) => {
   const {
     openFileDialog,
-    load,
-    setDoc,
+    loadDoc,
   } = editor
 
   async function open() {
     const [file] = await openFileDialog()
     if (file) {
-      const res = await load(file)
-      if (res) {
-        if (res.children) {
-          setDoc(res)
-        }
-        else {
-          setDoc({
-            children: [
-              res,
-            ],
-          })
-        }
-      }
+      await loadDoc(file)
     }
   }
 

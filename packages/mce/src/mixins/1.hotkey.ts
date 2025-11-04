@@ -28,6 +28,7 @@ declare global {
       editable?: boolean
       enabled?: boolean
       system?: boolean
+      preventDefault?: boolean
     }
 
     interface Hotkey extends HotkeyData {
@@ -211,7 +212,9 @@ export default defineMixin((editor) => {
               .join('+')
 
             if (eKey === tKey && (!hotkey?.when || hotkey.when(e))) {
-              e.preventDefault()
+              if (hotkey?.preventDefault !== false) {
+                e.preventDefault()
+              }
               if (hotkey?.handle) {
                 hotkey.handle(e)
               }

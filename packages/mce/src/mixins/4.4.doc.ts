@@ -1,5 +1,6 @@
 import type { Document } from 'modern-idoc'
 import { throttle } from 'lodash-es'
+import { idGenerator } from 'modern-idoc'
 import { defineMixin } from '../editor'
 import { Doc } from '../models'
 
@@ -70,7 +71,15 @@ export default defineMixin((editor, options) => {
   }
 
   const setDoc: Mce.Editor['setDoc'] = async (source) => {
-    const _doc = new Doc(typeof source === 'string' ? source : source.id)
+    let id: string | undefined
+    if (typeof source === 'string') {
+      id = source
+    }
+    else {
+      id = source?.id
+    }
+
+    const _doc = new Doc(id)
 
     state.value = 'loading'
 
@@ -89,7 +98,11 @@ export default defineMixin((editor, options) => {
   }
 
   const loadDoc: Mce.Editor['loadDoc'] = async (source) => {
-    const _doc = await setDoc(await load(source))
+    let loaded = await load(source)
+    if (loaded.meta?.inEditorIs !== 'Doc') {
+      loaded = { id: idGenerator(), children: [loaded] }
+    }
+    const _doc = await setDoc(loaded)
     emit('loadDoc', _doc, source)
     return _doc
   }

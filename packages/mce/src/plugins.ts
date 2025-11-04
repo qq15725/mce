@@ -11,6 +11,7 @@ import _frame from './plugins/frame'
 import _gif from './plugins/gif'
 import _group from './plugins/group'
 import _history from './plugins/history'
+import _html from './plugins/html'
 import _image from './plugins/image'
 import _import from './plugins/import'
 import _layerOrder from './plugins/layerOrder'
@@ -39,6 +40,7 @@ export const plugins = [
   _gif,
   _group,
   _history,
+  _html,
   _image,
   _import,
   _layerOrder,
