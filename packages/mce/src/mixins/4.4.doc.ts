@@ -1,6 +1,5 @@
-import type { Document } from 'modern-idoc'
+import type { Document, Element } from 'modern-idoc'
 import { throttle } from 'lodash-es'
-import { idGenerator } from 'modern-idoc'
 import { defineMixin } from '../editor'
 import { Doc } from '../models'
 
@@ -8,7 +7,7 @@ declare global {
   namespace Mce {
     interface Editor {
       getDoc: () => JsonData
-      setDoc: (doc: Document | string) => Promise<Doc>
+      setDoc: (doc: Document | Element[] | string) => Promise<Doc>
       loadDoc: (source: any) => Promise<Doc>
       clearDoc: () => void
     }
@@ -52,7 +51,7 @@ export default defineMixin((editor, options) => {
     return to('json')
   }
 
-  async function initDoc(doc: Doc, source?: Document | string) {
+  async function initDoc(doc: Doc, source?: Document | Element[] | string) {
     await doc.load(async () => {
       if (config.value.localDb) {
         try {
@@ -63,7 +62,12 @@ export default defineMixin((editor, options) => {
         }
       }
       if (source && typeof source !== 'string') {
-        doc.set(source)
+        if (Array.isArray(source)) {
+          doc.set({ children: source })
+        }
+        else {
+          doc.set(source)
+        }
       }
     })
     doc.on('update', throttle((update, origin) => emit('updateDoc', update, origin), 200))
@@ -75,8 +79,19 @@ export default defineMixin((editor, options) => {
     if (typeof source === 'string') {
       id = source
     }
-    else {
-      id = source?.id
+    else if (source) {
+      if (Array.isArray(source) && source.length === 1) {
+        source = source[0]
+      }
+
+      if (!Array.isArray(source)) {
+        if (source.meta?.inEditorIs === 'Doc') {
+          id = source.id
+        }
+        else {
+          source = [source]
+        }
+      }
     }
 
     const _doc = new Doc(id)
@@ -98,11 +113,7 @@ export default defineMixin((editor, options) => {
   }
 
   const loadDoc: Mce.Editor['loadDoc'] = async (source) => {
-    let loaded = await load(source)
-    if (loaded.meta?.inEditorIs !== 'Doc') {
-      loaded = { id: idGenerator(), children: [loaded] }
-    }
-    const _doc = await setDoc(loaded)
+    const _doc = await setDoc(await load(source))
     emit('loadDoc', _doc, source)
     return _doc
   }

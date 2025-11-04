@@ -99,7 +99,7 @@ export default definePlugin((editor, options) => {
       for (const type of item.types) {
         const blob = await item.getType(type)
         if (await canLoad(blob)) {
-          elements.push(await load(blob))
+          elements.push(...(await load(blob)))
         }
         else {
           console.warn(`Unhandled clipboard ${blob.type}`, await blob.text())

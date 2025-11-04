@@ -28,7 +28,7 @@ export default definePlugin((editor) => {
   const _import: Mce.Commands['import'] = async (options = {}) => {
     const files = await openFileDialog({ multiple: true })
 
-    return addElement(await Promise.all(files.map(file => load(file))), {
+    return addElement((await Promise.all(files.map(file => load(file)))).flat(), {
       ...options,
       sizeToFit: true,
       positionToFit: true,

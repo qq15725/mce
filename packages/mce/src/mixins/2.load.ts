@@ -1,7 +1,6 @@
 import type { NormalizedElement } from 'modern-idoc'
 import type { Ref } from 'vue'
 import { useFileDialog } from '@vueuse/core'
-import { idGenerator } from 'modern-idoc'
 import { ref } from 'vue'
 import { defineMixin } from '../editor'
 
@@ -19,7 +18,7 @@ declare global {
       registerLoader: (value: Loader | Loader[]) => void
       unregisterLoader: (name: string) => void
       canLoad: (source: any) => Promise<boolean>
-      load: <T = NormalizedElement>(source: any) => Promise<T>
+      load: <T = NormalizedElement>(source: any) => Promise<T[]>
       openFileDialog: (options?: { multiple?: boolean }) => Promise<File[]>
     }
   }
@@ -56,16 +55,16 @@ export default defineMixin((editor) => {
 
   const load: Mce.Editor['load'] = async (source) => {
     state.value = 'loading'
-    let result: any | undefined
+    const items: any[] = []
     try {
       for (const loader of loaders.value.values()) {
         if (await loader.test(source)) {
           const res = await loader.load(source)
           if (Array.isArray(res)) {
-            result = { id: idGenerator(), children: res }
+            items.push(...res)
           }
           else {
-            result = res
+            items.push(res)
           }
           break
         }
@@ -74,10 +73,10 @@ export default defineMixin((editor) => {
     finally {
       state.value = undefined
     }
-    if (!result) {
+    if (!items.length) {
       throw new Error(`Failed to load source "${source}"`)
     }
-    return result!
+    return items
   }
 
   const openFileDialog: Mce.Editor['openFileDialog'] = (options = {}) => {
