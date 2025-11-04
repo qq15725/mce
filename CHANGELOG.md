@@ -1,3 +1,20 @@
+## [0.11.3](https://github.com/qq15725/mce/compare/v0.11.2...v0.11.3) (2025-11-04)
+
+
+### Bug Fixes
+
+* bug ([3b5f476](https://github.com/qq15725/mce/commit/3b5f476f3fc6a1c833262e5f94f510a5981e2f17))
+
+
+### Features
+
+* change load to array ([65d1e0e](https://github.com/qq15725/mce/commit/65d1e0ea6950bd75f31de9a71d020b5e721f0fde))
+* drag and drop import ([67784b9](https://github.com/qq15725/mce/commit/67784b96fe7a3d9c290c442d32a86b437c201f27))
+* drag and drop import ([ddd6995](https://github.com/qq15725/mce/commit/ddd6995668f6077a0ac373da2833ab3c033e5a3b))
+* paste source ([78046c0](https://github.com/qq15725/mce/commit/78046c0a4138925d76abeea9dd564c57a06feeb6))
+
+
+
 ## [0.11.2](https://github.com/qq15725/mce/compare/v0.11.1...v0.11.2) (2025-11-04)
 
 
