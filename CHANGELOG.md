@@ -1,3 +1,12 @@
+## [0.11.4](https://github.com/qq15725/mce/compare/v0.11.3...v0.11.4) (2025-11-04)
+
+
+### Features
+
+* json plugin ([49f04ff](https://github.com/qq15725/mce/commit/49f04ffc85de3094e3546c0806a23c0379550ab1))
+
+
+
 ## [0.11.3](https://github.com/qq15725/mce/compare/v0.11.2...v0.11.3) (2025-11-04)
 
 
