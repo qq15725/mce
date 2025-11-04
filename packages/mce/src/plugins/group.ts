@@ -29,7 +29,7 @@ export default definePlugin((editor) => {
     if (elements.length === 0) {
       return
     }
-    const aabb = getAabb(elements, 'frame')
+    const aabb = getAabb(elements, 'parent')
     const children = elements.map((v) => {
       const cloned = v.toJSON()
       cloned.style.left = (cloned.style.left ?? 0) - aabb.left

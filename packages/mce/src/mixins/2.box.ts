@@ -11,9 +11,9 @@ declare global {
   namespace Mce {
     interface Editor {
       obbToFit: (element: Element2D) => void
-      getObb: (node: Node | Node[] | undefined, inTarget?: 'drawboard' | 'frame') => OrientedBoundingBox
+      getObb: (node: Node | Node[] | undefined, inTarget?: 'drawboard' | 'frame' | 'parent') => OrientedBoundingBox
       getObbInDrawboard: (node?: Node | Node[]) => OrientedBoundingBox
-      getAabb: (node: Node | Node[] | undefined, inTarget?: 'drawboard' | 'frame') => AxisAlignedBoundingBox
+      getAabb: (node: Node | Node[] | undefined, inTarget?: 'drawboard' | 'frame' | 'parent') => AxisAlignedBoundingBox
       getAabbInDrawboard: (node?: Node | Node[]) => AxisAlignedBoundingBox
       aabbToDrawboardAabb: (aabb: AxisAlignedBoundingBox) => AxisAlignedBoundingBox
       rootAabb: ComputedRef<AxisAlignedBoundingBox>
@@ -100,7 +100,7 @@ export default defineMixin((editor) => {
 
   function getObb(
     node: Node | Node[] | undefined,
-    inTarget?: 'drawboard' | 'frame',
+    inTarget?: 'drawboard' | 'frame' | 'parent',
   ): OrientedBoundingBox {
     let obb
     if (Array.isArray(node) && node.length > 0) {
@@ -147,6 +147,17 @@ export default defineMixin((editor) => {
         }
       }
     }
+    else if (inTarget === 'parent') {
+      const first = Array.isArray(node) ? node[0] : node
+      if (first instanceof Element2D) {
+        const parent = first.findAncestor(el => el instanceof Element2D)
+        if (parent) {
+          const parentBox = getAabb(parent)
+          obb.left -= parentBox.left
+          obb.top -= parentBox.top
+        }
+      }
+    }
     return obb
   }
 
@@ -156,7 +167,7 @@ export default defineMixin((editor) => {
 
   function getAabb(
     node: Node | Node[] | undefined,
-    inTarget?: 'drawboard',
+    inTarget?: 'drawboard' | 'frame' | 'parent',
   ): AxisAlignedBoundingBox {
     let aabb: AxisAlignedBoundingBox
     if (Array.isArray(node) && node.length > 0) {
@@ -212,6 +223,17 @@ export default defineMixin((editor) => {
         if (frame) {
           aabb.left -= frame.style.left
           aabb.top -= frame.style.top
+        }
+      }
+    }
+    else if (inTarget === 'parent') {
+      const first = Array.isArray(node) ? node[0] : node
+      if (first instanceof Element2D) {
+        const parent = first.findAncestor(el => el instanceof Element2D)
+        if (parent) {
+          const parentBox = getAabb(parent)
+          aabb.left -= parentBox.left
+          aabb.top -= parentBox.top
         }
       }
     }

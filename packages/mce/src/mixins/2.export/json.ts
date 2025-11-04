@@ -65,7 +65,9 @@ export default defineMixin((editor) => {
         }
       }
 
-      const box = getAabb(elements, 'frame')
+      const box = getAabb(elements, 'parent')
+
+      console.log(box)
 
       return {
         id,

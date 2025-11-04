@@ -1,5 +1,5 @@
+import type { Element2D } from 'modern-canvas'
 import type { Ref } from 'vue'
-import { Element2D } from 'modern-canvas'
 import { ref, watch } from 'vue'
 import { defineMixin } from '../editor'
 
@@ -8,7 +8,6 @@ declare global {
     interface Editor {
       selection: Ref<Element2D[]>
       textSelection: Ref<any[] | undefined>
-      getAncestor: (element?: Element2D) => Element2D | undefined
       hoverElement: Ref<Element2D | undefined>
     }
   }
@@ -34,17 +33,12 @@ export default defineMixin((editor) => {
   //   emit('setActiveElement', element)
   // }
 
-  function getAncestor(element?: Element2D): Element2D | undefined {
-    return element?.findAncestor<Element2D>(node => node instanceof Element2D)
-  }
-
   const hoverElement = ref<Element2D>()
   const textSelection = ref<any[]>()
 
   Object.assign(editor, {
     selection,
     textSelection,
-    getAncestor,
     hoverElement,
   })
 

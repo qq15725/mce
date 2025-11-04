@@ -28,7 +28,6 @@ declare global {
 export default defineMixin((editor) => {
   const {
     root,
-    getAncestor,
   } = editor
 
   const frames = computed(() => root.value.children.filter(isFrame) ?? [])
@@ -46,8 +45,7 @@ export default defineMixin((editor) => {
   }
 
   function getAncestorFrame(element?: Element2D): Element2D | undefined {
-    const ancestor = getAncestor(element)
-    return ancestor && isFrame(ancestor) ? ancestor : undefined
+    return element?.findAncestor<Element2D>(node => isFrame(node))
   }
 
   Object.assign(editor, {
