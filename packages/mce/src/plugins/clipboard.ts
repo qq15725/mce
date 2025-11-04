@@ -1,7 +1,6 @@
 import type { Element } from 'modern-idoc'
 import type { Ref } from 'vue'
 import { cloneDeep } from 'lodash-es'
-import { IN_BROWSER } from 'modern-canvas'
 import { ref } from 'vue'
 import { definePlugin } from '../editor'
 import { SUPPORTS_CLIPBOARD } from '../utils'
@@ -25,10 +24,14 @@ declare global {
     interface Editor {
       copiedData: Ref<any | undefined>
     }
+
+    interface Options {
+      clipboard?: boolean
+    }
   }
 }
 
-export default definePlugin((editor) => {
+export default definePlugin((editor, options) => {
   const {
     selection,
     exec,
@@ -39,13 +42,15 @@ export default definePlugin((editor) => {
 
   const copiedData = ref<any>()
 
+  const useClipboard = options.clipboard !== false && SUPPORTS_CLIPBOARD
+
   const copy: Mce.Commands['copy'] = async (data) => {
     if (data === undefined) {
       data = selection.value.length === 1
         ? [selection.value[0].toJSON()]
         : selection.value.map(v => v.toJSON())
     }
-    if (SUPPORTS_CLIPBOARD) {
+    if (useClipboard) {
       if (Array.isArray(data)) {
         const type = 'text/html'
         const content = `<mce-clipboard>${JSON.stringify(data)}</mce-clipboard>`
@@ -111,7 +116,7 @@ export default definePlugin((editor) => {
     const { lock, unlock } = pasteLock()
     if (!lock) {
       try {
-        if (SUPPORTS_CLIPBOARD) {
+        if (useClipboard) {
           await onPaste()
         }
         else if (copiedData.value) {
@@ -157,7 +162,7 @@ export default definePlugin((editor) => {
       { command: 'duplicate', key: 'CmdOrCtrl+d', editable: false },
     ],
     setup: () => {
-      if (IN_BROWSER) {
+      if (useClipboard) {
         window.addEventListener('paste', async (e) => {
           const items = e.clipboardData?.items
           if (items?.length) {
