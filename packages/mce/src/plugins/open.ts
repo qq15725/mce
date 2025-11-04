@@ -28,18 +28,9 @@ export default definePlugin((editor) => {
           setDoc(res)
         }
         else {
-          res.style ??= {}
-          res.style!.width ??= 1920
-          res.style!.height ??= 1080
           setDoc({
-            name: 'doc',
-            style: { width: 1920, height: 1080 },
             children: [
-              {
-                name: 'page',
-                style: { width: 1920, height: 1080 },
-                children: [res],
-              },
+              res,
             ],
           })
         }

@@ -10,8 +10,8 @@ declare global {
       style: {
         width: number
         height: number
-        scaleX: number
-        scaleY: number
+        transformOrigin: string
+        transform: string
       }
       children: NormalizedElement[]
       meta: {
@@ -44,7 +44,7 @@ export default defineMixin((editor) => {
     handle: (options) => {
       const {
         selected = false,
-        scale,
+        scale = 1,
       } = options
 
       let id = idGenerator()
@@ -70,10 +70,10 @@ export default defineMixin((editor) => {
       return {
         id,
         style: {
-          width: box.width,
-          height: box.height,
-          scaleX: scale,
-          scaleY: scale,
+          width: box.width * scale,
+          height: box.height * scale,
+          transformOrigin: 'left top',
+          transform: `scale(${scale})`,
         },
         children: elements.map((el) => {
           const json = el.toJSON()
@@ -89,7 +89,7 @@ export default defineMixin((editor) => {
         }),
         meta: {
           inPptIs: 'Pptx',
-          inCanvasIs: 'Node2D',
+          inCanvasIs: 'Element2D',
           ...getTimeRange(elements),
         },
       } as any

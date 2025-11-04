@@ -59,8 +59,8 @@ export default definePlugin((editor) => {
         const canvas = await render({
           data: doc,
           fonts,
-          width: (doc as any).style!.width,
-          height: (doc as any).style!.height,
+          width: doc.style.width,
+          height: doc.style.height,
         })
 
         return await new Promise<Blob>((resolve) => {
