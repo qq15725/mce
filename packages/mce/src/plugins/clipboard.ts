@@ -48,9 +48,12 @@ export default definePlugin((editor, options) => {
 
   const copy: Mce.Commands['copy'] = async (data) => {
     if (data === undefined) {
-      data = selection.value.length === 1
-        ? [selection.value[0].toJSON()]
-        : selection.value.map(v => v.toJSON())
+      data = selection.value.map((v) => {
+        const json = v.toJSON()
+        delete json.style.left
+        delete json.style.top
+        return json
+      })
     }
     if (useClipboard) {
       if (Array.isArray(data)) {

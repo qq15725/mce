@@ -45,7 +45,6 @@ npm i mce
       svg(),
     ],
     theme: 'system',
-    language: 'en',
     viewMode: 'edgeless',
     clipboard: true,
     checkerboard: true,

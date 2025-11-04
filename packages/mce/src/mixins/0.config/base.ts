@@ -8,14 +8,12 @@ declare global {
     }
 
     type Theme = 'system' | 'light' | 'dark'
-    type Language = string
     type ViewMode = 'frame' | 'edgeless'
     type TypographyStrategy = 'autoHeight' | 'autoWidth' | 'fixedWidthHeight' | 'autoFontSize'
     type HandleShape = 'rect' | 'circle'
 
     interface Config {
       theme: Theme
-      language: Language
       viewMode: ViewMode
       checkerboard: boolean
       pixelGrid: boolean
@@ -42,7 +40,6 @@ export default defineMixin((editor, options) => {
 
   // UI
   registerConfig('theme', 'system')
-  registerConfig('language', 'en')
   // Editor
   registerConfig('viewMode', 'edgeless')
   registerConfig('checkerboard', false)

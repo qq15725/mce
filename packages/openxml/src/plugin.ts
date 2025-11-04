@@ -14,7 +14,6 @@ export function plugin() {
     const {
       log,
       upload,
-      config,
       to,
       fonts,
     } = editor
@@ -43,7 +42,7 @@ export function plugin() {
           load: async (source: File | Blob) => {
             const presetShapeDefinitions = await import('modern-openxml/presetShapeDefinitions').then(rep => rep.default)
 
-            const idoc = await pptxToDoc(await source.arrayBuffer(), {
+            const doc = await pptxToDoc(await source.arrayBuffer(), {
               presetShapeDefinitions,
               upload: async (input, meta) => {
                 const filename = meta.image
@@ -66,18 +65,18 @@ export function plugin() {
               },
             })
 
-            idoc.children?.forEach((child, index) => {
+            doc.children?.forEach((child, index) => {
               child.name = `Slide ${index + 1}`
               child.style ??= {}
               child.style.left = 0
-              child.style.top = Number(child.style.top) + index * config.value.frameGap
+              child.style.top = Number(child.style.top)
               ;(child.meta as any).inEditorIs = 'Frame'
             })
 
-            idoc.name = (source as any).name
-            ;(idoc.meta as any).inEditorIs = 'Doc'
+            doc.name = (source as any).name
+            ;(doc.meta as any).inEditorIs = 'Doc'
 
-            return idoc
+            return doc
           },
         },
       ],

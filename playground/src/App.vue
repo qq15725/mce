@@ -19,7 +19,6 @@ const editor = new Editor({
     svg(),
   ],
   theme: 'system',
-  language: 'en',
   viewMode: 'edgeless',
   checkerboard: true,
   pixelGrid: true,
