@@ -1,7 +1,7 @@
 import type { Element } from 'modern-idoc'
 import type { Ref } from 'vue'
 import { cloneDeep } from 'lodash-es'
-import { ref } from 'vue'
+import { onBeforeUnmount, ref } from 'vue'
 import { definePlugin } from '../editor'
 import { SUPPORTS_CLIPBOARD } from '../utils'
 
@@ -17,7 +17,7 @@ declare global {
     interface Commands {
       copy: (data?: any) => Promise<void>
       cut: () => Promise<void>
-      paste: () => Promise<void>
+      paste: (items?: ClipboardItem[]) => Promise<void>
       duplicate: () => Promise<void>
     }
 
@@ -90,7 +90,7 @@ export default definePlugin((editor, options) => {
     }
   }
 
-  async function onPaste(source?: ClipboardItem[]): Promise<void> {
+  async function _paste(source?: ClipboardItem[]): Promise<void> {
     const items = source ?? await navigator.clipboard.read()
     const elements: Element[] = []
     for (const item of items) {
@@ -111,13 +111,16 @@ export default definePlugin((editor, options) => {
     })
   }
 
-  async function paste(): Promise<void> {
+  async function paste(source?: ClipboardItem[]): Promise<void> {
+    if (source) {
+      return await _paste(source)
+    }
     await new Promise(r => setTimeout(r, 0))
     const { lock, unlock } = pasteLock()
     if (!lock) {
       try {
         if (useClipboard) {
-          await onPaste()
+          await _paste()
         }
         else if (copiedData.value) {
           if (Array.isArray(copiedData.value)) {
@@ -163,7 +166,7 @@ export default definePlugin((editor, options) => {
     ],
     setup: () => {
       if (useClipboard) {
-        window.addEventListener('paste', async (e) => {
+        async function onPaste(e: ClipboardEvent) {
           const items = e.clipboardData?.items
           if (items?.length) {
             pasteLock()
@@ -183,11 +186,14 @@ export default definePlugin((editor, options) => {
                 }
               }
             }
-            await onPaste(
+            await _paste(
               clipboardItems.length ? clipboardItems : undefined,
             )
           }
-        })
+        }
+
+        window.addEventListener('paste', onPaste)
+        onBeforeUnmount(() => window.removeEventListener('paste', onPaste))
       }
     },
   }

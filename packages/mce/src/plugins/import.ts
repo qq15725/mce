@@ -1,4 +1,5 @@
 import type { Element2D } from 'modern-canvas'
+import { onBeforeUnmount, onMounted } from 'vue'
 import { definePlugin } from '../editor'
 
 declare global {
@@ -42,5 +43,53 @@ export default definePlugin((editor) => {
     hotkeys: [
       { command: 'import', key: 'CmdOrCtrl+i' },
     ],
+    setup: () => {
+      const {
+        drawboardDom,
+        exec,
+      } = editor
+
+      function onDragover(e: DragEvent) {
+        e.preventDefault()
+        if (e.dataTransfer) {
+          e.dataTransfer.dropEffect = 'copy'
+        }
+      }
+
+      async function onDrop(e: DragEvent) {
+        e.preventDefault()
+        const items = e.dataTransfer?.items
+        if (items?.length) {
+          const clipboardItems: ClipboardItem[] = []
+          for (const item of items) {
+            switch (item.kind) {
+              case 'file': {
+                const file = item.getAsFile()
+                if (file) {
+                  clipboardItems.push(
+                    new ClipboardItem({
+                      [file.type]: file,
+                    }),
+                  )
+                }
+                break
+              }
+            }
+          }
+          if (clipboardItems.length) {
+            await exec('paste', clipboardItems)
+          }
+        }
+      }
+
+      onMounted(() => {
+        drawboardDom.value?.addEventListener('dragover', onDragover)
+        drawboardDom.value?.addEventListener('drop', onDrop)
+      })
+      onBeforeUnmount(() => {
+        drawboardDom.value?.removeEventListener('dragover', onDragover)
+        drawboardDom.value?.removeEventListener('drop', onDrop)
+      })
+    },
   }
 })
