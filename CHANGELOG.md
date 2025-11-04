@@ -1,3 +1,19 @@
+## [0.11.2](https://github.com/qq15725/mce/compare/v0.11.1...v0.11.2) (2025-11-04)
+
+
+### Bug Fixes
+
+* new ([cf4da4c](https://github.com/qq15725/mce/commit/cf4da4ccbf26bcd531292e3c557fb12156934ca6))
+
+
+### Features
+
+* add clipboard option ([076bff1](https://github.com/qq15725/mce/commit/076bff1ae982c4d2631109d2a45c93d24d6c5549))
+* clipboard ([ef16cdd](https://github.com/qq15725/mce/commit/ef16cdd20bfc107f334a3b0670216cd65ec400d1))
+* getAabb in parent ([270024e](https://github.com/qq15725/mce/commit/270024edfc40e0f638a2b77c5b30dfb33687f8e1))
+
+
+
 ## [0.11.1](https://github.com/qq15725/mce/compare/v0.11.0...v0.11.1) (2025-11-04)
 
 
