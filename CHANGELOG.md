@@ -1,3 +1,18 @@
+## [0.11.1](https://github.com/qq15725/mce/compare/v0.11.0...v0.11.1) (2025-11-04)
+
+
+### Bug Fixes
+
+* scale ([75a13dc](https://github.com/qq15725/mce/commit/75a13dc35e7108bd1b3aff6b086b9f520c782f27))
+
+
+### Features
+
+* add customUpload / customContextMenu options ([78aa868](https://github.com/qq15725/mce/commit/78aa868d709c0da385b377fb87cc64c9167ebb96))
+* up svg dep / fix Exporters type ([4eb6ae9](https://github.com/qq15725/mce/commit/4eb6ae94d635ba91949848d087613a8ac1efb6a5))
+
+
+
 # [0.11.0](https://github.com/qq15725/mce/compare/v0.3.0...v0.11.0) (2025-11-03)
 
 
