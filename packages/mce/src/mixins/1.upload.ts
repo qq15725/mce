@@ -9,15 +9,15 @@ declare global {
     }
 
     interface Options {
-      handleUpload?: Upload
+      customUpload?: Upload
     }
   }
 }
 
 export default defineMixin((editor, options) => {
   const upload: Mce.Upload = async (file) => {
-    if (options.handleUpload) {
-      return await options.handleUpload(file)
+    if (options.customUpload) {
+      return await options.customUpload(file)
     }
 
     return URL.createObjectURL(file)

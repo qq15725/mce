@@ -4,14 +4,28 @@ import { definePlugin } from '../editor'
 
 declare global {
   namespace Mce {
+    interface MenuItem {
+      key: string
+      disabled?: boolean
+      checked?: boolean
+      children: MenuItem[]
+    }
+
     interface Editor {
-      mainMenu: ComputedRef<any[]>
-      contextMenu: ComputedRef<any[]>
+      mainMenu: ComputedRef<MenuItem[]>
+      contextMenu: ComputedRef<MenuItem[]>
+    }
+
+    interface Options {
+      customContextMenu?: (
+        defaultMenu: MenuItem[],
+        editor: Editor,
+      ) => MenuItem[]
     }
   }
 }
 
-export default definePlugin((editor) => {
+export default definePlugin((editor, options) => {
   const {
     canUndo,
     canRedo,
@@ -21,6 +35,10 @@ export default definePlugin((editor) => {
     config,
     exporters,
   } = editor
+
+  const {
+    customContextMenu,
+  } = options
 
   const hasSelected = computed(() => selection.value.length > 0)
 
@@ -175,7 +193,7 @@ export default definePlugin((editor) => {
     layerPositionMenu.value,
   ])
 
-  const contextMenu = computed(() => {
+  const _contextMenu = computed(() => {
     if (selection.value.length > 0) {
       if (textSelection.value) {
         return [
@@ -206,6 +224,11 @@ export default definePlugin((editor) => {
         exportMenu.value,
       ]
     }
+  })
+
+  const contextMenu = computed(() => {
+    const menu = _contextMenu.value as Mce.MenuItem[]
+    return customContextMenu?.(menu, editor) ?? menu
   })
 
   Object.assign(editor, {
