@@ -121,18 +121,6 @@ const editor = new Editor({
   },
 })
 
-// editor.on('setDoc', () => {
-//   editor.load('http://localhost:5173/example.jpg').then((el) => {
-//     editor.addElement(el, {
-//       position: { x: 500, y: 100 },
-//     })
-//   })
-// })
-
-editor.on('ready', () => {
-  console.log('ready')
-})
-
 window.editor = editor
 window.doc = editor.doc
 

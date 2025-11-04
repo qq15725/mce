@@ -113,6 +113,7 @@ export default defineMixin((editor) => {
     let top = rootAabb.value.top
     const left = rootAabb.value.left + rootAabb.value.width + config.value.frameGap
     const isArray = Array.isArray(value)
+    let offsetX = 0
 
     const elements = doc.value.transact(() => {
       const values = isArray ? value : [value]
@@ -153,6 +154,9 @@ export default defineMixin((editor) => {
             top += el.style.height + config.value.frameGap
           }
         }
+
+        el.style.left += offsetX
+        offsetX += el.style.width
 
         return el
       })
