@@ -47,6 +47,7 @@ npm i mce
     theme: 'system',
     language: 'en',
     viewMode: 'edgeless',
+    clipboard: true,
     checkerboard: true,
     pixelGrid: true,
     camera: true,
@@ -60,6 +61,7 @@ npm i mce
     zoomToFitOffset: { left: 0, top: 0, right: 0, bottom: 0 },
     localDb: false,
     customUpload: async (blob) => URL.createObjectURL(blob),
+    customContextMenu: (menu) => menu,
     defaultFont: { family: 'SourceHanSansCN-Normal', src: '/SourceHanSansCN-Normal.woff' },
     doc: {
       children: [
