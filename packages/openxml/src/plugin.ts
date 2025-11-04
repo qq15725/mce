@@ -4,7 +4,7 @@ import { docToPptx, pptxToDoc } from 'modern-openxml'
 declare global {
   namespace Mce {
     interface Exporters {
-      pptx: Blob
+      pptx: Promise<Blob>
     }
   }
 }

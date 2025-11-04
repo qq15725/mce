@@ -5,7 +5,7 @@ import mp4 from '@mce/mp4'
 import openxml from '@mce/openxml'
 import pdf from '@mce/pdf'
 import svg from '@mce/svg'
-import { Editor, EditorLayout, EditorLayoutItem } from 'mce'
+import { Editor, EditorLayout } from 'mce'
 import gifWorkerUrl from 'modern-gif/worker?url'
 import 'mce/styles'
 
@@ -44,6 +44,7 @@ const editor = new Editor({
         'cancel': '取消',
         'constrainToAxis': '约束到轴',
         'loading': '加载中...',
+        'exporting': '导出中...',
         'selecting': '选择中...',
         'selectObject': '选择对象',
         'commitChanges': '提交修改',
@@ -115,7 +116,6 @@ const editor = new Editor({
         'alignTop': '贴顶部',
         'alignVerticalCenter': '垂直居中',
         'alignBottom': '贴底部',
-        'exporting': '导出中...',
       },
     },
   },
@@ -151,9 +151,6 @@ if (tid || bid) {
       <template #transformer="{ box }" />
       <template #floatbar />
       <template #drawboard />
-      <EditorLayoutItem model-value position="top" :size="56" />
-      <EditorLayoutItem model-value position="left" :size="240" />
-      <EditorLayoutItem model-value position="right" :size="260" />
     </EditorLayout>
   </div>
 </template>

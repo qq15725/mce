@@ -15,9 +15,9 @@ declare global {
     }
 
     interface Exporters {
-      png: Blob
-      jpeg: Blob
-      webp: Blob
+      png: Promise<Blob>
+      jpeg: Promise<Blob>
+      webp: Promise<Blob>
     }
   }
 }

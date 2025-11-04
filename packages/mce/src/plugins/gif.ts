@@ -8,7 +8,7 @@ declare global {
     }
 
     interface Exporters {
-      gif: Blob
+      gif: Promise<Blob>
     }
   }
 }

@@ -4,7 +4,7 @@ import { Pdf } from 'modern-pdf'
 declare global {
   namespace Mce {
     interface Exporters {
-      pdf: Blob
+      pdf: Promise<Blob>
     }
   }
 }

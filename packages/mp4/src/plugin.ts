@@ -5,7 +5,7 @@ import { MP4Encoder } from 'modern-mp4'
 declare global {
   namespace Mce {
     interface Exporters {
-      svg: Blob
+      mp4: Promise<Blob>
     }
   }
 }

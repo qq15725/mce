@@ -52,7 +52,7 @@
     "lint": "eslint src"
   },
   "dependencies": {
-    "modern-idoc-svg": "^0.1.0"
+    "modern-idoc-svg": "^0.2.0"
   },
   "devDependencies": {
     "mce": "workspace:*"
