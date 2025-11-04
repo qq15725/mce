@@ -1,3 +1,4 @@
+import { idGenerator } from 'modern-idoc'
 import { definePlugin } from '../editor'
 
 declare global {
@@ -18,7 +19,10 @@ export default definePlugin((editor) => {
   } = editor
 
   function _new() {
-    setDoc([])
+    setDoc({
+      id: idGenerator(),
+      children: [],
+    })
   }
 
   return {
