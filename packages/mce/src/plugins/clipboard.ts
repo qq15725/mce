@@ -3,7 +3,7 @@ import type { Ref } from 'vue'
 import { cloneDeep } from 'lodash-es'
 import { onBeforeUnmount, ref } from 'vue'
 import { definePlugin } from '../editor'
-import { SUPPORTS_CLIPBOARD } from '../utils'
+import { isInputEvent, SUPPORTS_CLIPBOARD } from '../utils'
 
 declare global {
   namespace Mce {
@@ -189,6 +189,9 @@ export default definePlugin((editor, options) => {
     setup: () => {
       if (useClipboard) {
         async function onPaste(e: ClipboardEvent) {
+          if (isInputEvent(e)) {
+            return
+          }
           if (e.clipboardData) {
             await paste(e.clipboardData)
           }

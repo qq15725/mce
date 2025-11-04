@@ -92,3 +92,19 @@ export function findChildrenWithProvide(
 
   return []
 }
+
+export function isInputEvent(event?: Event): boolean {
+  if (!event)
+    return false
+
+  let path: EventTarget[] = (event as any).path
+  if (!path && event.composedPath)
+    path = event.composedPath()
+
+  if (!path)
+    return false
+
+  return path?.some(
+    (el: any) => ['INPUT', 'TEXTAREA', 'SELECT'].includes(el?.tagName) || el?.contentEditable === 'true',
+  )
+}

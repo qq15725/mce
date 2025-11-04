@@ -2,7 +2,7 @@ import type { Ref, WritableComputedRef } from 'vue'
 import { isClient, useEventListener } from '@vueuse/core'
 import { ref } from 'vue'
 import { defineMixin } from '../editor'
-import { isMac, isWindows } from '../utils'
+import { isInputEvent, isMac, isWindows } from '../utils'
 
 declare global {
   namespace Mce {
@@ -49,19 +49,6 @@ declare global {
 const defaultHotkeys: Mce.HotkeyData[] = [
   { command: 'cancel', key: 'Esc', editable: false },
 ]
-
-function isInputEvent(event?: KeyboardEvent): boolean {
-  if (!event)
-    return false
-  let path: EventTarget[] = (event as any).path
-  if (!path && event.composedPath)
-    path = event.composedPath()
-  if (!path)
-    return false
-  return path?.some(
-    (el: any) => ['INPUT', 'TEXTAREA', 'SELECT'].includes(el?.tagName) || el?.contentEditable === 'true',
-  )
-}
 
 export default defineMixin((editor) => {
   const {

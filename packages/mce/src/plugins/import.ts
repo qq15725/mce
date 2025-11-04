@@ -45,12 +45,14 @@ export default definePlugin((editor) => {
     ],
     setup: () => {
       const {
+        drawboardPointer,
         drawboardDom,
         exec,
       } = editor
 
       function onDragover(e: DragEvent) {
         e.preventDefault()
+        drawboardPointer.value = { x: e.clientX, y: e.clientY }
         if (e.dataTransfer) {
           e.dataTransfer.dropEffect = 'copy'
         }
