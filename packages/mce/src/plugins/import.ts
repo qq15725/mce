@@ -58,27 +58,8 @@ export default definePlugin((editor) => {
 
       async function onDrop(e: DragEvent) {
         e.preventDefault()
-        const items = e.dataTransfer?.items
-        if (items?.length) {
-          const clipboardItems: ClipboardItem[] = []
-          for (const item of items) {
-            switch (item.kind) {
-              case 'file': {
-                const file = item.getAsFile()
-                if (file) {
-                  clipboardItems.push(
-                    new ClipboardItem({
-                      [file.type]: file,
-                    }),
-                  )
-                }
-                break
-              }
-            }
-          }
-          if (clipboardItems.length) {
-            await exec('paste', clipboardItems)
-          }
+        if (e.dataTransfer) {
+          await exec('paste', e.dataTransfer)
         }
       }
 

@@ -14,10 +14,12 @@ declare global {
       duplicate: [event: KeyboardEvent]
     }
 
+    type PasteSource = DataTransfer | ClipboardItem[]
+
     interface Commands {
       copy: (data?: any) => Promise<void>
       cut: () => Promise<void>
-      paste: (items?: ClipboardItem[]) => Promise<void>
+      paste: (source?: PasteSource) => Promise<void>
       duplicate: () => Promise<void>
     }
 
@@ -74,24 +76,21 @@ export default definePlugin((editor, options) => {
     }
   }
 
-  async function cut(): Promise<void> {
+  const cut: Mce.Commands['cut'] = async () => {
     await copy()
     exec('delete')
   }
 
-  let lock = false
-  function pasteLock(): { lock: boolean, unlock: () => void } {
-    if (!lock) {
-      lock = true
-    }
+  let locked = false
+  function getPasteLock(): { locked: boolean, lock: () => void, unlock: () => void } {
     return {
-      lock,
-      unlock: () => lock = false,
+      locked,
+      lock: () => locked = true,
+      unlock: () => locked = false,
     }
   }
 
-  async function _paste(source?: ClipboardItem[]): Promise<void> {
-    const items = source ?? await navigator.clipboard.read()
+  async function _paste(items: ClipboardItem[]): Promise<void> {
     const elements: Element[] = []
     for (const item of items) {
       for (const type of item.types) {
@@ -104,23 +103,49 @@ export default definePlugin((editor, options) => {
         }
       }
     }
-    addElement(elements, {
-      inPointerPosition: true,
-      active: true,
-      regenId: true,
-    })
+    if (elements.length) {
+      addElement(elements, {
+        inPointerPosition: true,
+        active: true,
+        regenId: true,
+      })
+    }
   }
 
-  async function paste(source?: ClipboardItem[]): Promise<void> {
+  const paste: Mce.Commands['paste'] = async (source) => {
     if (source) {
-      return await _paste(source)
+      const { unlock, lock } = getPasteLock()
+      lock()
+      let items: ClipboardItem[] = []
+      if (source instanceof DataTransfer) {
+        for (const item of source.items) {
+          switch (item.kind) {
+            case 'file': {
+              const file = item.getAsFile()
+              if (file) {
+                items.push(new ClipboardItem({ [file.type]: file }))
+              }
+              break
+            }
+          }
+        }
+      }
+      else {
+        items = source
+      }
+      if (items.length) {
+        await _paste(items)
+      }
+      else {
+        unlock()
+      }
     }
-    await new Promise(r => setTimeout(r, 0))
-    const { lock, unlock } = pasteLock()
-    if (!lock) {
-      try {
+    else {
+      await new Promise(r => setTimeout(r, 100))
+      const { locked, unlock } = getPasteLock()
+      if (!locked) {
         if (useClipboard) {
-          await _paste()
+          await _paste(await navigator.clipboard.read())
         }
         else if (copiedData.value) {
           if (Array.isArray(copiedData.value)) {
@@ -132,12 +157,9 @@ export default definePlugin((editor, options) => {
           }
         }
       }
-      finally {
+      else {
         unlock()
       }
-    }
-    else {
-      unlock()
     }
   }
 
@@ -167,31 +189,10 @@ export default definePlugin((editor, options) => {
     setup: () => {
       if (useClipboard) {
         async function onPaste(e: ClipboardEvent) {
-          const items = e.clipboardData?.items
-          if (items?.length) {
-            pasteLock()
-            const clipboardItems: ClipboardItem[] = []
-            for (const item of items) {
-              switch (item.kind) {
-                case 'file': {
-                  const file = item.getAsFile()
-                  if (file) {
-                    clipboardItems.push(
-                      new ClipboardItem({
-                        [file.type]: file,
-                      }),
-                    )
-                  }
-                  break
-                }
-              }
-            }
-            await _paste(
-              clipboardItems.length ? clipboardItems : undefined,
-            )
+          if (e.clipboardData) {
+            await paste(e.clipboardData)
           }
         }
-
         window.addEventListener('paste', onPaste)
         onBeforeUnmount(() => window.removeEventListener('paste', onPaste))
       }
