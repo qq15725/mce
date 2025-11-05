@@ -2,16 +2,38 @@
 import type { Node } from 'modern-canvas'
 import type { PropType } from 'vue'
 import { Element2D } from 'modern-canvas'
-import { computed, createElementVNode, createVNode, defineComponent, mergeProps, ref } from 'vue'
+import { computed, createElementVNode, createVNode, defineComponent, mergeProps, ref, watch } from 'vue'
 import { useEditor } from '../composables/editor'
 import Icon from './shared/Icon.vue'
 
 const {
   root,
   selection,
+  exec,
 } = useEditor()
 
-const opened = defineModel<boolean>('opened', { default: true })
+const rootRef = ref<HTMLElement>()
+const hover = ref<{ node: Node, dom: HTMLElement }>()
+const current = ref<{ node: Element2D, x: number, y: number }>()
+
+watch(hover, (hover) => {
+  const rootBox = rootRef.value?.getBoundingClientRect()
+  const hoverBox = hover?.dom.getBoundingClientRect()
+  if (rootBox && hoverBox && hover!.node instanceof Element2D) {
+    current.value = {
+      x: -rootRef.value!.scrollLeft,
+      y: rootRef.value!.scrollTop + hoverBox.y - rootBox.y,
+      node: hover!.node,
+    }
+  }
+  else {
+    current.value = undefined
+  }
+})
+
+function onMouseleave() {
+  hover.value = undefined
+}
 
 const Layer = defineComponent({
   name: 'MceLayer',
@@ -21,37 +43,44 @@ const Layer = defineComponent({
       type: Object as PropType<Node>,
       required: true,
     },
-    opened: {
-      type: Boolean,
-      default: undefined,
+    indent: {
+      type: Number,
+      default: 0,
     },
   },
-  emits: ['update:opened'],
-  setup(props, { attrs, emit }) {
-    const _opened = ref(false)
-    const opened = computed({
-      get: () => props.opened !== undefined ? props.opened! : _opened.value,
-      set: (v: boolean) => {
-        if (props.opened !== undefined) {
-          emit('update:opened', v)
-        }
-        else {
-          _opened.value = v
-        }
-      },
-    })
-
+  setup(props, { attrs }) {
+    const opened = ref(false)
     const isActive = computed(() => selection.value.some(v => v.equal(props.node)))
-
     const children = computed<Node[]>(() => props.node?.children ?? [])
+    const itemRef = ref<HTMLElement>()
+    const editing = ref(false)
+    const editValue = ref<string>()
 
-    function onClickPrepend() {
+    function onClickExpand() {
       opened.value = !opened.value
     }
 
     function onClickContent() {
       if (props.node instanceof Element2D) {
         selection.value = [props.node]
+      }
+    }
+
+    function onDblclickThumbnail(e: MouseEvent) {
+      e.stopPropagation()
+      if (props.node instanceof Element2D) {
+        exec('zoomToSelection')
+      }
+    }
+
+    function onDblclickContent() {
+      editing.value = true
+    }
+
+    function onMouseenter() {
+      hover.value = {
+        node: props.node,
+        dom: itemRef.value!,
       }
     }
 
@@ -66,7 +95,7 @@ const Layer = defineComponent({
         }
         if (node instanceof Element2D) {
           if (node.foreground.isValid() && node.foreground.image) {
-            return createVNode('img', { src: node.foreground.image })
+            return createVNode(Icon, { icon: '$image' })
           }
           if (node.text.isValid()) {
             return createVNode(Icon, { icon: '$text' })
@@ -81,15 +110,21 @@ const Layer = defineComponent({
           class: [
             'mce-layer',
             isActive.value && 'mce-layer--active',
+            opened.value && 'mce-layer--opened',
           ],
         }),
         [
           createElementVNode('div', {
             class: 'mce-layer-item',
+            style: {
+              '--indent-padding': `${props.indent * 16}px`,
+            },
+            ref: itemRef,
+            onMouseenter,
           }, [
             createElementVNode('div', {
-              class: 'mce-layer-item__prepend',
-              onClick: onClickPrepend,
+              class: 'mce-layer-item__expand',
+              onClick: onClickExpand,
             }, [
               children.value.length
                 ? createVNode(Icon, { icon: '$arrowRight' })
@@ -98,21 +133,41 @@ const Layer = defineComponent({
             createElementVNode('div', {
               class: 'mce-layer-item__content',
               onClick: onClickContent,
+              onDblclick: onDblclickContent,
             }, [
-              createElementVNode('div', { class: 'mce-layer-item__thumbnail' }, [
+              createElementVNode('div', {
+                class: 'mce-layer-item__thumbnail',
+                onDblclick: onDblclickThumbnail,
+              }, [
                 thumbnail(),
               ]),
-              createElementVNode('div', { class: 'mce-layer-item__name' }, [
-                props.node.name,
+              createElementVNode('div', {
+                class: 'mce-layer-item__name',
+              }, [
+                editing.value
+                  ? createElementVNode('input', {
+                      class: 'mce-layer-item__name-input',
+                      autofocus: true,
+                      value: props.node.name,
+                      onBlur: () => {
+                        editing.value = false
+                        if (editValue.value) {
+                          ;(props.node as any).name = editValue.value
+                          editValue.value = undefined
+                        }
+                      },
+                      onInput: (e: InputEvent) => editValue.value = (e.target as HTMLInputElement).value,
+                    })
+                  : props.node.name,
               ]),
-            ]),
-            createElementVNode('div', { class: 'mce-layer-item__append' }, [
-              //
             ]),
           ]),
           ...(
             opened.value
-              ? children.value.map(child => createVNode(Layer, { node: child }))
+              ? children.value.map(child => createVNode(Layer, {
+                  node: child,
+                  indent: props.indent + 1,
+                }))
               : []
           ),
         ],
@@ -123,31 +178,68 @@ const Layer = defineComponent({
 </script>
 
 <template>
-  <Layer
-    v-model:opened="opened"
+  <div
+    ref="rootRef"
     class="mce-layers"
-    :node="root"
-  />
+    @mouseleave="onMouseleave"
+  >
+    <Layer
+      v-for="(child, index) in root.children" :key="index"
+      :node="child"
+    />
+
+    <div
+      v-if="current !== undefined"
+      class="mce-layers__action"
+      :style="{
+        right: `${current.x}px`,
+        top: `${current.y}px`,
+      }"
+    >
+      <div
+        class="mce-btn"
+        @click="current.node.meta.lock = !current.node.meta.lock"
+      >
+        <Icon
+          :icon="current.node.meta.lock ? '$lock' : '$unlock'"
+        />
+      </div>
+
+      <div
+        class="mce-btn"
+        @click="current.node.style.visibility = current.node.style.visibility === 'visible' ? 'hidden' : 'visible'"
+      >
+        <Icon
+          :icon="current.node.style.visibility === 'visible' ? '$visible' : '$unvisible'"
+        />
+      </div>
+    </div>
+  </div>
 </template>
 
 <style lang="scss">
   .mce-layer-item {
+    flex: none;
     display: flex;
     align-items: center;
-    height: 32px;
+    height: 24px;
     font-size: 12px;
     border-radius: 4px;
+    padding-left: var(--indent-padding, 0);
+    width: 100%;
+    min-width: max-content;
 
     &:hover {
       background-color: rgba(var(--mce-theme-on-background), var(--mce-hover-opacity));
     }
 
-    &__prepend {
+    &__expand {
       display: flex;
       align-items: center;
       width: 16px;
       height: 100%;
       opacity: 0;
+      flex: none;
     }
 
     &__content {
@@ -164,41 +256,85 @@ const Layer = defineComponent({
       height: 100%;
       font-size: 12px;
       overflow: hidden;
-
-      img {
-        display: block;
-        width: 100%;
-      }
     }
 
     &__name {
-      padding-left: 8px;
+      padding: 0 8px;
+    }
+
+    &__name-input {
+      border: none;
+      padding: 0;
+      outline: none;
+      font-size: inherit;
+      font-weight: inherit;
+    }
+  }
+
+  .mce-layer {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border-radius: 4px;
+    width: 100%;
+    min-width: max-content;
+
+    &--active {
+      background-color: rgba(var(--mce-theme-primary), var(--mce-activated-opacity));
+    }
+
+    &--opened {
+      .mce-layer-item__expand .mce-icon {
+        transform: rotate(90deg);
+      }
     }
   }
 
   .mce-layers {
     position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
     width: 100%;
     height: 100%;
+    min-width: auto;
+    padding: 8px;
     overflow: auto;
-    padding: 0 8px;
+    background-color: rgb(var(--mce-theme-surface));
 
     &:hover {
-      .mce-layer-item__prepend {
+      .mce-layer-item__expand {
         opacity: 1;
       }
     }
+
+    &__action {
+      position: absolute;
+      padding-right: 8px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      background-color: rgb(var(--mce-theme-surface));
+    }
   }
 
-  .mce-layer {
+  .mce-btn {
+    padding: 4px;
     border-radius: 4px;
+    height: 24px;
+    width: 24px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    > .mce-layer {
-      padding-left: 16px;
+    &:hover {
+      background-color: rgb(var(--mce-theme-background));
     }
 
-    &--active {
-      background-color: rgba(var(--mce-theme-primary), var(--mce-activated-opacity));
+    + .mce-btn {
+      margin-left: -4px;
     }
   }
 </style>
