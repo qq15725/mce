@@ -103,8 +103,8 @@ export default definePlugin((editor, options) => {
     ],
   }))
 
-  const zoomMenu = computed(() => ({
-    key: 'zoom',
+  const zoomViewMenu = computed(() => ({
+    key: 'view',
     children: [
       { key: 'zoomIn' },
       { key: 'zoomOut' },
@@ -125,7 +125,7 @@ export default definePlugin((editor, options) => {
       { key: 'view:statusbar', checked: config.value.statusbar },
       { key: 'view:frameOutline', checked: config.value.frameOutline },
       { type: 'divider' },
-      ...zoomMenu.value.children,
+      ...zoomViewMenu.value.children,
     ],
   }))
 
@@ -211,6 +211,7 @@ export default definePlugin((editor, options) => {
           layerOrderMenu.value,
           layerPositionMenu.value,
           flipMenu.value,
+          zoomViewMenu.value,
           { type: 'divider' },
           exportMenu.value,
         ]

@@ -89,7 +89,6 @@ const editor = new Editor({
         'view:timeline': '时间线',
         'view:statusbar': '状态栏',
         'view:frameOutline': '框轮廓',
-        'zoom': '缩放',
         'zoomIn': '放大',
         'zoomOut': '缩小',
         'zoomTo100': '缩放到100%',

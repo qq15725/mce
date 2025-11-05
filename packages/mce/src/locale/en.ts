@@ -47,7 +47,6 @@ export default {
   'view:timeline': 'Timeline',
   'view:statusbar': 'Statusbar',
   'view:frameOutline': 'Frame outlines',
-  'zoom': 'Zoom',
   'zoomIn': 'Zoom in',
   'zoomOut': 'Zoom out',
   'zoomTo100': 'Zoom to 100%',

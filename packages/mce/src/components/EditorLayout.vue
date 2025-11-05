@@ -449,10 +449,10 @@ function onScroll() {
 
 <style lang="scss">
 .mce-editor {
-  --mce-theme-primary: 97, 101, 253;
-  --mce-theme-on-primary: 247, 247, 248;
+  --mce-theme-primary: 69, 151, 248;
+  --mce-theme-on-primary: 255, 255, 255;
   --mce-theme-surface: 255, 255, 255;
-  --mce-theme-on-surface: 56, 56, 56;
+  --mce-theme-on-surface: 30, 30, 30;
   --mce-theme-surface-variant: 35, 37, 41;
   --mce-theme-on-surface-variant: 255, 255, 255;
   --mce-theme-background: 240, 242, 245;
@@ -464,9 +464,7 @@ function onScroll() {
   --mce-low-emphasis-opacity: 0.3;
   --mce-shadow: 0 8px 32px 2px rgba(0, 0, 0, 0.08), 0 0 1px rgba(0, 0, 0, 0.2);
   --mce-blur: 8px;
-}
 
-.mce-editor {
   position: relative;
   width: 100%;
   height: 100%;

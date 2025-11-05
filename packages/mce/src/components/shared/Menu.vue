@@ -251,6 +251,7 @@ defineExpose({
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 14px;
   }
 
   &__title {
@@ -267,7 +268,8 @@ defineExpose({
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 22px;
+    font-size: 12px;
+    margin-right: -6px;
   }
 }
 </style>
