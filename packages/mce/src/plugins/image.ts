@@ -90,7 +90,10 @@ export default definePlugin((editor) => {
         accept: imageExts.join(','),
         test: (source) => {
           if (source instanceof Blob) {
-            if (source.type.startsWith('image/')) {
+            if (
+              !source.type.startsWith('image/svg+xml')
+              && source.type.startsWith('image/')
+            ) {
               return true
             }
           }

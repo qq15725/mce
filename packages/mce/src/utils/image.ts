@@ -53,10 +53,10 @@ export function getImageSizeFromUrl(
 }
 
 export const imageMimeTypeExtMap = {
+  // 'image/svg+xml': ['.svg'],
   'image/jpeg': ['.jpg', '.jpeg'],
   'image/png': ['.png'],
   'image/gif': ['.gif'],
-  'image/svg+xml': ['.svg'],
   'image/tiff': ['.tif', '.tiff'],
   'image/bmp': ['.bmp'],
   'image/x-ms-bmp': ['.bmp'],
