@@ -7,6 +7,7 @@ declare global {
     interface Commands {
       startTyping: (e?: PointerEvent) => Promise<boolean>
       startTransform: (e?: PointerEvent) => boolean
+      openContextMenu: (e?: PointerEvent) => boolean
     }
 
     interface Events {

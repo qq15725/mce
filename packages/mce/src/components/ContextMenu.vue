@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, useTemplateRef, watch } from 'vue'
+import { onBeforeMount, onBeforeUnmount, useTemplateRef, watch } from 'vue'
 import { useEditor } from '../composables/editor'
 import Menu from './shared/Menu.vue'
 
@@ -11,6 +11,8 @@ const {
   getKbd,
   t,
   hotkeys,
+  registerCommand,
+  unregisterCommand,
 } = useEditor()
 
 const model = defineModel<boolean>()
@@ -18,6 +20,14 @@ const position = defineModel<{ x: number, y: number }>('position', {
   default: () => ({ x: 0, y: 0 }),
 })
 const menuRef = useTemplateRef('menuTplRef')
+
+onBeforeMount(() => {
+  registerCommand({ command: 'openContextMenu', handle: onContextmenu })
+})
+
+onBeforeUnmount(() => {
+  unregisterCommand('openContextMenu')
+})
 
 function updateLocation() {
   menuRef.value?.updateLocation()

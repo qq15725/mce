@@ -121,6 +121,10 @@ const Layer = defineComponent({
             },
             ref: itemRef,
             onMouseenter,
+            onContextmenu: (e) => {
+              selection.value = [props.node]
+              exec('openContextMenu', e)
+            },
           }, [
             createElementVNode('div', {
               class: 'mce-layer-item__expand',
