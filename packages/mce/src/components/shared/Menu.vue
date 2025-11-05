@@ -175,7 +175,7 @@ defineExpose({
                 v-if="item.children?.length"
                 class="mce-list-item__append"
               >
-                <Icon icon="$menuRight" />
+                <Icon icon="$arrowRight" />
               </div>
             </div>
           </div>

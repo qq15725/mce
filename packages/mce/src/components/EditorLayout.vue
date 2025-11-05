@@ -41,6 +41,7 @@ import Main from './shared/Main.vue'
 import Statusbar from './Statusbar.vue'
 import TextEditor from './TextEditor.vue'
 import Timeline from './timeline/Timeline.vue'
+import Toolbelt from './Toolbelt.vue'
 
 const props = defineProps({
   ...makeMceStrategyProps({
@@ -418,6 +419,7 @@ function onScroll() {
         <ContextMenu />
         <GoBackSelectedArea />
         <Rulers v-if="config.ruler" />
+        <Toolbelt />
         <slot name="drawboard" />
       </div>
     </Main>
@@ -462,6 +464,8 @@ function onScroll() {
   --mce-high-emphasis-opacity: 1;
   --mce-medium-emphasis-opacity: 0.5;
   --mce-low-emphasis-opacity: 0.3;
+  --mce-hover-opacity: 0.04;
+  --mce-activated-opacity: 0.06;
   --mce-shadow: 0 8px 32px 2px rgba(0, 0, 0, 0.08), 0 0 1px rgba(0, 0, 0, 0.2);
   --mce-blur: 8px;
 

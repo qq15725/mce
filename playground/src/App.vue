@@ -5,7 +5,7 @@ import mp4 from '@mce/mp4'
 import openxml from '@mce/openxml'
 import pdf from '@mce/pdf'
 import svg from '@mce/svg'
-import { Editor, EditorLayout } from 'mce'
+import { Editor, EditorLayers, EditorLayout, EditorLayoutItem } from 'mce'
 import gifWorkerUrl from 'modern-gif/worker?url'
 import 'mce/styles'
 
@@ -137,6 +137,9 @@ if (tid || bid) {
       <template #transformer="{ box }" />
       <template #floatbar />
       <template #drawboard />
+      <EditorLayoutItem position="left" :size="240">
+        <EditorLayers />
+      </EditorLayoutItem>
     </EditorLayout>
   </div>
 </template>

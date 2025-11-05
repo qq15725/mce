@@ -12,7 +12,10 @@ const props = defineProps({
     type: [Number, String],
     default: 300,
   },
-  modelValue: Boolean,
+  modelValue: {
+    type: Boolean,
+    default: true,
+  },
   ...makeLayoutItemProps(),
 })
 

@@ -8,10 +8,14 @@ export interface IconAliases {
   play: IconValue
   pause: IconValue
   gps: IconValue
-  menuRight: IconValue
+  arrowRight: IconValue
   mouseLeftClick: IconValue
   mouseRightClick: IconValue
   check: IconValue
+  frame: IconValue
+  group: IconValue
+  shape: IconValue
+  text: IconValue
 }
 
 export interface IconSet {
