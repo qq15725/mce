@@ -35,17 +35,21 @@ export async function convertLayout(
   let background: NormalizedBackground | undefined
   if (layout.background) {
     if (layout.background.color) {
-      background ??= {}
       if (isGradient(layout.background.color ?? '')) {
-        background.image = layout.background.color
+        background = {
+          image: layout.background.color,
+        }
       }
       else {
-        background.color = layout.background.color
+        background = {
+          color: layout.background.color,
+        }
       }
     }
     if (layout.background.image) {
-      background ??= {}
-      background.image = layout.background.image
+      background = {
+        image: layout.background.image,
+      }
     }
   }
 

@@ -37,9 +37,6 @@ export default definePlugin((editor, options) => {
           const width = Math.floor(data.style.width)
           const height = Math.floor(data.style.height)
           const encoder = new Encoder({ width, height, workerUrl: gifWorkerUrl })
-          console.log(
-            Array.from({ length: ~~((endTime - startTime) / 100) }, (_, i) => startTime + i * 100),
-          )
           await render({
             data,
             width,
@@ -47,7 +44,6 @@ export default definePlugin((editor, options) => {
             fonts,
             keyframes: Array.from({ length: ~~((endTime - startTime) / 100) }, (_, i) => startTime + i * 100),
             onKeyframe: async (data, { duration, progress }) => {
-              console.log(progress)
               await encoder.encode({ data: data as any, delay: duration })
               onProgress?.(progress)
             },
