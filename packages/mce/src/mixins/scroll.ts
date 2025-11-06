@@ -26,7 +26,6 @@ export default defineMixin((editor) => {
     getAabb,
     selectionAabb,
     viewAabb,
-    config,
     drawboardAabb,
     getScreenCenterOffset,
   } = editor
