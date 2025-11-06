@@ -5,19 +5,19 @@ import { isOverlappingAabb } from '../utils'
 import Icon from './shared/Icon.vue'
 
 const {
-  currentAabb,
+  selectionAabb,
   drawboardAabb,
   aabbToDrawboardAabb,
-  exec,
   t,
+  exec,
 } = useEditor()
 
 const isActive = computed(() => {
-  return currentAabb.value.width
-    && currentAabb.value.height
+  return selectionAabb.value.width
+    && selectionAabb.value.height
     && !isOverlappingAabb(
       drawboardAabb.value,
-      aabbToDrawboardAabb(currentAabb.value),
+      aabbToDrawboardAabb(selectionAabb.value),
     )
 })
 </script>
@@ -26,7 +26,7 @@ const isActive = computed(() => {
   <div
     v-if="isActive"
     class="mce-back-selected-aera"
-    @click.prevent="exec('zoomToSelection')"
+    @click.prevent="exec('scrollToSelection', { behavior: 'smooth' })"
   >
     <Icon icon="$gps" />
     <span>{{ t('goBackSelectedArea') }}</span>

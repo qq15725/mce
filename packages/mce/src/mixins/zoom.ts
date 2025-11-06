@@ -5,15 +5,6 @@ import { defineMixin } from '../editor'
 
 declare global {
   namespace Mce {
-    interface Config {
-      zoomRectOffset: {
-        left?: number
-        top?: number
-        right?: number
-        bottom?: number
-      }
-    }
-
     type ZoomTarget
       = | 'root'
         | 'selection'
@@ -32,36 +23,15 @@ declare global {
   }
 }
 
-const zoomRectOffset = { left: 0, top: 0, bottom: 0, right: 0 }
-
 export default defineMixin((editor) => {
   const {
     camera,
-    registerConfig,
-    config,
     drawboardAabb,
-    currentAabb,
+    selectionAabb,
     viewAabb,
     getAabb,
+    getScreenCenterOffset,
   } = editor
-
-  registerConfig('zoomRectOffset', { ...zoomRectOffset })
-
-  function getZoomRectOffset() {
-    const offset = {
-      ...zoomRectOffset,
-      ...config.value.zoomRectOffset,
-    }
-    if (config.value.scrollbar) {
-      offset.right += 8
-      offset.bottom += 8
-    }
-    if (config.value.ruler) {
-      offset.left += 16
-      offset.top += 16
-    }
-    return offset
-  }
 
   const zoomTo: Mce.Editor['zoomTo'] = async (target, options = {}) => {
     const {
@@ -74,14 +44,19 @@ export default defineMixin((editor) => {
     if (Array.isArray(target)) {
       aabb = getAabb(target)
     }
-    else if (target === 'selection') {
-      aabb = currentAabb.value
-    }
     else {
-      aabb = viewAabb.value
+      switch (target) {
+        case 'selection':
+          aabb = selectionAabb.value
+          break
+        case 'root':
+        default:
+          aabb = viewAabb.value
+          break
+      }
     }
 
-    const offset = getZoomRectOffset()
+    const offset = getScreenCenterOffset()
     const { width, height } = drawboardAabb.value
     const tw = width - (offset.left + offset.right)
     const th = height - (offset.top + offset.bottom)
@@ -128,8 +103,8 @@ export default defineMixin((editor) => {
       y: _camera.position.y,
     }
     const newPosition = {
-      x: (-sx * newZoom + x),
-      y: (-sy * newZoom + y),
+      x: sx * newZoom - x,
+      y: sy * newZoom - y,
     }
 
     switch (behavior) {

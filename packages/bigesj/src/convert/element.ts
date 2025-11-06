@@ -75,6 +75,7 @@ export async function convertElement(
 
   switch (el.type) {
     case 'image':
+      meta.inCanvasIs = 'Element2D'
       meta.inPptIs = 'Picture'
       element.foreground = {
         image: await convertImageElementToUrl(el),
@@ -114,6 +115,7 @@ export async function convertElement(
       }
       break
     case 'svg': {
+      meta.inCanvasIs = 'Element2D'
       meta.inPptIs = 'Picture'
       element.foreground = {
         image: await convertSvgElementToUrl(el),
@@ -122,6 +124,7 @@ export async function convertElement(
       break
     }
     case 'text': {
+      meta.inCanvasIs = 'Element2D'
       meta.inPptIs = 'Shape'
       if (style.writingMode === 'horizontal-tb') {
         style.width = Math.ceil(style.width + style.letterSpacing)
@@ -138,6 +141,7 @@ export async function convertElement(
       break
     }
     case 'com':
+      meta.inCanvasIs = 'Element2D'
       meta.inPptIs = 'GroupShape'
       element.children = (await Promise.all(
         el.children.map(async (child: any) => {
@@ -151,11 +155,14 @@ export async function convertElement(
         }),
       )).filter(Boolean)
       break
+    case 'anim':
+      meta.inCanvasIs = 'Lottie2D'
+      ;(element as any).src = el.url
+      break
     case 'pic':
     case 'mosaic':
     case 'image_squence':
     case 'background':
-    case 'anim':
     case 'legend':
     case 'shape':
     case 'ppt':

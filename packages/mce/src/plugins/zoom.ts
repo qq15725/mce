@@ -10,7 +10,7 @@ declare global {
       zoomTo100: () => void
       zoomToFit: () => void
       zoomToCover: () => void
-      zoomToSelection: () => void
+      zoomToSelection: (options?: ZoomToOptions) => void
     }
 
     interface Hotkeys {
@@ -44,8 +44,8 @@ export default definePlugin((editor) => {
       { command: 'zoomOut', handle: () => camera.value.addZoom(-0.25) },
       { command: 'zoomTo100', handle: () => camera.value.setZoom(1) },
       { command: 'zoomToCover', handle: () => zoomTo('root', { mode: 'cover' }) },
-      { command: 'zoomToFit', handle: () => zoomTo('root') },
-      { command: 'zoomToSelection', handle: () => zoomTo('selection') },
+      { command: 'zoomToFit', handle: () => zoomTo('root', { mode: 'contain' }) },
+      { command: 'zoomToSelection', handle: options => zoomTo('selection', options) },
     ],
     hotkeys: [
       { command: 'zoomIn', key: 'CmdOrCtrl+=' },

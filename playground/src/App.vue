@@ -32,7 +32,7 @@ const editor = new Editor({
   frameGap: 48,
   typographyStrategy: 'autoHeight',
   handleShape: 'rect',
-  zoomRectOffset: { left: 100, top: 100, right: 100, bottom: 100 },
+  screenCenterOffset: { left: 100, top: 100, right: 100, bottom: 100 },
   defaultFont: { family: 'SourceHanSansCN-Normal', src: '/SourceHanSansCN-Normal.woff' },
   localDb: false,
   gifWorkerUrl,

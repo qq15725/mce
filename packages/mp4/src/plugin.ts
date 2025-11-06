@@ -63,7 +63,8 @@ export function plugin() {
               width,
               height,
               fonts,
-              onFrame: async (data, { duration, progress }) => {
+              keyframes: Array.from({ length: ~~((endTime - startTime) / spf) }, (_, i) => startTime + i * spf),
+              onKeyframe: async (data, { duration, progress }) => {
                 const bitmap = await createImageBitmap(new ImageData(data as any, width, height))
                 await encoder.encode({
                   data: bitmap,
@@ -74,7 +75,6 @@ export function plugin() {
                 timestamp += duration
                 onProgress?.(progress)
               },
-              keyframes: Array.from({ length: ~~((endTime - startTime) / spf) }, (_, i) => startTime + i * spf),
             })
             return await encoder.flush()
           },

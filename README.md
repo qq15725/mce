@@ -57,7 +57,7 @@ npm i mce
     frameGap: 48,
     typographyStrategy: 'autoHeight',
     handleShape: 'rect',
-    zoomRectOffset: { left: 0, top: 0, right: 0, bottom: 0 },
+    screenCenterOffset: { left: 0, top: 0, right: 0, bottom: 0 },
     localDb: false,
     customUpload: async (blob) => URL.createObjectURL(blob),
     customContextMenu: (menu) => menu,

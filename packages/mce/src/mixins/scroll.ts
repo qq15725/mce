@@ -24,8 +24,11 @@ export default defineMixin((editor) => {
   const {
     camera,
     getAabb,
-    currentAabb,
+    selectionAabb,
     viewAabb,
+    config,
+    drawboardAabb,
+    getScreenCenterOffset,
   } = editor
 
   const scrollTo: Mce.Editor['scrollTo'] = async (target, options = {}) => {
@@ -34,24 +37,43 @@ export default defineMixin((editor) => {
       duration = 500,
     } = options
 
-    let position: { x: number, y: number }
-    if (Array.isArray(target)) {
-      const aabb = getAabb(target)
-      position = { x: aabb.left, y: aabb.top }
-    }
-    else if (target === 'selection') {
-      const aabb = currentAabb.value
-      position = { x: aabb.left, y: aabb.top }
-    }
-    else if (target === 'root') {
-      const aabb = viewAabb.value
-      position = { x: aabb.left, y: aabb.top }
+    const _camera = camera.value
+
+    const screenCenterOffset = getScreenCenterOffset()
+    const offset = { x: 0, y: 0 }
+    let position = { x: 0, y: 0 }
+    if (typeof target === 'object' && 'x' in target && 'y' in target) {
+      position.x = target.x
+      position.y = target.y
     }
     else {
-      position = target
+      let aabb
+      if (Array.isArray(target)) {
+        aabb = getAabb(target)
+      }
+      else {
+        switch (target) {
+          case 'selection':
+            aabb = selectionAabb.value
+            break
+          case 'root':
+          default:
+            aabb = viewAabb.value
+            break
+        }
+      }
+      position = { x: aabb.left + aabb.width / 2, y: aabb.top + aabb.height / 2 }
+      offset.x -= screenCenterOffset.left
+      offset.y -= screenCenterOffset.top
+      offset.x -= (drawboardAabb.value.width - screenCenterOffset.left - screenCenterOffset.right) / 2
+      offset.y -= (drawboardAabb.value.height - screenCenterOffset.top - screenCenterOffset.bottom) / 2
     }
 
-    const _camera = camera.value
+    position.x *= _camera.zoom.x
+    position.x += offset.x
+    position.y *= _camera.zoom.y
+    position.y += offset.y
+
     const oldPosition = { x: _camera.position.x, y: _camera.position.y }
 
     switch (behavior) {

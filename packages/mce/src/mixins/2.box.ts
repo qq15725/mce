@@ -17,7 +17,7 @@ declare global {
       getAabbInDrawboard: (node?: Node | Node[]) => AxisAlignedBoundingBox
       aabbToDrawboardAabb: (aabb: AxisAlignedBoundingBox) => AxisAlignedBoundingBox
       rootAabb: ComputedRef<AxisAlignedBoundingBox>
-      currentAabb: ComputedRef<AxisAlignedBoundingBox>
+      selectionAabb: ComputedRef<AxisAlignedBoundingBox>
     }
   }
 }
@@ -134,8 +134,8 @@ export default defineMixin((editor) => {
       obb.top *= zoom.y
       obb.width *= zoom.x
       obb.height *= zoom.y
-      obb.left += position.x
-      obb.top += position.y
+      obb.left -= position.x
+      obb.top -= position.y
     }
     else if (inTarget === 'frame') {
       const first = Array.isArray(node) ? node[0] : node
@@ -252,13 +252,13 @@ export default defineMixin((editor) => {
     _aabb.top *= zoom.y
     _aabb.width *= zoom.x
     _aabb.height *= zoom.y
-    _aabb.left += position.x
-    _aabb.top += position.y
+    _aabb.left -= position.x
+    _aabb.top -= position.y
     return _aabb
   }
 
   const rootAabb = computed(() => getAabb(root.value.children))
-  const currentAabb = computed(() => getAabb(selection.value))
+  const selectionAabb = computed(() => getAabb(selection.value))
 
   Object.assign(editor, {
     obbToFit,
@@ -268,6 +268,6 @@ export default defineMixin((editor) => {
     getAabbInDrawboard,
     aabbToDrawboardAabb,
     rootAabb,
-    currentAabb,
+    selectionAabb,
   })
 })

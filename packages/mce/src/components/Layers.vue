@@ -167,7 +167,7 @@ const Layer = defineComponent({
                       },
                       onInput: (e: InputEvent) => editValue.value = (e.target as HTMLInputElement).value,
                     })
-                  : props.node.name,
+                  : (props.node.name || props.node.id),
               ]),
             ]),
           ]),

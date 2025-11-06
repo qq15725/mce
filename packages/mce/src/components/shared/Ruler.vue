@@ -117,7 +117,7 @@ const unit = computed(() => {
 })
 
 const start = computed(() => {
-  const value = -props.position / props.zoom
+  const value = props.position / props.zoom
   return Math.floor(value / unit.value) * unit.value
 })
 
@@ -128,11 +128,11 @@ const end = computed(() => {
 })
 
 function numToPx(num: number) {
-  return Math.round(num * props.zoom + props.position)
+  return Math.round(num * props.zoom - props.position)
 }
 
 function pxToNum(px: number) {
-  return Math.round((px - props.position) / props.zoom)
+  return Math.round((px + props.position) / props.zoom)
 }
 
 function render() {

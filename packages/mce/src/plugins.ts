@@ -23,6 +23,7 @@ import _move from './plugins/move'
 import _new from './plugins/new'
 import _open from './plugins/open'
 import _saveAs from './plugins/saveAs'
+import _scroll from './plugins/scroll'
 import _select from './plugins/select'
 import _text from './plugins/text'
 import _ui from './plugins/ui'
@@ -53,6 +54,7 @@ export const plugins = [
   _new,
   _open,
   _saveAs,
+  _scroll,
   _select,
   _text,
   _ui,

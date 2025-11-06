@@ -65,8 +65,10 @@ function initYElement(
   yMap.set('childrenIds', yChildrenIds)
   yMap.set('meta', new Y.Map(Object.entries(normalized.meta ?? {})))
 
+  const inCanvasIs = normalized?.meta?.inCanvasIs
+
   // Element2d
-  if (normalized?.meta?.inCanvasIs === 'Element2D') {
+  if (inCanvasIs === 'Element2D' || inCanvasIs === 'Lottie2D') {
     yMap.set('style', new Y.Map(Object.entries(normalized.style ?? {})))
     yMap.set('background', new Y.Map(Object.entries(normalized.background ?? {})))
     yMap.set('shape', new Y.Map(Object.entries(normalized.shape ?? {})))
