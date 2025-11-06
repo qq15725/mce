@@ -1,3 +1,27 @@
+# [0.12.0](https://github.com/qq15725/mce/compare/v0.11.4...v0.12.0) (2025-11-06)
+
+
+### Bug Fixes
+
+* bg ([873566c](https://github.com/qq15725/mce/commit/873566c6be11fe1036189eb1bbcaca44df468c83))
+* dep ([6ca39a6](https://github.com/qq15725/mce/commit/6ca39a622159021f265805a491e74b1231a9ec69))
+* layers ([b78c9de](https://github.com/qq15725/mce/commit/b78c9de7ab2e9aedd7f402e94b4a75a90edcbccd))
+* lint ([81fc4ec](https://github.com/qq15725/mce/commit/81fc4ecd522e6ef97a6cf3316e05dab6ea182a00))
+
+
+### Features
+
+* add `scrollTo` method to editor ([9519840](https://github.com/qq15725/mce/commit/95198402eaf59307323025d5e3ad247216292219))
+* add command `scrollToSelection` / rename config `zoomRectOffset` to `screenCenterOffset` ([20916b7](https://github.com/qq15725/mce/commit/20916b76043c07ffe8c8741381cbdf11d18aa7cc))
+* EditorLayers ([5bb105a](https://github.com/qq15725/mce/commit/5bb105a80f80ac82f4bf41e9e9cfefd53df92e4b))
+* EditorLayers ([6135248](https://github.com/qq15725/mce/commit/6135248c336cf1f4e736cbde95abe861238c4bf4))
+* EditorLayers ([1a52ec3](https://github.com/qq15725/mce/commit/1a52ec3f70a025abb8b3a9c4a0be2aa99af35fa9))
+* opz style / zoom view in seletion context menu ([2bd11e9](https://github.com/qq15725/mce/commit/2bd11e9be1534129ab02f44aa30b9cf4ffd1812d))
+* rename config `zoomToFitOffset` to `zoomRectOffset` / add `zoomTo` method to editor ([77a5ca3](https://github.com/qq15725/mce/commit/77a5ca3e1f15ad0a9506bcb9ef6ca5c6091ca216))
+* svg plugin ([ac7075f](https://github.com/qq15725/mce/commit/ac7075f7419f0864a64b5033d34a1c2f727e15c6))
+
+
+
 ## [0.11.4](https://github.com/qq15725/mce/compare/v0.11.3...v0.11.4) (2025-11-04)
 
 

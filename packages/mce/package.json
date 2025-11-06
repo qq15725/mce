@@ -1,7 +1,7 @@
 {
   "name": "mce",
   "type": "module",
-  "version": "0.11.4",
+  "version": "0.12.0",
   "description": "The headless canvas editor framework. only the ESM.",
   "author": "wxm",
   "license": "MIT",
