@@ -31,7 +31,7 @@ export default definePlugin((editor) => {
     return addElement((await Promise.all(files.map(file => load(file)))).flat(), {
       ...options,
       sizeToFit: true,
-      position: 'fit',
+      position: 'horizontal',
     })
   }
 

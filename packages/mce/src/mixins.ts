@@ -11,6 +11,7 @@ import _0_font from './mixins/0.font'
 import _0_locale from './mixins/0.locale'
 import _1_frame from './mixins/1.frame'
 import _1_hotkey from './mixins/1.hotkey'
+import _1_screen from './mixins/1.screen'
 import _1_timeline from './mixins/1.timeline'
 import _1_upload from './mixins/1.upload'
 import _2_box from './mixins/2.box'
@@ -36,6 +37,7 @@ export const mixins = [
   _0_locale,
   _1_frame,
   _1_hotkey,
+  _1_screen,
   _1_timeline,
   _1_upload,
   _2_box,

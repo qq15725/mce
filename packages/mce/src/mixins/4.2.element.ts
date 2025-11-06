@@ -9,7 +9,7 @@ declare global {
     interface AddElementOptions {
       frame?: Element2D
       sizeToFit?: boolean
-      position?: Vector2Data | 'fit' | 'screenCenter' | 'pointer'
+      position?: Vector2Data | 'horizontal' | 'vertical' | 'screenCenter' | 'pointer'
       active?: boolean
       regenId?: boolean
     }
@@ -64,10 +64,9 @@ export default defineMixin((editor) => {
     getAncestorFrame,
     getAabb,
     getGlobalPointer,
+    getScreenCenter,
     selection,
-    getScreenCenterOffset,
     camera,
-    drawboardAabb,
   } = editor
 
   function addElement(
@@ -75,6 +74,10 @@ export default defineMixin((editor) => {
     options: Mce.AddElementOptions = {},
   ): Element2D | Element2D[] {
     log('addElement', value, options)
+
+    const {
+      frameGap,
+    } = config.value
 
     let {
       frame,
@@ -104,30 +107,19 @@ export default defineMixin((editor) => {
     let initPos: { x: number, y: number } | undefined
     switch (position) {
       case 'screenCenter': {
-        const screenCenterOffset = getScreenCenterOffset()
-        const { zoom, position } = camera.value
-        const centerOffset = {
-          x: position.x
-            + screenCenterOffset.left
-            + (
-              (drawboardAabb.value.width - screenCenterOffset.left - screenCenterOffset.right) / 2
-            ),
-          y: position.y
-            + screenCenterOffset.top
-            + (
-              (drawboardAabb.value.height - screenCenterOffset.top - screenCenterOffset.bottom) / 2
-            ),
-        }
-        initPos = {
-          x: centerOffset.x * zoom.x,
-          y: centerOffset.y * zoom.y,
-        }
+        initPos = camera.value.toGlobal(getScreenCenter())
         break
       }
-      case 'fit':
+      case 'horizontal':
         initPos = {
-          x: rootAabb.value.left + rootAabb.value.width + config.value.frameGap,
+          x: rootAabb.value.left + frameGap + rootAabb.value.width,
           y: rootAabb.value.top,
+        }
+        break
+      case 'vertical':
+        initPos = {
+          x: rootAabb.value.left,
+          y: rootAabb.value.top + frameGap + rootAabb.value.height,
         }
         break
       default:
@@ -164,16 +156,15 @@ export default defineMixin((editor) => {
               },
             )
           }
-          if (position === 'fit') {
-            el.style.left = Math.round(width - el.style.width) / 2
-            el.style.top = Math.round(height - el.style.height) / 2
-          }
+          // TODO
+          el.style.left = Math.round(width - el.style.width) / 2
+          el.style.top = Math.round(height - el.style.height) / 2
         }
         else {
           if (initPos) {
-            el.style.top = Math.round(initPos.x)
-            el.style.left = Math.round(initPos.y)
-            initPos.x += el.style.height + config.value.frameGap
+            el.style.left = Math.round(initPos.x)
+            el.style.top = Math.round(initPos.y)
+            initPos.x += el.style.width + config.value.frameGap
           }
         }
 

@@ -35,7 +35,7 @@ export default definePlugin((editor) => {
   const insertImage: Mce.Commands['insertImage'] = async (url, options) => {
     return addElement(await createImageElement(url), {
       sizeToFit: true,
-      position: 'fit',
+      position: 'horizontal',
       ...options,
     })
   }

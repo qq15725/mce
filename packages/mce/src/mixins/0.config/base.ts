@@ -36,10 +36,6 @@ declare global {
       localDb: boolean
       screenCenterOffset: ScreenCenterOffset
     }
-
-    interface Editor {
-      getScreenCenterOffset: () => Required<ScreenCenterOffset>
-    }
   }
 }
 
@@ -68,29 +64,7 @@ export default defineMixin((editor, options) => {
   // DB
   registerConfig('localDb', false)
 
-  const screenCenterOffset = { left: 0, top: 0, bottom: 0, right: 0 }
-
-  registerConfig('screenCenterOffset', { ...screenCenterOffset })
-
-  const getScreenCenterOffset: Mce.Editor['getScreenCenterOffset'] = () => {
-    const offset = {
-      ...screenCenterOffset,
-      ...config.value.screenCenterOffset,
-    }
-    if (config.value.scrollbar) {
-      offset.right += 8
-      offset.bottom += 8
-    }
-    if (config.value.ruler) {
-      offset.left += 16
-      offset.top += 16
-    }
-    return offset
-  }
-
-  Object.assign(editor, {
-    getScreenCenterOffset,
-  })
+  registerConfig('screenCenterOffset', { left: 0, top: 0, bottom: 0, right: 0 })
 
   return () => {
     const {
