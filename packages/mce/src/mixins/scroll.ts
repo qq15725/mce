@@ -63,8 +63,8 @@ export default defineMixin((editor) => {
       }
       position = { x: aabb.left + aabb.width / 2, y: aabb.top + aabb.height / 2 }
       offset.x -= screenCenterOffset.left
-      offset.y -= screenCenterOffset.top
       offset.x -= (drawboardAabb.value.width - screenCenterOffset.left - screenCenterOffset.right) / 2
+      offset.y -= screenCenterOffset.top
       offset.y -= (drawboardAabb.value.height - screenCenterOffset.top - screenCenterOffset.bottom) / 2
     }
 

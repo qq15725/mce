@@ -8,10 +8,8 @@ declare global {
   namespace Mce {
     interface AddElementOptions {
       frame?: Element2D
-      positionToFit?: boolean
       sizeToFit?: boolean
-      position?: Vector2Data
-      inPointerPosition?: boolean
+      position?: Vector2Data | 'fit' | 'screenCenter' | 'pointer'
       active?: boolean
       regenId?: boolean
     }
@@ -67,6 +65,9 @@ export default defineMixin((editor) => {
     getAabb,
     getGlobalPointer,
     selection,
+    getScreenCenterOffset,
+    camera,
+    drawboardAabb,
   } = editor
 
   function addElement(
@@ -77,21 +78,11 @@ export default defineMixin((editor) => {
 
     let {
       frame,
-      positionToFit,
       sizeToFit,
       position,
-      inPointerPosition,
       active,
       regenId,
     } = options
-
-    if (!position && inPointerPosition) {
-      position = getGlobalPointer()
-    }
-
-    if (position) {
-      positionToFit = false
-    }
 
     if (!frame) {
       if (config.value.viewMode === 'frame') {
@@ -110,8 +101,39 @@ export default defineMixin((editor) => {
       }
     }
 
-    let top = rootAabb.value.top
-    const left = rootAabb.value.left + rootAabb.value.width + config.value.frameGap
+    let initPos: { x: number, y: number } | undefined
+    switch (position) {
+      case 'screenCenter': {
+        const screenCenterOffset = getScreenCenterOffset()
+        const { zoom, position } = camera.value
+        const centerOffset = {
+          x: position.x
+            + screenCenterOffset.left
+            + (
+              (drawboardAabb.value.width - screenCenterOffset.left - screenCenterOffset.right) / 2
+            ),
+          y: position.y
+            + screenCenterOffset.top
+            + (
+              (drawboardAabb.value.height - screenCenterOffset.top - screenCenterOffset.bottom) / 2
+            ),
+        }
+        initPos = {
+          x: centerOffset.x * zoom.x,
+          y: centerOffset.y * zoom.y,
+        }
+        break
+      }
+      case 'fit':
+        initPos = {
+          x: rootAabb.value.left + rootAabb.value.width + config.value.frameGap,
+          y: rootAabb.value.top,
+        }
+        break
+      default:
+        break
+    }
+
     const isArray = Array.isArray(value)
     let offsetX = 0
 
@@ -142,16 +164,16 @@ export default defineMixin((editor) => {
               },
             )
           }
-          if (positionToFit) {
+          if (position === 'fit') {
             el.style.left = Math.round(width - el.style.width) / 2
             el.style.top = Math.round(height - el.style.height) / 2
           }
         }
         else {
-          if (positionToFit) {
-            el.style.top = Math.round(top)
-            el.style.left = Math.round(left)
-            top += el.style.height + config.value.frameGap
+          if (initPos) {
+            el.style.top = Math.round(initPos.x)
+            el.style.left = Math.round(initPos.y)
+            initPos.x += el.style.height + config.value.frameGap
           }
         }
 
@@ -163,12 +185,12 @@ export default defineMixin((editor) => {
 
       const aabb = getAabb(elements)
 
-      if (position) {
+      if (position === 'pointer') {
+        const pointer = getGlobalPointer()
         const diff = {
-          x: Math.round(position.x - aabb.left),
-          y: Math.round(position.y - aabb.top),
+          x: Math.round(pointer.x - aabb.left),
+          y: Math.round(pointer.y - aabb.top),
         }
-
         elements.forEach((el) => {
           el.style.left += diff.x
           el.style.top += diff.y

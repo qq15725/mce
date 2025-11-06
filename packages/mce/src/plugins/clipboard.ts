@@ -108,7 +108,7 @@ export default definePlugin((editor, options) => {
     }
     if (elements.length) {
       addElement(elements, {
-        inPointerPosition: true,
+        position: 'pointer',
         active: true,
         regenId: true,
       })
@@ -130,6 +130,17 @@ export default definePlugin((editor, options) => {
               }
               break
             }
+            case 'string':
+              switch (item.type) {
+                case 'application/json': {
+                  const json = await new Promise<string>(r => item.getAsString(r))
+                  const blob = new Blob([json], { type: item.type })
+                  const file = new File([blob], 'data.json', { type: item.type })
+                  items.push(new ClipboardItem({ [item.type]: file }))
+                  break
+                }
+              }
+              break
           }
         }
       }
@@ -153,7 +164,7 @@ export default definePlugin((editor, options) => {
         else if (copiedData.value) {
           if (Array.isArray(copiedData.value)) {
             addElement(copiedData.value?.map(el => cloneDeep(el)) ?? [], {
-              inPointerPosition: true,
+              position: 'pointer',
               active: true,
               regenId: true,
             })
