@@ -1,3 +1,12 @@
+## [0.12.1](https://github.com/qq15725/mce/compare/v0.12.0...v0.12.1) (2025-11-06)
+
+
+### Features
+
+* update addElement options ([1ffcfd0](https://github.com/qq15725/mce/commit/1ffcfd0152b22cba286518ef339ce4ccb690ca1b))
+
+
+
 # [0.12.0](https://github.com/qq15725/mce/compare/v0.11.4...v0.12.0) (2025-11-06)
 
 
