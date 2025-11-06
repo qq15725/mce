@@ -43,9 +43,9 @@ export default definePlugin((editor) => {
       { command: 'zoomIn', handle: () => camera.value.addZoom(0.25) },
       { command: 'zoomOut', handle: () => camera.value.addZoom(-0.25) },
       { command: 'zoomTo100', handle: () => camera.value.setZoom(1) },
-      { command: 'zoomToCover', handle: () => zoomTo('cover') },
-      { command: 'zoomToFit', handle: () => zoomTo('contain') },
-      { command: 'zoomToSelection', handle: () => zoomTo('contain', { selection: true }) },
+      { command: 'zoomToCover', handle: () => zoomTo('root', { mode: 'cover' }) },
+      { command: 'zoomToFit', handle: () => zoomTo('root') },
+      { command: 'zoomToSelection', handle: () => zoomTo('selection') },
     ],
     hotkeys: [
       { command: 'zoomIn', key: 'CmdOrCtrl+=' },

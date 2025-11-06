@@ -14,15 +14,20 @@ declare global {
       }
     }
 
-    type ZoomToValue = 'contain' | 'cover' | number
+    type ZoomTarget
+      = | 'root'
+        | 'selection'
+        | Element2D[]
+        | number
 
     interface ZoomToOptions {
-      selection?: boolean | Element2D[]
+      mode?: 'contain' | 'cover'
+      duration?: number
       behavior?: 'smooth' | 'instant'
     }
 
     interface Editor {
-      zoomTo: (value: ZoomToValue, options?: ZoomToOptions) => Promise<void>
+      zoomTo: (target: ZoomTarget, options?: ZoomToOptions) => Promise<void>
     }
   }
 }
@@ -58,17 +63,18 @@ export default defineMixin((editor) => {
     return offset
   }
 
-  const zoomTo: Mce.Editor['zoomTo'] = async (value, options = {}) => {
+  const zoomTo: Mce.Editor['zoomTo'] = async (target, options = {}) => {
     const {
-      selection,
+      mode = 'contain',
+      duration = 500,
       behavior,
     } = options
 
     let aabb: AxisAlignedBoundingBox
-    if (Array.isArray(selection)) {
-      aabb = getAabb(selection)
+    if (Array.isArray(target)) {
+      aabb = getAabb(target)
     }
-    else if (selection) {
+    else if (target === 'selection') {
       aabb = currentAabb.value
     }
     else {
@@ -93,14 +99,14 @@ export default defineMixin((editor) => {
     const _camera = camera.value
 
     let targetZoom
-    if (value === 'contain') {
-      targetZoom = Math.min(zw, zh)
+    if (typeof target === 'number') {
+      targetZoom = target
     }
-    else if (value === 'cover') {
+    else if (mode === 'cover') {
       targetZoom = Math.max(zw, zh)
     }
     else {
-      targetZoom = value
+      targetZoom = Math.min(zw, zh)
     }
 
     const oldZoom = Math.min(_camera.zoom.x, _camera.zoom.y)
@@ -126,8 +132,6 @@ export default defineMixin((editor) => {
       y: (-sy * newZoom + y),
     }
 
-    const duration = 500
-
     switch (behavior) {
       case 'smooth':
         await new Promise<void>((resolve) => {
@@ -142,7 +146,7 @@ export default defineMixin((editor) => {
             const progress = Math.min(elapsed / duration, 1)
             const ease = progress < 0.5
               ? 2 * progress * progress
-              : -1 + (4 - 2 * progress) * progress // 示例的 easeInOutQuad
+              : -1 + (4 - 2 * progress) * progress // easeInOutQuad
 
             _camera.zoom.set(oldZoom + zoomDistance * ease)
             _camera.position.set(

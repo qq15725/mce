@@ -70,8 +70,7 @@ const Layer = defineComponent({
     function onDblclickThumbnail(e: MouseEvent) {
       e.stopPropagation()
       if (props.node instanceof Element2D) {
-        zoomTo('contain', {
-          selection: true,
+        zoomTo('selection', {
           behavior: 'smooth',
         })
       }
