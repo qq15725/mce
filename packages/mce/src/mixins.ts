@@ -23,6 +23,7 @@ import _4_2_element from './mixins/4.2.element'
 import _4_3_frame from './mixins/4.3.frame'
 import _4_4_doc from './mixins/4.4.doc'
 import _snapshot from './mixins/snapshot'
+import _zoom from './mixins/zoom'
 
 export const mixins = [
   _0_command,
@@ -46,4 +47,5 @@ export const mixins = [
   _4_3_frame,
   _4_4_doc,
   _snapshot,
+  _zoom,
 ]

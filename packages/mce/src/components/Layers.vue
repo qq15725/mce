@@ -10,6 +10,7 @@ const {
   root,
   selection,
   exec,
+  zoomTo,
 } = useEditor()
 
 const rootRef = ref<HTMLElement>()
@@ -69,7 +70,10 @@ const Layer = defineComponent({
     function onDblclickThumbnail(e: MouseEvent) {
       e.stopPropagation()
       if (props.node instanceof Element2D) {
-        exec('zoomToSelection')
+        zoomTo('contain', {
+          selection: true,
+          behavior: 'smooth',
+        })
       }
     }
 
