@@ -124,9 +124,11 @@ const Layer = defineComponent({
             },
             ref: itemRef,
             onMouseenter,
-            onContextmenu: (e) => {
-              selection.value = [props.node]
-              exec('openContextMenu', e)
+            onContextmenu: (e: PointerEvent) => {
+              if (props.node instanceof Element2D) {
+                selection.value = [props.node]
+                exec('openContextMenu', e)
+              }
             },
           }, [
             createElementVNode('div', {
