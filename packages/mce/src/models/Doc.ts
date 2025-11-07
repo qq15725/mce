@@ -311,7 +311,7 @@ export class Doc extends Model {
     const fromIndex = childrenIds.toJSON().indexOf(id)
     childrenIds.delete(fromIndex, 1)
     childrenIds.insert(toIndex, [id])
-    if (parent) {
+    if (parent && !parent.equal(this.root)) {
       parent.moveChild(node, toIndex)
     }
     else {
