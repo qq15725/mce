@@ -141,10 +141,7 @@ export default definePlugin((editor, options) => {
     },
     {
       key: 'frame/unframe',
-      disabled: !(
-        hasMultipleSelected.value
-        || (selection.value[0] && isFrame(selection.value[0]))
-      ),
+      disabled: !hasSelected.value,
     },
   ])
 

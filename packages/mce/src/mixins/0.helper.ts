@@ -1,3 +1,5 @@
+import type { Node } from 'modern-canvas'
+import { Element2D } from 'modern-canvas'
 import { defineMixin } from '../editor'
 
 declare global {
@@ -21,6 +23,9 @@ declare global {
 
     interface Editor {
       parseAnchor: (anchor: Anchor, isRtl?: boolean) => ParsedAnchor
+      isFrame: (node: Node) => node is Element2D
+      isLocked: (element: Element2D) => boolean
+      setLock: (element: Element2D, lock: boolean) => void
     }
   }
 }
@@ -52,7 +57,23 @@ export default defineMixin((editor) => {
     } as Mce.ParsedAnchor
   }
 
+  function isFrame(node: Node): node is Element2D {
+    return node instanceof Element2D
+      && node.meta?.inEditorIs === 'Frame'
+  }
+
+  function isLocked(element: Element2D): boolean {
+    return Boolean(element.meta.lock)
+  }
+
+  function setLock(element: Element2D, lock: boolean): void {
+    element.meta.lock = lock
+  }
+
   Object.assign(editor, {
     parseAnchor,
+    isFrame,
+    isLocked,
+    setLock,
   })
 })

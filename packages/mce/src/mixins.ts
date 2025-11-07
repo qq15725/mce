@@ -20,7 +20,6 @@ import _2_export from './mixins/2.export'
 import _2_load from './mixins/2.load'
 import _3_view from './mixins/3.view'
 import _4_0_text from './mixins/4.0.text'
-import _4_1_lock from './mixins/4.1.lock'
 import _4_2_element from './mixins/4.2.element'
 import _4_3_frame from './mixins/4.3.frame'
 import _4_4_doc from './mixins/4.4.doc'
@@ -47,7 +46,6 @@ export const mixins = [
   _2_load,
   _3_view,
   _4_0_text,
-  _4_1_lock,
   _4_2_element,
   _4_3_frame,
   _4_4_doc,

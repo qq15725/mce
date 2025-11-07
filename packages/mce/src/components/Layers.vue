@@ -11,6 +11,7 @@ const {
   selection,
   exec,
   zoomTo,
+  isFrame,
 } = useEditor()
 
 const rootRef = ref<HTMLElement>()
@@ -90,7 +91,7 @@ const Layer = defineComponent({
     return (): any => {
       function thumbnail() {
         const node = props.node
-        if (node.meta.inEditorIs === 'Frame') {
+        if (isFrame(node)) {
           return createVNode(Icon, { icon: '$frame' })
         }
         if (node.children.length > 0) {

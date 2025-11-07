@@ -73,13 +73,13 @@ export default definePlugin((editor) => {
   }
 
   function frameOrUnframe() {
-    if (selection.value.length === 1) {
+    if (selection.value.length) {
       if (isFrame(selection.value[0])) {
         unframe()
       }
-    }
-    else if (selection.value.length > 1) {
-      frame()
+      else {
+        frame()
+      }
     }
   }
 

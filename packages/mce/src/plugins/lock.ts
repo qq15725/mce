@@ -17,17 +17,16 @@ declare global {
 export default definePlugin((editor) => {
   const {
     selection,
-    lock,
-    unlock,
-    isLock,
+    isLocked,
+    setLock,
   } = editor
 
   return {
     name: 'mce:lock',
     commands: [
-      { command: 'lock', handle: () => selection.value.forEach(lock) },
-      { command: 'unlock', handle: () => selection.value.forEach(unlock) },
-      { command: 'lock/unlock', handle: () => selection.value.forEach(el => isLock(el) ? unlock(el) : lock(el)) },
+      { command: 'lock', handle: () => selection.value.forEach(el => setLock(el, true)) },
+      { command: 'unlock', handle: () => selection.value.forEach(el => setLock(el, false)) },
+      { command: 'lock/unlock', handle: () => selection.value.forEach(el => setLock(el, !isLocked(el))) },
     ],
     hotkeys: [
       { command: 'lock/unlock', key: 'Shift+CmdOrCtrl+l' },
