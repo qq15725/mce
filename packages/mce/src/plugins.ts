@@ -7,7 +7,6 @@ import _clipboard from './plugins/clipboard'
 import _copyAs from './plugins/copyAs'
 import _delete from './plugins/delete'
 import _flip from './plugins/flip'
-import _frame from './plugins/frame'
 import _gif from './plugins/gif'
 import _group from './plugins/group'
 import _history from './plugins/history'
@@ -38,7 +37,6 @@ export const plugins = [
   _copyAs,
   _delete,
   _flip,
-  _frame,
   _gif,
   _group,
   _history,

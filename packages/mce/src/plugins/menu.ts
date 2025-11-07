@@ -132,17 +132,12 @@ export default definePlugin((editor, options) => {
   }))
 
   const objectMenu1 = computed(() => [
-    {
-      key: 'group/ungroup',
-      disabled: !(
-        hasMultipleSelected.value
-        || selection.value[0]?.children.length
-      ),
-    },
-    {
-      key: 'frame/unframe',
-      disabled: !hasSelected.value,
-    },
+    { key: 'groupSelection', disabled: !hasSelected.value },
+    { key: 'frameSelection', disabled: !hasSelected.value },
+    { key: 'ungroup', disabled: !(
+      hasSelected.value
+      && selection.value[0]?.children.length
+    ) },
   ])
 
   const layerOrderMenu = computed(() => ({

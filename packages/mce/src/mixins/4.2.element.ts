@@ -1,4 +1,4 @@
-import type { Element2D, Vector2Data } from 'modern-canvas'
+import type { Element2D, Node, Vector2Data } from 'modern-canvas'
 import type { Element } from 'modern-idoc'
 import type { AxisAlignedBoundingBox } from '../types'
 import { defineMixin } from '../editor'
@@ -13,9 +13,9 @@ declare global {
         | 'pointer'
 
     interface AddElementOptions {
-      parent?: Element2D
       position?: AddElementPosition
-      append?: boolean
+      parent?: Node
+      index?: number
       sizeToFit?: boolean
       active?: boolean
       regenId?: boolean
@@ -89,6 +89,7 @@ export default defineMixin((editor) => {
 
     let {
       parent,
+      index,
       sizeToFit,
       position,
       active,
@@ -111,20 +112,27 @@ export default defineMixin((editor) => {
         }
       }
     }
+    const parentAabb = parent ? getAabb(parent) : undefined
 
     const isArray = Array.isArray(value)
     let offsetX = 0
+    let offsetIndex = index
 
     const elements = doc.value.transact(() => {
       const values = isArray ? value : [value]
       const elements = values.map((element) => {
         const el = doc.value.addElement(element, {
           parentId: parent?.id,
+          index: offsetIndex,
           regenId,
         }) as Element2D
 
-        if (parent) {
-          const { width, height } = parent.style
+        if (offsetIndex !== undefined) {
+          offsetIndex++
+        }
+
+        if (parentAabb && parentAabb.width && parentAabb.height) {
+          const { width, height } = parentAabb
           const halfWidth = width / 2
           const halfHeight = height / 2
 
@@ -156,7 +164,6 @@ export default defineMixin((editor) => {
       })
 
       const aabb = getAabb(elements)
-      const parentAabb = parent ? getAabb(parent) : undefined
       let globalPosition: { x: number, y: number } | undefined
 
       if (typeof position === 'string') {
