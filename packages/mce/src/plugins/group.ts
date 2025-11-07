@@ -26,7 +26,7 @@ export default definePlugin((editor) => {
 
   function group(): void {
     const elements = selection.value
-    if (elements.length === 0) {
+    if (elements.length <= 1) {
       return
     }
     const aabb = getAabb(elements, 'parent')
@@ -53,7 +53,7 @@ export default definePlugin((editor) => {
 
   function ungroup() {
     const element = selection.value[0]
-    if (!element)
+    if (!element || !element.children.length)
       return
     const items = element.children.map((child) => {
       const obb = getObb(child, 'frame')
@@ -73,7 +73,9 @@ export default definePlugin((editor) => {
 
   function groupOrUngroup() {
     if (selection.value.length === 1) {
-      ungroup()
+      if (selection.value[0].children.length) {
+        ungroup()
+      }
     }
     else if (selection.value.length > 1) {
       group()

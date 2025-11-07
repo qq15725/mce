@@ -54,7 +54,7 @@ export default definePlugin((editor) => {
 
   function unframe() {
     const element = selection.value[0]
-    if (!element)
+    if (!element || !isFrame(element))
       return
     const items = element.children.map((el) => {
       const obb = getObb(el)

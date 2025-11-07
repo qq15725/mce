@@ -33,6 +33,7 @@ export default definePlugin((editor, options) => {
     textSelection,
     config,
     exporters,
+    isFrame,
   } = editor
 
   const {
@@ -40,6 +41,7 @@ export default definePlugin((editor, options) => {
   } = options
 
   const hasSelected = computed(() => selection.value.length > 0)
+  const hasMultipleSelected = computed(() => selection.value.length > 1)
 
   const exportMenu = computed(() => ({
     key: 'export',
@@ -130,8 +132,20 @@ export default definePlugin((editor, options) => {
   }))
 
   const objectMenu1 = computed(() => [
-    { key: 'group/ungroup', disabled: !hasSelected.value },
-    { key: 'frame/unframe', disabled: !hasSelected.value },
+    {
+      key: 'group/ungroup',
+      disabled: !(
+        hasMultipleSelected.value
+        || selection.value[0]?.children.length
+      ),
+    },
+    {
+      key: 'frame/unframe',
+      disabled: !(
+        hasMultipleSelected.value
+        || (selection.value[0] && isFrame(selection.value[0]))
+      ),
+    },
   ])
 
   const layerOrderMenu = computed(() => ({
