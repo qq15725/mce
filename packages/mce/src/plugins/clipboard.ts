@@ -20,7 +20,7 @@ declare global {
       copy: (data?: any) => Promise<void>
       cut: () => Promise<void>
       paste: (source?: PasteSource) => Promise<void>
-      duplicate: () => Promise<void>
+      duplicate: () => void
     }
 
     interface Editor {
@@ -177,9 +177,20 @@ export default definePlugin((editor, options) => {
     }
   }
 
-  async function duplicate(): Promise<void> {
-    await copy()
-    await paste()
+  function duplicate(): void {
+    if (!selection.value.length) {
+      return
+    }
+
+    addElement(
+      selection.value.map(v => v.toJSON()),
+      {
+        parent: selection.value[0].parent,
+        index: selection.value[0].getIndex(),
+        active: true,
+        regenId: true,
+      },
+    )
   }
 
   Object.assign(editor, {
