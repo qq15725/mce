@@ -62,9 +62,17 @@ const Layer = defineComponent({
       opened.value = !opened.value
     }
 
-    function onClickContent() {
+    function onClickContent(e: MouseEvent) {
       if (props.node instanceof Element2D) {
-        selection.value = [props.node]
+        if (e.shiftKey) {
+          selection.value = [
+            ...selection.value.filter(v => !v.equal(props.node)),
+            props.node,
+          ]
+        }
+        else {
+          selection.value = [props.node]
+        }
       }
     }
 
@@ -85,6 +93,15 @@ const Layer = defineComponent({
       hover.value = {
         node: props.node,
         dom: itemRef.value!,
+      }
+    }
+
+    function onContextmenu(e: PointerEvent) {
+      if (props.node instanceof Element2D) {
+        if (!selection.value.some(v => v.equal(props.node))) {
+          selection.value = [props.node]
+        }
+        exec('openContextMenu', e)
       }
     }
 
@@ -125,12 +142,7 @@ const Layer = defineComponent({
             },
             ref: itemRef,
             onMouseenter,
-            onContextmenu: (e: PointerEvent) => {
-              if (props.node instanceof Element2D) {
-                selection.value = [props.node]
-                exec('openContextMenu', e)
-              }
-            },
+            onContextmenu,
           }, [
             createElementVNode('div', {
               class: 'mce-layer-item__expand',
