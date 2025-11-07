@@ -29,15 +29,13 @@ const {
   <Scrollbar
     v-bind="props"
     v-model="camera.position.y"
-    :zoom="camera.zoom.y"
     vertical
-    :length="viewAabb.height"
+    :length="viewAabb.height * camera.zoom.y"
   />
 
   <Scrollbar
     v-bind="props"
     v-model="camera.position.x"
-    :zoom="camera.zoom.x"
-    :length="viewAabb.width"
+    :length="viewAabb.width * camera.zoom.x"
   />
 </template>
