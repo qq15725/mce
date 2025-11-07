@@ -115,7 +115,6 @@ export default defineMixin((editor) => {
     const parentAabb = parent ? getAabb(parent) : undefined
 
     const isArray = Array.isArray(value)
-    let offsetX = 0
     let offsetIndex = index
 
     const elements = doc.value.transact(() => {
@@ -163,9 +162,6 @@ export default defineMixin((editor) => {
             )
           }
         }
-
-        el.style.left += offsetX
-        offsetX += el.style.width
 
         return el
       })
