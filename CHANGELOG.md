@@ -1,3 +1,23 @@
+## [0.12.3](https://github.com/qq15725/mce/compare/v0.12.2...v0.12.3) (2025-11-07)
+
+
+### Bug Fixes
+
+* addElement ([67ff071](https://github.com/qq15725/mce/commit/67ff071db0d3332e45d816f1cbaf7c653a299544))
+* duplicate ([8d3ba0e](https://github.com/qq15725/mce/commit/8d3ba0ec967fb51dd5f7e73f4965919a9a7026de))
+* group ([5b64740](https://github.com/qq15725/mce/commit/5b647404ee8cd0fdc53b61c1bc63c32ac310ffb4))
+* layers ([a22716f](https://github.com/qq15725/mce/commit/a22716f4a28954ea4f0ee7fbd03e4b6204dc8ec2))
+* scrollbar ([73a049d](https://github.com/qq15725/mce/commit/73a049d0cdf8a26243297ef2aa416f587a0ff996))
+
+
+### Features
+
+* addElement auto set text width height ([d0b4800](https://github.com/qq15725/mce/commit/d0b48002ddf90950ff02938b575feff8a0739504))
+* change group frame ([8f5cf7b](https://github.com/qq15725/mce/commit/8f5cf7be43f6ecdfce932a897b2ea0f5bb2c2b2b))
+* change lock util ([5f1cef4](https://github.com/qq15725/mce/commit/5f1cef490a4ef7de4f990a5379243b278b40c9cc))
+
+
+
 ## [0.12.2](https://github.com/qq15725/mce/compare/v0.12.1...v0.12.2) (2025-11-07)
 
 
