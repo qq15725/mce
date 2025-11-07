@@ -264,6 +264,10 @@ export class Doc extends Model {
     this.reset()
     this.addElements(children)
     this.setProperties(props)
+    this._yProps.clear()
+    for (const key in props) {
+      this._yProps.set(key, (props as any)[key])
+    }
     this._yProps.set('meta', new Y.Map(Object.entries(meta)))
     return this
   }

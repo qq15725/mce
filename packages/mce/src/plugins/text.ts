@@ -27,7 +27,7 @@ export default definePlugin((editor) => {
     const { style, ...restOptions } = options
     return addElement(createTextElement(content, style), {
       sizeToFit: true,
-      position: 'horizontal',
+      position: 'right',
       ...restOptions,
     })
   }

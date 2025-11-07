@@ -16,7 +16,8 @@ declare global {
       children: NormalizedElement[]
       meta: {
         inPptIs: 'Pptx'
-        inCanvasIs: 'Node2D'
+        inEditorIs: 'Doc'
+        inCanvasIs: 'Element2D'
         startTime: number
         endTime: number
       }
@@ -92,9 +93,7 @@ export default definePlugin((editor) => {
             }
 
             if (elements.length === 0 && root.value) {
-              if (root.value.meta.id) {
-                id = root.value.meta.id
-              }
+              id = root.value.id
               elements = root.value.children as Element2D[]
             }
           }
@@ -123,6 +122,7 @@ export default definePlugin((editor) => {
             }),
             meta: {
               inPptIs: 'Pptx',
+              inEditorIs: 'Doc',
               inCanvasIs: 'Element2D',
               ...getTimeRange(elements),
             },

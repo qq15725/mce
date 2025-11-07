@@ -5,15 +5,28 @@ import { Doc } from '../models'
 
 declare global {
   namespace Mce {
+    interface InternalDocument extends Document {
+      id: string
+      meta: {
+        [key: string]: any
+        inEditorIs: 'Doc'
+      }
+    }
+
+    type DocumentSource
+      = | InternalDocument
+        | Element[]
+        | string
+
     interface Editor {
       getDoc: () => JsonData
-      setDoc: (doc: Document | Element[] | string) => Promise<Doc>
+      setDoc: (doc: DocumentSource) => Promise<Doc>
       loadDoc: (source: any) => Promise<Doc>
       clearDoc: () => void
     }
 
     interface Options {
-      doc?: Document | string
+      doc?: DocumentSource
     }
 
     interface Events {
@@ -51,7 +64,7 @@ export default defineMixin((editor, options) => {
     return to('json')
   }
 
-  async function initDoc(doc: Doc, source?: Document | Element[] | string) {
+  async function initDoc(doc: Doc, source?: Mce.DocumentSource) {
     await doc.load(async () => {
       if (config.value.localDb) {
         try {
@@ -76,12 +89,13 @@ export default defineMixin((editor, options) => {
 
   const setDoc: Mce.Editor['setDoc'] = async (source) => {
     let id: string | undefined
+    let _source: any = source
     if (typeof source === 'string') {
       id = source
     }
     else if (source) {
       if (Array.isArray(source) && source.length === 1) {
-        source = source[0]
+        _source = source[0]
       }
 
       if (!Array.isArray(source)) {
@@ -89,7 +103,7 @@ export default defineMixin((editor, options) => {
           id = source.id
         }
         else {
-          source = [source]
+          _source = [source]
         }
       }
     }
@@ -101,7 +115,7 @@ export default defineMixin((editor, options) => {
     try {
       await waitUntilFontLoad()
       clearDoc()
-      await initDoc(_doc, source)
+      await initDoc(_doc, _source)
       doc.value = _doc
       emit('setDoc', _doc)
     }
