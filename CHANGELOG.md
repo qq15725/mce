@@ -1,3 +1,19 @@
+## [0.12.2](https://github.com/qq15725/mce/compare/v0.12.1...v0.12.2) (2025-11-07)
+
+
+### Bug Fixes
+
+* addElement to screenCenter ([fe8274f](https://github.com/qq15725/mce/commit/fe8274ff1bab286e09e935efc7c5da7c013d92c9))
+* getDoc ([5a7990f](https://github.com/qq15725/mce/commit/5a7990fa1aa90b45d2e7e5fab34e777c07be4a8e))
+* overlay zIndex ([6e819dd](https://github.com/qq15725/mce/commit/6e819dd719935ede3ece908248304de2b631b65b))
+
+
+### Features
+
+* addElement position ([da6fb3c](https://github.com/qq15725/mce/commit/da6fb3c0163b59dd194ff1c56265a931bf1d5c69))
+
+
+
 ## [0.12.1](https://github.com/qq15725/mce/compare/v0.12.0...v0.12.1) (2025-11-06)
 
 
