@@ -1,3 +1,13 @@
+## [0.12.5](https://github.com/qq15725/mce/compare/v0.12.4...v0.12.5) (2025-11-07)
+
+
+### Bug Fixes
+
+* addElement bug in parent is root ([e164245](https://github.com/qq15725/mce/commit/e164245dc651f2d5fe8f927b8a72406877a2fe90))
+* moveElement bug in parent is root ([c645f5e](https://github.com/qq15725/mce/commit/c645f5ea815b2ad581b40ce10b2379d8ba7840c9))
+
+
+
 ## [0.12.4](https://github.com/qq15725/mce/compare/v0.12.3...v0.12.4) (2025-11-07)
 
 
