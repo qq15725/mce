@@ -19,15 +19,12 @@ export async function convertElement(
   delete style.bottom
   delete style.right
 
+  const { children: _children, ...raw } = el
+
   const meta: Record<string, any> = {
+    raw,
     inPptIs: 'Shape',
     inEditorIs: 'Element',
-  }
-  if (el.id) {
-    meta.rawId = el.id
-  }
-  if (el.name) {
-    meta.rawName = el.name
   }
 
   const element: NormalizedElement = {
