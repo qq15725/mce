@@ -175,6 +175,8 @@ export default defineMixin((editor) => {
             break
           case 'screenCenter':
             globalPosition = camera.value.toGlobal(getScreenCenter())
+            globalPosition.x -= aabb.width / 2
+            globalPosition.y -= aabb.height / 2
             break
           default: {
             const _parentAabb = parentAabb ?? rootAabb.value
