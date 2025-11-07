@@ -131,6 +131,13 @@ export default defineMixin((editor) => {
           offsetIndex++
         }
 
+        if (el.text.isValid()) {
+          if (!el.style.width)
+            el.style.width = el.text.base.boundingBox.width
+          if (!el.style.height)
+            el.style.height = el.text.base.boundingBox.height
+        }
+
         if (parentAabb && parentAabb.width && parentAabb.height) {
           const { width, height } = parentAabb
           const halfWidth = width / 2
