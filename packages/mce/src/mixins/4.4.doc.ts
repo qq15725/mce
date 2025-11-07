@@ -98,12 +98,12 @@ export default defineMixin((editor, options) => {
         _source = source[0]
       }
 
-      if (!Array.isArray(source)) {
-        if (source.meta?.inEditorIs === 'Doc') {
-          id = source.id
+      if (!Array.isArray(_source)) {
+        if (_source.meta?.inEditorIs === 'Doc') {
+          id = _source.id
         }
         else {
-          _source = [source]
+          _source = [_source]
         }
       }
     }
