@@ -33,7 +33,6 @@ export default definePlugin((editor, options) => {
     textSelection,
     config,
     exporters,
-    isFrame,
   } = editor
 
   const {
@@ -41,7 +40,6 @@ export default definePlugin((editor, options) => {
   } = options
 
   const hasSelected = computed(() => selection.value.length > 0)
-  const hasMultipleSelected = computed(() => selection.value.length > 1)
 
   const exportMenu = computed(() => ({
     key: 'export',
