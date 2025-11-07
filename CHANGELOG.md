@@ -1,3 +1,18 @@
+## [0.12.4](https://github.com/qq15725/mce/compare/v0.12.3...v0.12.4) (2025-11-07)
+
+
+### Bug Fixes
+
+* screenCenter ([4c55edd](https://github.com/qq15725/mce/commit/4c55edd1272cd8cb550272704808c4ec895cd097))
+* setDoc ([c2d59dd](https://github.com/qq15725/mce/commit/c2d59dd6444338c174a624c230c50f3832300fef))
+
+
+### Features
+
+* el.meta.raw ([6937059](https://github.com/qq15725/mce/commit/693705909fd02defb37696c9b1e3b9ab071a18f0))
+
+
+
 ## [0.12.3](https://github.com/qq15725/mce/compare/v0.12.2...v0.12.3) (2025-11-07)
 
 
