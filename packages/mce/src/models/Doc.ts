@@ -226,7 +226,7 @@ export class Doc extends Model {
     const first = nodeMap[0]
     let parent
     let childrenIds
-    if (parentId) {
+    if (parentId && parentId !== this.root.id) {
       parent = this.nodeMap.get(parentId)
       childrenIds = this._yChildren.get(parentId)?.get('childrenIds')
     }
