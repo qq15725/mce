@@ -8,6 +8,7 @@ import _0_config_base from './mixins/0.config/base'
 import _0_context from './mixins/0.context'
 import _0_element from './mixins/0.element'
 import _0_font from './mixins/0.font'
+import _0_helper from './mixins/0.helper'
 import _0_locale from './mixins/0.locale'
 import _1_frame from './mixins/1.frame'
 import _1_hotkey from './mixins/1.hotkey'
@@ -34,6 +35,7 @@ export const mixins = [
   _0_context,
   _0_element,
   _0_font,
+  _0_helper,
   _0_locale,
   _1_frame,
   _1_hotkey,

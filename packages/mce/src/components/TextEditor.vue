@@ -21,7 +21,7 @@ const mainStyleWithScale = computed(() => {
   const { zoom, position } = camera.value
   return {
     transformOrigin: 'left top',
-    transform: `translate(${position.x}px, ${position.y}px) scale(${zoom.x}, ${zoom.y})`,
+    transform: `translate(${-position.x}px, ${-position.y}px) scale(${zoom.x}, ${zoom.y})`,
   }
 })
 

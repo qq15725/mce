@@ -90,8 +90,8 @@ export default defineMixin((editor) => {
     const sh = aabb.height * zoom.y
     ctx.drawImage(
       view,
-      (aabb.left * zoom.x + position.x) * pixelRatio,
-      (aabb.top * zoom.x + position.y) * pixelRatio,
+      (aabb.left * zoom.x - position.x) * pixelRatio,
+      (aabb.top * zoom.x - position.y) * pixelRatio,
       sw * pixelRatio,
       sh * pixelRatio,
       0,

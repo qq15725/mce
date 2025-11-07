@@ -6,10 +6,17 @@ import { isOverlappingObb } from '../utils'
 
 declare global {
   namespace Mce {
+    type AddElementPosition
+      = | Vector2Data
+        | Anchor
+        | 'screenCenter'
+        | 'pointer'
+
     interface AddElementOptions {
-      frame?: Element2D
+      parent?: Element2D
+      position?: AddElementPosition
+      append?: boolean
       sizeToFit?: boolean
-      position?: Vector2Data | 'horizontal' | 'vertical' | 'screenCenter' | 'pointer'
       active?: boolean
       regenId?: boolean
     }
@@ -67,6 +74,7 @@ export default defineMixin((editor) => {
     getScreenCenter,
     selection,
     camera,
+    parseAnchor,
   } = editor
 
   function addElement(
@@ -80,50 +88,28 @@ export default defineMixin((editor) => {
     } = config.value
 
     let {
-      frame,
+      parent,
       sizeToFit,
       position,
       active,
       regenId,
     } = options
 
-    if (!frame) {
+    if (!parent) {
       if (config.value.viewMode === 'frame') {
-        frame = currentFrame.value
+        parent = currentFrame.value
       }
       else {
         const element = selection.value[0]
         if (element) {
           if (isFrame(element)) {
-            frame = element
+            parent = element
           }
           else {
-            frame = getAncestorFrame(element)
+            parent = getAncestorFrame(element)
           }
         }
       }
-    }
-
-    let initPos: { x: number, y: number } | undefined
-    switch (position) {
-      case 'screenCenter': {
-        initPos = camera.value.toGlobal(getScreenCenter())
-        break
-      }
-      case 'horizontal':
-        initPos = {
-          x: rootAabb.value.left + frameGap + rootAabb.value.width,
-          y: rootAabb.value.top,
-        }
-        break
-      case 'vertical':
-        initPos = {
-          x: rootAabb.value.left,
-          y: rootAabb.value.top + frameGap + rootAabb.value.height,
-        }
-        break
-      default:
-        break
     }
 
     const isArray = Array.isArray(value)
@@ -132,16 +118,21 @@ export default defineMixin((editor) => {
     const elements = doc.value.transact(() => {
       const values = isArray ? value : [value]
       const elements = values.map((element) => {
-        const el = doc.value.addElement(element, { parentId: frame?.id, regenId }) as Element2D
+        const el = doc.value.addElement(element, {
+          parentId: parent?.id,
+          regenId,
+        }) as Element2D
 
-        if (frame) {
-          const { width, height } = frame.style
+        if (parent) {
+          const { width, height } = parent.style
           const halfWidth = width / 2
           const halfHeight = height / 2
+
           if (!el.style.width)
             el.style.width = halfWidth
           if (!el.style.height)
             el.style.height = halfHeight
+
           if (sizeToFit) {
             const aspectRatio = el.style.width / el.style.height
             const newWidth = aspectRatio > 1 ? halfWidth : halfHeight * aspectRatio
@@ -156,16 +147,6 @@ export default defineMixin((editor) => {
               },
             )
           }
-          // TODO
-          el.style.left = Math.round(width - el.style.width) / 2
-          el.style.top = Math.round(height - el.style.height) / 2
-        }
-        else {
-          if (initPos) {
-            el.style.left = Math.round(initPos.x)
-            el.style.top = Math.round(initPos.y)
-            initPos.x += el.style.width + config.value.frameGap
-          }
         }
 
         el.style.left += offsetX
@@ -175,6 +156,78 @@ export default defineMixin((editor) => {
       })
 
       const aabb = getAabb(elements)
+      const parentAabb = parent ? getAabb(parent) : undefined
+      let globalPosition: { x: number, y: number } | undefined
+
+      if (typeof position === 'string') {
+        switch (position) {
+          case 'pointer':
+            break
+          case 'screenCenter':
+            globalPosition = camera.value.toGlobal(getScreenCenter())
+            break
+          default: {
+            const _parentAabb = parentAabb ?? rootAabb.value
+            const anchor = parseAnchor(position)
+            globalPosition = { x: 0, y: 0 }
+
+            const map = {
+              centerX: () => globalPosition!.x = _parentAabb.left + _parentAabb.width / 2,
+              centerY: () => globalPosition!.y = _parentAabb.top + _parentAabb.height / 2,
+            }
+
+            if (anchor.side === 'center') {
+              map.centerX()
+              map.centerY()
+            }
+            else {
+              if (anchor.side === 'left' || anchor.side === 'right') {
+                switch (anchor.side) {
+                  case 'left':
+                    globalPosition.x = _parentAabb.left - (aabb.width + frameGap)
+                    break
+                  case 'right':
+                    globalPosition.x = _parentAabb.left + _parentAabb.width + frameGap
+                    break
+                }
+                switch (anchor.align) {
+                  case 'top':
+                    globalPosition.y = _parentAabb.top
+                    break
+                  case 'bottom':
+                    globalPosition.y = _parentAabb.top + _parentAabb.height
+                    break
+                  case 'center':
+                    map.centerY()
+                    break
+                }
+              }
+              else if (anchor.side === 'top' || anchor.side === 'bottom') {
+                switch (anchor.side) {
+                  case 'top':
+                    globalPosition.y = _parentAabb.top - (aabb.height + frameGap)
+                    break
+                  case 'bottom':
+                    globalPosition.y = _parentAabb.top + _parentAabb.height + frameGap
+                    break
+                }
+                switch (anchor.align) {
+                  case 'left':
+                    globalPosition.x = _parentAabb.left
+                    break
+                  case 'right':
+                    globalPosition.x = _parentAabb.left + _parentAabb.width
+                    break
+                  case 'center':
+                    map.centerX()
+                    break
+                }
+              }
+            }
+            break
+          }
+        }
+      }
 
       if (position === 'pointer') {
         const pointer = getGlobalPointer()
@@ -185,6 +238,21 @@ export default defineMixin((editor) => {
         elements.forEach((el) => {
           el.style.left += diff.x
           el.style.top += diff.y
+        })
+      }
+      else if (globalPosition) {
+        elements.forEach((el) => {
+          el.style.left = Math.round(
+            parentAabb
+              ? parentAabb.left - globalPosition.x
+              : globalPosition.x,
+          )
+          el.style.top = Math.round(
+            parentAabb
+              ? parentAabb.top - globalPosition.y
+              : globalPosition.y,
+          )
+          globalPosition.x += el.style.width + frameGap
         })
       }
 
