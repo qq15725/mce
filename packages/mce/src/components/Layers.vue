@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import type { Node } from 'modern-canvas'
-import type { PropType } from 'vue'
+import type { ComponentInternalInstance, ComputedRef, InjectionKey, PropType, Ref } from 'vue'
 import { Element2D } from 'modern-canvas'
-import { computed, createElementVNode, createVNode, defineComponent, mergeProps, ref, watch } from 'vue'
+import { computed, createElementVNode, createVNode, defineComponent, getCurrentInstance, inject, mergeProps, nextTick, onBeforeUnmount, provide, reactive, ref, watch } from 'vue'
 import { useEditor } from '../composables/editor'
+import { findChildrenWithProvide } from '../utils'
 import Icon from './shared/Icon.vue'
 
 const {
@@ -12,19 +13,92 @@ const {
   exec,
   zoomTo,
   isFrame,
+  hoverElement,
+  state,
+  nodes,
+  nodeIndexMap,
 } = useEditor()
 
-const rootRef = ref<HTMLElement>()
+const rootDom = ref<HTMLElement>()
 const hover = ref<{ node: Node, dom: HTMLElement }>()
 const current = ref<{ node: Element2D, x: number, y: number }>()
+const adding = ref(false)
+
+interface LayoutProvide {
+  register: (
+    vm: ComponentInternalInstance,
+    options: {
+      id: string
+      dom: ComputedRef<HTMLElement | undefined>
+      opened: Ref<boolean>
+    },
+  ) => void
+  unregister: (id: string) => void
+}
+const MceLayerKey: InjectionKey<LayoutProvide> = Symbol.for('mce:layer')
+const MceLayerItemKey: InjectionKey<{ id: string }> = Symbol.for('mce:layer-item')
+const registered = ref<string[]>([])
+const openedItems = reactive(new Map<string, Ref<boolean>>())
+const domItems = reactive(new Map<string, ComputedRef<HTMLElement | undefined>>())
+const rootVm = getCurrentInstance()!
+
+provide(MceLayerKey, {
+  register: (vm, options) => {
+    const {
+      id,
+      dom,
+      opened,
+    } = options
+    openedItems.set(id, opened)
+    domItems.set(id, dom)
+    registered.value.push(id)
+    const instances = findChildrenWithProvide(MceLayerItemKey, rootVm?.vnode)
+    const instanceIndex = instances.indexOf(vm)
+    if (instanceIndex > -1) {
+      registered.value.splice(instanceIndex, 0, id)
+    }
+    else {
+      registered.value.push(id)
+    }
+  },
+  unregister: (id) => {
+    openedItems.delete(id)
+    domItems.delete(id)
+    registered.value = registered.value.filter(v => v !== id)
+  },
+})
+
+watch(selection, (selection) => {
+  if (state.value === 'selecting' || adding.value) {
+    return
+  }
+  let last: Node | undefined
+  selection.forEach((node) => {
+    node.findAncestor((ancestor) => {
+      const opened = openedItems.get(ancestor.id)
+      if (opened) {
+        opened.value = true
+      }
+      return false
+    })
+    last = node
+  })
+  if (last) {
+    nextTick().then(() => {
+      domItems.get(last!.id)?.value?.scrollIntoView({
+        block: 'center',
+      })
+    })
+  }
+})
 
 watch(hover, (hover) => {
-  const rootBox = rootRef.value?.getBoundingClientRect()
+  const rootBox = rootDom.value?.getBoundingClientRect()
   const hoverBox = hover?.dom.getBoundingClientRect()
   if (rootBox && hoverBox && hover!.node instanceof Element2D) {
     current.value = {
-      x: -rootRef.value!.scrollLeft,
-      y: rootRef.value!.scrollTop + hoverBox.y - rootBox.y,
+      x: -rootDom.value!.scrollLeft,
+      y: rootDom.value!.scrollTop + hoverBox.y - rootBox.y,
       node: hover!.node,
     }
   }
@@ -53,27 +127,78 @@ const Layer = defineComponent({
   setup(props, { attrs }) {
     const opened = ref(false)
     const isActive = computed(() => selection.value.some(v => v.equal(props.node)))
-    const children = computed<Node[]>(() => props.node?.children ?? [])
+    const children = computed<Node[]>(() => props.node.children ?? [])
     const itemRef = ref<HTMLElement>()
     const editing = ref(false)
     const editValue = ref<string>()
+
+    const vm = getCurrentInstance()!
+    const id = `${props.node.name} ${props.node.id}`
+    provide(MceLayerItemKey, { id })
+    const rootLayer = inject(MceLayerKey)!
+    rootLayer.register(vm, {
+      id,
+      dom: computed(() => itemRef.value),
+      opened,
+    })
+    onBeforeUnmount(() => rootLayer.unregister(id))
 
     function onClickExpand() {
       opened.value = !opened.value
     }
 
     function onClickContent(e: MouseEvent) {
+      adding.value = true
       if (props.node instanceof Element2D) {
         if (e.shiftKey) {
-          selection.value = [
+          const nodes = [
             ...selection.value.filter(v => !v.equal(props.node)),
             props.node,
           ]
+          let min: number | undefined
+          let max: number | undefined
+          nodes.forEach((el) => {
+            const index = nodeIndexMap.get(el.id)
+            if (index !== undefined) {
+              min = min === undefined ? index : Math.min(min, index)
+              max = max === undefined ? index : Math.max(max, index)
+            }
+          })
+          if (min !== undefined && max !== undefined) {
+            let _selection = nodes.slice(min, max + 1)
+
+            // compact selection
+            const result = new Set<string>(_selection.map(node => node.id))
+            const parents = new Set<Node>()
+            _selection.forEach(node => node.parent && parents.add(node.parent))
+            parents.forEach((parent) => {
+              if (parent.children.every(ch => result.has(ch.id))) {
+                const ids = new Set<string>(parent.children.map(ch => ch.id))
+                _selection = [
+                  ..._selection.filter(v => !ids.has(v.id)),
+                  parent,
+                ]
+              }
+            })
+            selection.value = _selection
+          }
+        }
+        else if (e.ctrlKey || e.metaKey) {
+          const filtered = selection.value.filter(v => !v.equal(props.node))
+          if (filtered.length !== selection.value.length) {
+            selection.value = filtered
+          }
+          else {
+            selection.value = [...filtered, props.node]
+          }
         }
         else {
           selection.value = [props.node]
         }
       }
+      nextTick().then(() => {
+        adding.value = false
+      })
     }
 
     function onDblclickThumbnail(e: MouseEvent) {
@@ -90,6 +215,9 @@ const Layer = defineComponent({
     }
 
     function onMouseenter() {
+      if (props.node instanceof Element2D) {
+        hoverElement.value = props.node
+      }
       hover.value = {
         node: props.node,
         dom: itemRef.value!,
@@ -133,13 +261,13 @@ const Layer = defineComponent({
             isActive.value && 'mce-layer--active',
             opened.value && 'mce-layer--opened',
           ],
+          style: {
+            '--indent-padding': `${props.indent * 16}px`,
+          },
         }),
         [
           createElementVNode('div', {
             class: 'mce-layer-item',
-            style: {
-              '--indent-padding': `${props.indent * 16}px`,
-            },
             ref: itemRef,
             onMouseenter,
             onContextmenu,
@@ -201,7 +329,7 @@ const Layer = defineComponent({
 
 <template>
   <div
-    ref="rootRef"
+    ref="rootDom"
     class="mce-layers"
     @mouseleave="onMouseleave"
   >
@@ -241,18 +369,39 @@ const Layer = defineComponent({
 
 <style lang="scss">
   .mce-layer-item {
+    position: relative;
     flex: none;
     display: flex;
     align-items: center;
-    height: 24px;
+    height: 32px;
     font-size: 12px;
-    border-radius: 4px;
     padding-left: var(--indent-padding, 0);
     width: 100%;
     min-width: max-content;
 
+    &:before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      pointer-events: none;
+    }
+
+    &:after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 2px;
+      bottom: 2px;
+      right: 0;
+      background-color: var(--overlay-color, transparent);
+      pointer-events: none;
+    }
+
     &:hover {
-      background-color: rgba(var(--mce-theme-on-background), var(--mce-hover-opacity));
+      --overlay-color: rgba(var(--mce-theme-on-background), var(--mce-hover-opacity));
     }
 
     &__expand {
@@ -297,13 +446,18 @@ const Layer = defineComponent({
     flex: none;
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    border-radius: 4px;
     width: 100%;
     min-width: max-content;
 
     &--active {
-      background-color: rgba(var(--mce-theme-primary), var(--mce-activated-opacity));
+
+      .mce-layer-item:before {
+        background: rgba(var(--mce-theme-primary), calc(var(--mce-activated-opacity) * 3));
+      }
+
+      .mce-layer-item:hover:after {
+          background: rgba(var(--mce-theme-primary), var(--mce-hover-opacity));
+      }
     }
 
     &--opened {
@@ -317,7 +471,6 @@ const Layer = defineComponent({
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: 8px;
     width: 100%;
     height: 100%;
     min-width: auto;

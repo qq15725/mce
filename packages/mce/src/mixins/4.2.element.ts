@@ -101,13 +101,13 @@ export default defineMixin((editor) => {
         parent = currentFrame.value
       }
       else {
-        const element = selection.value[0]
-        if (element) {
-          if (isFrame(element)) {
-            parent = element
+        const node = selection.value[0]
+        if (node) {
+          if (isFrame(node)) {
+            parent = node
           }
           else {
-            parent = getAncestorFrame(element)
+            parent = getAncestorFrame(node)
           }
         }
       }

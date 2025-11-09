@@ -1,12 +1,14 @@
-import type { Element2D } from 'modern-canvas'
+import type { Node } from 'modern-canvas'
 import type { Ref } from 'vue'
-import { ref, watch } from 'vue'
+import { Element2D } from 'modern-canvas'
+import { computed, ref, watch } from 'vue'
 import { defineMixin } from '../editor'
 
 declare global {
   namespace Mce {
     interface Editor {
-      selection: Ref<Element2D[]>
+      selection: Ref<Node[]>
+      elementSelection: Ref<Element2D[]>
       textSelection: Ref<any[] | undefined>
       hoverElement: Ref<Element2D | undefined>
     }
@@ -15,29 +17,16 @@ declare global {
 
 export default defineMixin((editor) => {
   const selection = ref<Element2D[]>([])
-  // let element
-  // if (typeof id === 'string') {
-  //   element = getElement(id)
-  // }
-  // else {
-  //   element = id
-  // }
-  // const unequal = activeElement.value
-  //   ? !activeElement.value.equal(element)
-  //   : activeElement.value !== element
-  // activeElement.value = element
-  // if (element) {
-  //   selection.value = []
-  // }
-  // if (unequal) {
-  //   emit('setActiveElement', element)
-  // }
-
+  const elementSelection = computed({
+    get: () => selection.value.filter(v => v instanceof Element2D),
+    set: val => selection.value = val,
+  })
   const hoverElement = ref<Element2D>()
   const textSelection = ref<any[]>()
 
   Object.assign(editor, {
     selection,
+    elementSelection,
     textSelection,
     hoverElement,
   })

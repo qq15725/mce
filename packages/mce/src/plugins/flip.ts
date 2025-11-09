@@ -11,17 +11,17 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    selection,
+    elementSelection,
   } = editor
 
   function flipHorizontal() {
-    selection.value.forEach((el) => {
+    elementSelection.value.forEach((el) => {
       el.style.scaleX = -el.style.scaleX
     })
   }
 
   function flipVertical() {
-    selection.value.forEach((el) => {
+    elementSelection.value.forEach((el) => {
       el.style.scaleY = -el.style.scaleY
     })
   }

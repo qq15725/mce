@@ -85,7 +85,7 @@ function isLeftTopLine(line: Line) {
 export default definePlugin((editor) => {
   const {
     currentFrame,
-    selection,
+    elementSelection,
     state,
     getObbInDrawboard,
     root,
@@ -121,20 +121,20 @@ export default definePlugin((editor) => {
   const excluded = computed(() => {
     return new Set(
       [
-        selection.value[0]?.instanceId,
+        elementSelection.value[0]?.instanceId,
       ].filter(Boolean),
     )
   })
 
   const activatedBox = computed(() => {
-    if (selection.value[0]) {
-      return createBox(selection.value[0])!
+    if (elementSelection.value[0]) {
+      return createBox(elementSelection.value[0])!
     }
     return undefined
   })
 
   const parnet = computed(() => {
-    const p = selection.value[0].parent
+    const p = elementSelection.value[0].parent
     return p instanceof Element2D ? p : undefined
   })
 

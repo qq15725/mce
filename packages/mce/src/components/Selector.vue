@@ -20,7 +20,7 @@ const props = withDefaults(defineProps<{
 const {
   state,
   resizeElement,
-  selection,
+  elementSelection,
   camera,
   obbToFit,
   getObbInDrawboard,
@@ -43,11 +43,11 @@ onBeforeUnmount(() => {
 })
 
 const parentObbs = computed(() => {
-  if (selection.value.length !== 1) {
+  if (elementSelection.value.length !== 1) {
     return []
   }
   const obbs: OrientedBoundingBox[] = []
-  selection.value[0]?.findAncestor((ancestor) => {
+  elementSelection.value[0]?.findAncestor((ancestor) => {
     if (ancestor instanceof Element2D) {
       obbs.push(getObbInDrawboard(ancestor as Element2D))
     }
@@ -59,12 +59,12 @@ const parentObbs = computed(() => {
 const selectionObbs = computed(() => {
   if (
     state.value !== 'selecting'
-    && selection.value.length === 1
+    && elementSelection.value.length === 1
   ) {
     return []
   }
 
-  return selection.value.map((el) => {
+  return elementSelection.value.map((el) => {
     return {
       name: el.name,
       box: getObbInDrawboard(el),
@@ -72,7 +72,7 @@ const selectionObbs = computed(() => {
   })
 })
 
-const _selectionObb = computed(() => getObbInDrawboard(selection.value))
+const _selectionObb = computed(() => getObbInDrawboard(elementSelection.value))
 const selectionObb = computed({
   get: () => _selectionObb.value,
   set: (val: OrientedBoundingBox) => {
@@ -86,7 +86,7 @@ const selectionObb = computed({
       rotate: Math.round(((val.rotate ?? 0) - (oldBox.rotate ?? 0))),
     }
     const handle: string = transformable.value?.activeHandle ?? 'move'
-    selection.value.forEach((element) => {
+    elementSelection.value.forEach((element) => {
       const style = element.style
       const box = {
         left: style.left + offsetBox.left,
@@ -127,9 +127,9 @@ const selectionObb = computed({
 })
 
 function tipFormat() {
-  const obb = selection.value.length === 1
-    ? selection.value[0].style
-    : getObb(selection.value)
+  const obb = elementSelection.value.length === 1
+    ? elementSelection.value[0].style
+    : getObb(elementSelection.value)
   return `${Number(obb.width.toFixed(2))} × ${Number(obb.height.toFixed(2))}`
 }
 
@@ -172,11 +172,11 @@ defineExpose({
     ref="transformableRef"
     v-model="selectionObb"
     :visibility="state !== 'selecting' ? 'auto' : 'none'"
-    :moveable="selection[0] && !isLocked(selection[0])"
+    :moveable="elementSelection[0] && !isLocked(elementSelection[0])"
     :resize-strategy="props.resizeStrategy"
     :handle-shape="config.handleShape"
     class="mce-selection-obb"
-    :border-style="selection.length > 1 ? 'dashed' : 'solid'"
+    :border-style="elementSelection.length > 1 ? 'dashed' : 'solid'"
     :tip-format="tipFormat"
     @move="() => !state && (state = 'transforming')"
     @end="() => state === 'transforming' && (state = undefined)"

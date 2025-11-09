@@ -20,14 +20,14 @@ export default definePlugin((editor) => {
   const {
     getObb,
     getAabb,
-    selection,
+    elementSelection,
     addElement,
     deleteElement,
     doc,
   } = editor
 
   function group(inEditorIs: 'Element' | 'Frame'): void {
-    const elements = selection.value
+    const elements = elementSelection.value
     if (!elements.length) {
       return
     }
@@ -60,7 +60,7 @@ export default definePlugin((editor) => {
   }
 
   function ungroup() {
-    const element = selection.value[0]
+    const element = elementSelection.value[0]
     if (!element || !element.children.length)
       return
     const parent = getObb(element, 'parent')

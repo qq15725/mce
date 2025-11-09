@@ -24,8 +24,8 @@ declare global {
     interface Editor {
       parseAnchor: (anchor: Anchor, isRtl?: boolean) => ParsedAnchor
       isFrame: (node: Node) => node is Element2D
-      isLocked: (element: Element2D) => boolean
-      setLock: (element: Element2D, lock: boolean) => void
+      isLocked: (node: Node) => boolean
+      setLock: (node: Node, lock: boolean) => void
     }
   }
 }
@@ -62,12 +62,12 @@ export default defineMixin((editor) => {
       && node.meta?.inEditorIs === 'Frame'
   }
 
-  function isLocked(element: Element2D): boolean {
-    return Boolean(element.meta.lock)
+  function isLocked(node: Node): boolean {
+    return Boolean(node.meta.lock)
   }
 
-  function setLock(element: Element2D, lock: boolean): void {
-    element.meta.lock = lock
+  function setLock(node: Node, lock: boolean): void {
+    node.meta.lock = lock
   }
 
   Object.assign(editor, {

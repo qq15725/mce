@@ -32,7 +32,7 @@ declare global {
 export default definePlugin((editor) => {
   const {
     getAabb,
-    selection,
+    elementSelection,
     root,
     getTimeRange,
   } = editor
@@ -89,7 +89,7 @@ export default definePlugin((editor) => {
           }
           else {
             if (selected === true) {
-              elements = selection.value
+              elements = elementSelection.value
             }
 
             if (elements.length === 0 && root.value) {

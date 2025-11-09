@@ -33,7 +33,7 @@ export default definePlugin((editor) => {
     camera,
     drawboardAabb,
     zoomTo,
-    selection,
+    elementSelection,
     exec,
   } = editor
 
@@ -57,7 +57,7 @@ export default definePlugin((editor) => {
     events: {
       setDoc: () => exec('zoomToFit'),
       setCurrentFrame: () => {
-        if (selection.value.length) {
+        if (elementSelection.value.length) {
           exec('zoomToSelection')
         }
         else {

@@ -23,7 +23,7 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    selection,
+    elementSelection,
   } = editor
 
   function move(direction: Mce.MoveCommandDirection, distance = 1): void {
@@ -41,13 +41,13 @@ export default definePlugin((editor) => {
         prop = 'left'
         break
     }
-    selection.value.forEach((element) => {
+    elementSelection.value.forEach((element) => {
       element.style[prop] += distance
     })
   }
 
   function when(): boolean {
-    return selection.value.length > 0
+    return elementSelection.value.length > 0
   }
 
   return {

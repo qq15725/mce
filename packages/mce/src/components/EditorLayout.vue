@@ -87,7 +87,7 @@ const {
   selectArea,
   exec,
   isLocked,
-  selection,
+  elementSelection,
   getAabbInDrawboard,
   drawboardAabb,
   drawboardPointer,
@@ -133,13 +133,13 @@ function onHover(event: PointerInputEvent) {
   let hovered: Element2D | undefined
   if (isPointInsideAabb(
     { x: event.clientX, y: event.clientY },
-    getAabbInDrawboard(selection.value),
+    getAabbInDrawboard(elementSelection.value),
   )) {
     cursor = 'move'
   }
   else {
     const element = event.target
-    const oldElement = selection.value[0]
+    const oldElement = elementSelection.value[0]
     const result = props.hoverStrategy({
       element,
       oldElement,
@@ -170,7 +170,7 @@ function onPointerdown(event: PointerInputEvent): void {
     return
   }
 
-  const oldElement = selection.value[0]
+  const oldElement = elementSelection.value[0]
   const element = event.target
   const start = { x: event.clientX, y: event.clientY }
   let current = { ...start }
@@ -181,7 +181,7 @@ function onPointerdown(event: PointerInputEvent): void {
   const inSelected = isPointInsideAabb({
     x: start.x + -drawboardAabb.value.left,
     y: start.y + -drawboardAabb.value.top,
-  }, getAabbInDrawboard(selection.value))
+  }, getAabbInDrawboard(elementSelection.value))
 
   if (event.button === 2) {
     if (!inSelected) {
@@ -197,7 +197,7 @@ function onPointerdown(event: PointerInputEvent): void {
       else {
         selected = result ? [result] : []
       }
-      selection.value = selected
+      elementSelection.value = selected
     }
     return
   }
@@ -215,7 +215,7 @@ function onPointerdown(event: PointerInputEvent): void {
     else {
       selected = result ? [result] : []
     }
-    selection.value = selected
+    elementSelection.value = selected
   }
 
   function onSelectArea(): void {
@@ -249,11 +249,11 @@ function onPointerdown(event: PointerInputEvent): void {
     }
 
     if (_element && (event?.ctrlKey || event?.shiftKey || event?.metaKey)) {
-      if (selection.value.findIndex(v => v.equal(_element)) > -1) {
-        selected = selection.value.filter(v => !v.equal(_element))
+      if (elementSelection.value.findIndex(v => v.equal(_element)) > -1) {
+        selected = elementSelection.value.filter(v => !v.equal(_element))
       }
       else {
-        selected = [...selection.value, _element]
+        selected = [...elementSelection.value, _element]
       }
     }
     else {
@@ -310,7 +310,7 @@ function onPointerdown(event: PointerInputEvent): void {
         onActivate()
       }
 
-      selection.value = selected
+      elementSelection.value = selected
 
       if (ctxState) {
         if (selected[0] && !isLocked(selected[0])) {
@@ -398,7 +398,7 @@ function onScroll() {
         <Selector
           ref="selectorTpl"
           :selected-area="selectedArea"
-          :resize-strategy="selection[0] ? props.resizeStrategy(selection[0]) : undefined"
+          :resize-strategy="elementSelection[0] ? props.resizeStrategy(elementSelection[0]) : undefined"
         >
           <template #transformable="{ box }">
             <slot name="transformer" :box="box" />

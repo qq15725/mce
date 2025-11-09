@@ -5,7 +5,7 @@ import { useEditor } from '../composables/editor'
 import { boundingBoxToStyle } from '../utils/box'
 
 const {
-  selection,
+  elementSelection,
   state,
   textSelection,
   textToFit,
@@ -26,7 +26,7 @@ const mainStyleWithScale = computed(() => {
 })
 
 const textEditorStyle = computed(() => {
-  const element = selection.value[0]
+  const element = elementSelection.value[0]
   const obb = getObb(element)
   const textBox = element?.text.base?.boundingBox
   if (textBox) {
@@ -44,7 +44,7 @@ function onUpdateTextSelection(e: CustomEvent): void {
 }
 
 function onUpdate(): void {
-  const element = selection.value[0]!
+  const element = elementSelection.value[0]!
   const shape = element.shape
   if (!shape.enabled || !(shape as any)._path2DSet.paths.length) {
     textToFit(element)
@@ -52,7 +52,7 @@ function onUpdate(): void {
 }
 
 async function startTyping(e?: PointerEvent): Promise<boolean> {
-  const element = selection.value[0]
+  const element = elementSelection.value[0]
   if (!element) {
     return false
   }
@@ -77,7 +77,7 @@ defineExpose({
 
 <template>
   <div
-    v-show="selection[0] && state === 'typing'"
+    v-show="elementSelection[0] && state === 'typing'"
     class="mce-text-editor"
     :style="{
       ...mainStyleWithScale,

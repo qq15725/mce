@@ -1,4 +1,4 @@
-import type { Element2D } from 'modern-canvas'
+import type { Node } from 'modern-canvas'
 import { definePlugin } from '../editor'
 
 declare global {
@@ -11,10 +11,10 @@ declare global {
     }
 
     interface Commands {
-      bringToFront: (target?: Element2D | Element2D[]) => void
-      bringForward: (target?: Element2D) => void
-      sendBackward: (target?: Element2D) => void
-      sendToBack: (target?: Element2D | Element2D[]) => void
+      bringToFront: (target?: Node | Node[]) => void
+      bringForward: (target?: Node) => void
+      sendBackward: (target?: Node) => void
+      sendToBack: (target?: Node | Node[]) => void
     }
   }
 }
@@ -25,7 +25,7 @@ export default definePlugin((editor) => {
   } = editor
 
   function zOrder(
-    target: Element2D | Element2D[],
+    target: Node | Node[],
     type: 'bringForward' | 'bringToFront' | 'sendBackward' | 'sendToBack',
   ) {
     const els = Array.isArray(target) ? target : [target]
@@ -55,19 +55,19 @@ export default definePlugin((editor) => {
     })
   }
 
-  function bringToFront(target: Element2D | Element2D[] = selection.value): void {
+  function bringToFront(target: Node | Node[] = selection.value): void {
     target && zOrder(target, 'bringToFront')
   }
 
-  function bringForward(target: Element2D | undefined = selection.value[0]): void {
+  function bringForward(target: Node | undefined = selection.value[0]): void {
     target && zOrder(target, 'bringForward')
   }
 
-  function sendBackward(target: Element2D | undefined = selection.value[0]): void {
+  function sendBackward(target: Node | undefined = selection.value[0]): void {
     target && zOrder(target, 'sendBackward')
   }
 
-  function sendToBack(target: Element2D | Element2D[] = selection.value): void {
+  function sendToBack(target: Node | Node[] = selection.value): void {
     target && zOrder(target, 'sendToBack')
   }
 

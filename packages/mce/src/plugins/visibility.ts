@@ -16,23 +16,23 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    selection,
+    elementSelection,
   } = editor
 
   function show(): void {
-    selection.value.forEach((el) => {
+    elementSelection.value.forEach((el) => {
       el.style.visibility = 'visible'
     })
   }
 
   function hide(): void {
-    selection.value.forEach((el) => {
+    elementSelection.value.forEach((el) => {
       el.style.visibility = 'hidden'
     })
   }
 
   function hideOrShow(): void {
-    selection.value.forEach((el) => {
+    elementSelection.value.forEach((el) => {
       el.style.visibility = el.style.visibility === 'hidden' ? 'visible' : 'hidden'
     })
   }

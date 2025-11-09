@@ -28,7 +28,7 @@ export default definePlugin((editor) => {
   } = editor
 
   function selectAll(): void {
-    selection.value = [...root.value.children] as Element2D[]
+    selection.value = [...root.value.children]
   }
 
   function deselectAll() {
@@ -43,28 +43,22 @@ export default definePlugin((editor) => {
   }
 
   function previousSelection() {
-    const element = selection.value[0]
-    if (!element)
-      return
-    const previousSibling = element.previousSibling
-    if (
-      previousSibling instanceof Element2D
-      && !element.equal(previousSibling)
-    ) {
-      selection.value = [previousSibling]
+    const node = selection.value[0]
+    if (node) {
+      const previousSibling = node.previousSibling
+      if (previousSibling && !node.equal(previousSibling)) {
+        selection.value = [previousSibling]
+      }
     }
   }
 
   function nextSelection() {
-    const element = selection.value[0]
-    if (!element)
-      return
-    const nextSibling = element.nextSibling
-    if (
-      nextSibling instanceof Element2D
-      && !element.equal(nextSibling)
-    ) {
-      selection.value = [nextSibling]
+    const node = selection.value[0]
+    if (node) {
+      const nextSibling = node.nextSibling
+      if (nextSibling && node.equal(nextSibling)) {
+        selection.value = [nextSibling]
+      }
     }
   }
 
