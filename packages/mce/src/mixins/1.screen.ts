@@ -1,10 +1,12 @@
+import type { ComputedRef } from 'vue'
+import { computed } from 'vue'
 import { defineMixin } from '../editor'
 
 declare global {
   namespace Mce {
     interface Editor {
-      getScreenCenterOffset: () => Required<ScreenCenterOffset>
-      getScreenCenter: () => { x: number, y: number }
+      screenCenterOffset: ComputedRef<Required<ScreenCenterOffset>>
+      screenCenter: ComputedRef<{ x: number, y: number }>
     }
   }
 }
@@ -15,7 +17,7 @@ export default defineMixin((editor) => {
     drawboardAabb,
   } = editor
 
-  const getScreenCenterOffset: Mce.Editor['getScreenCenterOffset'] = () => {
+  const screenCenterOffset = computed(() => {
     const offset = {
       left: 0,
       top: 0,
@@ -32,20 +34,20 @@ export default defineMixin((editor) => {
       offset.top += 16
     }
     return offset
-  }
+  })
 
-  const getScreenCenter: Mce.Editor['getScreenCenter'] = () => {
-    const offset = getScreenCenterOffset()
+  const screenCenter = computed(() => {
+    const offset = screenCenterOffset.value
     return {
       x: offset.left
         + (drawboardAabb.value.width - offset.left - offset.right) / 2,
       y: offset.top
         + (drawboardAabb.value.height - offset.top - offset.bottom) / 2,
     }
-  }
+  })
 
   Object.assign(editor, {
-    getScreenCenterOffset,
-    getScreenCenter,
+    screenCenterOffset,
+    screenCenter,
   })
 })

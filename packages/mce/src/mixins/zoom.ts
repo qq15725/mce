@@ -30,7 +30,7 @@ export default defineMixin((editor) => {
     selectionAabb,
     viewAabb,
     getAabb,
-    getScreenCenterOffset,
+    screenCenterOffset,
   } = editor
 
   const zoomTo: Mce.Editor['zoomTo'] = async (target, options = {}) => {
@@ -56,7 +56,7 @@ export default defineMixin((editor) => {
       }
     }
 
-    const offset = getScreenCenterOffset()
+    const offset = screenCenterOffset.value
     const { width, height } = drawboardAabb.value
     const tw = width - (offset.left + offset.right)
     const th = height - (offset.top + offset.bottom)

@@ -26,7 +26,7 @@ export default defineMixin((editor) => {
     getAabb,
     selectionAabb,
     viewAabb,
-    getScreenCenter,
+    screenCenter,
   } = editor
 
   const scrollTo: Mce.Editor['scrollTo'] = async (target, options = {}) => {
@@ -37,7 +37,7 @@ export default defineMixin((editor) => {
 
     const _camera = camera.value
 
-    const screenCenter = getScreenCenter()
+    const _screenCenter = screenCenter.value
     const offset = { x: 0, y: 0 }
     let position = { x: 0, y: 0 }
     if (typeof target === 'object' && 'x' in target && 'y' in target) {
@@ -61,8 +61,8 @@ export default defineMixin((editor) => {
         }
       }
       position = { x: aabb.left + aabb.width / 2, y: aabb.top + aabb.height / 2 }
-      offset.x += -screenCenter.x
-      offset.y = -screenCenter.y
+      offset.x += -_screenCenter.x
+      offset.y = -_screenCenter.y
     }
 
     position.x *= _camera.zoom.x

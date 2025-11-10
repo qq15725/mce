@@ -3,6 +3,7 @@ import type { Node } from 'modern-canvas'
 import type { PropType } from 'vue'
 import { computed, nextTick, ref } from 'vue'
 import { useEditor, useLayerItem } from '../composables'
+import Btn from './shared/Btn.vue'
 import Icon from './shared/Icon.vue'
 
 defineOptions({
@@ -51,7 +52,19 @@ const {
   dom: computed(() => dom.value),
 })
 const isFrist = computed(() => sortedSelection.value[0]?.equal(props.node))
-const isLast = computed(() => sortedSelection.value[sortedSelection.value.length - 1]?.equal(props.node))
+const isLast = computed(() => {
+  const last = sortedSelection.value[sortedSelection.value.length - 1]
+  if (last) {
+    if (last.equal(props.node)) {
+      if (!opened.value || !props.node?.children.length)
+        return true
+    }
+    else if (last.equal(props.node?.parent)) {
+      // TODO
+    }
+  }
+  return false
+})
 const isActive = computed(() => selection.value.some(v => v.equal(props.node)))
 
 const inputDom = ref<HTMLElement>()
@@ -179,6 +192,7 @@ function onContextmenu(e: PointerEvent) {
 }
 
 function onInputBlur() {
+  console.log('onInputBlur')
   editing.value = false
   if (editValue.value) {
     ;(props.node as any).name = editValue.value
@@ -236,6 +250,7 @@ function onInputBlur() {
           v-model="editValue"
           type="text"
           class="mce-layer__input"
+          autofocus
           @blur="onInputBlur"
         >
         <div
@@ -259,25 +274,23 @@ function onInputBlur() {
         </template>
 
         <template v-else>
-          <div
-            class="mce-btn"
+          <Btn
             :class="{
               'mce-btn--hide': !hovering && !isLock(props.node),
             }"
             @click.prevent.stop="setLock(props.node, !isLock(props.node))"
           >
             <Icon :icon="isLock(props.node) ? '$lock' : '$unlock'" />
-          </div>
+          </Btn>
 
-          <div
-            class="mce-btn"
+          <Btn
             :class="{
               'mce-btn--hide': !hovering && isVisible(props.node),
             }"
             @click.prevent.stop="setVisible(props.node, !isVisible(props.node))"
           >
             <Icon :icon="isVisible(props.node) ? '$visible' : '$unvisible'" />
-          </div>
+          </Btn>
         </template>
       </div>
     </div>
@@ -427,15 +440,6 @@ function onInputBlur() {
   }
 
   .mce-btn {
-    padding: 4px;
-    border-radius: 4px;
-    height: 24px;
-    width: 24px;
-    font-size: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
     &--hide {
       opacity: 0;
     }

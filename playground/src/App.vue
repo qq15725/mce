@@ -5,7 +5,7 @@ import mp4 from '@mce/mp4'
 import openxml from '@mce/openxml'
 import pdf from '@mce/pdf'
 import svg from '@mce/svg'
-import { Editor, EditorLayers, EditorLayout, EditorLayoutItem } from 'mce'
+import { Editor, EditorLayout } from 'mce'
 import gifWorkerUrl from 'modern-gif/worker?url'
 import 'mce/styles'
 
@@ -86,9 +86,11 @@ const editor = new Editor({
         'view:pixelGrid': '像素网格',
         'view:ruler': '标尺',
         'view:scrollbar': '滚动条',
+        'view:layers': '图层',
         'view:timeline': '时间线',
         'view:statusbar': '状态栏',
-        'view:frameOutline': '框轮廓',
+        'view:frameOutline': '框架轮廓',
+        'layers': '图层',
         'zoomIn': '放大',
         'zoomOut': '缩小',
         'zoomTo100': '缩放到100%',
@@ -138,9 +140,6 @@ if (tid || bid) {
       <template #transformer="{ box }" />
       <template #floatbar />
       <template #drawboard />
-      <EditorLayoutItem position="left" :size="240">
-        <EditorLayers />
-      </EditorLayoutItem>
     </EditorLayout>
   </div>
 </template>

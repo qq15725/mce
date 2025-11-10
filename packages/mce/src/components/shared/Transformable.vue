@@ -497,9 +497,8 @@ defineExpose({
   >
     <slot
       :value="modelValue"
-      :move-props="{
+      :props="{
         onPointerdown: start,
-        style: { cursor: 'move' },
       }"
       :start="start"
     />
@@ -615,7 +614,6 @@ defineExpose({
 .mce-transformable {
   left: 0;
   top: 0;
-  color: rgb(var(--mce-theme-primary));
 
   &__svg {
     position: absolute;
@@ -625,6 +623,7 @@ defineExpose({
     height: 100%;
     overflow: visible;
     pointer-events: none;
+    color: rgb(var(--mce-theme-primary));
   }
 
   &__box {

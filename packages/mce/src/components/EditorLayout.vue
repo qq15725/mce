@@ -31,10 +31,12 @@ import Floatbar from './Floatbar.vue'
 import Frames from './Frames.vue'
 import GoBackSelectedArea from './GoBackSelectedArea.vue'
 import Hover from './Hover.vue'
+import Layers from './Layers.vue'
 import Rulers from './Rulers.vue'
 import Scrollbars from './Scrollbars.vue'
 import Selector from './Selector.vue'
 import Setup from './Setup.vue'
+import FloatPanel from './shared/FloatPanel.vue'
 import Layout from './shared/Layout.vue'
 import LayoutItem from './shared/LayoutItem.vue'
 import Main from './shared/Main.vue'
@@ -91,6 +93,8 @@ const {
   getAabbInDrawboard,
   drawboardAabb,
   drawboardPointer,
+  screenCenterOffset,
+  t,
 } = editor
 
 const overlayContainer = useTemplateRef('overlayContainerTpl')
@@ -419,6 +423,19 @@ function onScroll() {
         <ContextMenu />
         <GoBackSelectedArea />
         <Rulers v-if="config.ruler" />
+        <FloatPanel
+          v-if="config.layers"
+          v-model="config.layers"
+          :title="t('layers')"
+          :default-transform="{
+            width: 240,
+            height: drawboardAabb.height * .7,
+            top: screenCenterOffset.top + 24,
+            left: screenCenterOffset.left + 24,
+          }"
+        >
+          <Layers />
+        </FloatPanel>
         <Toolbelt />
         <slot name="drawboard" />
       </div>

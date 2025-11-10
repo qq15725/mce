@@ -26,6 +26,7 @@ declare global {
       camera: boolean
       ruler: boolean
       scrollbar: boolean
+      layers: boolean
       timeline: boolean
       statusbar: boolean
       wheelZoom: boolean
@@ -54,6 +55,7 @@ export default defineMixin((editor, options) => {
   registerConfig('camera', false)
   registerConfig('ruler', false)
   registerConfig('scrollbar', false)
+  registerConfig('layers', false)
   registerConfig('timeline', false)
   registerConfig('statusbar', false)
   registerConfig('wheelZoom', false)

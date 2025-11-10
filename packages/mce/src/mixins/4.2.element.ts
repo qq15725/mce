@@ -71,7 +71,7 @@ export default defineMixin((editor) => {
     getAncestorFrame,
     getAabb,
     getGlobalPointer,
-    getScreenCenter,
+    screenCenter,
     selection,
     camera,
     parseAnchor,
@@ -174,7 +174,7 @@ export default defineMixin((editor) => {
           case 'pointer':
             break
           case 'screenCenter':
-            globalPosition = camera.value.toGlobal(getScreenCenter())
+            globalPosition = camera.value.toGlobal(screenCenter.value)
             globalPosition.x -= aabb.width / 2
             globalPosition.y -= aabb.height / 2
             break
