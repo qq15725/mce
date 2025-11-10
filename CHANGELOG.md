@@ -1,3 +1,17 @@
+# [0.13.0](https://github.com/qq15725/mce/compare/v0.12.5...v0.13.0) (2025-11-10)
+
+
+### Features
+
+* elementSelection ([543dea5](https://github.com/qq15725/mce/commit/543dea5baa3bc1da97146e5d9e426151287f990a))
+* layers ([58a8e3e](https://github.com/qq15725/mce/commit/58a8e3ed31503d2aeb0c9f84fe2e5a72b85f68e9))
+* layers ([688678d](https://github.com/qq15725/mce/commit/688678de4ded1b44a45dcaff388207b4d26a65da))
+* layers ([2a0ba35](https://github.com/qq15725/mce/commit/2a0ba35705efbbce5f1008d68d343ccb7737058d))
+* zh ([f06db6c](https://github.com/qq15725/mce/commit/f06db6cc205fa3d48e4d4031c691d9db7a63b3a7))
+* zhHans ([c57de64](https://github.com/qq15725/mce/commit/c57de64c255abf71448152b82071103f65ec63da))
+
+
+
 ## [0.12.5](https://github.com/qq15725/mce/compare/v0.12.4...v0.12.5) (2025-11-07)
 
 
