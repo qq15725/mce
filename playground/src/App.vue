@@ -37,7 +37,7 @@ const editor = new Editor({
   localDb: false,
   gifWorkerUrl,
   locale: {
-    locale: 'zh',
+    locale: 'zhHans',
   },
 })
 

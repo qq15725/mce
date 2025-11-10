@@ -44,7 +44,7 @@ export default defineMixin((editor, options) => {
       fallback: 'en',
       messages: {
         en,
-        zh: zhHans,
+        zhHans,
       },
     }, locale)
 
