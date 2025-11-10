@@ -61,6 +61,9 @@ npm i mce
     localDb: false,
     customUpload: async (blob) => URL.createObjectURL(blob),
     customContextMenu: (menu) => menu,
+    locale: {
+      locale: 'zhHans', // default 'en'
+    },
     defaultFont: { family: 'SourceHanSansCN-Normal', src: '/SourceHanSansCN-Normal.woff' },
     doc: {
       children: [
