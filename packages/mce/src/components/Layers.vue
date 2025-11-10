@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Node } from 'modern-canvas'
-import { nextTick, ref, watch } from 'vue'
+import { computed, nextTick, watch } from 'vue'
 import { createLayer } from '../composables'
 import { useEditor } from '../composables/editor'
 import Layer from './Layer.vue'
@@ -9,15 +9,28 @@ const {
   root,
   selection,
   state,
+  nodeIndexMap,
 } = useEditor()
 
-const rootDom = ref<HTMLElement>()
+const sortedSelection = computed(() => {
+  return selection.value
+    .map((node) => {
+      return {
+        node,
+        index: nodeIndexMap.get(node.id) ?? 0,
+      }
+    })
+    .sort((a, b) => a.index - b.index)
+    .map(v => v.node)
+})
 
 const {
   selecting,
   openedItems,
   domItems,
-} = createLayer()
+} = createLayer({
+  sortedSelection,
+})
 
 watch(selection, (selection) => {
   if (state.value === 'selecting' || selecting.value) {
@@ -45,34 +58,43 @@ watch(selection, (selection) => {
 </script>
 
 <template>
-  <div
-    ref="rootDom"
-    class="mce-layers"
-  >
-    <Layer
-      v-for="(child, index) in root.children" :key="index"
-      :node="child"
-    />
+  <div class="mce-layers">
+    <div class="mce-layers__wrapper">
+      <Layer
+        :root="true"
+        :node="root"
+        :opened="true"
+      />
+    </div>
   </div>
 </template>
 
 <style lang="scss">
   .mce-layers {
     position: relative;
-    display: flex;
-    flex-direction: column;
     width: 100%;
     height: 100%;
     min-width: auto;
-    padding: 8px;
     overflow: auto;
     background-color: rgb(var(--mce-theme-surface));
+
+    &__wrapper {
+      padding: 8px;
+      width: max-content;
+      min-width: 100%;
+    }
 
     .mce-layer__expand {
       opacity: 0;
     }
 
-    &:hover {
+    .mce-layer--root:hover {
+      .mce-layer__expand {
+        opacity: 1;
+      }
+    }
+
+    &:hover .mce-layer:not(.mce-layer--root) {
       .mce-layer__expand {
         opacity: 1;
       }

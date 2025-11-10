@@ -21,7 +21,7 @@ declare global {
       drawboardPointer: Ref<Vector2Data | undefined>
       doc: Ref<Doc>
       root: ComputedRef<Node>
-      nodes: Node[]
+      nodes: Ref<Node[]>
       nodeIndexMap: Map<string, number>
       state: Ref<State | undefined>
       setState: (state: State, context?: StateContext) => void
@@ -62,7 +62,7 @@ export default defineMixin((editor) => {
   const drawboardAabb = ref({ left: 0, top: 0, width: 0, height: 0 })
   const doc = ref(new Doc())
   const root = computed(() => doc.value.root)
-  const nodes = reactive<Node[]>([])
+  const nodes = ref<Node[]>([])
   const nodeIndexMap = reactive(new Map<string, number>())
   const drawboardPointer = ref<Vector2Data>()
   const state = ref<Mce.State>()
@@ -123,15 +123,15 @@ export default defineMixin((editor) => {
         node = value
       }
       else {
-        nodes.length = 0
+        nodes.value.length = 0
         nodeIndexMap.clear()
         node = root.value
       }
       for (const ch of node.children) {
         updateNodes(ch)
       }
-      nodes.push(node)
-      nodeIndexMap.set(node.id, nodes.length - 1)
+      nodes.value.push(node)
+      nodeIndexMap.set(node.id, nodes.value.length - 1)
     }
 
     on('setDoc', () => updateNodes())

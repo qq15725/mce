@@ -7,13 +7,16 @@ import Icon from './shared/Icon.vue'
 
 defineOptions({
   name: 'MceLayer',
+  inheritAttrs: false,
 })
 
 const props = defineProps({
+  root: Boolean,
   node: {
     type: Object as PropType<Node>,
     required: true,
   },
+  active: Boolean,
   indent: {
     type: Number,
     default: 0,
@@ -28,26 +31,56 @@ const {
   isLock,
   setLock,
   selection,
+  nodes,
   nodeIndexMap,
   zoomTo,
   hoverElement,
   exec,
 } = useEditor()
 
+const opened = defineModel('opened', { default: false })
+const dom = ref<HTMLElement>()
+
 const {
   selecting,
-  opened,
-  isActive,
-  dom,
+  sortedSelection,
 } = useLayerItem({
   id: props.node.id,
+  opened,
   node: computed(() => props.node),
-  selection,
+  dom: computed(() => dom.value),
+})
+const isFrist = computed(() => sortedSelection.value[0]?.equal(props.node))
+const isLast = computed(() => sortedSelection.value[sortedSelection.value.length - 1]?.equal(props.node))
+const isActive = computed(() => selection.value.some(v => v.equal(props.node)))
+
+const inputDom = ref<HTMLElement>()
+const isHoverElement = computed(() => props.node?.equal(hoverElement.value))
+const hovering = ref(false)
+const editing = ref(false)
+const editValue = ref<string>()
+const thumbnailIcon = computed(() => {
+  const node = props.node
+  if (isFrame(node)) {
+    return '$frame'
+  }
+  else if (node.children.length) {
+    return '$group'
+  }
+  else if (isElement(node)) {
+    if (node.foreground.isValid() && node.foreground.image) {
+      return '$image'
+    }
+    if (node.text.isValid()) {
+      return '$text'
+    }
+  }
+  return '$shape'
 })
 
-const hoveredElement = computed(() => props.node?.equal(hoverElement.value))
-const hovered = ref(false)
-const editing = ref(false)
+function onMousedown() {
+  // TODO
+}
 
 function onClickExpand() {
   opened.value = !opened.value
@@ -57,13 +90,13 @@ function onClickContent(e: MouseEvent) {
   selecting.value = true
   if (isElement(props.node)) {
     if (e.shiftKey) {
-      const nodes = [
+      const _nodes = [
         ...selection.value.filter(v => !v.equal(props.node)),
         props.node,
       ]
       let min: number | undefined
       let max: number | undefined
-      nodes.forEach((el) => {
+      _nodes.forEach((el) => {
         const index = nodeIndexMap.get(el.id)
         if (index !== undefined) {
           min = min === undefined ? index : Math.min(min, index)
@@ -71,7 +104,7 @@ function onClickContent(e: MouseEvent) {
         }
       })
       if (min !== undefined && max !== undefined) {
-        let _selection = nodes.slice(min, max + 1)
+        let _selection = nodes.value.slice(min, max + 1)
 
         // compact selection
         const result = new Set<string>(_selection.map(node => node.id))
@@ -118,18 +151,22 @@ function onDblclickThumbnail(e: MouseEvent) {
 
 function onDblclickContent() {
   editing.value = true
+  editValue.value = props.node.name
+  nextTick().then(() => {
+    inputDom.value?.focus()
+  })
 }
 
 function onMouseenter() {
   if (isElement(props.node)) {
     hoverElement.value = props.node
-    hovered.value = true
+    hovering.value = true
   }
 }
 
 function onMouseleave() {
   hoverElement.value = undefined
-  hovered.value = false
+  hovering.value = false
 }
 
 function onContextmenu(e: PointerEvent) {
@@ -141,12 +178,6 @@ function onContextmenu(e: PointerEvent) {
   }
 }
 
-const editValue = ref<string>()
-
-function onInput(e: InputEvent) {
-  editValue.value = (e.target as HTMLInputElement).value
-}
-
 function onInputBlur() {
   editing.value = false
   if (editValue.value) {
@@ -154,25 +185,6 @@ function onInputBlur() {
     editValue.value = undefined
   }
 }
-
-const thumbnailIcon = computed(() => {
-  const node = props.node
-  if (isFrame(node)) {
-    return '$frame'
-  }
-  else if (node.children.length) {
-    return '$group'
-  }
-  if (isElement(node)) {
-    if (node.foreground.isValid() && node.foreground.image) {
-      return '$image'
-    }
-    if (node.text.isValid()) {
-      return '$text'
-    }
-  }
-  return '$shape'
-})
 </script>
 
 <template>
@@ -180,13 +192,17 @@ const thumbnailIcon = computed(() => {
     ref="dom"
     class="mce-layer"
     :class="[
-      isActive && 'mce-layer--active',
+      props.root && 'mce-layer--root',
+      (active || isActive) && 'mce-layer--active',
+      isFrist && 'mce-layer--first',
+      isLast && 'mce-layer--last',
       opened && 'mce-layer--open',
-      hoveredElement && 'mce-layer--hover',
+      isHoverElement && 'mce-layer--hover',
     ]"
     :style=" {
       '--indent-padding': `${props.indent * 16}px`,
     }"
+    @mousedown="onMousedown"
     @mouseenter="onMouseenter"
     @mouseleave="onMouseleave"
     @contextmenu="onContextmenu"
@@ -195,7 +211,10 @@ const thumbnailIcon = computed(() => {
       class="mce-layer__expand"
       @click="onClickExpand"
     >
-      <Icon v-if="props.node.children.length" icon="$arrowRight" />
+      <Icon
+        v-if="props.node.children.length"
+        icon="$arrowRight"
+      />
     </div>
 
     <div
@@ -209,42 +228,57 @@ const thumbnailIcon = computed(() => {
       >
         <Icon :icon="thumbnailIcon" />
       </div>
+
       <div class="mce-layer__name">
         <input
-          v-if="editing"
+          v-show="editing"
+          ref="inputDom"
+          v-model="editValue"
           type="text"
           class="mce-layer__input"
-          autofocus
-          :value="props.node.name"
           @blur="onInputBlur"
-          @input="onInput"
         >
-
-        <span v-else>{{ props.node.name || props.node.id }}</span>
+        <div
+          :style="{ visibility: editing ? 'hidden' : undefined }"
+        >
+          {{ editValue || props.node.name || props.node.id }}
+        </div>
       </div>
 
-      <div style="flex: 1;" />
-
       <div class="mce-layer__action">
-        <div
-          class="mce-btn"
-          :class="{
-            'mce-btn--hide': !hovered && !isLock(props.node),
-          }"
-          @click="setLock(props.node, !isLock(props.node))"
-        >
-          <Icon :icon="isLock(props.node) ? '$lock' : '$unlock'" />
-        </div>
+        <template v-if="props.root">
+          <div
+            class="mce-btn"
+            :class="{
+              'mce-btn--hide': !hovering && !isLock(props.node),
+            }"
+            @click="setLock(props.node, !isLock(props.node))"
+          >
+            <Icon :icon="isLock(props.node) ? '$lock' : '$unlock'" />
+          </div>
+        </template>
 
-        <div
-          class="mce-btn"
-          :class="{
-            'mce-btn--hide': !hovered && isVisible(props.node),
-          }"
-          @click="setVisible(props.node, !isVisible(props.node))"
-        >
-          <Icon :icon="isVisible(props.node) ? '$visible' : '$unvisible'" />
-        </div>
+        <template v-else>
+          <div
+            class="mce-btn"
+            :class="{
+              'mce-btn--hide': !hovering && !isLock(props.node),
+            }"
+            @click.prevent.stop="setLock(props.node, !isLock(props.node))"
+          >
+            <Icon :icon="isLock(props.node) ? '$lock' : '$unlock'" />
+          </div>
+
+          <div
+            class="mce-btn"
+            :class="{
+              'mce-btn--hide': !hovering && isVisible(props.node),
+            }"
+            @click.prevent.stop="setVisible(props.node, !isVisible(props.node))"
+          >
+            <Icon :icon="isVisible(props.node) ? '$visible' : '$unvisible'" />
+          </div>
+        </template>
       </div>
     </div>
   </div>
@@ -253,7 +287,8 @@ const thumbnailIcon = computed(() => {
     <MceLayer
       v-for="(child, key) of props.node.children" :key="key"
       :node="child"
-      :indent="props.indent + 1"
+      :indent="root ? props.indent : (props.indent + 1)"
+      :active="active || isActive"
     />
   </template>
 </template>
@@ -269,30 +304,39 @@ const thumbnailIcon = computed(() => {
     padding-left: var(--indent-padding, 0);
     width: 100%;
     min-width: max-content;
+    border-radius: 4px;
 
     &:before {
       content: '';
       position: absolute;
       left: 0;
-      top: 0;
-      bottom: 0;
       right: 0;
+      top: 4px;
+      bottom: 4px;
+      background-color: var(--underlay-color, transparent);
       pointer-events: none;
+      border-radius: inherit;
     }
 
     &:after {
       content: '';
       position: absolute;
       left: 0;
-      top: 2px;
-      bottom: 2px;
       right: 0;
+      top: 4px;
+      bottom: 4px;
       background-color: var(--overlay-color, transparent);
       pointer-events: none;
+      border-radius: inherit;
     }
 
-    &:hover {
-      --overlay-color: rgba(var(--mce-theme-on-background), var(--mce-hover-opacity));
+    &--root {
+      margin-bottom: 4px;
+      font-weight: bold;
+
+      .mce-layer__thumbnail {
+        display: none;
+      }
     }
 
     &--hover {
@@ -300,11 +344,29 @@ const thumbnailIcon = computed(() => {
     }
 
     &--active:before {
-      background: rgba(var(--mce-theme-primary), calc(var(--mce-activated-opacity) * 3));
+      top: 0;
+      bottom: 0;
+      border-radius: 0;
     }
 
-    &--active:hover:after {
-      background: rgba(var(--mce-theme-primary), var(--mce-hover-opacity));
+    &--first:before {
+      border-top-left-radius: 4px;
+      border-top-right-radius: 4px;
+      top: 4px;
+    }
+
+    &--last:before {
+      border-bottom-left-radius: 4px;
+      border-bottom-right-radius: 4px;
+      bottom: 4px;
+    }
+
+    &--active {
+      --underlay-color: rgba(var(--mce-theme-primary), calc(var(--mce-activated-opacity) * 3));
+    }
+
+    &--active:hover {
+      --overlay-color: rgba(var(--mce-theme-primary), var(--mce-hover-opacity));
     }
 
     &--open {
@@ -335,21 +397,30 @@ const thumbnailIcon = computed(() => {
       height: 100%;
       font-size: 12px;
       overflow: hidden;
+      margin-right: 4px;
     }
 
     &__name {
-      padding: 0 8px;
+      position: relative;
+      flex: 1;
     }
 
     &__input {
-      border: none;
+      position: absolute;
+      left: 0;
+      top: 0;
       padding: 0;
-      outline: none;
+      width: 100%;
+      height: 100%;
+      border: none;
+      outline: 1px solid rgb(var(--mce-theme-primary));
       font-size: inherit;
       font-weight: inherit;
+      border-radius: 2px;
     }
 
     &__action {
+      flex: none;
       display: flex;
       align-items: center;
     }

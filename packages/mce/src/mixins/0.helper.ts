@@ -1,5 +1,4 @@
-import type { Node } from 'modern-canvas'
-import { Element2D } from 'modern-canvas'
+import { Element2D, Node } from 'modern-canvas'
 import { defineMixin } from '../editor'
 
 declare global {
@@ -23,6 +22,7 @@ declare global {
 
     interface Editor {
       parseAnchor: (anchor: Anchor, isRtl?: boolean) => ParsedAnchor
+      isRoot: (value: any) => value is Node
       isElement: (value: any) => value is Element2D
       isFrame: (node: Node) => node is Element2D
       isVisible: (node: Node) => boolean
@@ -34,6 +34,10 @@ declare global {
 }
 
 export default defineMixin((editor) => {
+  const {
+    root,
+  } = editor
+
   const block = ['top', 'bottom']
   const inline = ['start', 'end', 'left', 'right']
 
@@ -58,6 +62,10 @@ export default defineMixin((editor) => {
       side: toPhysical(side as any, isRtl),
       align: toPhysical(align as any, isRtl),
     } as Mce.ParsedAnchor
+  }
+
+  function isRoot(value: any): value is Node {
+    return value instanceof Node && root.value.equal(value)
   }
 
   function isElement(value: any): value is Element2D {
@@ -88,6 +96,7 @@ export default defineMixin((editor) => {
 
   Object.assign(editor, {
     parseAnchor,
+    isRoot,
     isElement,
     isFrame,
     isVisible,
