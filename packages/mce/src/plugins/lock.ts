@@ -17,7 +17,7 @@ declare global {
 export default definePlugin((editor) => {
   const {
     selection,
-    isLocked,
+    isLock,
     setLock,
   } = editor
 
@@ -26,7 +26,7 @@ export default definePlugin((editor) => {
     commands: [
       { command: 'lock', handle: () => selection.value.forEach(el => setLock(el, true)) },
       { command: 'unlock', handle: () => selection.value.forEach(el => setLock(el, false)) },
-      { command: 'lock/unlock', handle: () => selection.value.forEach(el => setLock(el, !isLocked(el))) },
+      { command: 'lock/unlock', handle: () => selection.value.forEach(el => setLock(el, !isLock(el))) },
     ],
     hotkeys: [
       { command: 'lock/unlock', key: 'Shift+CmdOrCtrl+l' },

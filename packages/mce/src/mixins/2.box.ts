@@ -24,6 +24,7 @@ declare global {
 
 export default defineMixin((editor) => {
   const {
+    isElement,
     camera,
     root,
     selection,
@@ -111,7 +112,7 @@ export default defineMixin((editor) => {
         obb = { ...getAabb(node), rotate: 0 }
       }
     }
-    else if (node instanceof Element2D) {
+    else if (isElement(node)) {
       // for vue reactive
       const style = node.style
       noop([style.left, style.top, style.width, style.height, style.rotate])
@@ -198,7 +199,7 @@ export default defineMixin((editor) => {
         }
       }
     }
-    else if (node instanceof Element2D) {
+    else if (isElement(node)) {
       // for vue reactive
       const style = node.style
       noop([style.left, style.top, style.width, style.height, style.rotate])

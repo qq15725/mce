@@ -23,8 +23,11 @@ declare global {
 
     interface Editor {
       parseAnchor: (anchor: Anchor, isRtl?: boolean) => ParsedAnchor
+      isElement: (value: any) => value is Element2D
       isFrame: (node: Node) => node is Element2D
-      isLocked: (node: Node) => boolean
+      isVisible: (node: Node) => boolean
+      setVisible: (node: Node, visible: boolean) => void
+      isLock: (node: Node) => boolean
       setLock: (node: Node, lock: boolean) => void
     }
   }
@@ -57,12 +60,25 @@ export default defineMixin((editor) => {
     } as Mce.ParsedAnchor
   }
 
-  function isFrame(node: Node): node is Element2D {
-    return node instanceof Element2D
-      && node.meta?.inEditorIs === 'Frame'
+  function isElement(value: any): value is Element2D {
+    return value instanceof Element2D
   }
 
-  function isLocked(node: Node): boolean {
+  function isFrame(node: Node): node is Element2D {
+    return isElement(node) && node.meta.inEditorIs === 'Frame'
+  }
+
+  function isVisible(node: Node): boolean {
+    return isElement(node) && node.style.visibility === 'visible'
+  }
+
+  function setVisible(node: Node, visible: boolean): void {
+    if (isElement(node)) {
+      node.style.visibility = visible ? 'visible' : 'hidden'
+    }
+  }
+
+  function isLock(node: Node): boolean {
     return Boolean(node.meta.lock)
   }
 
@@ -72,8 +88,11 @@ export default defineMixin((editor) => {
 
   Object.assign(editor, {
     parseAnchor,
+    isElement,
     isFrame,
-    isLocked,
+    isVisible,
+    setVisible,
+    isLock,
     setLock,
   })
 })

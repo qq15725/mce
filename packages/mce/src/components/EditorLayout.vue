@@ -86,7 +86,7 @@ const {
   isFrame,
   selectArea,
   exec,
-  isLocked,
+  isLock,
   elementSelection,
   getAabbInDrawboard,
   drawboardAabb,
@@ -313,7 +313,7 @@ function onPointerdown(event: PointerInputEvent): void {
       elementSelection.value = selected
 
       if (ctxState) {
-        if (selected[0] && !isLocked(selected[0])) {
+        if (selected[0] && !isLock(selected[0])) {
           switch (ctxState) {
             case 'typing': {
               await exec('startTyping', _event)

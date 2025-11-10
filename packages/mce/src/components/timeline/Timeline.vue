@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { Animation, Element2D } from 'modern-canvas'
+import type { Element2D } from 'modern-canvas'
+import { Animation } from 'modern-canvas'
 import { computed, onBeforeUnmount, ref, useTemplateRef } from 'vue'
 import { useEditor } from '../../composables'
 import Icon from '../shared/Icon.vue'
@@ -10,6 +11,7 @@ import Track from './Track.vue'
 import Trackhead from './Trackhead.vue'
 
 const {
+  isElement,
   root,
   msPerPx,
   currentTime,
@@ -26,7 +28,7 @@ const wheelSensitivity = 0.02
 
 const elements = computed(() => {
   return root.value.findAll<Element2D>((node) => {
-    if (node instanceof Element2D) {
+    if (isElement(node)) {
       if (node.children.some(child => child instanceof Animation)) {
         return true
       }

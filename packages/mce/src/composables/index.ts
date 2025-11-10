@@ -1,6 +1,7 @@
 export * from './editor'
 export * from './icon'
 export * from './icons'
+export * from './layer'
 export * from './layout'
 export * from './menu'
 export * from './overlay'

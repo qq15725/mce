@@ -1,6 +1,6 @@
 import type { Node } from 'modern-canvas'
 import type { ComputedRef, Ref, WritableComputedRef } from 'vue'
-import { assets, clamp, Element2D, TimelineNode } from 'modern-canvas'
+import { assets, clamp, TimelineNode } from 'modern-canvas'
 import { computed, ref } from 'vue'
 import { defineMixin } from '../editor'
 
@@ -18,6 +18,7 @@ declare global {
 
 export default defineMixin((editor) => {
   const {
+    isElement,
     root,
     timeline,
     renderEngine,
@@ -43,7 +44,7 @@ export default defineMixin((editor) => {
         range.endTime = Math.max(range.endTime, node.globalEndTime)
       }
 
-      if (node instanceof Element2D) {
+      if (isElement(node)) {
         if (node.background.animatedTexture) {
           range.endTime = Math.max(range.endTime, node.globalStartTime + node.background.animatedTexture.duration)
         }

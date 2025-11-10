@@ -1,7 +1,6 @@
 import type { Editor } from 'mce'
 import type { Node } from 'modern-canvas'
 import { definePlugin } from 'mce'
-import { Element2D } from 'modern-canvas'
 import { onBeforeUnmount } from 'vue'
 import { useFonts } from './composables'
 import { bidTidLoader, bigeLoader } from './loaders'
@@ -49,6 +48,7 @@ async function setupFonts(editor: Editor, api: Record<string, any>): Promise<voi
     on,
     off,
     root,
+    isElement,
   } = editor
 
   const {
@@ -57,7 +57,7 @@ async function setupFonts(editor: Editor, api: Record<string, any>): Promise<voi
   } = useFonts()
 
   function preloadNode(node: Node) {
-    if (node instanceof Element2D) {
+    if (isElement(node)) {
       if (node.style.fontFamily) {
         loadFont(node.style.fontFamily).then(() => node.text.update())
       }
