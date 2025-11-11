@@ -1,5 +1,5 @@
 import type { Element2D, Vector2Data } from 'modern-canvas'
-import { render } from 'modern-canvas'
+import { DrawboardEffect, render } from 'modern-canvas'
 import { definePlugin } from '../editor'
 import { createImageElement, imageExtRe, imageExts } from '../utils'
 
@@ -30,6 +30,7 @@ export default definePlugin((editor) => {
     to,
     fonts,
     upload,
+    drawboardEffect,
   } = editor
 
   const insertImage: Mce.Commands['insertImage'] = async (url, options) => {
@@ -61,6 +62,16 @@ export default definePlugin((editor) => {
           fonts,
           width: doc.style.width,
           height: doc.style.height,
+          onBefore: (engine) => {
+            engine.root.append(
+              new DrawboardEffect({
+                internalMode: 'back',
+                effectMode: 'before',
+                ...drawboardEffect.value.getProperties(),
+              }),
+            )
+            console.log(drawboardEffect.value.getProperties())
+          },
         })
 
         return await new Promise<Blob>((resolve) => {
