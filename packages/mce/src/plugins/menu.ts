@@ -114,6 +114,13 @@ export default definePlugin((editor, options) => {
     ],
   }))
 
+  const panelsMenu = computed(() => ({
+    key: 'panels',
+    children: [
+      { key: 'panels:layers', checked: config.value.layers },
+    ],
+  }))
+
   const viewMenu = computed(() => ({
     key: 'view',
     children: [
@@ -121,10 +128,11 @@ export default definePlugin((editor, options) => {
       { key: 'view:pixelGrid', checked: config.value.pixelGrid },
       { key: 'view:ruler', checked: config.value.ruler },
       { key: 'view:scrollbar', checked: config.value.scrollbar },
-      { key: 'view:layers', checked: config.value.layers },
       { key: 'view:timeline', checked: config.value.timeline },
       { key: 'view:statusbar', checked: config.value.statusbar },
       { key: 'view:frameOutline', checked: config.value.frameOutline },
+      { type: 'divider' },
+      panelsMenu.value,
       { type: 'divider' },
       ...zoomViewMenu.value.children,
     ],

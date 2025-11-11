@@ -1,3 +1,4 @@
+import type { CheckerboardStyle } from 'modern-canvas'
 import { watch } from 'vue'
 import { defineMixin } from '../../editor'
 
@@ -21,7 +22,9 @@ declare global {
     interface Config {
       theme: Theme
       viewMode: ViewMode
+      watermark?: string
       checkerboard: boolean
+      checkerboardStyle: CheckerboardStyle
       pixelGrid: boolean
       camera: boolean
       ruler: boolean
@@ -49,7 +52,9 @@ export default defineMixin((editor, options) => {
   registerConfig('theme', 'system')
   // Editor
   registerConfig('viewMode', 'edgeless')
+  registerConfig('watermark', undefined)
   registerConfig('checkerboard', false)
+  registerConfig('checkerboardStyle', 'grid')
   registerConfig('pixelGrid', false)
   registerConfig('camera', false)
   registerConfig('ruler', false)
@@ -86,14 +91,26 @@ export default defineMixin((editor, options) => {
     )
 
     watch(
+      () => config.value.watermark,
+      value => drawboardEffect.value.watermark = value,
+      { immediate: true },
+    )
+
+    watch(
       () => config.value.checkerboard,
-      enable => drawboardEffect.value.checkerboard = enable,
+      value => drawboardEffect.value.checkerboard = value,
+      { immediate: true },
+    )
+
+    watch(
+      () => config.value.checkerboardStyle,
+      value => drawboardEffect.value.checkerboardStyle = value,
       { immediate: true },
     )
 
     watch(
       () => config.value.pixelGrid,
-      enable => drawboardEffect.value.pixelGrid = enable,
+      value => drawboardEffect.value.pixelGrid = value,
       { immediate: true },
     )
   }
