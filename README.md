@@ -53,7 +53,6 @@ npm i mce
     ruler: true,
     scrollbar: true,
     statusbar: true,
-    wheelZoom: false,
     frameGap: 48,
     typographyStrategy: 'autoHeight',
     handleShape: 'rect',

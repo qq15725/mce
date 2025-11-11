@@ -29,7 +29,6 @@ declare global {
       layers: boolean
       timeline: boolean
       statusbar: boolean
-      wheelZoom: boolean
       frameOutline: boolean
       frameGap: number
       typographyStrategy: TypographyStrategy
@@ -58,15 +57,13 @@ export default defineMixin((editor, options) => {
   registerConfig('layers', false)
   registerConfig('timeline', false)
   registerConfig('statusbar', false)
-  registerConfig('wheelZoom', false)
   registerConfig('frameOutline', false)
   registerConfig('frameGap', 48)
   registerConfig('typographyStrategy', 'autoHeight')
   registerConfig('handleShape', 'rect')
+  registerConfig('screenCenterOffset', { left: 0, top: 0, bottom: 0, right: 0 })
   // DB
   registerConfig('localDb', false)
-
-  registerConfig('screenCenterOffset', { left: 0, top: 0, bottom: 0, right: 0 })
 
   return () => {
     const {
