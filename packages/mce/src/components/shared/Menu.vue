@@ -38,7 +38,7 @@ export interface MenuItem {
 const isActive = defineModel<boolean>()
 const opened = ref<number>(-1)
 const overlay = useTemplateRef('overlayTpl')
-const menuItemRefs = useTemplateRef('menuItemTplRefs')
+const menuItemRefs = ref<(HTMLElement | undefined)[]>([])
 const hasPrepend = computed(() => Boolean(props.items?.some(v => 'checked' in v)))
 
 const uid = useId()
@@ -102,6 +102,10 @@ function onClickItem(item: MenuItem, index: number, e: MouseEvent) {
   }
 }
 
+function onMouseenter(item: MenuItem, index: number) {
+  opened.value = item.disabled ? -1 : index
+}
+
 function onMouseleave() {
   if (props.items?.[opened.value]?.children?.length === undefined) {
     opened.value = -1
@@ -143,16 +147,16 @@ defineExpose({
       >
         <template v-if="item.type === 'divider'">
           <div
-            ref="menuItemTplRefs"
+            :ref="el => menuItemRefs[index] = (el ?? undefined) as any"
             class="mce-list__divider"
           />
         </template>
 
         <template v-else>
           <div
-            ref="menuItemTplRefs"
+            :ref="el => menuItemRefs[index] = (el ?? undefined) as any"
             class="mce-list__item"
-            @mouseenter="item.disabled ? (opened = -1) : (opened = index)"
+            @mouseenter="onMouseenter(item, index)"
           >
             <div
               class="mce-list-item"
