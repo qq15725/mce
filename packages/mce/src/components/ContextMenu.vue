@@ -52,7 +52,7 @@ onBeforeUnmount(() => {
   drawboardDom.value?.removeEventListener('contextmenu', onContextmenu)
 })
 
-function onClickItem(item: any) {
+function onClickItem(item: Mce.MenuItem) {
   ;(exec as any)(item.key)
 }
 

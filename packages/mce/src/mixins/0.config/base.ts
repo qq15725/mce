@@ -26,6 +26,7 @@ declare global {
       checkerboard: boolean
       checkerboardStyle: CheckerboardStyle
       pixelGrid: boolean
+      pixelate: boolean
       camera: boolean
       ruler: boolean
       scrollbar: boolean
@@ -56,6 +57,7 @@ export default defineMixin((editor, options) => {
   registerConfig('checkerboard', false)
   registerConfig('checkerboardStyle', 'grid')
   registerConfig('pixelGrid', false)
+  registerConfig('pixelate', true)
   registerConfig('camera', false)
   registerConfig('ruler', false)
   registerConfig('scrollbar', false)
@@ -72,6 +74,7 @@ export default defineMixin((editor, options) => {
 
   return () => {
     const {
+      renderEngine,
       camera,
       drawboardEffect,
     } = editor
@@ -81,6 +84,12 @@ export default defineMixin((editor, options) => {
         ;(config.value as any)[key] = (options as any)[key]
       }
     })
+
+    watch(
+      () => config.value.pixelate,
+      value => renderEngine.value.pixelate = value,
+      { immediate: true },
+    )
 
     watch(
       () => config.value.camera,

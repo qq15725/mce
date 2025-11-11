@@ -1,3 +1,4 @@
+import type { CheckerboardStyle } from 'modern-canvas'
 import type { ComputedRef } from 'vue'
 import { computed } from 'vue'
 import { definePlugin } from '../editor'
@@ -8,7 +9,8 @@ declare global {
       key: string
       disabled?: boolean
       checked?: boolean
-      children: MenuItem[]
+      children?: MenuItem[]
+      handle?: (event: MouseEvent) => void
     }
 
     interface Editor {
@@ -121,10 +123,36 @@ export default definePlugin((editor, options) => {
     ],
   }))
 
+  function setCheckerboard(value: CheckerboardStyle) {
+    if (config.value.checkerboard && config.value.checkerboardStyle === value) {
+      config.value.checkerboard = false
+    }
+    else {
+      config.value.checkerboard = true
+      config.value.checkerboardStyle = value
+    }
+  }
+
+  const checkerboardMenu = computed(() => ({
+    key: 'view:checkerboard',
+    children: [
+      {
+        key: 'checkerboardStyle:grid',
+        checked: config.value.checkerboard && config.value.checkerboardStyle === 'grid',
+        handle: () => setCheckerboard('grid'),
+      },
+      {
+        key: 'checkerboardStyle:dot',
+        checked: config.value.checkerboard && config.value.checkerboardStyle === 'dot',
+        handle: () => setCheckerboard('dot'),
+      },
+    ],
+  }))
+
   const viewMenu = computed(() => ({
     key: 'view',
     children: [
-      { key: 'view:checkerboard', checked: config.value.checkerboard },
+      checkerboardMenu.value,
       { key: 'view:pixelGrid', checked: config.value.pixelGrid },
       { key: 'view:ruler', checked: config.value.ruler },
       { key: 'view:scrollbar', checked: config.value.scrollbar },
@@ -132,10 +160,15 @@ export default definePlugin((editor, options) => {
       { key: 'view:statusbar', checked: config.value.statusbar },
       { key: 'view:frameOutline', checked: config.value.frameOutline },
       { type: 'divider' },
+      {
+        key: 'pixelate',
+        checked: config.value.pixelate,
+        handle: () => config.value.pixelate = !config.value.pixelate,
+      },
       panelsMenu.value,
       { type: 'divider' },
       ...zoomViewMenu.value.children,
-    ],
+    ].filter(Boolean) as Mce.MenuItem[],
   }))
 
   const objectMenu1 = computed(() => [

@@ -93,8 +93,12 @@ function onClickItem(item: MenuItem, index: number, e: MouseEvent) {
   else {
     isActive.value = false
     parent?.closeParents(e)
-    item.handle?.(e)
-    emit('click:item', item, e)
+    if (item.handle) {
+      item.handle?.(e)
+    }
+    else {
+      emit('click:item', item, e)
+    }
   }
 }
 
