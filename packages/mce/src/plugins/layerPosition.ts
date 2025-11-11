@@ -24,17 +24,18 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    currentFrameAabb,
+    isElement,
+    rootAabb,
     elementSelection,
     getAabb,
   } = editor
 
   function align(direction: Mce.AlignCommandDirection) {
-    const box = elementSelection.value.length === 1
-      ? currentFrameAabb.value
-      : getAabb(elementSelection.value)
-
     elementSelection.value.forEach((el) => {
+      const box = el.parent && isElement(el.parent)
+        ? getAabb(el.parent)
+        : rootAabb.value
+
       switch (direction) {
         case 'left':
           el.style.left = 0
