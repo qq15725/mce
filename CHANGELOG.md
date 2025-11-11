@@ -1,3 +1,23 @@
+## [0.13.1](https://github.com/qq15725/mce/compare/v0.13.0...v0.13.1) (2025-11-11)
+
+
+### Bug Fixes
+
+* align ([fb87b83](https://github.com/qq15725/mce/commit/fb87b83e7fe692ae84c0cc1e047d6efd099b04f9))
+* floatbar ([44cd2be](https://github.com/qq15725/mce/commit/44cd2befc535a86dbb755d9d3d0c95a2dbc4cbdb))
+* menu ([72c3e30](https://github.com/qq15725/mce/commit/72c3e30686c4eec7c9c2c61aa2e2f576e2f15195))
+* watermark ([7d29acd](https://github.com/qq15725/mce/commit/7d29acd182a735cea2da99d41d96142836a8d1c3))
+
+
+### Features
+
+* add config pixelate ([6863150](https://github.com/qq15725/mce/commit/6863150cb1f556923f13c0305b7353f4500fd3e3))
+* add panels plugin ([638a11e](https://github.com/qq15725/mce/commit/638a11e1800d7da38ceabdad8de2efce1809a029))
+* remove config.wheelZoom ([af6ecff](https://github.com/qq15725/mce/commit/af6ecff6443f43dd872f0afdb16f5d9f18a67f4c))
+* up deps ([cf46605](https://github.com/qq15725/mce/commit/cf466054966772d11fb769ead98d395190e86631))
+
+
+
 # [0.13.0](https://github.com/qq15725/mce/compare/v0.12.5...v0.13.0) (2025-11-10)
 
 
