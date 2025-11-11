@@ -56,7 +56,9 @@ if (tid || bid) {
     <EditorLayout :editor="editor">
       <template #selector="{ box }" />
       <template #transformer="{ box }" />
-      <template #floatbar />
+      <template #floatbar>
+        <div>FLOATBAR</div>
+      </template>
       <template #drawboard />
     </EditorLayout>
   </div>

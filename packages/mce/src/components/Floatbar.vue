@@ -7,6 +7,7 @@ import Overlay from './shared/Overlay.vue'
 const props = defineProps({
   ...makeMceOverlayProps({
     location: 'top-start' as const,
+    middlewares: ['offset', 'shift'] as any[],
     offset: 8,
   }),
 })
@@ -37,6 +38,7 @@ defineExpose({
     ref="overlayTpl"
     class="mce-floatbar"
     :location="props.location"
+    :middlewares="props.middlewares"
     :offset="selection[0] && isFrame(selection[0]) ? 32 : 8"
     :target="props.target"
     :attach="false"

@@ -63,14 +63,16 @@ const target = computed(() => {
 const contentEl = useTemplateRef('contentElTpl')
 const attach = computed(() => props.attach ?? overlayItem.attach?.value ?? 'body')
 
+const middlewares = new Set(props.middlewares)
+
 const { floatingStyles, update } = useFloating(target, contentEl, {
   placement: computed(() => props.location),
   whileElementsMounted: autoUpdate,
   middleware: [
-    offset(() => props.offset ?? 0),
-    flip(),
-    shift({ padding: 20 }),
-  ],
+    middlewares.has('offset') && offset(() => props.offset ?? 0),
+    middlewares.has('flip') && flip(),
+    middlewares.has('shift') && shift({ padding: 20 }),
+  ].filter(Boolean) as any[],
 })
 
 const style = computed(() => {
