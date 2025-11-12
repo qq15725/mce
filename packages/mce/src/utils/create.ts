@@ -14,7 +14,9 @@ export function createTextElement(content: string, style?: Record<string, any>):
       height: box.height,
     },
     text: { content: normalizeTextContent(content) },
-    meta: { inPptIs: 'Shape' },
+    meta: {
+      inPptIs: 'Shape',
+    },
   }
 }
 
@@ -25,6 +27,9 @@ export async function createImageElement(image: string): Promise<NormalizedEleme
       ...await getImageSizeFromUrl(image),
     },
     foreground: { image },
-    meta: { inPptIs: 'Picture' },
+    meta: {
+      inPptIs: 'Picture',
+      lockAspectRatio: true,
+    },
   }
 }
