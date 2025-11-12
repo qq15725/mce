@@ -1,3 +1,19 @@
+## [0.13.2](https://github.com/qq15725/mce/compare/v0.13.1...v0.13.2) (2025-11-12)
+
+
+### Bug Fixes
+
+* align in root ([bdd0232](https://github.com/qq15725/mce/commit/bdd02326eb0f41b6ef98bd1da45a884a88d300e8))
+* lockAspectRatio ([d8ea776](https://github.com/qq15725/mce/commit/d8ea776907ded3dde5fba85eb574ecbdf6b16ca2))
+* resizeElement ([859844a](https://github.com/qq15725/mce/commit/859844a59aabe7b42378974a0c12f5286e213ebb))
+
+
+### Features
+
+* add Element2D Meta type d.ts ([7fda8c8](https://github.com/qq15725/mce/commit/7fda8c86a72521de3912097bcab1043a487a496b))
+
+
+
 ## [0.13.1](https://github.com/qq15725/mce/compare/v0.13.0...v0.13.1) (2025-11-11)
 
 
