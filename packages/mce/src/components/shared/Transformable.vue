@@ -37,7 +37,7 @@ const props = withDefaults(defineProps<{
   rotatable?: boolean
   resizable?: boolean
   threshold?: number
-  resizeStrategy?: 'free' | 'aspectRatio' | 'diagonalAspectRatio'
+  resizeStrategy?: 'aspectRatio' | 'diagonalAspectRatio'
   handleStrategy?: 'default' | 'point'
   handleShape?: 'rect' | 'circle'
   color?: string
@@ -53,7 +53,6 @@ const props = withDefaults(defineProps<{
   rotatable: true,
   resizable: true,
   threshold: 0,
-  resizeStrategy: 'free',
   handleStrategy: 'default',
   color: 'black',
   handleColor: 'white',
@@ -199,51 +198,45 @@ function start(event?: MouseEvent, index?: number): boolean {
 
   const { left = 0, top = 0, width = 0, height = 0, rotate = 0 } = model.value
 
-  const aspectRatio = width && height ? width / height : 0
+  let aspectRatio = 0
+  if (width && height) {
+    aspectRatio = width / height
+  }
 
-  const anchor = index === undefined
+  const handle = index === undefined
     ? { type: 'move', x: 0, y: 0, width: 0, height: 0 } as HandleObject
     : computedHandles.value[index]
 
-  activeHandle.value = anchor.type
+  activeHandle.value = handle.type
 
-  const isMove = anchor.type === 'move'
-  const isRotate = anchor.type.startsWith('rotate')
-  const isHorizontal = anchor.type === 'resize-left' || anchor.type === 'resize-right'
-  const isHorizontalVertical = anchor.type.split('-').length === 2
+  const isMove = handle.type === 'move'
+  const isRotate = handle.type.startsWith('rotate')
+  const isHorizontal = handle.type === 'resize-left' || handle.type === 'resize-right'
+  const isHorizontalVertical = handle.type.split('-').length === 2
 
   const centerPoint = {
     x: left + width / 2,
     y: top + height / 2,
   }
 
-  const pointer = {
-    x: left,
-    y: top,
+  const startPoint = {
+    x: left + handle.x + handle.width / 2,
+    y: top + handle.y + handle.height / 2,
   }
 
-  if (!isMove) {
-    pointer.x += anchor.x + anchor.width / 2
-    pointer.y += anchor.y + anchor.height / 2
-  }
+  const rotatedStartPoint = rotatePoint(startPoint, centerPoint, rotate)
 
-  const startPoint = rotatePoint(
-    pointer,
-    centerPoint,
-    isMove ? 0 : rotate,
-  )
-
-  const symmetricPoint = {
-    x: centerPoint.x * 2 - startPoint.x,
-    y: centerPoint.y * 2 - startPoint.y,
+  const rotatedSymmetricPoint = {
+    x: centerPoint.x * 2 - rotatedStartPoint.x,
+    y: centerPoint.y * 2 - rotatedStartPoint.y,
   }
 
   const startAngle = Math.atan2(
-    startPoint.y - centerPoint.y,
-    startPoint.x - centerPoint.x,
+    rotatedStartPoint.y - centerPoint.y,
+    rotatedStartPoint.x - centerPoint.x,
   ) / (Math.PI / 180)
 
-  let client: { x: number, y: number } | undefined = event
+  let startClientPoint: { x: number, y: number } | undefined = event
     ? { x: event.clientX, y: event.clientY }
     : undefined
 
@@ -259,13 +252,13 @@ function start(event?: MouseEvent, index?: number): boolean {
   function onMove(event: MouseEvent): void {
     const updated = {} as Required<OrientedBoundingBox>
 
-    if (!client) {
-      client = { x: event.clientX, y: event.clientY }
+    if (!startClientPoint) {
+      startClientPoint = { x: event.clientX, y: event.clientY }
     }
 
     const offset = {
-      x: event.clientX - client.x,
-      y: event.clientY - client.y,
+      x: event.clientX - startClientPoint.x,
+      y: event.clientY - startClientPoint.y,
     }
 
     if (!transforming.value) {
@@ -279,90 +272,69 @@ function start(event?: MouseEvent, index?: number): boolean {
       startTransform()
     }
 
-    const currentPoint = {
-      x: startPoint.x + offset.x,
-      y: startPoint.y + offset.y,
+    const rotatedCurrentPoint = {
+      x: rotatedStartPoint.x + offset.x,
+      y: rotatedStartPoint.y + offset.y,
     }
 
     if (isMove) {
       if (props.movable) {
-        updated.left = currentPoint.x
-        updated.top = currentPoint.y
+        updated.left = startPoint.x + offset.x
+        updated.top = startPoint.y + offset.y
       }
     }
     else if (isRotate) {
       if (props.rotatable) {
         const endAngle = Math.atan2(
-          currentPoint.y - centerPoint.y,
-          currentPoint.x - centerPoint.x,
+          rotatedCurrentPoint.y - centerPoint.y,
+          rotatedCurrentPoint.x - centerPoint.x,
         ) / (Math.PI / 180)
 
         updated.rotate = ((rotate + endAngle - startAngle) + 360) % 360
       }
     }
     else if (isHorizontalVertical) {
-      const inverseCurrentPoint = rotatePoint(currentPoint, startPoint, -rotate)
-      const _currentPoint = rotatePoint(
-        isHorizontal
-          ? { x: inverseCurrentPoint.x, y: startPoint.y }
-          : { x: startPoint.x, y: inverseCurrentPoint.y },
-        startPoint,
-        rotate,
-      )
+      const currentPoint = rotatePoint(rotatedCurrentPoint, centerPoint, -rotate)
+      const newCurrentPoint = isHorizontal
+        ? { x: currentPoint.x, y: startPoint.y }
+        : { x: startPoint.x, y: currentPoint.y }
+      const newRotatedCurrentPoint = rotatePoint(newCurrentPoint, centerPoint, rotate)
 
-      const newCenterPoint = {
-        x: _currentPoint.x - (_currentPoint.x - symmetricPoint.x) / 2,
-        y: _currentPoint.y + (symmetricPoint.y - _currentPoint.y) / 2,
-      }
-
-      const hypotenuse = getDistance(_currentPoint, symmetricPoint)
+      const hypotenuse = Math.abs(getDistance(newRotatedCurrentPoint, rotatedSymmetricPoint))
 
       if (isHorizontal) {
         updated.width = hypotenuse
-        if (aspectRatio && props.resizeStrategy === 'aspectRatio') {
+        if (props.resizeStrategy === 'aspectRatio' && aspectRatio) {
           updated.height = hypotenuse / aspectRatio
+        }
+        else {
+          updated.height = height
         }
       }
       else {
         updated.height = hypotenuse
-        if (aspectRatio && props.resizeStrategy === 'aspectRatio') {
+        if (props.resizeStrategy === 'aspectRatio' && aspectRatio) {
           updated.width = hypotenuse * aspectRatio
         }
+        else {
+          updated.width = width
+        }
       }
 
-      updated.left = newCenterPoint.x - ((isHorizontal ? hypotenuse : width) / 2)
-      updated.top = newCenterPoint.y - ((isHorizontal ? height : hypotenuse) / 2)
+      const newCenterPoint = {
+        x: newRotatedCurrentPoint.x - (newRotatedCurrentPoint.x - rotatedSymmetricPoint.x) / 2,
+        y: newRotatedCurrentPoint.y + (rotatedSymmetricPoint.y - newRotatedCurrentPoint.y) / 2,
+      }
+
+      updated.left = newCenterPoint.x - (updated.width / 2)
+      updated.top = newCenterPoint.y - (updated.height / 2)
     }
     else {
-      if (
-        aspectRatio
-        && (
-          props.resizeStrategy === 'aspectRatio'
-          || props.resizeStrategy === 'diagonalAspectRatio'
-        )
-      ) {
-        let flag = 1
-        switch (anchor.type) {
-          case 'resize-top-right':
-          case 'resize-bottom-left':
-            flag = -1
-            break
-        }
-        if (offset.x > offset.y) {
-          currentPoint.x = startPoint.x + offset.x
-          currentPoint.y = startPoint.y + flag * offset.x / aspectRatio
-        }
-        else {
-          currentPoint.x = startPoint.x + flag * offset.y * aspectRatio
-          currentPoint.y = startPoint.y + offset.y
-        }
-      }
-
-      const newCenterPoint = getMidpoint(currentPoint, symmetricPoint)
+      const newCenterPoint = getMidpoint(rotatedCurrentPoint, rotatedSymmetricPoint)
 
       const points = [
-        rotatePoint(currentPoint, newCenterPoint, -rotate),
-        rotatePoint(symmetricPoint, newCenterPoint, -rotate),
+        rotatePoint(rotatedCurrentPoint, newCenterPoint, -rotate),
+        rotatePoint(rotatedSymmetricPoint, newCenterPoint, -rotate),
       ]
 
       const [minX, maxX] = points[0].x > points[1].x
@@ -377,6 +349,21 @@ function start(event?: MouseEvent, index?: number): boolean {
       updated.height = maxY - minY
       updated.left = minX
       updated.top = minY
+
+      if (
+        (
+          props.resizeStrategy === 'aspectRatio'
+          || props.resizeStrategy === 'diagonalAspectRatio'
+        ) && aspectRatio
+      ) {
+        // TODO
+        if ((updated.width / updated.height) > aspectRatio) {
+          updated.width = updated.height * aspectRatio
+        }
+        else {
+          updated.height = updated.width / aspectRatio
+        }
+      }
     }
 
     if (
@@ -442,7 +429,9 @@ function getMidpoint(point1: Point, point2: Point) {
 }
 
 function getDistance(point1: Point, point2: Point) {
-  return Math.sqrt((point1.x - point2.x) ** 2 + (point1.y - point2.y) ** 2)
+  const dx = point2.x - point1.x
+  const dy = point2.y - point1.y
+  return ((dx + dy) >= 0 ? 1 : -1) * Math.sqrt(dx * dx + dy * dy)
 }
 
 onMounted(async () => {

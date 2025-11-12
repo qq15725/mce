@@ -1,4 +1,4 @@
-import { Element2D } from 'modern-canvas'
+import type { Element2D } from 'modern-canvas'
 import { measureText } from 'modern-text'
 import { TextEditor } from 'modern-text/web-components'
 import { defineMixin } from '../editor'
@@ -15,45 +15,21 @@ declare global {
 export default defineMixin((editor) => {
   const {
     config,
+    isElement,
   } = editor
 
   function textFontSizeToFit(element: Element2D): void {
     function _handle(element: Element2D): void {
-      const chars = element.text.base.characters
-      let pos = 0
-      let char: any | undefined
-      chars.forEach((_char) => {
-        const _pos = _char.lineBox.left + _char.lineBox.width
-        if (_pos > pos) {
-          char = _char
-          pos = _pos
-        }
-      })
-      const style = {}
-      const content = chars
-        .filter(_char => _char.lineBox.top === char?.lineBox.top)
-        .map((char) => {
-          Object.assign(
-            style,
-            { ...char.parent.style },
-            { ...char.parent.parent.style },
-          )
-          return char.content
-        })
-        .join('')
+      if (!element.text.isValid()) {
+        return
+      }
 
       const { boundingBox } = measureText({
         style: {
           ...element.style.toJSON(),
           width: 'auto',
         },
-        content: [
-          {
-            fragments: [
-              { ...style, content },
-            ],
-          },
-        ],
+        content: element.text.content,
       })
 
       const fontSize = (element.style.fontSize || 12) / 2
@@ -69,22 +45,19 @@ export default defineMixin((editor) => {
       }
 
       _scaleStyle(element.style)
-
-      if (element.text?.isValid?.() && Array.isArray(element.text?.content)) {
-        element.text.content.forEach((p) => {
-          _scaleStyle(p)
-          p.fragments.forEach((f) => {
-            _scaleStyle(f)
-          })
+      element.text.content.forEach((p) => {
+        _scaleStyle(p)
+        p.fragments.forEach((f) => {
+          _scaleStyle(f)
         })
-      }
+      })
 
       element.requestRedraw()
     }
 
     _handle(element)
     element.findOne((descendant) => {
-      if (descendant instanceof Element2D) {
+      if (isElement(descendant)) {
         _handle(descendant)
       }
       return false
@@ -102,7 +75,7 @@ export default defineMixin((editor) => {
     }
 
     function _handle(element: Element2D): void {
-      if (!element.text?.isValid?.() || typeof element.text?.content !== 'object') {
+      if (!element.text.isValid()) {
         return
       }
 
@@ -134,7 +107,7 @@ export default defineMixin((editor) => {
 
     _handle(element)
     element.findOne((descendant) => {
-      if (descendant instanceof Element2D) {
+      if (isElement(descendant)) {
         _handle(descendant)
       }
       return false

@@ -11,7 +11,7 @@ defineOptions({
 })
 
 const props = withDefaults(defineProps<{
-  resizeStrategy?: 'free' | 'aspectRatio' | 'diagonalAspectRatio'
+  resizeStrategy?: 'aspectRatio' | 'diagonalAspectRatio'
   selectedArea?: AxisAlignedBoundingBox
 }>(), {
   selectedArea: () => ({ left: 0, top: 0, width: 0, height: 0 }),
@@ -81,8 +81,8 @@ const selectionObb = computed({
     const offsetBox = {
       left: Math.round((val.left - oldBox.left) / zoom.x),
       top: Math.round((val.top - oldBox.top) / zoom.y),
-      width: Math.round((val.width - oldBox.width) / zoom.x),
-      height: Math.round((val.height - oldBox.height) / zoom.y),
+      width: Math.round(Math.max(1, val.width / zoom.x) - oldBox.width / zoom.x),
+      height: Math.round(Math.max(1, val.height / zoom.y) - oldBox.height / zoom.y),
       rotate: Math.round(((val.rotate ?? 0) - (oldBox.rotate ?? 0))),
     }
     const handle: string = transformable.value?.activeHandle ?? 'move'

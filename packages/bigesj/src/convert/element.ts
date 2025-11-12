@@ -74,6 +74,7 @@ export async function convertElement(
     case 'image':
       meta.inCanvasIs = 'Element2D'
       meta.inPptIs = 'Picture'
+      meta.lockAspectRatio = true
       element.foreground = {
         image: await convertImageElementToUrl(el),
         fillWithShape: true,
@@ -114,6 +115,7 @@ export async function convertElement(
     case 'svg': {
       meta.inCanvasIs = 'Element2D'
       meta.inPptIs = 'Picture'
+      meta.lockAspectRatio = true
       element.foreground = {
         image: await convertSvgElementToUrl(el),
         fillWithShape: true,

@@ -2,6 +2,9 @@ import 'modern-canvas'
 
 declare module 'modern-canvas' {
   interface Meta {
+    inPptIs?: 'Pptx' | 'Picture' | 'Shape' | 'GroupShape' | 'Animation'
+    inEditorIs?: 'Doc' | 'Frame' | 'Element' | 'Node'
+    inCanvasIs?: 'Lottie2D' | 'Element2D' | 'Animation'
     lock?: boolean
     lockAspectRatio?: boolean
     movable?: boolean

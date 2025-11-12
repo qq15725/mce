@@ -102,6 +102,16 @@ const canvas = useTemplateRef('canvasTpl')
 const selector = useTemplateRef('selectorTpl')
 const textEditor = useTemplateRef('textEditorTpl')
 const selectedArea = ref({ left: 0, top: 0, width: 0, height: 0 })
+const resizeStrategy = computed(() => {
+  const first = elementSelection.value[0]
+  if (first) {
+    if (first.text.isValid()) {
+      return 'diagonalAspectRatio'
+    }
+    return props.resizeStrategy(first)
+  }
+  return undefined
+})
 
 provideOverlay({
   attach: computed(() => overlayContainer.value),
@@ -402,7 +412,7 @@ function onScroll() {
         <Selector
           ref="selectorTpl"
           :selected-area="selectedArea"
-          :resize-strategy="elementSelection[0] ? props.resizeStrategy(elementSelection[0]) : undefined"
+          :resize-strategy="resizeStrategy"
         >
           <template #transformable="{ box }">
             <slot name="transformer" :box="box" />
