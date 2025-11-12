@@ -33,7 +33,7 @@ interface HandleObject {
 const props = withDefaults(defineProps<{
   tag?: string | any
   modelValue?: Partial<OrientedBoundingBox>
-  moveable?: boolean
+  movable?: boolean
   rotatable?: boolean
   resizable?: boolean
   threshold?: number
@@ -49,7 +49,7 @@ const props = withDefaults(defineProps<{
   tipFormat?: (type: 'size') => string
 }>(), {
   tag: 'div',
-  moveable: true,
+  movable: true,
   rotatable: true,
   resizable: true,
   threshold: 0,
@@ -217,30 +217,30 @@ function start(event?: MouseEvent, index?: number): boolean {
     y: top + height / 2,
   }
 
-  const startingPointBefore = {
+  const pointer = {
     x: left,
     y: top,
   }
 
   if (!isMove) {
-    startingPointBefore.x += anchor.x + anchor.width / 2
-    startingPointBefore.y += anchor.y + anchor.height / 2
+    pointer.x += anchor.x + anchor.width / 2
+    pointer.y += anchor.y + anchor.height / 2
   }
 
-  const startingPoint = calcRotation(
-    startingPointBefore,
+  const startPoint = rotatePoint(
+    pointer,
     centerPoint,
     isMove ? 0 : rotate,
   )
 
   const symmetricPoint = {
-    x: centerPoint.x * 2 - startingPoint.x,
-    y: centerPoint.y * 2 - startingPoint.y,
+    x: centerPoint.x * 2 - startPoint.x,
+    y: centerPoint.y * 2 - startPoint.y,
   }
 
-  const rotationBefore = Math.atan2(
-    startingPoint.y - centerPoint.y,
-    startingPoint.x - centerPoint.x,
+  const startAngle = Math.atan2(
+    startPoint.y - centerPoint.y,
+    startPoint.x - centerPoint.x,
   ) / (Math.PI / 180)
 
   let client: { x: number, y: number } | undefined = event
@@ -263,15 +263,15 @@ function start(event?: MouseEvent, index?: number): boolean {
       client = { x: event.clientX, y: event.clientY }
     }
 
-    const clientOffset = {
+    const offset = {
       x: event.clientX - client.x,
       y: event.clientY - client.y,
     }
 
     if (!transforming.value) {
       if (
-        Math.abs(clientOffset.x) < props.threshold
-        && Math.abs(clientOffset.y) < props.threshold
+        Math.abs(offset.x) < props.threshold
+        && Math.abs(offset.y) < props.threshold
       ) {
         return
       }
@@ -279,42 +279,43 @@ function start(event?: MouseEvent, index?: number): boolean {
       startTransform()
     }
 
-    const cursorPoint = {
-      x: startingPoint.x + clientOffset.x,
-      y: startingPoint.y + clientOffset.y,
+    const currentPoint = {
+      x: startPoint.x + offset.x,
+      y: startPoint.y + offset.y,
     }
 
     if (isMove) {
-      if (!props.moveable) {
-        return
+      if (props.movable) {
+        updated.left = currentPoint.x
+        updated.top = currentPoint.y
       }
-      updated.left = cursorPoint.x
-      updated.top = cursorPoint.y
     }
     else if (isRotate) {
-      const rotationAfter = Math.atan2(
-        cursorPoint.y - centerPoint.y,
-        cursorPoint.x - centerPoint.x,
-      ) / (Math.PI / 180)
+      if (props.rotatable) {
+        const endAngle = Math.atan2(
+          currentPoint.y - centerPoint.y,
+          currentPoint.x - centerPoint.x,
+        ) / (Math.PI / 180)
 
-      updated.rotate = ((rotate + rotationAfter - rotationBefore) + 360) % 360
+        updated.rotate = ((rotate + endAngle - startAngle) + 360) % 360
+      }
     }
     else if (isHorizontalVertical) {
-      const rotationBefore = calcRotation(cursorPoint, startingPoint, -rotate)
-      const rotationAfter = calcRotation(
+      const inverseCurrentPoint = rotatePoint(currentPoint, startPoint, -rotate)
+      const _currentPoint = rotatePoint(
         isHorizontal
-          ? { x: rotationBefore.x, y: startingPoint.y }
-          : { x: startingPoint.x, y: rotationBefore.y },
-        startingPoint,
+          ? { x: inverseCurrentPoint.x, y: startPoint.y }
+          : { x: startPoint.x, y: inverseCurrentPoint.y },
+        startPoint,
         rotate,
       )
 
       const newCenterPoint = {
-        x: rotationAfter.x - (rotationAfter.x - symmetricPoint.x) / 2,
-        y: rotationAfter.y + (symmetricPoint.y - rotationAfter.y) / 2,
+        x: _currentPoint.x - (_currentPoint.x - symmetricPoint.x) / 2,
+        y: _currentPoint.y + (symmetricPoint.y - _currentPoint.y) / 2,
       }
 
-      const hypotenuse = calcHypotenuse(rotationAfter, symmetricPoint)
+      const hypotenuse = getDistance(_currentPoint, symmetricPoint)
 
       if (isHorizontal) {
         updated.width = hypotenuse
@@ -347,21 +348,21 @@ function start(event?: MouseEvent, index?: number): boolean {
             flag = -1
             break
         }
-        if (clientOffset.x > clientOffset.y) {
-          cursorPoint.x = startingPoint.x + clientOffset.x
-          cursorPoint.y = startingPoint.y + flag * clientOffset.x / aspectRatio
+        if (offset.x > offset.y) {
+          currentPoint.x = startPoint.x + offset.x
+          currentPoint.y = startPoint.y + flag * offset.x / aspectRatio
         }
         else {
-          cursorPoint.x = startingPoint.x + flag * clientOffset.y * aspectRatio
-          cursorPoint.y = startingPoint.y + clientOffset.y
+          currentPoint.x = startPoint.x + flag * offset.y * aspectRatio
+          currentPoint.y = startPoint.y + offset.y
         }
       }
 
-      const newCenterPoint = calcCenter(cursorPoint, symmetricPoint)
+      const newCenterPoint = getMidpoint(currentPoint, symmetricPoint)
 
       const points = [
-        calcRotation(cursorPoint, newCenterPoint, -rotate),
-        calcRotation(symmetricPoint, newCenterPoint, -rotate),
+        rotatePoint(currentPoint, newCenterPoint, -rotate),
+        rotatePoint(symmetricPoint, newCenterPoint, -rotate),
       ]
 
       const [minX, maxX] = points[0].x > points[1].x
@@ -423,28 +424,24 @@ function getCursor(type: Handle) {
   return `url("data:image/svg+xml,${cursors[type](model.value.rotate ?? 0)}") 16 16, pointer`
 }
 
-function calcRotation(point: Point, origin: Point, angle: number): Point {
+function rotatePoint(point: Point, origin: Point, angle: number): Point {
   const radian = angle * Math.PI / 180
   const cos = Math.cos(radian)
   const sin = Math.sin(radian)
   return {
-    x: (point.x - origin.x) * cos
-      - (point.y - origin.y) * sin
-      + origin.x,
-    y: (point.x - origin.x) * sin
-      + (point.y - origin.y) * cos
-      + origin.y,
+    x: (point.x - origin.x) * cos - (point.y - origin.y) * sin + origin.x,
+    y: (point.x - origin.x) * sin + (point.y - origin.y) * cos + origin.y,
   }
 }
 
-function calcCenter(point1: Point, point2: Point) {
+function getMidpoint(point1: Point, point2: Point) {
   return {
     x: (point2.x + point1.x) / 2,
     y: (point2.y + point1.y) / 2,
   }
 }
 
-function calcHypotenuse(point1: Point, point2: Point) {
+function getDistance(point1: Point, point2: Point) {
   return Math.sqrt((point1.x - point2.x) ** 2 + (point1.y - point2.y) ** 2)
 }
 
@@ -522,7 +519,7 @@ defineExpose({
             return !(
               (!resizable && v.type.startsWith('resize'))
               || (!rotatable && v.type.startsWith('rotate'))
-              || (!moveable && v.type === 'move')
+              || (!movable && v.type === 'move')
             )
           })"
           :key="index"

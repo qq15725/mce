@@ -1,9 +1,9 @@
 import type { Cursor, Node, Vector2Data } from 'modern-canvas'
 import type { ComputedRef, Ref } from 'vue'
 import type { AxisAlignedBoundingBox } from '../types'
-import { Camera2D, DrawboardEffect, Engine, Timeline } from 'modern-canvas'
+import { Camera2D, DrawboardEffect, Element2D, Engine, Timeline } from 'modern-canvas'
 import { Fonts } from 'modern-font'
-import { computed, markRaw, reactive, ref } from 'vue'
+import { computed, markRaw, reactive, ref, watch } from 'vue'
 import { defineMixin } from '../editor'
 import { Doc } from '../models'
 
@@ -23,6 +23,10 @@ declare global {
       root: ComputedRef<Node>
       nodes: Ref<Node[]>
       nodeIndexMap: Map<string, number>
+      selection: Ref<Node[]>
+      elementSelection: Ref<Element2D[]>
+      textSelection: Ref<any[] | undefined>
+      hoverElement: Ref<Element2D | undefined>
       state: Ref<State | undefined>
       setState: (state: State, context?: StateContext) => void
       stateContext: Ref<StateContext | undefined>
@@ -64,6 +68,13 @@ export default defineMixin((editor) => {
   const root = computed(() => doc.value.root)
   const nodes = ref<Node[]>([])
   const nodeIndexMap = reactive(new Map<string, number>())
+  const selection = ref<Element2D[]>([])
+  const elementSelection = computed({
+    get: () => selection.value.filter(v => v instanceof Element2D),
+    set: val => selection.value = val,
+  })
+  const textSelection = ref<any[]>()
+  const hoverElement = ref<Element2D>()
   const drawboardPointer = ref<Vector2Data>()
   const state = ref<Mce.State>()
   const stateContext = ref<Mce.StateContext>()
@@ -101,6 +112,10 @@ export default defineMixin((editor) => {
     root,
     nodes,
     nodeIndexMap,
+    selection,
+    elementSelection,
+    textSelection,
+    hoverElement,
     drawboardDom,
     drawboardAabb,
     state,
@@ -115,6 +130,7 @@ export default defineMixin((editor) => {
     const {
       on,
       root,
+      state,
     } = editor
 
     function updateNodes(value?: Node) {
@@ -135,5 +151,15 @@ export default defineMixin((editor) => {
     }
 
     on('setDoc', () => updateNodes())
+
+    watch(selection, (value) => {
+      // debug
+      ;(window as any).$$0 = value[0]
+    })
+
+    watch(state, () => {
+      textSelection.value = undefined
+      hoverElement.value = undefined
+    })
   }
 })

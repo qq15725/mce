@@ -162,37 +162,37 @@ function onHover(event: PointerInputEvent) {
   setCursor(cursor)
 }
 
-function onPointerdown(event: PointerInputEvent): void {
+function onPointerdown(downEvent: PointerInputEvent): void {
   if (
     (
-      event.srcElement !== drawboardDom.value
-      && (event.srcElement as HTMLElement).dataset?.pointerdown_to_drawboard === undefined
+      downEvent.srcElement !== drawboardDom.value
+      && (downEvent.srcElement as HTMLElement).dataset?.pointerdown_to_drawboard === undefined
     )
     || camera.value.spaceKey
-    || ![0, 2].includes(event.button)
+    || ![0, 2].includes(downEvent.button)
   ) {
     return
   }
 
   const oldElement = elementSelection.value[0]
-  const element = event.target
-  const start = { x: event.clientX, y: event.clientY }
+  const element = downEvent.target
+  const start = { x: downEvent.clientX, y: downEvent.clientY }
   let current = { ...start }
   let dragging = false
   let isUp = false
   let selected: Element2D[] = []
   let ctxState: Mce.State | undefined
-  const inSelected = isPointInsideAabb({
+  const inSelection = isPointInsideAabb({
     x: start.x + -drawboardAabb.value.left,
     y: start.y + -drawboardAabb.value.top,
   }, getAabbInDrawboard(elementSelection.value))
 
-  if (event.button === 2) {
-    if (!inSelected) {
+  if (downEvent.button === 2) {
+    if (!inSelection) {
       const result = props.activeStrategy({
         element,
         oldElement,
-        event,
+        event: downEvent,
         isExcluded,
       })
       if (result && !(result instanceof Element2D)) {
@@ -239,7 +239,7 @@ function onPointerdown(event: PointerInputEvent): void {
     const result = props.activeStrategy({
       element,
       oldElement,
-      event,
+      event: downEvent,
       isExcluded: () => false,
     })
 
@@ -252,7 +252,7 @@ function onPointerdown(event: PointerInputEvent): void {
       _element = result
     }
 
-    if (_element && (event?.ctrlKey || event?.shiftKey || event?.metaKey)) {
+    if (_element && (downEvent?.ctrlKey || downEvent?.shiftKey || downEvent?.metaKey)) {
       if (elementSelection.value.findIndex(v => v.equal(_element)) > -1) {
         selected = elementSelection.value.filter(v => !v.equal(_element))
       }
@@ -273,21 +273,21 @@ function onPointerdown(event: PointerInputEvent): void {
       )
   }
 
-  function onEngineMove(event: PointerInputEvent) {
-    if (inSelected) {
+  function onEngineMove(moveEvent: PointerInputEvent) {
+    if (inSelection) {
       if (canStartDrag()) {
         dragging = true
-        exec('startTransform')
+        exec('startTransform', downEvent)
       }
     }
     else {
       if (element && !isFrame(element)) {
         if (canStartDrag()) {
           dragging = true
-          onDrag(event)
+          onDrag(moveEvent)
           nextTick(() => {
             if (!isUp) {
-              exec('startTransform')
+              exec('startTransform', downEvent)
             }
           })
         }
@@ -295,9 +295,9 @@ function onPointerdown(event: PointerInputEvent): void {
     }
   }
 
-  function onMove(event: PointerEvent) {
-    current = { x: event.clientX, y: event.clientY }
-    if (!inSelected) {
+  function onMove(moveEvent: PointerEvent) {
+    current = { x: moveEvent.clientX, y: moveEvent.clientY }
+    if (!inSelection) {
       if (!element || isFrame(element)) {
         onSelectArea()
       }
@@ -327,7 +327,7 @@ function onPointerdown(event: PointerInputEvent): void {
         }
       }
 
-      onHover(event)
+      onHover(downEvent)
     }
 
     renderEngine.value.off('pointermove', onEngineMove)

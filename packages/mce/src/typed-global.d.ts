@@ -1,3 +1,16 @@
+import 'modern-canvas'
+
+declare module 'modern-canvas' {
+  interface Meta {
+    lock?: boolean
+    lockAspectRatio?: boolean
+    movable?: boolean
+    rotatable?: boolean
+    resizable?: boolean
+    transformable?: boolean
+  }
+}
+
 declare global {
   namespace Mce {
     interface Editor {}

@@ -6,7 +6,6 @@ import _0_command from './mixins/0.command'
 import _0_config from './mixins/0.config'
 import _0_config_base from './mixins/0.config/base'
 import _0_context from './mixins/0.context'
-import _0_element from './mixins/0.element'
 import _0_font from './mixins/0.font'
 import _0_helper from './mixins/0.helper'
 import _0_locale from './mixins/0.locale'
@@ -32,7 +31,6 @@ export const mixins = [
   _0_config,
   _0_config_base,
   _0_context,
-  _0_element,
   _0_font,
   _0_helper,
   _0_locale,

@@ -41,10 +41,6 @@ declare global {
         height: number,
         options?: ResizeElementOptions,
       ) => void
-      pointerActivateElement: (
-        element: Element2D | undefined,
-        event?: MouseEvent | PointerEvent,
-      ) => void
       selectArea: (areaInDrawboard: AxisAlignedBoundingBox) => Element2D[]
     }
 
@@ -329,30 +325,6 @@ export default defineMixin((editor) => {
     options.textFontSizeToFit && textFontSizeToFit(element)
   }
 
-  function pointerActivateElement(
-    element: Element2D | undefined,
-    event?: MouseEvent | PointerEvent,
-  ): void {
-    if (element && (event?.ctrlKey || event?.shiftKey || event?.metaKey)) {
-      let elements
-      if (selection.value.length === 1) {
-        elements = [selection.value[0], element]
-      }
-      else {
-        if (selection.value.findIndex(v => v.equal(element)) > -1) {
-          elements = selection.value.filter(v => v.equal(element))
-        }
-        else {
-          elements = [...selection.value, element]
-        }
-      }
-      selection.value = elements
-    }
-    else {
-      selection.value = element ? [element] : []
-    }
-  }
-
   function selectArea(areaInDrawboard: AxisAlignedBoundingBox): Element2D[] {
     const selected = root.value
       ?.children
@@ -378,7 +350,6 @@ export default defineMixin((editor) => {
     updateElement,
     getElement,
     resizeElement,
-    pointerActivateElement,
     selectArea,
   })
 })
