@@ -32,29 +32,51 @@ export default definePlugin((editor) => {
 
   function align(direction: Mce.AlignCommandDirection) {
     elementSelection.value.forEach((el) => {
-      const box = el.parent && isElement(el.parent)
-        ? getAabb(el.parent)
-        : rootAabb.value
+      if (el.parent && isElement(el.parent)) {
+        const parentAabb = getAabb(el.parent)
 
-      switch (direction) {
-        case 'left':
-          el.style.left = 0
-          break
-        case 'horizontal-center':
-          el.style.left = (box.width - el.style.width) / 2
-          break
-        case 'right':
-          el.style.left = box.width - el.style.width
-          break
-        case 'top':
-          el.style.top = 0
-          break
-        case 'vertical-center':
-          el.style.top = (box.height - el.style.height) / 2
-          break
-        case 'bottom':
-          el.style.top = box.height - el.style.height
-          break
+        switch (direction) {
+          case 'left':
+            el.style.left = 0
+            break
+          case 'horizontal-center':
+            el.style.left = (parentAabb.width - el.style.width) / 2
+            break
+          case 'right':
+            el.style.left = parentAabb.width - el.style.width
+            break
+          case 'top':
+            el.style.top = 0
+            break
+          case 'vertical-center':
+            el.style.top = (parentAabb.height - el.style.height) / 2
+            break
+          case 'bottom':
+            el.style.top = parentAabb.height - el.style.height
+            break
+        }
+      }
+      else {
+        switch (direction) {
+          case 'left':
+            el.style.left = rootAabb.value.left
+            break
+          case 'horizontal-center':
+            el.style.left = (rootAabb.value.left + rootAabb.value.width - el.style.width) / 2
+            break
+          case 'right':
+            el.style.left = (rootAabb.value.left + rootAabb.value.width) - el.style.width
+            break
+          case 'top':
+            el.style.top = rootAabb.value.top
+            break
+          case 'vertical-center':
+            el.style.top = (rootAabb.value.top + rootAabb.value.height - el.style.height) / 2
+            break
+          case 'bottom':
+            el.style.top = (rootAabb.value.top + rootAabb.value.height) - el.style.height
+            break
+        }
       }
     })
   }
