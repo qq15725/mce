@@ -614,7 +614,7 @@ defineExpose({
       <rect width="100%" height="100%" fill="none" class="mce-transformable__rect" />
 
       <rect
-        class="mce-transformable__border"
+        class="mce-transformable__rect"
         width="100%"
         height="100%"
         fill="none"
@@ -733,8 +733,7 @@ defineExpose({
     visibility: hidden;
   }
 
-  &__rect,
-  &__border {
+  &__rect {
     stroke-width: 1px;
   }
 
