@@ -1,3 +1,12 @@
+## [0.13.5](https://github.com/qq15725/mce/compare/v0.13.4...v0.13.5) (2025-11-13)
+
+
+### Features
+
+* doubleclickStrategy ([2dec899](https://github.com/qq15725/mce/commit/2dec8998e4040646d60d8fcd387d6a96ed85f017))
+
+
+
 ## [0.13.4](https://github.com/qq15725/mce/compare/v0.13.3...v0.13.4) (2025-11-13)
 
 
