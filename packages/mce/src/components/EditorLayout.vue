@@ -106,7 +106,7 @@ const resizeStrategy = computed(() => {
   const first = elementSelection.value[0]
   if (first) {
     if (first.text.isValid()) {
-      return 'diagonalAspectRatio'
+      return 'lockAspectRatioDiagonal'
     }
     return props.resizeStrategy(first)
   }

@@ -26,7 +26,7 @@ const transform = ref({
     v-slot="{ props: slotProps }"
     v-model="transform"
     class="mce-float-panel"
-    visibility="none"
+    hide-ui
     @wheel.stop
   >
     <div

@@ -2,6 +2,10 @@
 import type { OrientedBoundingBox } from '../../types'
 import { computed, getCurrentInstance, nextTick, onMounted, ref, useModel } from 'vue'
 
+export interface TransformableValue extends OrientedBoundingBox {
+  borderRadius: number
+}
+
 interface Point {
   x: number
   y: number
@@ -9,10 +13,6 @@ interface Point {
 
 type Handle
   = | 'move'
-    | 'rotate-top-left'
-    | 'rotate-top-right'
-    | 'rotate-bottom-left'
-    | 'rotate-bottom-right'
     | 'resize-top'
     | 'resize-right'
     | 'resize-bottom'
@@ -21,9 +21,18 @@ type Handle
     | 'resize-top-right'
     | 'resize-bottom-left'
     | 'resize-bottom-right'
+    | 'rotate-top-left'
+    | 'rotate-top-right'
+    | 'rotate-bottom-left'
+    | 'rotate-bottom-right'
+    | 'border-radius-top-left'
+    | 'border-radius-top-right'
+    | 'border-radius-bottom-left'
+    | 'border-radius-bottom-right'
 
 interface HandleObject {
   type: Handle
+  shape?: 'rect' | 'circle'
   x: number
   y: number
   width: number
@@ -32,17 +41,16 @@ interface HandleObject {
 
 const props = withDefaults(defineProps<{
   tag?: string | any
-  modelValue?: Partial<OrientedBoundingBox>
+  modelValue?: Partial<TransformableValue>
   movable?: boolean
   rotatable?: boolean
   resizable?: boolean
+  adjustableBorderRadius?: boolean
   threshold?: number
-  resizeStrategy?: 'aspectRatio' | 'diagonalAspectRatio'
-  handleStrategy?: 'default' | 'point'
+  resizeStrategy?: 'lockAspectRatio' | 'lockAspectRatioDiagonal'
+  handleStrategy?: 'point'
   handleShape?: 'rect' | 'circle'
-  color?: string
-  handleColor?: string
-  visibility?: 'visible' | 'none' | 'auto'
+  hideUi?: boolean
   handles?: Handle[]
   initialSize?: boolean
   borderStyle?: 'solid' | 'dashed'
@@ -52,17 +60,12 @@ const props = withDefaults(defineProps<{
   movable: true,
   rotatable: true,
   resizable: true,
+  adjustableBorderRadius: false,
   threshold: 0,
-  handleStrategy: 'default',
-  color: 'black',
-  handleColor: 'white',
-  visibility: 'auto',
+  handleShape: 'rect',
   handles: () => [
     'move',
-    'rotate-top-left',
-    'rotate-top-right',
-    'rotate-bottom-left',
-    'rotate-bottom-right',
+    // resize
     'resize-left',
     'resize-top',
     'resize-right',
@@ -71,96 +74,171 @@ const props = withDefaults(defineProps<{
     'resize-top-right',
     'resize-bottom-right',
     'resize-bottom-left',
+    // border-radius
+    'border-radius-top-left',
+    'border-radius-top-right',
+    'border-radius-bottom-left',
+    'border-radius-bottom-right',
+    // rotate
+    'rotate-top-left',
+    'rotate-top-right',
+    'rotate-bottom-left',
+    'rotate-bottom-right',
   ] as Handle[],
 })
 
 const emit = defineEmits<{
-  'update:modelValue': [OrientedBoundingBox]
-  'start': [OrientedBoundingBox]
-  'move': [OrientedBoundingBox, OrientedBoundingBox]
-  'end': [OrientedBoundingBox]
+  'update:modelValue': [TransformableValue]
+  'start': [TransformableValue]
+  'move': [TransformableValue, TransformableValue]
+  'end': [TransformableValue]
 }>()
 
-const cursors: Record<Exclude<Handle, 'move'>, any> = {
-  'rotate-top-left': (rotation: number) => createCursor('rotate', 360 + rotation),
-  'rotate-top-right': (rotation: number) => createCursor('rotate', 90 + rotation),
-  'rotate-bottom-left': (rotation: number) => createCursor('rotate', 270 + rotation),
-  'rotate-bottom-right': (rotation: number) => createCursor('rotate', 180 + rotation),
-  'resize-left': (rotation: number) => createCursor('resizeXy', 180 + rotation),
-  'resize-top': (rotation: number) => createCursor('resizeXy', 90 + rotation),
-  'resize-right': (rotation: number) => createCursor('resizeXy', 180 + rotation),
-  'resize-bottom': (rotation: number) => createCursor('resizeXy', 90 + rotation),
-  'resize-top-left': (rotation: number) => createCursor('resizeBevel', 90 + rotation),
-  'resize-top-right': (rotation: number) => createCursor('resizeBevel', 180 + rotation),
-  'resize-bottom-right': (rotation: number) => createCursor('resizeBevel', 90 + rotation),
-  'resize-bottom-left': (rotation: number) => createCursor('resizeBevel', 180 + rotation),
+const cursors: Record<string, any> = {
+  'rotate-top-left': (angle: number) => createCursor('rotate', 360 + angle),
+  'rotate-top-right': (angle: number) => createCursor('rotate', 90 + angle),
+  'rotate-bottom-left': (angle: number) => createCursor('rotate', 270 + angle),
+  'rotate-bottom-right': (angle: number) => createCursor('rotate', 180 + angle),
+  'resize-left': (angle: number) => createCursor('resizeXy', 180 + angle),
+  'resize-top': (angle: number) => createCursor('resizeXy', 90 + angle),
+  'resize-right': (angle: number) => createCursor('resizeXy', 180 + angle),
+  'resize-bottom': (angle: number) => createCursor('resizeXy', 90 + angle),
+  'resize-top-left': (angle: number) => createCursor('resizeBevel', 90 + angle),
+  'resize-top-right': (angle: number) => createCursor('resizeBevel', 180 + angle),
+  'resize-bottom-right': (angle: number) => createCursor('resizeBevel', 90 + angle),
+  'resize-bottom-left': (angle: number) => createCursor('resizeBevel', 180 + angle),
 }
 
 const modelValue = useModel(props, 'modelValue')
 const model = computed({
   get: () => {
-    let { left = 0, top = 0, width = 0, height = 0, rotate = 0 } = modelValue.value ?? {}
+    let { left = 0, top = 0, width = 0, height = 0, rotate = 0, borderRadius = 0 } = modelValue.value ?? {}
     if (Number.isNaN(Number(width)))
       width = 0
     if (Number.isNaN(Number(height)))
       height = 0
-    return { left, top, width, height, rotate }
+    return { left, top, width, height, rotate, borderRadius }
   },
   set: val => modelValue.value = val,
 })
 const transforming = ref(false)
 const activeHandle = ref<Handle>()
 const computedHandles = computed<HandleObject[]>(() => {
-  const { width = 0, height = 0 } = model.value
-  const size = 6
-  const sizeHalf = size / 2
-  const size1 = 8
-  const size1Half = size1 / 2
-  const size2 = 12
+  const size = 8
+  const { width = 0, height = 0, borderRadius } = model.value
+  const center = { x: width / 2, y: height / 2 }
+  const shape = props.handleShape
+  const lines = [
+    { type: 'top', points: [[0, 0], [1, 0]] },
+    { type: 'right', points: [[1, 0], [1, 1]] },
+    { type: 'bottom', points: [[0, 1], [1, 1]] },
+    { type: 'left', points: [[0, 0], [0, 1]] },
+  ]
+  const points = [
+    { type: 'top', point: [0.5, 0] },
+    { type: 'right', point: [1, 0.5] },
+    { type: 'bottom', point: [0.5, 1] },
+    { type: 'left', point: [0, 0.5] },
+    { type: 'top-left', point: [0, 0] },
+    { type: 'top-right', point: [1, 0] },
+    { type: 'bottom-left', point: [0, 1] },
+    { type: 'bottom-right', point: [1, 1] },
+  ]
+
+  const lineHandles = lines.map((item) => {
+    const [p1, p2] = item.points
+    const minX = Math.min(p1[0], p2[0]) * width
+    const maxX = Math.max(p1[0], p2[0]) * width
+    const minY = Math.min(p1[1], p2[1]) * height
+    const maxY = Math.max(p1[1], p2[1]) * height
+    return {
+      type: item.type,
+      x: minX - size / 2,
+      y: minY - size / 2,
+      width: (maxX - minX) + size,
+      height: (maxY - minY) + size,
+    }
+  })
+  const pointHandles = points.map((item) => {
+    return {
+      type: item.type,
+      shape,
+      x: item.point[0] * width - size / 2,
+      y: item.point[1] * height - size / 2,
+      width: size,
+      height: size,
+    }
+  })
+  const diagonalPointHandles = pointHandles
+    .filter(item => item.type.split('-').length === 2)
+  const rotateHandles = diagonalPointHandles
+    .map((item) => {
+      const sign = {
+        x: center.x - item.x > 0 ? 1 : -1,
+        y: center.y - item.y > 0 ? 1 : -1,
+      }
+      return {
+        ...item,
+        shape: undefined,
+        type: `rotate-${item.type}`,
+        x: item.x - sign.x * size,
+        y: item.y - sign.y * size,
+      }
+    })
+  const borderRadiusHandles = props.adjustableBorderRadius
+    ? diagonalPointHandles
+        .map((item) => {
+          const sign = {
+            x: center.x - item.x > 0 ? 1 : -1,
+            y: center.y - item.y > 0 ? 1 : -1,
+          }
+          const offset = size * 2
+          return {
+            ...item,
+            shape: 'circle',
+            type: `border-radius-${item.type}`,
+            x: item.x + sign.x * Math.min(width / 2, offset + borderRadius),
+            y: item.y + sign.y * Math.min(height / 2, offset + borderRadius),
+          }
+        })
+    : []
+
   let handles
   if (props.handleStrategy === 'point') {
     handles = [
       // move
-      { type: 'move', x: -sizeHalf, y: size1Half, width: size, height: height - size1 },
-      { type: 'move', x: size1Half, y: -sizeHalf, width: width - size1, height: size },
-      { type: 'move', x: width - sizeHalf, y: size1Half, width: size, height: height - size1 },
-      { type: 'move', x: size1Half, y: height - sizeHalf, width: width - size1, height: size },
-      { type: 'move', x: -sizeHalf, y: size1Half, width: size, height: height - size1 },
+      ...lineHandles.map(item => ({ ...item, type: 'move' })),
       // resize
-      { type: 'resize-top', x: width / 2 - size1Half, y: -size1Half, width: size1, height: size1 },
-      { type: 'resize-right', x: width - size1Half, y: height / 2 - size1Half, width: size1, height: size1 },
-      { type: 'resize-bottom', x: width / 2 - size1Half, y: height + -size1Half, width: size1, height: size1 },
-      { type: 'resize-left', x: -size1Half, y: height / 2 - size1Half, width: size1, height: size1 },
-      { type: 'resize-top-left', x: -size1Half, y: -size1Half, width: size1, height: size1 },
-      { type: 'resize-top-right', x: width - size1Half, y: -size1Half, width: size1, height: size1 },
-      { type: 'resize-bottom-left', x: -size1Half, y: height - size1Half, width: size1, height: size1 },
-      { type: 'resize-bottom-right', x: width - size1Half, y: height - size1Half, width: size1, height: size1 },
+      ...pointHandles.map(item => ({ ...item, type: `resize-${item.type}` })),
+      // border-radius
+      ...borderRadiusHandles,
       // rotate
-      { type: 'rotate-top-left', x: -size2 - size1Half, y: -size2 - size1Half, width: size2, height: size2 },
-      { type: 'rotate-top-right', x: width + size1Half, y: -size2 - size1Half, width: size2, height: size2 },
-      { type: 'rotate-bottom-left', x: -size2 - size1Half, y: height + size1Half, width: size2, height: size2 },
-      { type: 'rotate-bottom-right', x: width + size1Half, y: height + size1Half, width: size2, height: size2 },
+      ...rotateHandles,
     ]
   }
   else {
     handles = [
       // resize
-      { type: 'resize-top', x: size1Half, y: -sizeHalf, width: width - size1, height: size },
-      { type: 'resize-right', x: width - sizeHalf, y: size1Half, width: size, height: height - size1 },
-      { type: 'resize-bottom', x: size1Half, y: height - sizeHalf, width: width - size1, height: size },
-      { type: 'resize-left', x: -sizeHalf, y: size1Half, width: size, height: height - size1 },
-      { type: 'resize-top-left', x: -size1Half, y: -size1Half, width: size1, height: size1 },
-      { type: 'resize-top-right', x: width - size1Half, y: -size1Half, width: size1, height: size1 },
-      { type: 'resize-bottom-left', x: -size1Half, y: height - size1Half, width: size1, height: size1 },
-      { type: 'resize-bottom-right', x: width - size1Half, y: height - size1Half, width: size1, height: size1 },
+      ...lineHandles.map(item => ({ ...item, type: `resize-${item.type}` })),
+      ...diagonalPointHandles.map(item => ({ ...item, type: `resize-${item.type}` })),
+      // border-radius
+      ...borderRadiusHandles,
       // rotate
-      { type: 'rotate-top-left', x: -size2 - size1Half, y: -size2 - size1Half, width: size2, height: size2 },
-      { type: 'rotate-top-right', x: width + size1Half, y: -size2 - size1Half, width: size2, height: size2 },
-      { type: 'rotate-bottom-left', x: -size2 - size1Half, y: height + size1Half, width: size2, height: size2 },
-      { type: 'rotate-bottom-right', x: width + size1Half, y: height + size1Half, width: size2, height: size2 },
+      ...rotateHandles,
     ]
   }
-  return handles.filter(val => props.handles.includes(val.type as Handle))
+
+  return handles
+    .filter((handle) => {
+      if (props.handles.includes(handle.type as Handle)) {
+        return !(
+          (!props.resizable && handle.type.startsWith('resize'))
+          || (!props.rotatable && handle.type.startsWith('rotate'))
+          || (!props.movable && handle.type === 'move')
+        )
+      }
+      return false
+    })
     .map((anchor) => {
       anchor.width = Math.max(anchor.width, 0)
       anchor.height = Math.max(anchor.height, 0)
@@ -185,7 +263,6 @@ const style = computed(() => {
     transform: `matrix(${cos}, ${sin}, ${-sin}, ${cos}, ${left}, ${top})`,
   }
 })
-const isAutoVisibilityTransforming = computed(() => props.visibility === 'auto' && transforming.value)
 const tip = computed(() => props.tipFormat?.('size'))
 
 function start(event?: MouseEvent, index?: number): boolean {
@@ -196,7 +273,7 @@ function start(event?: MouseEvent, index?: number): boolean {
   event?.preventDefault()
   event?.stopPropagation()
 
-  const { left = 0, top = 0, width = 0, height = 0, rotate = 0 } = model.value
+  const { left, top, width, height, rotate, borderRadius } = model.value
 
   let aspectRatio = 0
   if (width && height) {
@@ -211,6 +288,7 @@ function start(event?: MouseEvent, index?: number): boolean {
 
   const isMove = handle.type === 'move'
   const isRotate = handle.type.startsWith('rotate')
+  const isBorderRadius = handle.type.startsWith('border-radius')
   const isHorizontal = handle.type === 'resize-left' || handle.type === 'resize-right'
   const isHorizontalVertical = handle.type.split('-').length === 2
 
@@ -220,8 +298,18 @@ function start(event?: MouseEvent, index?: number): boolean {
   }
 
   const startPoint = {
-    x: left + handle.x + handle.width / 2,
-    y: top + handle.y + handle.height / 2,
+    x: left,
+    y: top,
+  }
+
+  if (!isMove) {
+    startPoint.x += handle.x + handle.width / 2
+    startPoint.y += handle.y + handle.height / 2
+  }
+
+  const sign = {
+    x: startPoint.x - centerPoint.x > 0 ? 1 : -1,
+    y: startPoint.y - centerPoint.y > 0 ? 1 : -1,
   }
 
   const rotatedStartPoint = rotatePoint(startPoint, centerPoint, rotate)
@@ -250,7 +338,7 @@ function start(event?: MouseEvent, index?: number): boolean {
   }
 
   function onMove(event: MouseEvent): void {
-    const updated = {} as Required<OrientedBoundingBox>
+    const updated = {} as TransformableValue
 
     if (!startClientPoint) {
       startClientPoint = { x: event.clientX, y: event.clientY }
@@ -293,6 +381,16 @@ function start(event?: MouseEvent, index?: number): boolean {
         updated.rotate = ((rotate + endAngle - startAngle) + 360) % 360
       }
     }
+    else if (isBorderRadius) {
+      const offset = rotatePoint(rotatedOffset, { x: 0, y: 0 }, -rotate)
+      const _offset = Math.abs(offset.x) < Math.abs(offset.y)
+        ? -sign.x * offset.x
+        : -sign.y * offset.y * aspectRatio
+      updated.borderRadius = Math.min(
+        Math.max(0, borderRadius + _offset),
+        Math.min(width / 2, height / 2),
+      )
+    }
     else if (isHorizontalVertical) {
       const currentPoint = rotatePoint(rotatedCurrentPoint, centerPoint, -rotate)
       const newCurrentPoint = isHorizontal
@@ -302,7 +400,7 @@ function start(event?: MouseEvent, index?: number): boolean {
       const distance = Math.abs(getDistance(newRotatedCurrentPoint, rotatedSymmetricPoint))
       if (isHorizontal) {
         updated.width = distance
-        if (props.resizeStrategy === 'aspectRatio' && aspectRatio) {
+        if (props.resizeStrategy === 'lockAspectRatio' && aspectRatio) {
           updated.height = distance / aspectRatio
         }
         else {
@@ -311,7 +409,7 @@ function start(event?: MouseEvent, index?: number): boolean {
       }
       else {
         updated.height = distance
-        if (props.resizeStrategy === 'aspectRatio' && aspectRatio) {
+        if (props.resizeStrategy === 'lockAspectRatio' && aspectRatio) {
           updated.width = distance * aspectRatio
         }
         else {
@@ -328,24 +426,19 @@ function start(event?: MouseEvent, index?: number): boolean {
       let newRotatedCurrentPoint
       if (
         (
-          props.resizeStrategy === 'aspectRatio'
-          || props.resizeStrategy === 'diagonalAspectRatio'
+          props.resizeStrategy === 'lockAspectRatio'
+          || props.resizeStrategy === 'lockAspectRatioDiagonal'
         ) && aspectRatio
       ) {
-        const signX = startPoint.x - centerPoint.x > 0 ? 1 : -1
-        const signY = startPoint.y - centerPoint.y > 0 ? 1 : -1
-        const offsetPoint = rotatePoint(
-          rotatedOffset,
-          { x: 0, y: 0 },
-          -rotate,
-        )
-        const _offset = Math.abs(offsetPoint.x) < Math.abs(offsetPoint.y * aspectRatio)
-          ? signX * offsetPoint.x
-          : signY * offsetPoint.y * aspectRatio
+        const offset = rotatePoint(rotatedOffset, { x: 0, y: 0 }, -rotate)
+        const _offset = Math.abs(offset.x) < Math.abs(offset.y)
+          ? sign.x * offset.x
+          : sign.y * offset.y * aspectRatio
+        // TODO
         newRotatedCurrentPoint = rotatePoint(
           {
-            x: startPoint.x + signX * _offset,
-            y: startPoint.y + signY * _offset / aspectRatio,
+            x: startPoint.x + sign.x * _offset,
+            y: startPoint.y + sign.y * _offset / aspectRatio,
           },
           centerPoint,
           rotate,
@@ -394,6 +487,7 @@ function start(event?: MouseEvent, index?: number): boolean {
     window.removeEventListener('pointermove', onMove)
     window.removeEventListener('pointerup', onEnd, true)
     transforming.value = false
+    activeHandle.value = undefined
     emit('end', model.value)
   }
 
@@ -409,16 +503,20 @@ const cursorMap = {
   resizeBevel: '<path d="m19.7432 17.0869-4.072 4.068 2.829 2.828-8.473-.013-.013-8.47 2.841 2.842 4.075-4.068 1.414-1.415-2.844-2.842h8.486v8.484l-2.83-2.827z" fill="white"/><path d="m18.6826 16.7334-4.427 4.424 1.828 1.828-5.056-.016-.014-5.054 1.842 1.841 4.428-4.422 2.474-2.475-1.844-1.843h5.073v5.071l-1.83-1.828z" fill="black"/>',
 }
 
-function createCursor(type: 'rotate' | 'resizeXy' | 'resizeBevel', rotation: number) {
+function createCursor(type: 'rotate' | 'resizeXy' | 'resizeBevel', angle: number) {
   const path = cursorMap[type]
-  return `<svg height="32" width="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><defs><filter id="shadow" color-interpolation-filters="sRGB"><feDropShadow dx="1" dy="1" stdDeviation="1.2" flood-opacity=".5"/></filter></defs><g fill="none" transform="rotate(${rotation} 16 16)" filter="url(%23shadow)">${path}</g></svg>`
+  return `<svg height="32" width="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><defs><filter id="shadow" color-interpolation-filters="sRGB"><feDropShadow dx="1" dy="1" stdDeviation="1.2" flood-opacity=".5"/></filter></defs><g fill="none" transform="rotate(${angle} 16 16)" filter="url(%23shadow)">${path}</g></svg>`
     .replace(/"/g, '\'')
 }
 
 function getCursor(type: Handle) {
   if (type === 'move')
     return 'move'
-  return `url("data:image/svg+xml,${cursors[type](model.value.rotate ?? 0)}") 16 16, pointer`
+  const create = cursors[type]
+  if (!create) {
+    return 'default'
+  }
+  return `url("data:image/svg+xml,${create(model.value.rotate ?? 0)}") 16 16, pointer`
 }
 
 function rotatePoint(point: Point, origin: Point, angle: number): Point {
@@ -489,6 +587,16 @@ defineExpose({
   <Component
     :is="tag"
     class="mce-transformable"
+    :class="[
+      transforming && 'mce-transformable--transforming',
+      props.hideUi && 'mce-transformable--hide-ui',
+      resizeStrategy && `mce-transformable--${resizeStrategy}`,
+      activeHandle && `mce-transformable--${activeHandle}`,
+      activeHandle === 'move' && 'mce-transformable--moving',
+      activeHandle?.startsWith('resize') && 'mce-transformable--resizing',
+      activeHandle?.startsWith('rotate') && 'mce-transformable--rotateing',
+      props.borderStyle && `mce-transformable--${props.borderStyle}`,
+    ]"
     :style="style"
   >
     <slot
@@ -499,74 +607,75 @@ defineExpose({
       :start="start"
     />
 
-    <svg class="mce-transformable__svg">
+    <svg
+      class="mce-transformable__svg"
+    >
+      <rect width="100%" height="100%" fill="none" class="mce-transformable__rect" />
+
       <rect
+        class="mce-transformable__border"
         width="100%"
         height="100%"
         fill="none"
-        class="mce-transformable__box"
-        :style="{
-          strokeDasharray: props.borderStyle === 'dashed' ? '4px' : undefined,
-          opacity: visibility === 'none' ? 0 : isAutoVisibilityTransforming ? '.4' : undefined,
-          strokeWidth: isAutoVisibilityTransforming ? '0.5px' : undefined,
-        }"
+        :rx="model.borderRadius"
+        :ry="model.borderRadius"
       />
 
-      <g pointer-events="all">
+      <line
+        v-if="
+          activeHandle === 'resize-top'
+            || activeHandle === 'resize-right'
+            || activeHandle === 'resize-top-right'
+            || activeHandle === 'resize-bottom-left'
+        "
+        class="mce-transformable__diagonal" x1="100%" y1="0" x2="0" y2="100%"
+      />
+
+      <line
+        v-else-if="
+          activeHandle === 'resize-left'
+            || activeHandle === 'resize-bottom'
+            || activeHandle === 'resize-top-left'
+            || activeHandle === 'resize-bottom-right'
+        "
+        class="mce-transformable__diagonal" x1="0" y1="0" x2="100%" y2="100%"
+      />
+
+      <g>
         <template
-          v-for="(handle, index) in computedHandles.filter(v => {
-            return !(
-              (!resizable && v.type.startsWith('resize'))
-              || (!rotatable && v.type.startsWith('rotate'))
-              || (!movable && v.type === 'move')
-            )
-          })"
+          v-for="(handle, index) in computedHandles"
           :key="index"
         >
           <template
-            v-if="handleStrategy === 'point'
-              ? handle.type.startsWith('resize')
-              : (handle.type === 'resize-top-left'
-                || handle.type === 'resize-top-right'
-                || handle.type === 'resize-bottom-left'
-                || handle.type === 'resize-bottom-right')"
+            v-if="handle.shape"
           >
-            <template v-if="props.handleShape === 'rect'">
-              <rect
-                :x="handle.x"
-                :y="handle.y"
-                :width="handle.width"
-                :height="handle.height"
-                :aria-label="handle.type"
-                :fill="handleColor"
-                class="mce-transformable__handle"
-                :style="{
-                  opacity: (
-                    visibility === 'none'
-                    || (transforming && visibility !== 'visible')
-                  ) ? 0 : undefined,
-                }"
-              />
-            </template>
+            <rect
+              v-if="handle.shape === 'rect'"
+              :x="handle.x"
+              :y="handle.y"
+              :width="handle.width"
+              :height="handle.height"
+              :aria-label="handle.type"
+              class="mce-transformable__handle"
+            />
 
-            <template v-else>
-              <circle
-                :cx="handle.x + handle.width / 2"
-                :cy="handle.y + handle.width / 2"
-                :r="handle.width / 2"
-                :aria-label="handle.type"
-                :fill="handleColor"
-                class="mce-transformable__handle"
-                :style="{
-                  opacity: (
-                    visibility === 'none'
-                    || (transforming && visibility !== 'visible')
-                  ) ? 0 : undefined,
-                }"
-              />
-            </template>
+            <circle
+              v-else
+              :cx="handle.x + handle.width / 2"
+              :cy="handle.y + handle.width / 2"
+              :r="handle.width / 2"
+              :aria-label="handle.type"
+              class="mce-transformable__handle"
+            />
           </template>
+        </template>
+      </g>
 
+      <g pointer-events="all">
+        <template
+          v-for="(handle, index) in computedHandles"
+          :key="index"
+        >
           <rect
             ref="handlesRef"
             :x="handle.x"
@@ -574,13 +683,7 @@ defineExpose({
             :width="handle.width"
             :height="handle.height"
             :aria-label="handle.type"
-            class="mce-transformable__handle-box"
-            :style="{
-              opacity: (
-                visibility === 'none'
-                || (transforming && visibility !== 'visible')
-              ) ? 0 : undefined,
-            }"
+            class="mce-transformable__handle-rect"
             :cursor="transforming ? 'auto' : getCursor(handle.type)"
             @pointerdown="(event: PointerEvent) => start(event, index)"
           />
@@ -589,9 +692,7 @@ defineExpose({
 
       <g
         pointer-events="all"
-        :style="isAutoVisibilityTransforming
-          ? { opacity: '.4', strokeWidth: '0.5px' }
-          : undefined"
+        class="mce-transformable__svg-slot"
       >
         <slot
           name="svg"
@@ -608,6 +709,8 @@ defineExpose({
 
 <style lang="scss">
 .mce-transformable {
+  $root: &;
+
   left: 0;
   top: 0;
 
@@ -620,20 +723,27 @@ defineExpose({
     overflow: visible;
     pointer-events: none;
     color: rgb(var(--mce-theme-primary));
+    stroke: currentColor;
   }
 
-  &__box {
-    stroke: currentColor;
+  &__diagonal {
+    stroke-width: 1px;
+    stroke-dasharray: 2px;
+    visibility: hidden;
+  }
+
+  &__rect,
+  &__border {
     stroke-width: 1px;
   }
 
   &__handle {
-    stroke: currentColor;
+    fill: white;
     stroke-width: 1px;
     pointer-events: none;
   }
 
-  &__handle-box {
+  &__handle-rect {
     stroke-width: 1px;
     fill: transparent;
     stroke: transparent;
@@ -650,6 +760,55 @@ defineExpose({
     padding: 2px 4px;
     border-radius: 3px;
     text-wrap: nowrap;
+  }
+
+  &--dashed {
+    #{$root}__rect {
+      stroke-dasharray: 4px;
+    }
+  }
+
+  &--lockAspectRatio,
+  &--lockAspectRatioDiagonal {
+    &#{$root}--resizing {
+      #{$root}__diagonal {
+        visibility: visible;
+      }
+    }
+  }
+
+  &--moving {
+    #{$root}__handle {
+      visibility: hidden;
+    }
+
+    #{$root}__handle-rect {
+      visibility: hidden;
+    }
+
+    #{$root}__rect {
+      opacity: .4;
+      stroke-width: 0.5px;
+    }
+
+    #{$root}__svg-slot {
+      opacity: .4;
+      stroke-width: 0.5px;
+    }
+  }
+
+  &--hide-ui {
+    #{$root}__handle {
+      visibility: hidden;
+    }
+
+    #{$root}__handle-rect {
+      visibility: hidden;
+    }
+
+    #{$root}__rect {
+      visibility: hidden;
+    }
   }
 }
 </style>

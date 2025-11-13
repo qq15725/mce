@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { AxisAlignedBoundingBox, OrientedBoundingBox } from '../types'
+import type { TransformableValue } from './shared/Transformable.vue'
 import { Element2D } from 'modern-canvas'
 import { computed, onBeforeMount, onBeforeUnmount, useTemplateRef } from 'vue'
 import { useEditor } from '../composables/editor'
@@ -11,7 +12,7 @@ defineOptions({
 })
 
 const props = withDefaults(defineProps<{
-  resizeStrategy?: 'aspectRatio' | 'diagonalAspectRatio'
+  resizeStrategy?: 'lockAspectRatio' | 'lockAspectRatioDiagonal'
   selectedArea?: AxisAlignedBoundingBox
 }>(), {
   selectedArea: () => ({ left: 0, top: 0, width: 0, height: 0 }),
@@ -72,46 +73,52 @@ const selectionObbs = computed(() => {
   })
 })
 
-const _selectionObb = computed(() => getObbInDrawboard(elementSelection.value))
-const selectionObb = computed({
-  get: () => _selectionObb.value,
-  set: (val: OrientedBoundingBox) => {
+const _selectionTransform = computed(() => {
+  const zoom = camera.value.zoom
+  return {
+    ...getObbInDrawboard(elementSelection.value),
+    borderRadius: (elementSelection.value[0]?.style.borderRadius ?? 0) * zoom.x,
+  }
+})
+const selectionTransform = computed({
+  get: () => _selectionTransform.value,
+  set: (val: TransformableValue) => {
     const zoom = camera.value.zoom
-    const oldBox = _selectionObb.value
-    const offsetBox = {
-      left: (val.left - oldBox.left) / zoom.x,
-      top: (val.top - oldBox.top) / zoom.y,
-      width: Math.max(1, val.width / zoom.x) - oldBox.width / zoom.x,
-      height: Math.max(1, val.height / zoom.y) - oldBox.height / zoom.y,
-      rotate: (val.rotate ?? 0) - (oldBox.rotate ?? 0),
+    const oldTransform = _selectionTransform.value
+    const offsetStyle = {
+      left: (val.left - oldTransform.left) / zoom.x,
+      top: (val.top - oldTransform.top) / zoom.y,
+      width: Math.max(1, val.width / zoom.x) - oldTransform.width / zoom.x,
+      height: Math.max(1, val.height / zoom.y) - oldTransform.height / zoom.y,
+      rotate: (val.rotate ?? 0) - (oldTransform.rotate ?? 0),
+      borderRadius: ((val.borderRadius ?? 0) - (oldTransform.borderRadius ?? 0)) / zoom.y,
     }
     const handle: string = transformable.value?.activeHandle ?? 'move'
     elementSelection.value.forEach((element) => {
       const style = element.style
-      const box = {
-        left: style.left + offsetBox.left,
-        top: style.top + offsetBox.top,
-        width: style.width + offsetBox.width,
-        height: style.height + offsetBox.height,
-        rotate: style.rotate + offsetBox.rotate,
+      const newStyle = {
+        left: style.left + offsetStyle.left,
+        top: style.top + offsetStyle.top,
+        width: style.width + offsetStyle.width,
+        height: style.height + offsetStyle.height,
+        rotate: style.rotate + offsetStyle.rotate,
+        borderRadius: style.borderRadius + offsetStyle.borderRadius,
       }
-      if (!handle.startsWith('rotate')) {
-        if (handle.startsWith('resize')) {
-          resizeElement(
-            element,
-            box.width / element.style.width,
-            box.height / element.style.height,
-            isFrame(element)
-              ? undefined
-              : handle.split('-').length > 2
-                ? { deep: true, textFontSizeToFit: true }
-                : { deep: true, textToFit: true },
-          )
-          box.width = element.style.width
-          box.height = element.style.height
-        }
+      if (handle.startsWith('resize')) {
+        resizeElement(
+          element,
+          newStyle.width / element.style.width,
+          newStyle.height / element.style.height,
+          isFrame(element)
+            ? undefined
+            : handle.split('-').length > 2
+              ? { deep: true, textFontSizeToFit: true }
+              : { deep: true, textToFit: true },
+        )
+        newStyle.width = element.style.width
+        newStyle.height = element.style.height
       }
-      Object.assign(style, box)
+      Object.assign(style, newStyle)
       element.updateGlobalTransform()
       element.findAncestor((ancestor) => {
         if (
@@ -124,6 +131,37 @@ const selectionObb = computed({
       })
     })
   },
+})
+
+const movable = computed(() => {
+  return elementSelection.value.every((element) => {
+    return !isLock(element)
+      && element.meta.movable !== false
+      && element.meta.transformable !== false
+  })
+})
+
+const resizable = computed(() => {
+  return elementSelection.value.every((element) => {
+    return !isLock(element)
+      && element.meta.resizable !== false
+      && element.meta.transformable !== false
+  })
+})
+
+const rotatable = computed(() => {
+  return elementSelection.value.every((element) => {
+    return !isLock(element)
+      && element.meta.rotatable !== false
+      && element.meta.transformable !== false
+  })
+})
+
+const adjustableBorderRadius = computed(() => {
+  const element = elementSelection.value[0]!
+  return elementSelection.value.length === 1
+    && !isLock(element)
+    && element.foreground.isValid()
 })
 
 function tipFormat() {
@@ -168,11 +206,13 @@ defineExpose({
   />
 
   <Transformable
-    v-if="selectionObb.width && selectionObb.height"
+    v-if="selectionTransform.width && selectionTransform.height"
     ref="transformableRef"
-    v-model="selectionObb"
-    :visibility="state !== 'selecting' ? 'auto' : 'none'"
-    :movable="elementSelection[0] && !isLock(elementSelection[0])"
+    v-model="selectionTransform"
+    :movable="movable"
+    :resizable="resizable"
+    :rotatable="rotatable"
+    :adjustable-border-radius="adjustableBorderRadius"
     :resize-strategy="props.resizeStrategy"
     :handle-shape="config.handleShape"
     class="mce-selection-obb"
@@ -186,12 +226,12 @@ defineExpose({
     </template>
   </Transformable>
 
-  <template v-if="selectionObb.width && selectionObb.height && $slots.default">
+  <template v-if="selectionTransform.width && selectionTransform.height && $slots.default">
     <div
       style="position: absolute;"
-      :style="boundingBoxToStyle(selectionObb)"
+      :style="boundingBoxToStyle(selectionTransform)"
     >
-      <slot :box="selectionObb" />
+      <slot :box="selectionTransform" />
     </div>
   </template>
 </template>
