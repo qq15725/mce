@@ -1,3 +1,21 @@
+## [0.13.3](https://github.com/qq15725/mce/compare/v0.13.2...v0.13.3) (2025-11-13)
+
+
+### Bug Fixes
+
+* handle ([9276b45](https://github.com/qq15725/mce/commit/9276b45302ff13b39b88c9c9bf877b347a9e2795))
+* textFontSizeToFit ([5356686](https://github.com/qq15725/mce/commit/5356686cee7b8dc113d7e8512dabd6dc8f6c88a0))
+* textFontSizeToFit ([985271a](https://github.com/qq15725/mce/commit/985271a28e7ade8fc70560ea2b147dec1433bb14))
+* transformable ([b20593e](https://github.com/qq15725/mce/commit/b20593e0ed03c346e778259a4c0a9735723a63be))
+
+
+### Features
+
+* add copyAs:png ([202ebe6](https://github.com/qq15725/mce/commit/202ebe6226076e56827d7353d239ca4abf11c3f0))
+* transformable component support change borderRadius ([e450343](https://github.com/qq15725/mce/commit/e4503432ba51fc2510cbc9525372ed7ec4000a1c))
+
+
+
 ## [0.13.2](https://github.com/qq15725/mce/compare/v0.13.1...v0.13.2) (2025-11-12)
 
 
