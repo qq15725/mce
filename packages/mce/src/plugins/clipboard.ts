@@ -14,10 +14,11 @@ declare global {
       duplicate: [event: KeyboardEvent]
     }
 
+    type CopySource = string | Blob | Record<string, any>[]
     type PasteSource = DataTransfer | ClipboardItem[]
 
     interface Commands {
-      copy: (data?: any) => Promise<void>
+      copy: (source?: CopySource) => Promise<void>
       cut: () => Promise<void>
       paste: (source?: PasteSource) => Promise<void>
       duplicate: () => void
@@ -46,9 +47,26 @@ export default definePlugin((editor, options) => {
 
   const useClipboard = options.clipboard !== false && SUPPORTS_CLIPBOARD
 
-  const copy: Mce.Commands['copy'] = async (data) => {
-    if (data === undefined) {
-      data = selection.value.map((v) => {
+  function toClipboardItem(source: any): ClipboardItem {
+    if (typeof source === 'string') {
+      const type = 'text/plain'
+      return new ClipboardItem({ [type]: new Blob([source], { type }) })
+    }
+    else if (source instanceof Blob) {
+      return new ClipboardItem({ [source.type]: source })
+    }
+    else {
+      const type = 'text/html'
+      const content = `<mce-clipboard>${JSON.stringify(source)}</mce-clipboard>`
+      return new ClipboardItem({
+        [type]: new Blob([content], { type }),
+      })
+    }
+  }
+
+  const copy: Mce.Commands['copy'] = async (source) => {
+    if (source === undefined) {
+      source = selection.value.map((v) => {
         const json = v.toJSON()
         delete json.style.left
         delete json.style.top
@@ -56,25 +74,13 @@ export default definePlugin((editor, options) => {
       })
     }
     if (useClipboard) {
-      if (Array.isArray(data)) {
-        const type = 'text/html'
-        const content = `<mce-clipboard>${JSON.stringify(data)}</mce-clipboard>`
-        await navigator!.clipboard.write([
-          new ClipboardItem({
-            [type]: new Blob([content], { type }),
-          }),
-        ])
-      }
-      else if (typeof data === 'string') {
-        const type = 'text/plain'
-        await navigator!.clipboard.write([
-          new ClipboardItem({ [type]: new Blob([data], { type }) }),
-        ])
-      }
+      await navigator!.clipboard.write([
+        toClipboardItem(source),
+      ])
     }
     else {
-      if (Array.isArray(data)) {
-        copiedData.value = data
+      if (Array.isArray(source)) {
+        copiedData.value = source
       }
     }
   }

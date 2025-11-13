@@ -70,7 +70,6 @@ export default definePlugin((editor) => {
                 ...drawboardEffect.value.getProperties(),
               }),
             )
-            console.log(drawboardEffect.value.getProperties())
           },
         })
 
@@ -91,8 +90,8 @@ export default definePlugin((editor) => {
       { command: 'drawImage', handle: drawImage },
     ],
     exporters: [
+      { ...createExporter('png'), copyAs: true },
       createExporter('jpeg'),
-      createExporter('png'),
       createExporter('webp'),
     ],
     loaders: [
@@ -119,6 +118,9 @@ export default definePlugin((editor) => {
           return await createImageElement(await upload(source))
         },
       },
+    ],
+    hotkeys: [
+      { command: 'copyAs:png', key: 'Shift+CmdOrCtrl+c' },
     ],
   }
 })

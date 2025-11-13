@@ -30,10 +30,6 @@ export default definePlugin((editor) => {
       res = exporter.copyAs(res)
     }
 
-    if (typeof res !== 'string') {
-      res = JSON.stringify(res)
-    }
-
     exec('copy', res)
   }
 
