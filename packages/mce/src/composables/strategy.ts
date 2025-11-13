@@ -67,7 +67,9 @@ export const defaultActiveStrategy: ActiveStrategy = (context) => {
   const cb = (node: Node) => {
     if (
       isElement(node) && (
-        node.parent?.equal(activeElement)
+        node.equal(activeElement)
+        || node.parent?.equal(activeElement)
+        || node.parent?.equal(activeElement?.parent)
         || (isFrame(node.parent) && isRoot(node.parent.parent))
         || (isRoot(node.parent) && !isFrame(node))
       )
@@ -102,7 +104,9 @@ export const defaultHoverStrategy: HoverStrategy = (context) => {
   const cb = (node: Node) => {
     if (
       isElement(node) && (
-        node.parent?.equal(activeElement)
+        node.equal(activeElement)
+        || node.parent?.equal(activeElement)
+        || node.parent?.equal(activeElement?.parent)
         || (isFrame(node.parent) && isRoot(node.parent.parent))
         || (isRoot(node.parent) && !isFrame(node))
       )
