@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { OrientedBoundingBox } from '../../types'
-import { computed, getCurrentInstance, nextTick, onMounted, ref, useModel } from 'vue'
+import { computed, getCurrentInstance, h, nextTick, onMounted, ref, useModel } from 'vue'
 
 export interface TransformableValue extends OrientedBoundingBox {
   borderRadius: number
@@ -582,6 +582,57 @@ defineExpose({
   activeHandle,
   transforming,
 })
+
+function Diagonal() {
+  const handle = activeHandle.value
+
+  if (!handle || !handle.startsWith('resize')) {
+    return undefined
+  }
+
+  switch (props.resizeStrategy) {
+    case 'lockAspectRatio':
+      //
+      break
+    case 'lockAspectRatioDiagonal':
+      if (handle.split('-').length === 2) {
+        return undefined
+      }
+      break
+    default:
+      return undefined
+  }
+
+  if (
+    handle === 'resize-top'
+    || handle === 'resize-right'
+    || handle === 'resize-top-right'
+    || handle === 'resize-bottom-left'
+  ) {
+    return h('line', {
+      class: 'mce-transformable__diagonal',
+      x1: '100%',
+      y1: '0',
+      x2: '0',
+      y2: '100%',
+    })
+  }
+  else if (
+    handle === 'resize-left'
+    || handle === 'resize-bottom'
+    || handle === 'resize-top-left'
+    || handle === 'resize-bottom-right'
+  ) {
+    return h('line', {
+      class: 'mce-transformable__diagonal',
+      x1: '0',
+      y1: '0',
+      x2: '100%',
+      y2: '100%',
+    })
+  }
+  return undefined
+}
 </script>
 
 <template>
@@ -608,9 +659,7 @@ defineExpose({
       :start="start"
     />
 
-    <svg
-      class="mce-transformable__svg"
-    >
+    <svg class="mce-transformable__svg">
       <rect width="100%" height="100%" fill="none" class="mce-transformable__rect" />
 
       <rect
@@ -622,25 +671,7 @@ defineExpose({
         :ry="model.borderRadius"
       />
 
-      <line
-        v-if="
-          activeHandle === 'resize-top'
-            || activeHandle === 'resize-right'
-            || activeHandle === 'resize-top-right'
-            || activeHandle === 'resize-bottom-left'
-        "
-        class="mce-transformable__diagonal" x1="100%" y1="0" x2="0" y2="100%"
-      />
-
-      <line
-        v-else-if="
-          activeHandle === 'resize-left'
-            || activeHandle === 'resize-bottom'
-            || activeHandle === 'resize-top-left'
-            || activeHandle === 'resize-bottom-right'
-        "
-        class="mce-transformable__diagonal" x1="0" y1="0" x2="100%" y2="100%"
-      />
+      <Diagonal />
 
       <g>
         <template
@@ -768,12 +799,9 @@ defineExpose({
     }
   }
 
-  &--lockAspectRatio,
-  &--lockAspectRatioDiagonal {
-    &#{$root}--resizing {
-      #{$root}__diagonal {
-        visibility: visible;
-      }
+  &--resizing {
+    #{$root}__diagonal {
+      visibility: visible;
     }
   }
 

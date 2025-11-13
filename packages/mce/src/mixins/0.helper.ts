@@ -24,7 +24,7 @@ declare global {
       parseAnchor: (anchor: Anchor, isRtl?: boolean) => ParsedAnchor
       isRoot: (value: any) => value is Node
       isElement: (value: any) => value is Element2D
-      isFrame: (node: Node) => node is Element2D
+      isFrame: (value: any) => value is Element2D
       isVisible: (node: Node) => boolean
       setVisible: (node: Node, visible: boolean) => void
       isLock: (node: Node) => boolean
@@ -72,8 +72,8 @@ export default defineMixin((editor) => {
     return value instanceof Element2D
   }
 
-  function isFrame(node: Node): node is Element2D {
-    return isElement(node) && node.meta.inEditorIs === 'Frame'
+  function isFrame(value: any): value is Element2D {
+    return isElement(value) && value.meta.inEditorIs === 'Frame'
   }
 
   function isVisible(node: Node): boolean {

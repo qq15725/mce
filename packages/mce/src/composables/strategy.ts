@@ -1,19 +1,27 @@
-import type { Element2D, PointerInputEvent } from 'modern-canvas'
+import type { Element2D, Node, PointerInputEvent } from 'modern-canvas'
 import type { PropType } from 'vue'
+import type { Editor } from '../editor'
 import { propsFactory } from '../utils/propsFactory'
 
 export interface ActiveStrategyContext {
   element: Element2D | undefined
-  oldElement: Element2D | undefined
   event: PointerInputEvent
-  isExcluded: (element: Element2D) => boolean
+  editor: Editor
+}
+
+export interface DoubleclickStrategyContext {
+  event: PointerInputEvent
+  editor: Editor
 }
 
 export interface HoverStrategyContext extends ActiveStrategyContext {
   //
 }
 
-export type ResizeStrategy = (element: Element2D) => 'lockAspectRatio' | 'lockAspectRatioDiagonal' | undefined
+export type ResizeStrategy = (element: Element2D) =>
+  | 'lockAspectRatio'
+  | 'lockAspectRatioDiagonal'
+  | undefined
 
 export type ActiveStrategy = (context: ActiveStrategyContext) =>
   | {
@@ -21,6 +29,10 @@ export type ActiveStrategy = (context: ActiveStrategyContext) =>
     state: Mce.State | undefined
   }
   | Element2D
+  | undefined
+
+export type DoubleclickStrategy = (context: DoubleclickStrategyContext) =>
+  | Mce.State
   | undefined
 
 export type HoverStrategy = (context: HoverStrategyContext) =>
@@ -34,6 +46,7 @@ export type HoverStrategy = (context: HoverStrategyContext) =>
 export const makeMceStrategyProps = propsFactory({
   resizeStrategy: Function as PropType<ResizeStrategy>,
   activeStrategy: Function as PropType<ActiveStrategy>,
+  doubleclickStrategy: Function as PropType<DoubleclickStrategy>,
   hoverStrategy: Function as PropType<HoverStrategy>,
 }, 'makeMceStrategyProps')
 
@@ -45,31 +58,61 @@ export const defaultResizeStrategy: ResizeStrategy = (element) => {
 }
 
 export const defaultActiveStrategy: ActiveStrategy = (context) => {
-  const { element, oldElement, isExcluded } = context
-  if (element && !isExcluded(element)) {
-    if (element.equal(oldElement)) {
-      if (element.text.isValid()) {
-        return {
-          element,
-          state: 'typing' as const,
-        }
-      }
+  const { element, editor } = context
+  if (!element) {
+    return undefined
+  }
+  const { isRoot, isFrame, isElement, elementSelection } = editor
+  const activeElement = elementSelection.value[0]
+  const cb = (node: Node) => {
+    if (
+      isElement(node) && (
+        node.parent?.equal(activeElement)
+        || (isFrame(node.parent) && isRoot(node.parent.parent))
+        || (isRoot(node.parent) && !isFrame(node))
+      )
+    ) {
+      return true
     }
+    return false
+  }
+  if (cb(element)) {
     return element
+  }
+  return element.findAncestor<Element2D>(cb)
+}
+
+export const defaultDoubleclickStrategy: DoubleclickStrategy = (context) => {
+  const { editor } = context
+  const { elementSelection } = editor
+  const element = elementSelection.value[0]
+  if (element) {
+    return element.foreground.isValid() ? undefined : 'typing'
   }
   return undefined
 }
 
 export const defaultHoverStrategy: HoverStrategy = (context) => {
-  const { element, isExcluded, oldElement } = context
-  if (element && !isExcluded(element)) {
-    if (element.equal(oldElement)) {
-      return {
-        element,
-        cursor: 'move' as const,
-      }
+  const { element, editor } = context
+  if (!element) {
+    return undefined
+  }
+  const { isRoot, isFrame, isElement, elementSelection } = editor
+  const activeElement = elementSelection.value[0]
+  const cb = (node: Node) => {
+    if (
+      isElement(node) && (
+        node.parent?.equal(activeElement)
+        || (isFrame(node.parent) && isRoot(node.parent.parent))
+        || (isRoot(node.parent) && !isFrame(node))
+      )
+    ) {
+      return true
     }
+    return false
+  }
+  if (cb(element)) {
     return element
   }
-  return undefined
+  return element.findAncestor<Element2D>(cb)
 }

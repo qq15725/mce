@@ -18,6 +18,7 @@ import { createIcons, IconsSymbol } from '../composables/icons'
 import { provideOverlay } from '../composables/overlay'
 import {
   defaultActiveStrategy,
+  defaultDoubleclickStrategy,
   defaultHoverStrategy,
   defaultResizeStrategy,
   makeMceStrategyProps,
@@ -49,14 +50,11 @@ const props = defineProps({
   ...makeMceStrategyProps({
     resizeStrategy: defaultResizeStrategy,
     activeStrategy: defaultActiveStrategy,
+    doubleclickStrategy: defaultDoubleclickStrategy,
     hoverStrategy: defaultHoverStrategy,
   }),
   editor: Editor,
 })
-
-const emit = defineEmits<{
-  'dblclick:drawboard': [event: Event]
-}>()
 
 defineSlots<{
   selector?: (props: { box: OrientedBoundingBox }) => void
@@ -66,7 +64,7 @@ defineSlots<{
   default?: () => void
 }>()
 
-let editor
+let editor: Editor
 if (props.editor) {
   editor = provideEditor(props.editor)
 }
@@ -138,27 +136,24 @@ onBeforeUnmount(() => {
   renderEngine.value.off('pointerover', onPointerover)
 })
 
-function isExcluded(element: Element2D): boolean {
-  return isFrame(element)
-}
-
 function onHover(event: PointerInputEvent) {
   let cursor: Cursor | undefined
   let hovered: Element2D | undefined
-  if (isPointInsideAabb(
-    { x: event.clientX, y: event.clientY },
-    getAabbInDrawboard(elementSelection.value),
-  )) {
+  if (
+    elementSelection.value.length > 1
+    && isPointInsideAabb(
+      { x: event.clientX, y: event.clientY },
+      getAabbInDrawboard(elementSelection.value),
+    )
+  ) {
     cursor = 'move'
   }
   else {
     const element = event.target
-    const oldElement = elementSelection.value[0]
     const result = props.hoverStrategy({
       element,
-      oldElement,
       event,
-      isExcluded,
+      editor,
     })
     if (result && !(result instanceof Element2D)) {
       hovered = result.element
@@ -184,11 +179,11 @@ function onPointerdown(downEvent: PointerInputEvent): void {
     return
   }
 
-  const oldElement = elementSelection.value[0]
   const element = downEvent.target
   const start = { x: downEvent.clientX, y: downEvent.clientY }
   let current = { ...start }
   let dragging = false
+  let selecting = false
   let isUp = false
   let selected: Element2D[] = []
   let ctxState: Mce.State | undefined
@@ -201,9 +196,8 @@ function onPointerdown(downEvent: PointerInputEvent): void {
     if (!inSelection) {
       const result = props.activeStrategy({
         element,
-        oldElement,
         event: downEvent,
-        isExcluded,
+        editor,
       })
       if (result && !(result instanceof Element2D)) {
         selected = result.element ? [result.element] : []
@@ -219,9 +213,8 @@ function onPointerdown(downEvent: PointerInputEvent): void {
   function onDrag(event: PointerInputEvent): void {
     const result = props.activeStrategy({
       element,
-      oldElement,
       event,
-      isExcluded,
+      editor,
     })
     if (result && !(result instanceof Element2D)) {
       selected = result.element ? [result.element] : []
@@ -233,6 +226,7 @@ function onPointerdown(downEvent: PointerInputEvent): void {
   }
 
   function onSelectArea(): void {
+    selecting = true
     if (state.value !== 'selecting') {
       state.value = 'selecting'
     }
@@ -248,9 +242,8 @@ function onPointerdown(downEvent: PointerInputEvent): void {
   function onActivate() {
     const result = props.activeStrategy({
       element,
-      oldElement,
       event: downEvent,
-      isExcluded: () => false,
+      editor,
     })
 
     let _element: Element2D | undefined
@@ -314,13 +307,13 @@ function onPointerdown(downEvent: PointerInputEvent): void {
     }
   }
 
-  async function onUp(_event: PointerEvent) {
+  async function onUp(upEvent: PointerEvent) {
     if (state.value) {
       state.value = undefined
     }
 
     if (!dragging) {
-      if (element) {
+      if (element && !selecting) {
         onActivate()
       }
 
@@ -330,7 +323,7 @@ function onPointerdown(downEvent: PointerInputEvent): void {
         if (selected[0] && !isLock(selected[0])) {
           switch (ctxState) {
             case 'typing': {
-              await exec('startTyping', _event)
+              await exec('startTyping', upEvent)
               break
             }
           }
@@ -385,6 +378,19 @@ function onScroll() {
     }
   }
 }
+
+async function onDoubleclick(event: MouseEvent) {
+  const state = props.doubleclickStrategy({
+    event: event as any,
+    editor,
+  })
+  switch (state) {
+    case 'typing': {
+      await exec('startTyping', event)
+      break
+    }
+  }
+}
 </script>
 
 <template>
@@ -396,7 +402,7 @@ function onScroll() {
         ref="drawboardDom"
         class="mce-editor__drawboard"
         :data-pixel-ratio="renderEngine.pixelRatio"
-        @dblclick="emit('dblclick:drawboard', $event)"
+        @dblclick="onDoubleclick($event)"
         @scroll="onScroll"
         @wheel.prevent
       >

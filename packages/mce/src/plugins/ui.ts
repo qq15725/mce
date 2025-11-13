@@ -5,9 +5,9 @@ import { definePlugin } from '../editor'
 declare global {
   namespace Mce {
     interface Commands {
-      startTyping: (e?: PointerEvent) => Promise<boolean>
-      startTransform: (e?: PointerEvent) => boolean
-      openContextMenu: (e?: PointerEvent) => boolean
+      startTyping: (e?: MouseEvent | PointerEvent) => Promise<boolean>
+      startTransform: (e?: MouseEvent | PointerEvent) => boolean
+      openContextMenu: (e?: MouseEvent | PointerEvent) => boolean
     }
 
     interface Events {

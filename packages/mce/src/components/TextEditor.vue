@@ -64,7 +64,11 @@ async function startTyping(e?: PointerEvent): Promise<boolean> {
   const editor = textEditor.value!
   editor.set(element.text.base)
   await nextTick()
-  return editor.pointerdown(e)
+  if (editor.pointerDown(e)) {
+    editor.selectAll()
+    return true
+  }
+  return false
 }
 
 onBeforeMount(() => registerCommand({ command: 'startTyping', handle: startTyping }))
