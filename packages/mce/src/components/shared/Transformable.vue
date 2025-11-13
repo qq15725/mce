@@ -185,6 +185,7 @@ const computedHandles = computed<HandleObject[]>(() => {
         y: item.y - sign.y * size,
       }
     })
+  const minSize = Math.min(width, height)
   const borderRadiusHandles = props.adjustableBorderRadius
     ? diagonalPointHandles
         .map((item) => {
@@ -192,7 +193,7 @@ const computedHandles = computed<HandleObject[]>(() => {
             x: center.x - item.x > 0 ? 1 : -1,
             y: center.y - item.y > 0 ? 1 : -1,
           }
-          const offset = size * 2
+          const offset = minSize * 0.1
           return {
             ...item,
             shape: 'circle',
