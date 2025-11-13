@@ -322,7 +322,7 @@ export default defineMixin((editor) => {
 
     options.deep && deepHandle(element)
     options.textToFit && textToFit(element)
-    options.textFontSizeToFit && textFontSizeToFit(element)
+    options.textFontSizeToFit && textFontSizeToFit(element, scaleX)
   }
 
   function selectArea(areaInDrawboard: AxisAlignedBoundingBox): Element2D[] {
