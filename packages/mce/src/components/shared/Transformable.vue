@@ -256,15 +256,15 @@ function start(event?: MouseEvent, index?: number): boolean {
       startClientPoint = { x: event.clientX, y: event.clientY }
     }
 
-    const offset = {
+    const rotatedOffset = {
       x: event.clientX - startClientPoint.x,
       y: event.clientY - startClientPoint.y,
     }
 
     if (!transforming.value) {
       if (
-        Math.abs(offset.x) < props.threshold
-        && Math.abs(offset.y) < props.threshold
+        Math.abs(rotatedOffset.x) < props.threshold
+        && Math.abs(rotatedOffset.y) < props.threshold
       ) {
         return
       }
@@ -273,14 +273,14 @@ function start(event?: MouseEvent, index?: number): boolean {
     }
 
     const rotatedCurrentPoint = {
-      x: rotatedStartPoint.x + offset.x,
-      y: rotatedStartPoint.y + offset.y,
+      x: rotatedStartPoint.x + rotatedOffset.x,
+      y: rotatedStartPoint.y + rotatedOffset.y,
     }
 
     if (isMove) {
       if (props.movable) {
-        updated.left = startPoint.x + offset.x
-        updated.top = startPoint.y + offset.y
+        updated.left = startPoint.x + rotatedOffset.x
+        updated.top = startPoint.y + rotatedOffset.y
       }
     }
     else if (isRotate) {
@@ -299,41 +299,66 @@ function start(event?: MouseEvent, index?: number): boolean {
         ? { x: currentPoint.x, y: startPoint.y }
         : { x: startPoint.x, y: currentPoint.y }
       const newRotatedCurrentPoint = rotatePoint(newCurrentPoint, centerPoint, rotate)
-
-      const hypotenuse = Math.abs(getDistance(newRotatedCurrentPoint, rotatedSymmetricPoint))
-
+      const distance = Math.abs(getDistance(newRotatedCurrentPoint, rotatedSymmetricPoint))
       if (isHorizontal) {
-        updated.width = hypotenuse
+        updated.width = distance
         if (props.resizeStrategy === 'aspectRatio' && aspectRatio) {
-          updated.height = hypotenuse / aspectRatio
+          updated.height = distance / aspectRatio
         }
         else {
           updated.height = height
         }
       }
       else {
-        updated.height = hypotenuse
+        updated.height = distance
         if (props.resizeStrategy === 'aspectRatio' && aspectRatio) {
-          updated.width = hypotenuse * aspectRatio
+          updated.width = distance * aspectRatio
         }
         else {
           updated.width = width
         }
       }
 
-      const newCenterPoint = {
-        x: newRotatedCurrentPoint.x - (newRotatedCurrentPoint.x - rotatedSymmetricPoint.x) / 2,
-        y: newRotatedCurrentPoint.y + (rotatedSymmetricPoint.y - newRotatedCurrentPoint.y) / 2,
-      }
+      const newCenterPoint = getMidpoint(newRotatedCurrentPoint, rotatedSymmetricPoint)
 
       updated.left = newCenterPoint.x - (updated.width / 2)
       updated.top = newCenterPoint.y - (updated.height / 2)
     }
     else {
-      const newCenterPoint = getMidpoint(rotatedCurrentPoint, rotatedSymmetricPoint)
+      let newRotatedCurrentPoint
+      if (
+        (
+          props.resizeStrategy === 'aspectRatio'
+          || props.resizeStrategy === 'diagonalAspectRatio'
+        ) && aspectRatio
+      ) {
+        const signX = startPoint.x - centerPoint.x > 0 ? 1 : -1
+        const signY = startPoint.y - centerPoint.y > 0 ? 1 : -1
+        const offsetPoint = rotatePoint(
+          rotatedOffset,
+          { x: 0, y: 0 },
+          -rotate,
+        )
+        const _offset = Math.abs(offsetPoint.x) < Math.abs(offsetPoint.y * aspectRatio)
+          ? signX * offsetPoint.x
+          : signY * offsetPoint.y * aspectRatio
+        newRotatedCurrentPoint = rotatePoint(
+          {
+            x: startPoint.x + signX * _offset,
+            y: startPoint.y + signY * _offset / aspectRatio,
+          },
+          centerPoint,
+          rotate,
+        )
+      }
+      else {
+        newRotatedCurrentPoint = rotatedCurrentPoint
+      }
+
+      const newCenterPoint = getMidpoint(newRotatedCurrentPoint, rotatedSymmetricPoint)
 
       const points = [
-        rotatePoint(rotatedCurrentPoint, newCenterPoint, -rotate),
+        rotatePoint(newRotatedCurrentPoint, newCenterPoint, -rotate),
         rotatePoint(rotatedSymmetricPoint, newCenterPoint, -rotate),
       ]
 
@@ -349,21 +374,6 @@ function start(event?: MouseEvent, index?: number): boolean {
       updated.height = maxY - minY
       updated.left = minX
       updated.top = minY
-
-      if (
-        (
-          props.resizeStrategy === 'aspectRatio'
-          || props.resizeStrategy === 'diagonalAspectRatio'
-        ) && aspectRatio
-      ) {
-        // TODO
-        if ((updated.width / updated.height) > aspectRatio) {
-          updated.width = updated.height * aspectRatio
-        }
-        else {
-          updated.height = updated.width / aspectRatio
-        }
-      }
     }
 
     if (
