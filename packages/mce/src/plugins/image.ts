@@ -65,9 +65,11 @@ export default definePlugin((editor) => {
           onBefore: (engine) => {
             engine.root.append(
               new DrawboardEffect({
+                ...drawboardEffect.value.getProperties(),
                 internalMode: 'back',
                 effectMode: 'before',
-                ...drawboardEffect.value.getProperties(),
+                checkerboard: false,
+                pixelGrid: false,
               }),
             )
           },
