@@ -1,11 +1,13 @@
-import { inject, provide } from 'vue'
+import { getCurrentInstance, inject } from 'vue'
 import { Editor } from '../editor'
 
 export function useEditor(): Editor {
-  return inject(Editor.injectionKey)!
-}
-
-export function provideEditor(editor = new Editor()): Editor {
-  provide(Editor.injectionKey, editor)
-  return editor
+  let editor = inject(Editor.injectionKey, null)
+  if (!editor) {
+    const _editor = (getCurrentInstance()?.proxy as any)?.editor as any
+    if (_editor instanceof Editor) {
+      editor = _editor
+    }
+  }
+  return editor!
 }

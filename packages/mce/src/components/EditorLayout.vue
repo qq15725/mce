@@ -12,7 +12,7 @@ import {
   ref,
   useTemplateRef,
 } from 'vue'
-import { provideEditor, useEditor } from '../composables/editor'
+import { useEditor } from '../composables/editor'
 import { createIcons, IconsSymbol } from '../composables/icons'
 import { provideOverlay } from '../composables/overlay'
 import {
@@ -68,7 +68,8 @@ defineSlots<{
 
 let editor: Editor
 if (props.editor) {
-  editor = provideEditor(props.editor)
+  editor = props.editor
+  provide(Editor.injectionKey, editor)
 }
 else {
   editor = useEditor()
