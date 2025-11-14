@@ -1,4 +1,5 @@
 import type { Cursor, Node, Vector2Data } from 'modern-canvas'
+import type { IndexCharacter } from 'modern-text/web-components'
 import type { ComputedRef, Ref } from 'vue'
 import type { AxisAlignedBoundingBox } from '../types'
 import { Camera2D, DrawboardEffect, Element2D, Engine, Timeline } from 'modern-canvas'
@@ -25,7 +26,7 @@ declare global {
       nodeIndexMap: Map<string, number>
       selection: Ref<Node[]>
       elementSelection: Ref<Element2D[]>
-      textSelection: Ref<any[] | undefined>
+      textSelection: Ref<IndexCharacter[] | undefined>
       hoverElement: Ref<Element2D | undefined>
       state: Ref<State | undefined>
       setState: (state: State, context?: StateContext) => void
