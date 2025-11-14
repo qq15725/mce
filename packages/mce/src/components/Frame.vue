@@ -43,6 +43,8 @@ async function onPointerdown(ev: PointerEvent) {
     class="mce-frame"
     :class="[
       config.frameOutline && 'mce-frame--outline',
+      hoverElement?.equal(frame) && 'mce-frame--hover',
+      selection.some(v => v.equal(frame)) && 'mce-frame--selected',
     ]"
   >
     <div
@@ -66,10 +68,20 @@ async function onPointerdown(ev: PointerEvent) {
 
 <style lang="scss">
 .mce-frame {
+  $root: &;
   position: absolute;
 
   &--outline {
     outline: 1px solid #0000002b;
+  }
+
+  &--hover,
+  &--selected {
+    #{$root}__name {
+      > div {
+        opacity: 1;
+      }
+    }
   }
 
   &__name {
@@ -88,7 +100,8 @@ async function onPointerdown(ev: PointerEvent) {
       position: relative;
       min-width: 28px;
       box-sizing: content-box;
-      color: rgba(var(--mce-theme-on-surface), .8);
+      color: rgb(var(--mce-theme-on-surface));
+      opacity: .5;
     }
 
     > input {
