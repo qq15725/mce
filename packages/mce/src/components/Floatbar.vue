@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useTemplateRef, watch } from 'vue'
+import { computed, useTemplateRef, watch } from 'vue'
 import { useEditor } from '../composables/editor'
 import { makeMceOverlayProps } from '../composables/overlay'
 import Overlay from './shared/Overlay.vue'
@@ -12,20 +12,40 @@ const props = defineProps({
 })
 
 const {
-  getAabbInDrawboard,
   selection,
+  selectionAabbInDrawboard,
   isFrame,
 } = useEditor()
 
 const overlay = useTemplateRef('overlayTpl')
 
+const style = computed(() => {
+  const location = props.location
+  const aabb = selectionAabbInDrawboard.value
+  if (
+    location?.startsWith('top')
+    || location?.startsWith('bottom')
+  ) {
+    return {
+      width: `${aabb.width}px`,
+    }
+  }
+  else if (
+    location?.startsWith('left')
+    || location?.startsWith('right')
+  ) {
+    return {
+      height: `${aabb.height}px`,
+    }
+  }
+  return {}
+})
+
 function updateLocation() {
   overlay.value?.updateLocation()
 }
 
-watch(() => getAabbInDrawboard(selection.value), updateLocation, {
-  deep: true,
-})
+watch(selectionAabbInDrawboard, updateLocation, { deep: true })
 
 defineExpose({
   updateLocation,
@@ -35,6 +55,7 @@ defineExpose({
 <template>
   <Overlay
     ref="overlayTpl"
+    :style="style"
     class="mce-floatbar"
     :location="props.location"
     :middlewares="props.middlewares"
@@ -48,3 +69,9 @@ defineExpose({
     </template>
   </Overlay>
 </template>
+
+<style lang="scss">
+  .mce-floatbar {
+    overflow: visible;
+  }
+</style>

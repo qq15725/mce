@@ -23,9 +23,10 @@ const {
   state,
   resizeElement,
   elementSelection,
+  selectionObb,
+  selectionObbInDrawboard,
   camera,
   obbToFit,
-  getObbInDrawboard,
   getObb,
   registerCommand,
   unregisterCommand,
@@ -51,7 +52,7 @@ const parentObbs = computed(() => {
   const obbs: OrientedBoundingBox[] = []
   elementSelection.value[0]?.findAncestor((ancestor) => {
     if (isElement(ancestor)) {
-      obbs.push(getObbInDrawboard(ancestor as Element2D))
+      obbs.push(getObb(ancestor as Element2D, 'drawboard'))
     }
     return false
   })
@@ -69,7 +70,7 @@ const selectionObbs = computed(() => {
   return elementSelection.value.map((el) => {
     return {
       name: el.name,
-      box: getObbInDrawboard(el),
+      box: getObb(el, 'drawboard'),
     }
   })
 })
@@ -77,7 +78,7 @@ const selectionObbs = computed(() => {
 const _selectionTransform = computed(() => {
   const zoom = camera.value.zoom
   return {
-    ...getObbInDrawboard(elementSelection.value),
+    ...selectionObbInDrawboard.value,
     borderRadius: (elementSelection.value[0]?.style.borderRadius ?? 0) * zoom.x,
   }
 })
@@ -168,7 +169,7 @@ const adjustableBorderRadius = computed(() => {
 function tipFormat() {
   const obb = elementSelection.value.length === 1
     ? elementSelection.value[0].style
-    : getObb(elementSelection.value)
+    : selectionObb.value
   return `${Number(obb.width.toFixed(2))} × ${Number(obb.height.toFixed(2))}`
 }
 

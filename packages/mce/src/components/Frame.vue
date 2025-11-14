@@ -8,7 +8,7 @@ const frame = defineModel<Element2D>({ required: true })
 const input = useTemplateRef('inputTpl')
 
 const {
-  getObbInDrawboard,
+  getObb,
   hoverElement,
   selection,
   state,
@@ -39,7 +39,7 @@ async function onPointerdown(ev: PointerEvent) {
 <template>
   <div
     v-show="frame.visible"
-    :style="boundingBoxToStyle(getObbInDrawboard(frame))"
+    :style="boundingBoxToStyle(getObb(frame, 'drawboard'))"
     class="mce-frame"
     :class="[
       config.frameOutline && 'mce-frame--outline',

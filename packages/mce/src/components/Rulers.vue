@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useEditor } from '../composables/editor'
 import Ruler from './shared/Ruler.vue'
 
@@ -9,11 +8,8 @@ defineOptions({
 
 const {
   camera,
-  getAabbInDrawboard,
-  selection,
+  selectionAabbInDrawboard,
 } = useEditor()
-
-const activeAabb = computed(() => getAabbInDrawboard(selection.value))
 </script>
 
 <template>
@@ -22,7 +18,7 @@ const activeAabb = computed(() => getAabbInDrawboard(selection.value))
       refline
       :zoom="camera.zoom.x"
       :position="camera.position.x"
-      :selected="activeAabb"
+      :selected="selectionAabbInDrawboard"
       axis
       :size="16"
     />
@@ -31,7 +27,7 @@ const activeAabb = computed(() => getAabbInDrawboard(selection.value))
       refline
       :zoom="camera.zoom.y"
       :position="camera.position.y"
-      :selected="activeAabb"
+      :selected="selectionAabbInDrawboard"
       axis
       vertical
       :size="16"

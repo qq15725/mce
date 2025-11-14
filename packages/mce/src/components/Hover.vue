@@ -6,10 +6,10 @@ import { boundingBoxToStyle } from '../utils/box'
 const {
   selection,
   hoverElement,
-  getObbInDrawboard,
+  getObb,
 } = useEditor()
 
-const hoverElementObb = computed(() => getObbInDrawboard(hoverElement.value))
+const hoverElementObb = computed(() => getObb(hoverElement.value, 'drawboard'))
 </script>
 
 <template>

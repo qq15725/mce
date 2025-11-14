@@ -88,7 +88,7 @@ export default definePlugin((editor) => {
     currentFrame,
     elementSelection,
     state,
-    getObbInDrawboard,
+    getObb,
     root,
   } = editor
 
@@ -102,7 +102,7 @@ export default definePlugin((editor) => {
     let width: number
     if ((node as Element2D).instanceId) {
       box.id = (node as Element2D).instanceId
-      ;({ top, left, height, width } = getObbInDrawboard(node as Element2D))
+      ;({ top, left, height, width } = getObb(node as Element2D, 'drawboard'))
     }
     else {
       box.id = Math.random()

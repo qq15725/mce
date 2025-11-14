@@ -18,8 +18,7 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    selection,
-    getAabbInDrawboard,
+    selectionAabbInDrawboard,
     emit,
   } = editor
 
@@ -28,7 +27,7 @@ export default definePlugin((editor) => {
     setup: () => {
       // TODO lazy watch
       watch(
-        () => getAabbInDrawboard(selection.value),
+        selectionAabbInDrawboard,
         aabb => emit('setTransform', { aabb }),
         { deep: true },
       )

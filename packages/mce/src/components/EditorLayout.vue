@@ -94,8 +94,8 @@ const {
   selectArea,
   exec,
   isLock,
+  selectionAabbInDrawboard,
   elementSelection,
-  getAabbInDrawboard,
   drawboardAabb,
   drawboardPointer,
   screenCenterOffset,
@@ -150,7 +150,7 @@ function onHover(event: PointerInputEvent) {
     elementSelection.value.length > 1
     && isPointInsideAabb(
       { x: event.clientX, y: event.clientY },
-      getAabbInDrawboard(elementSelection.value),
+      selectionAabbInDrawboard.value,
     )
   ) {
     cursor = 'move'
@@ -197,7 +197,7 @@ function onPointerdown(downEvent: PointerInputEvent): void {
   const inSelection = isPointInsideAabb({
     x: start.x + -drawboardAabb.value.left,
     y: start.y + -drawboardAabb.value.top,
-  }, getAabbInDrawboard(elementSelection.value))
+  }, selectionAabbInDrawboard.value)
 
   if (downEvent.button === 2) {
     if (!inSelection) {

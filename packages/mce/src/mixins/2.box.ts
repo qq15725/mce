@@ -12,12 +12,13 @@ declare global {
     interface Editor {
       obbToFit: (element: Element2D) => void
       getObb: (node: Node | Node[] | undefined, inTarget?: 'drawboard' | 'frame' | 'parent') => OrientedBoundingBox
-      getObbInDrawboard: (node?: Node | Node[]) => OrientedBoundingBox
       getAabb: (node: Node | Node[] | undefined, inTarget?: 'drawboard' | 'frame' | 'parent') => AxisAlignedBoundingBox
-      getAabbInDrawboard: (node?: Node | Node[]) => AxisAlignedBoundingBox
       aabbToDrawboardAabb: (aabb: AxisAlignedBoundingBox) => AxisAlignedBoundingBox
       rootAabb: ComputedRef<AxisAlignedBoundingBox>
       selectionAabb: ComputedRef<AxisAlignedBoundingBox>
+      selectionAabbInDrawboard: ComputedRef<AxisAlignedBoundingBox>
+      selectionObb: ComputedRef<OrientedBoundingBox>
+      selectionObbInDrawboard: ComputedRef<OrientedBoundingBox>
     }
   }
 }
@@ -162,10 +163,6 @@ export default defineMixin((editor) => {
     return obb
   }
 
-  function getObbInDrawboard(node?: Node | Node[]): OrientedBoundingBox {
-    return getObb(node, 'drawboard')
-  }
-
   function getAabb(
     node: Node | Node[] | undefined,
     inTarget?: 'drawboard' | 'frame' | 'parent',
@@ -241,10 +238,6 @@ export default defineMixin((editor) => {
     return aabb
   }
 
-  function getAabbInDrawboard(node?: Node | Node[]): AxisAlignedBoundingBox {
-    return getAabb(node, 'drawboard')
-  }
-
   function aabbToDrawboardAabb(aabb: AxisAlignedBoundingBox): AxisAlignedBoundingBox {
     const _aabb = { ...aabb }
     const zoom = camera.value.zoom
@@ -260,15 +253,19 @@ export default defineMixin((editor) => {
 
   const rootAabb = computed(() => getAabb(root.value.children))
   const selectionAabb = computed(() => getAabb(selection.value))
+  const selectionAabbInDrawboard = computed(() => getAabb(selection.value, 'drawboard'))
+  const selectionObb = computed(() => getObb(selection.value))
+  const selectionObbInDrawboard = computed(() => getObb(selection.value, 'drawboard'))
 
   Object.assign(editor, {
     obbToFit,
     getObb,
-    getObbInDrawboard,
     getAabb,
-    getAabbInDrawboard,
     aabbToDrawboardAabb,
     rootAabb,
     selectionAabb,
+    selectionAabbInDrawboard,
+    selectionObb,
+    selectionObbInDrawboard,
   })
 })
