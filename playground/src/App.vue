@@ -58,8 +58,8 @@ if (tid || bid) {
 <template>
   <div style="width: 100vw; height: 100vh">
     <EditorLayout :editor="editor">
-      <template #selector="{ box }" />
-      <template #transformer="{ box }" />
+      <template #selector />
+      <template #transformer />
       <template #floatbar-top>
         <div>FloatbarTop</div>
       </template>

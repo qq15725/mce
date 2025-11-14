@@ -29,6 +29,7 @@ import Auxiliary from './Auxiliary.vue'
 import ContextMenu from './ContextMenu.vue'
 import Drawing from './Drawing.vue'
 import Floatbar from './Floatbar.vue'
+import ForegroundCropper from './ForegroundCropper.vue'
 import Frames from './Frames.vue'
 import GoBackSelectedArea from './GoBackSelectedArea.vue'
 import Hover from './Hover.vue'
@@ -428,6 +429,7 @@ async function onDoubleclick(event: MouseEvent) {
             <slot name="transformer" :box="box" />
           </template>
           <template #default="{ box }">
+            <ForegroundCropper />
             <slot name="selector" :box="box" />
           </template>
         </Selector>

@@ -3,6 +3,7 @@ import './typed-plugins.d.ts'
 
 export { default as EditorLayout } from './components/EditorLayout.vue'
 export { default as EditorLayers } from './components/Layers.vue'
+export { default as Cropper } from './components/shared/Cropper.vue'
 export { default as Dialog } from './components/shared/Dialog.vue'
 export { default as EditorLayoutItem } from './components/shared/LayoutItem.vue'
 export { default as Menu } from './components/shared/Menu.vue'
