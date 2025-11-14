@@ -104,9 +104,9 @@ npm i mce
       <template #transformer="{ box }" />
       <template #floatbar />
       <template #drawboard />
-      <EditorLayoutItem model-value position="top" :size="56" />
-      <EditorLayoutItem model-value position="left" :size="380" />
-      <EditorLayoutItem model-value position="right" :size="260" />
+      <EditorLayoutItem position="top" :size="56" />
+      <EditorLayoutItem position="left" :size="380" />
+      <EditorLayoutItem position="right" :size="260" />
     </EditorLayout>
   </div>
 </template>
