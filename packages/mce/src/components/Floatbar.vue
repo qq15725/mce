@@ -6,7 +6,6 @@ import Overlay from './shared/Overlay.vue'
 
 const props = defineProps({
   ...makeMceOverlayProps({
-    location: 'top-start' as const,
     middlewares: ['offset', 'shift'] as any[],
     offset: 8,
   }),

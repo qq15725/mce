@@ -58,11 +58,13 @@ const props = defineProps({
 })
 
 defineSlots<{
-  selector?: (props: { box: OrientedBoundingBox }) => void
-  transformer?: (props: { box: Partial<OrientedBoundingBox> }) => void
-  floatbar?: () => void
-  drawboard?: () => void
-  default?: () => void
+  'selector'?: (props: { box: OrientedBoundingBox }) => void
+  'transformer'?: (props: { box: Partial<OrientedBoundingBox> }) => void
+  'floatbar'?: () => void
+  'floatbar-top'?: () => void
+  'floatbar-bottom'?: () => void
+  'drawboard'?: () => void
+  'default'?: () => void
 }>()
 
 let editor: Editor
@@ -431,12 +433,21 @@ async function onDoubleclick(event: MouseEvent) {
         </Selector>
         <Scrollbars v-if="config.scrollbar" />
         <Floatbar
-          v-if="$slots.floatbar"
+          v-if="$slots.floatbar || $slots['floatbar-top']"
+          location="top-start"
           :target="state === 'typing'
             ? textEditor?.textEditor
             : selector?.transformable?.$el"
         >
           <slot name="floatbar" />
+          <slot name="floatbar-top" />
+        </Floatbar>
+        <Floatbar
+          v-if="$slots['floatbar-bottom']"
+          location="bottom-start"
+          :target="selector?.transformable?.$el"
+        >
+          <slot name="floatbar-bottom" />
         </Floatbar>
         <ContextMenu />
         <GoBackSelectedArea />
