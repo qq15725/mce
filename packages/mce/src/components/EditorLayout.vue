@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import type { Cursor, PointerInputEvent } from 'modern-canvas'
+import type { Cursor, Element2D, PointerInputEvent } from 'modern-canvas'
 import type { OrientedBoundingBox } from '../types'
 import { useResizeObserver } from '@vueuse/core'
-import { Element2D } from 'modern-canvas'
 import {
   computed,
   nextTick,
@@ -38,7 +37,6 @@ import MadeWith from './MadeWith.vue'
 import Rulers from './Rulers.vue'
 import Scrollbars from './Scrollbars.vue'
 import Selector from './Selector.vue'
-import Setup from './Setup.vue'
 import FloatPanel from './shared/FloatPanel.vue'
 import Layout from './shared/Layout.vue'
 import LayoutItem from './shared/LayoutItem.vue'
@@ -76,9 +74,12 @@ else {
   editor = useEditor()
 }
 
+editor.setup()
+
 provide(IconsSymbol, createIcons())
 
 const {
+  isElement,
   showMadeWith,
   config,
   drawboardDom,
@@ -160,7 +161,7 @@ function onHover(event: PointerInputEvent) {
       event,
       editor,
     })
-    if (result && !(result instanceof Element2D)) {
+    if (result && !isElement(result)) {
       hovered = result.element
       cursor = result.cursor
     }
@@ -204,7 +205,7 @@ function onPointerdown(downEvent: PointerInputEvent): void {
         event: downEvent,
         editor,
       })
-      if (result && !(result instanceof Element2D)) {
+      if (result && !isElement(result)) {
         selected = result.element ? [result.element] : []
       }
       else {
@@ -221,7 +222,7 @@ function onPointerdown(downEvent: PointerInputEvent): void {
       event,
       editor,
     })
-    if (result && !(result instanceof Element2D)) {
+    if (result && !isElement(result)) {
       selected = result.element ? [result.element] : []
     }
     else {
@@ -252,7 +253,7 @@ function onPointerdown(downEvent: PointerInputEvent): void {
     })
 
     let _element: Element2D | undefined
-    if (result && !(result instanceof Element2D)) {
+    if (result && !isElement(result)) {
       _element = result.element
       ctxState = result.state
     }
@@ -396,12 +397,14 @@ async function onDoubleclick(event: MouseEvent) {
     }
   }
 }
+
+const slotProps = {
+  editor,
+}
 </script>
 
 <template>
   <Layout class="mce-editor">
-    <Setup />
-
     <Main>
       <div
         ref="drawboardDom"
@@ -415,25 +418,29 @@ async function onDoubleclick(event: MouseEvent) {
           ref="canvasTpl"
           class="mce-editor__canvas"
         />
+
         <TextEditor ref="textEditorTpl" />
         <Auxiliary />
         <Hover />
         <Frames />
         <Drawing />
+        <Rulers v-if="config.ruler" />
+        <Scrollbars v-if="config.scrollbar" />
+        <MadeWith v-if="showMadeWith" />
         <Selector
           ref="selectorTpl"
           :selected-area="selectedArea"
           :resize-strategy="resizeStrategy"
         >
           <template #transformable="{ box }">
-            <slot name="transformer" :box="box" />
+            <slot name="transformer" :box="box" v-bind="slotProps" />
           </template>
+
           <template #default="{ box }">
             <ForegroundCropper />
-            <slot name="selector" :box="box" />
+            <slot name="selector" :box="box" v-bind="slotProps" />
           </template>
         </Selector>
-        <Scrollbars v-if="config.scrollbar" />
         <Floatbar
           v-if="$slots.floatbar || $slots['floatbar-top']"
           location="top-start"
@@ -441,19 +448,18 @@ async function onDoubleclick(event: MouseEvent) {
             ? textEditor?.textEditor
             : selector?.transformable?.$el"
         >
-          <slot name="floatbar" />
-          <slot name="floatbar-top" />
+          <slot name="floatbar" v-bind="slotProps" />
+          <slot name="floatbar-top" v-bind="slotProps" />
         </Floatbar>
         <Floatbar
           v-if="$slots['floatbar-bottom']"
           location="bottom-start"
           :target="selector?.transformable?.$el"
         >
-          <slot name="floatbar-bottom" />
+          <slot name="floatbar-bottom" v-bind="slotProps" />
         </Floatbar>
         <ContextMenu />
         <GoBackSelectedArea />
-        <Rulers v-if="config.ruler" />
         <FloatPanel
           v-if="config.layers"
           v-model="config.layers"
@@ -467,13 +473,12 @@ async function onDoubleclick(event: MouseEvent) {
         >
           <Layers />
         </FloatPanel>
-        <MadeWith v-if="showMadeWith" />
         <Toolbelt />
-        <slot name="drawboard" />
+        <slot name="drawboard" v-bind="slotProps" />
       </div>
     </Main>
 
-    <slot />
+    <slot v-bind="slotProps" />
 
     <LayoutItem
       v-model="config.statusbar"

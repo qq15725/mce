@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import type { Element2D } from 'modern-canvas'
 import type { AxisAlignedBoundingBox, OrientedBoundingBox } from '../types'
 import type { TransformableValue } from './shared/Transformable.vue'
-import { Element2D } from 'modern-canvas'
 import { computed, onBeforeMount, onBeforeUnmount, useTemplateRef } from 'vue'
 import { useEditor } from '../composables/editor'
 import { boundingBoxToStyle } from '../utils/box'
@@ -19,6 +19,7 @@ const props = withDefaults(defineProps<{
 })
 
 const {
+  isElement,
   state,
   resizeElement,
   elementSelection,
@@ -49,7 +50,7 @@ const parentObbs = computed(() => {
   }
   const obbs: OrientedBoundingBox[] = []
   elementSelection.value[0]?.findAncestor((ancestor) => {
-    if (ancestor instanceof Element2D) {
+    if (isElement(ancestor)) {
       obbs.push(getObbInDrawboard(ancestor as Element2D))
     }
     return false
@@ -122,7 +123,7 @@ const selectionTransform = computed({
       element.updateGlobalTransform()
       element.findAncestor((ancestor) => {
         if (
-          ancestor instanceof Element2D
+          isElement(ancestor)
           && !isFrame(ancestor)
         ) {
           obbToFit(ancestor)
@@ -179,7 +180,7 @@ defineExpose({
 <template>
   <div
     v-for="(obb, index) in parentObbs" :key="index"
-    class="mce-parent-element-obb"
+    class="mce-selector__parent-element"
     :style="{
       borderColor: 'currentColor',
       ...boundingBoxToStyle(obb),
@@ -188,7 +189,7 @@ defineExpose({
 
   <div
     v-if="state === 'selecting'"
-    class="mce-selected-area"
+    class="mce-selector__selected-area"
     :style="{
       borderColor: 'currentcolor',
       ...boundingBoxToStyle(props.selectedArea),
@@ -198,7 +199,7 @@ defineExpose({
   <div
     v-for="(item, index) in selectionObbs"
     :key="index"
-    class="mce-element-obb"
+    class="mce-selector__element"
     :style="{
       borderColor: 'currentcolor',
       ...boundingBoxToStyle(item.box),
@@ -215,7 +216,7 @@ defineExpose({
     :adjustable-border-radius="adjustableBorderRadius"
     :resize-strategy="props.resizeStrategy"
     :handle-shape="config.handleShape"
-    class="mce-selection-obb"
+    class="mce-selector__transform"
     :border-style="elementSelection.length > 1 ? 'dashed' : 'solid'"
     :tip-format="tipFormat"
     @move="() => !state && (state = 'transforming')"
@@ -228,7 +229,7 @@ defineExpose({
 
   <template v-if="selectionTransform.width && selectionTransform.height && $slots.default">
     <div
-      style="position: absolute;"
+      class="mce-selector__slot"
       :style="boundingBoxToStyle(selectionTransform)"
     >
       <slot :box="selectionTransform" />
@@ -237,32 +238,36 @@ defineExpose({
 </template>
 
 <style lang="scss">
-.mce-parent-element-obb {
-  position: absolute;
-  pointer-events: none;
-  border-width: 1px;
-  border-style: dashed;
-  color: rgba(var(--mce-theme-primary), 1);
-  opacity: .5;
-}
+  .mce-selector__slot {
+    position: absolute;
+  }
 
-.mce-selected-area {
-  position: absolute;
-  border-width: 1px;
-  border-style: solid;
-  color: rgba(var(--mce-theme-primary), 1);
-  background-color: rgba(var(--mce-theme-primary), .1);
-}
+  .mce-selector__parent-element {
+    position: absolute;
+    pointer-events: none;
+    border-width: 1px;
+    border-style: dashed;
+    color: rgba(var(--mce-theme-primary), 1);
+    opacity: .5;
+  }
 
-.mce-selection-obb {
-  position: absolute;
-  color: rgba(var(--mce-theme-primary), 1);
-}
+  .mce-selector__selected-area {
+    position: absolute;
+    border-width: 1px;
+    border-style: solid;
+    color: rgba(var(--mce-theme-primary), 1);
+    background-color: rgba(var(--mce-theme-primary), .1);
+  }
 
-.mce-element-obb {
-  position: absolute;
-  border-width: 1px;
-  border-style: solid;
-  color: rgba(var(--mce-theme-primary), 1);
-}
+  .mce-selector__transform {
+    position: absolute;
+    color: rgba(var(--mce-theme-primary), 1);
+  }
+
+  .mce-selector__element {
+    position: absolute;
+    border-width: 1px;
+    border-style: solid;
+    color: rgba(var(--mce-theme-primary), 1);
+  }
 </style>

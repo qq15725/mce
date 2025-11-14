@@ -1,6 +1,5 @@
 import type { ComputedRef } from 'vue'
 import type { AxisAlignedBoundingBox } from '../types'
-import { Element2D } from 'modern-canvas'
 import { computed, watch } from 'vue'
 import { defineMixin } from '../editor'
 
@@ -67,6 +66,7 @@ export default defineMixin((editor) => {
 
   return () => {
     const {
+      isElement,
       root,
       currentFrame,
       on,
@@ -77,14 +77,14 @@ export default defineMixin((editor) => {
       switch (config.value.viewMode) {
         case 'frame':
           root.value.children.forEach((child) => {
-            if (child instanceof Element2D) {
+            if (isElement(child)) {
               child.visible = child.equal(currentFrame.value)
             }
           })
           break
         case 'edgeless':
           root.value.children.forEach((child) => {
-            if (child instanceof Element2D) {
+            if (isElement(child)) {
               child.visible = true
             }
           })

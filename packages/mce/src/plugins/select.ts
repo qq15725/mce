@@ -1,4 +1,3 @@
-import { Element2D } from 'modern-canvas'
 import { definePlugin } from '../editor'
 
 declare global {
@@ -23,6 +22,7 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
+    isElement,
     selection,
     root,
   } = editor
@@ -37,7 +37,7 @@ export default definePlugin((editor) => {
 
   function selectParent() {
     const parent = selection.value[0]?.parent
-    if (parent instanceof Element2D) {
+    if (isElement(parent)) {
       selection.value = [parent]
     }
   }

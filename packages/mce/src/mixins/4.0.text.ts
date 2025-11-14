@@ -1,6 +1,6 @@
+import type { Element2D } from 'modern-canvas'
 import type { NormalizedFill, NormalizedFragment, NormalizedParagraph, NormalizedTextContent } from 'modern-idoc'
 import type { IndexCharacter } from 'modern-text/web-components'
-import { Element2D } from 'modern-canvas'
 import { isEqualObject, normalizeCRLF } from 'modern-idoc'
 import { measureText } from 'modern-text'
 import { TextEditor } from 'modern-text/web-components'
@@ -22,6 +22,7 @@ declare global {
 
 export default defineMixin((editor) => {
   const {
+    isElement,
     config,
     elementSelection,
     textSelection,
@@ -96,7 +97,7 @@ export default defineMixin((editor) => {
 
     _handle(element)
     element.findOne((descendant) => {
-      if (descendant instanceof Element2D) {
+      if (isElement(descendant)) {
         _handle(descendant)
       }
       return false
@@ -146,7 +147,7 @@ export default defineMixin((editor) => {
 
     _handle(element)
     element.findOne((descendant) => {
-      if (descendant instanceof Element2D) {
+      if (isElement(descendant)) {
         _handle(descendant)
       }
       return false

@@ -1,8 +1,8 @@
-import type { Cursor, Node, Vector2Data } from 'modern-canvas'
+import type { Cursor, Element2D, Node, Vector2Data } from 'modern-canvas'
 import type { IndexCharacter } from 'modern-text/web-components'
 import type { ComputedRef, Ref } from 'vue'
 import type { AxisAlignedBoundingBox } from '../types'
-import { Camera2D, DrawboardEffect, Element2D, Engine, Timeline } from 'modern-canvas'
+import { Camera2D, DrawboardEffect, Engine, Timeline } from 'modern-canvas'
 import { Fonts } from 'modern-font'
 import { computed, markRaw, reactive, ref, watch } from 'vue'
 import { defineMixin } from '../editor'
@@ -43,6 +43,7 @@ declare global {
 export default defineMixin((editor) => {
   const {
     emit,
+    isElement,
   } = editor
 
   const fonts = markRaw(new Fonts()) as Fonts
@@ -71,7 +72,7 @@ export default defineMixin((editor) => {
   const nodeIndexMap = reactive(new Map<string, number>())
   const selection = ref<Element2D[]>([])
   const elementSelection = computed({
-    get: () => selection.value.filter(v => v instanceof Element2D),
+    get: () => selection.value.filter(v => isElement(v)),
     set: val => selection.value = val,
   })
   const textSelection = ref<any[]>()

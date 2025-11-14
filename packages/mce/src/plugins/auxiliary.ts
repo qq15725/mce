@@ -1,5 +1,5 @@
+import type { Element2D } from 'modern-canvas'
 import type { ComputedRef } from 'vue'
-import { Element2D } from 'modern-canvas'
 import { computed } from 'vue'
 import { definePlugin } from '../editor'
 import { isOverlappingAabb } from '../utils'
@@ -84,6 +84,7 @@ function isLeftTopLine(line: Line) {
 
 export default definePlugin((editor) => {
   const {
+    isElement,
     currentFrame,
     elementSelection,
     state,
@@ -135,7 +136,7 @@ export default definePlugin((editor) => {
 
   const parnet = computed(() => {
     const p = elementSelection.value[0].parent
-    return p instanceof Element2D ? p : undefined
+    return isElement(p) ? p : undefined
   })
 
   const parentBox = computed(() => createBox(

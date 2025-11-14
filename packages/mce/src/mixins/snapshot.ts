@@ -1,6 +1,6 @@
-import type { Node } from 'modern-canvas'
+import type { Element2D, Node } from 'modern-canvas'
 import type { Element } from 'modern-idoc'
-import { Element2D, render } from 'modern-canvas'
+import { render } from 'modern-canvas'
 import { defineMixin } from '../editor'
 
 declare global {
@@ -20,6 +20,7 @@ declare global {
 
 export default defineMixin((editor) => {
   const {
+    isElement,
     renderEngine,
     frames,
     currentFrameAabb,
@@ -42,7 +43,7 @@ export default defineMixin((editor) => {
   async function captureElementScreenshot(element: Element | Element2D): Promise<HTMLCanvasElement> {
     await editor.waitUntilFontLoad()
     let data
-    if (element instanceof Element2D) {
+    if (isElement(element)) {
       data = element.toJSON()
     }
     else {

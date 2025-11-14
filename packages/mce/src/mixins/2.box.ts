@@ -1,7 +1,7 @@
-import type { Node } from 'modern-canvas'
+import type { Element2D, Node } from 'modern-canvas'
 import type { ComputedRef } from 'vue'
 import type { AxisAlignedBoundingBox, OrientedBoundingBox } from '../types'
-import { DEG_TO_RAD, Element2D, Transform2D } from 'modern-canvas'
+import { DEG_TO_RAD, Transform2D } from 'modern-canvas'
 import { computed } from 'vue'
 import { defineMixin } from '../editor'
 
@@ -40,7 +40,7 @@ export default defineMixin((editor) => {
     }
     let flag = false
     element.children.forEach((child) => {
-      if (child instanceof Element2D) {
+      if (isElement(child)) {
         const _minmax = child.getAabb().toMinmax()
         minmax.minX = Math.min(minmax.minX, _minmax.minX)
         minmax.minY = Math.min(minmax.minY, _minmax.minY)
@@ -59,7 +59,7 @@ export default defineMixin((editor) => {
 
       const aabbs: Record<number, any> = {}
       element.children.forEach((child, index) => {
-        if (child instanceof Element2D) {
+        if (isElement(child)) {
           aabbs[index] = child.getGlobalAabb()
         }
       })
@@ -71,7 +71,7 @@ export default defineMixin((editor) => {
       element.updateGlobalTransform()
 
       element.children.forEach((child, index) => {
-        if (child instanceof Element2D) {
+        if (isElement(child)) {
           child.updateGlobalTransform()
           const oldAabb = aabbs[index]
           const localCenter = child.toLocal({
@@ -140,7 +140,7 @@ export default defineMixin((editor) => {
     }
     else if (inTarget === 'frame') {
       const first = Array.isArray(node) ? node[0] : node
-      if (first instanceof Element2D) {
+      if (isElement(first)) {
         const frame = getAncestorFrame(first)
         if (frame) {
           obb.left -= frame.style.left
@@ -150,8 +150,8 @@ export default defineMixin((editor) => {
     }
     else if (inTarget === 'parent') {
       const first = Array.isArray(node) ? node[0] : node
-      if (first instanceof Element2D) {
-        const parent = first.findAncestor(el => el instanceof Element2D)
+      if (isElement(first)) {
+        const parent = first.findAncestor(el => isElement(el))
         if (parent) {
           const parentBox = getAabb(parent)
           obb.left -= parentBox.left
@@ -183,7 +183,7 @@ export default defineMixin((editor) => {
           maxY: Number.MIN_SAFE_INTEGER,
         }
         node.forEach((child) => {
-          if (child instanceof Element2D) {
+          if (isElement(child)) {
             const aabb = getAabb(child)
             minmax.minX = Math.min(minmax.minX, aabb.left)
             minmax.minY = Math.min(minmax.minY, aabb.top)
@@ -219,7 +219,7 @@ export default defineMixin((editor) => {
     }
     else if (inTarget === 'frame') {
       const first = Array.isArray(node) ? node[0] : node
-      if (first instanceof Element2D) {
+      if (isElement(first)) {
         const frame = getAncestorFrame(first)
         if (frame) {
           aabb.left -= frame.style.left
@@ -229,8 +229,8 @@ export default defineMixin((editor) => {
     }
     else if (inTarget === 'parent') {
       const first = Array.isArray(node) ? node[0] : node
-      if (first instanceof Element2D) {
-        const parent = first.findAncestor(el => el instanceof Element2D)
+      if (isElement(first)) {
+        const parent = first.findAncestor(el => isElement(el))
         if (parent) {
           const parentBox = getAabb(parent)
           aabb.left -= parentBox.left
