@@ -1,8 +1,8 @@
-import type { Cursor, Element2D, Node, Vector2Data } from 'modern-canvas'
+import type { Cursor, Vector2Data } from 'modern-canvas'
 import type { IndexCharacter } from 'modern-text/web-components'
 import type { ComputedRef, Ref } from 'vue'
 import type { AxisAlignedBoundingBox } from '../types'
-import { Camera2D, DrawboardEffect, Engine, Timeline } from 'modern-canvas'
+import { Camera2D, DrawboardEffect, Element2D, Engine, Node, Timeline } from 'modern-canvas'
 import { Fonts } from 'modern-font'
 import { computed, markRaw, reactive, ref, watch } from 'vue'
 import { defineMixin } from '../editor'
@@ -10,6 +10,23 @@ import { Doc } from '../models'
 
 declare global {
   namespace Mce {
+    type Tblock = 'top' | 'bottom'
+
+    type Tinline = 'start' | 'end' | 'left' | 'right'
+
+    type Anchor
+      = | Tblock
+        | Tinline
+        | 'center'
+        | 'center center'
+        | `${Tblock} ${Tinline | 'center'}`
+        | `${Tinline} ${Tblock | 'center'}`
+
+    type ParsedAnchor
+      = | { side: 'center', align: 'center' }
+        | { side: Tblock, align: 'left' | 'right' | 'center' }
+        | { side: 'left' | 'right', align: Tblock | 'center' }
+
     interface Editor {
       fonts: Fonts
       renderEngine: Ref<Engine>
@@ -32,6 +49,14 @@ declare global {
       setState: (state: State, context?: StateContext) => void
       stateContext: Ref<StateContext | undefined>
       getGlobalPointer: () => Vector2Data
+      parseAnchor: (anchor: Anchor, isRtl?: boolean) => ParsedAnchor
+      isRoot: (value: any) => value is Node
+      isElement: (value: any) => value is Element2D
+      isFrame: (value: any) => value is Element2D
+      isVisible: (node: Node) => boolean
+      setVisible: (node: Node, visible: boolean) => void
+      isLock: (node: Node) => boolean
+      setLock: (node: Node, lock: boolean) => void
     }
 
     interface Events {
@@ -43,7 +68,6 @@ declare global {
 export default defineMixin((editor) => {
   const {
     emit,
-    isElement,
   } = editor
 
   const fonts = markRaw(new Fonts()) as Fonts
@@ -104,6 +128,62 @@ export default defineMixin((editor) => {
     }, { x: 0, y: 0 })
   }
 
+  const block = ['top', 'bottom']
+  const inline = ['start', 'end', 'left', 'right']
+
+  function toPhysical(str: 'center' | Mce.Tblock | Mce.Tinline, isRtl?: boolean): 'bottom' | 'center' | 'left' | 'right' | 'top' {
+    if (str === 'start')
+      return isRtl ? 'right' : 'left'
+    if (str === 'end')
+      return isRtl ? 'left' : 'right'
+    return str
+  }
+
+  const parseAnchor: Mce.Editor['parseAnchor'] = (anchor, isRtl) => {
+    let [side, align] = anchor.split(' ')
+    if (!align) {
+      align = block.includes(side)
+        ? 'start'
+        : inline.includes(side)
+          ? 'top'
+          : 'center'
+    }
+    return {
+      side: toPhysical(side as any, isRtl),
+      align: toPhysical(align as any, isRtl),
+    } as Mce.ParsedAnchor
+  }
+
+  function isRoot(value: any): value is Node {
+    return value instanceof Node && root.value.equal(value)
+  }
+
+  function isElement(value: any): value is Element2D {
+    return value instanceof Element2D
+  }
+
+  function isFrame(value: any): value is Element2D {
+    return isElement(value) && value.meta.inEditorIs === 'Frame'
+  }
+
+  function isVisible(node: Node): boolean {
+    return isElement(node) && node.style.visibility === 'visible'
+  }
+
+  function setVisible(node: Node, visible: boolean): void {
+    if (isElement(node)) {
+      node.style.visibility = visible ? 'visible' : 'hidden'
+    }
+  }
+
+  function isLock(node: Node): boolean {
+    return Boolean(node.meta.lock)
+  }
+
+  function setLock(node: Node, lock: boolean): void {
+    node.meta.lock = lock
+  }
+
   Object.assign(editor, {
     fonts,
     renderEngine,
@@ -126,6 +206,14 @@ export default defineMixin((editor) => {
     setCursor,
     drawboardPointer,
     getGlobalPointer,
+    parseAnchor,
+    isRoot,
+    isElement,
+    isFrame,
+    isVisible,
+    setVisible,
+    isLock,
+    setLock,
   })
 
   return () => {
