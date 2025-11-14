@@ -95,12 +95,15 @@ async function onPointerdown(ev: PointerEvent) {
       position: absolute;
       left: 0;
       top: 0;
-      outline: none;
+      padding: 0;
       width: 100%;
       height: 100%;
-      border: 1px solid #0000002b;
-      border-radius: 4px;
+      border: none;
+      outline: 1px solid rgb(var(--mce-theme-primary));
       cursor: default;
+      font-size: inherit;
+      font-weight: inherit;
+      border-radius: 2px;
     }
   }
 }

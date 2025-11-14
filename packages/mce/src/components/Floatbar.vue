@@ -41,6 +41,16 @@ const style = computed(() => {
   return {}
 })
 
+const offset = computed(() => {
+  if (
+    selection.value.some(v => isFrame(v))
+    || props.location?.startsWith('bottom')
+  ) {
+    return 32
+  }
+  return 8
+})
+
 function updateLocation() {
   overlay.value?.updateLocation()
 }
@@ -59,7 +69,7 @@ defineExpose({
     class="mce-floatbar"
     :location="props.location"
     :middlewares="props.middlewares"
-    :offset="selection[0] && isFrame(selection[0]) ? 32 : 8"
+    :offset="offset"
     :target="props.target"
     :attach="false"
     :model-value="true"

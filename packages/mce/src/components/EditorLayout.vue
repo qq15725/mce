@@ -90,7 +90,6 @@ const {
   hoverElement,
   state,
   setCursor,
-  isFrame,
   selectArea,
   exec,
   isLock,
@@ -291,7 +290,7 @@ function onPointerdown(downEvent: PointerInputEvent): void {
       }
     }
     else {
-      if (element && !isFrame(element)) {
+      if (element) {
         if (canStartDrag()) {
           dragging = true
           onDrag(moveEvent)
@@ -308,7 +307,7 @@ function onPointerdown(downEvent: PointerInputEvent): void {
   function onMove(moveEvent: PointerEvent) {
     current = { x: moveEvent.clientX, y: moveEvent.clientY }
     if (!inSelection) {
-      if (!element || isFrame(element)) {
+      if (!element) {
         onSelectArea()
       }
     }
