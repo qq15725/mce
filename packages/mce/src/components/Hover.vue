@@ -7,6 +7,7 @@ const {
   selection,
   hoverElement,
   getObb,
+  camera,
 } = useEditor()
 
 const hoverElementObb = computed(() => getObb(hoverElement.value, 'drawboard'))
@@ -19,6 +20,7 @@ const hoverElementObb = computed(() => getObb(hoverElement.value, 'drawboard'))
     :data-name="hoverElement.name"
     :style="{
       borderColor: 'currentcolor',
+      borderRadius: `${(hoverElement.style.borderRadius ?? 0) * camera.zoom.x}px`,
       ...boundingBoxToStyle(hoverElementObb),
     }"
   />

@@ -194,12 +194,14 @@ const computedHandles = computed<HandleObject[]>(() => {
             y: center.y - item.y > 0 ? 1 : -1,
           }
           const offset = minSize * 0.1
+          const ws = (borderRadius + offset) / (width / 2 + offset)
+          const hs = (borderRadius + offset) / (height / 2 + offset)
           return {
             ...item,
             shape: 'circle',
             type: `border-radius-${item.type}`,
-            x: item.x + sign.x * Math.min(width / 2, offset + borderRadius),
-            y: item.y + sign.y * Math.min(height / 2, offset + borderRadius),
+            x: item.x + sign.x * width / 2 * ws,
+            y: item.y + sign.y * height / 2 * hs,
           }
         })
     : []
@@ -384,13 +386,10 @@ function start(event?: MouseEvent, index?: number): boolean {
     }
     else if (isBorderRadius) {
       const offset = rotatePoint(rotatedOffset, { x: 0, y: 0 }, -rotate)
-      const _offset = Math.abs(offset.x) < Math.abs(offset.y)
-        ? -sign.x * offset.x
-        : -sign.y * offset.y * aspectRatio
-      updated.borderRadius = Math.min(
-        Math.max(0, borderRadius + _offset),
-        Math.min(width / 2, height / 2),
-      )
+      const dx = -sign.x * offset.x
+      const dy = -sign.y * offset.y
+      const _offset = Math.abs(dx) < Math.abs(dy) ? dy : dx
+      updated.borderRadius = borderRadius + _offset
     }
     else if (isHorizontalVertical) {
       const currentPoint = rotatePoint(rotatedCurrentPoint, centerPoint, -rotate)
@@ -432,9 +431,9 @@ function start(event?: MouseEvent, index?: number): boolean {
         ) && aspectRatio
       ) {
         const offset = rotatePoint(rotatedOffset, { x: 0, y: 0 }, -rotate)
-        const _offset = Math.abs(offset.x) < Math.abs(offset.y)
-          ? sign.x * offset.x
-          : sign.y * offset.y * aspectRatio
+        const dx = sign.x * offset.x
+        const dy = sign.y * offset.y * aspectRatio
+        const _offset = Math.abs(dx) < Math.abs(dy) ? dx : dy
         // TODO
         newRotatedCurrentPoint = rotatePoint(
           {
@@ -477,6 +476,13 @@ function start(event?: MouseEvent, index?: number): boolean {
       return
     }
 
+    if (updated.borderRadius ?? borderRadius) {
+      updated.borderRadius = Math.min(
+        Math.max(0, updated.borderRadius ?? borderRadius),
+        Math.min((updated.width ?? width) / 2, (updated.height ?? height) / 2),
+      )
+    }
+
     const oldValue = { ...model.value }
     const newValue = { ...model.value, ...updated }
 
@@ -511,11 +517,12 @@ function createCursor(type: 'rotate' | 'resizeXy' | 'resizeBevel', angle: number
 }
 
 function getCursor(type: Handle) {
-  if (type === 'move')
+  if (type === 'move') {
     return 'move'
+  }
   const create = cursors[type]
   if (!create) {
-    return 'default'
+    return undefined
   }
   return `url("data:image/svg+xml,${create(model.value.rotate ?? 0)}") 16 16, pointer`
 }
@@ -778,6 +785,13 @@ function Diagonal() {
     stroke-width: 1px;
     fill: transparent;
     stroke: transparent;
+
+    &[aria-label="border-radius-top-left"],
+    &[aria-label="border-radius-top-right"],
+    &[aria-label="border-radius-bottom-left"],
+    &[aria-label="border-radius-bottom-right"] {
+      // TODO
+    }
   }
 
   &__tip {

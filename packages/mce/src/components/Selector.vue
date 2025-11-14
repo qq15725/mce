@@ -69,7 +69,7 @@ const selectionObbs = computed(() => {
 
   return elementSelection.value.map((el) => {
     return {
-      name: el.name,
+      element: el,
       box: getObb(el, 'drawboard'),
     }
   })
@@ -203,6 +203,7 @@ defineExpose({
     class="mce-selector__element"
     :style="{
       borderColor: 'currentcolor',
+      borderRadius: `${(item.element.style.borderRadius ?? 0) * camera.zoom.x}px`,
       ...boundingBoxToStyle(item.box),
     }"
   />
