@@ -1,3 +1,24 @@
+## [0.13.7](https://github.com/qq15725/mce/compare/v0.13.6...v0.13.7) (2025-11-14)
+
+
+### Bug Fixes
+
+* borderRadius ([a3b6814](https://github.com/qq15725/mce/commit/a3b68142c25062fd5d6fb6f692f6245832ad23c9))
+* floatbar ([0740002](https://github.com/qq15725/mce/commit/07400025c44ee0218efa736dd7119ab713ecea05))
+* frame ([68d9534](https://github.com/qq15725/mce/commit/68d9534102806b50eef7f1e563551a66192da204))
+* frame / hover / active ([2247561](https://github.com/qq15725/mce/commit/2247561d8756631eef57926796185e9fb61a6f6a))
+* image export ([e8da437](https://github.com/qq15725/mce/commit/e8da437e10fd0f89ba9ac7585977d23e11872efe))
+* setup ([cdc3090](https://github.com/qq15725/mce/commit/cdc3090d58534a12beb1fc355098585c07fa1ecb))
+* text editor ([0e78223](https://github.com/qq15725/mce/commit/0e78223811ec3c16d06fdf980265651d5ba04c47))
+
+
+### Features
+
+* opz code ([af2e562](https://github.com/qq15725/mce/commit/af2e562851073c5eb0cb71f542b171f6f3c50537))
+* opz code ([3d67ec1](https://github.com/qq15725/mce/commit/3d67ec169f4dd56775b4e34e89bb0d16dbaa2785))
+
+
+
 ## [0.13.6](https://github.com/qq15725/mce/compare/v0.13.5...v0.13.6) (2025-11-14)
 
 
