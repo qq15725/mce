@@ -1,3 +1,15 @@
+## [0.13.6](https://github.com/qq15725/mce/compare/v0.13.5...v0.13.6) (2025-11-14)
+
+
+### Features
+
+* add floatbar-top floatbar-bottom slots ([68ca072](https://github.com/qq15725/mce/commit/68ca07298d821bd4730b50953d019095a617c6e0))
+* Cropper ([8f2760f](https://github.com/qq15725/mce/commit/8f2760f8bce5a47a971e367e8b85fe60e4630cc8))
+* made with ([038478c](https://github.com/qq15725/mce/commit/038478c5e8e6d328d1161d77ea4d38d0c67188db))
+* text util methods ([0bc8b9e](https://github.com/qq15725/mce/commit/0bc8b9e74369b2b4ee2b460dbed484f2570b42af))
+
+
+
 ## [0.13.5](https://github.com/qq15725/mce/compare/v0.13.4...v0.13.5) (2025-11-13)
 
 
