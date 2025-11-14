@@ -66,6 +66,8 @@ async function startTyping(e?: PointerEvent): Promise<boolean> {
   await nextTick()
   if (editor.pointerDown(e)) {
     editor.selectAll()
+    // TODO updateSelectionByDom
+    ;(editor as any)._updateSelectionByDom()
     return true
   }
   return false

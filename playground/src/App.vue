@@ -61,10 +61,10 @@ if (tid || bid) {
       <template #selector />
       <template #transformer />
       <template #floatbar-top>
-        <div>FloatbarTop</div>
+        <span>FloatbarTop</span>
       </template>
       <template #floatbar-bottom>
-        <div>FloatbarBottom</div>
+        <span>FloatbarBottom</span>
       </template>
       <template #drawboard />
     </EditorLayout>

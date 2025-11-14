@@ -67,7 +67,7 @@ const isLast = computed(() => {
 })
 const isActive = computed(() => selection.value.some(v => v.equal(props.node)))
 
-const inputDom = ref<HTMLElement>()
+const inputDom = ref<HTMLInputElement>()
 const isHoverElement = computed(() => props.node?.equal(hoverElement.value))
 const hovering = ref(false)
 const editing = ref(false)
@@ -166,7 +166,11 @@ function onDblclickContent() {
   editing.value = true
   editValue.value = props.node.name
   nextTick().then(() => {
-    inputDom.value?.focus()
+    const dom = inputDom.value
+    if (dom) {
+      dom.focus()
+      dom.select()
+    }
   })
 }
 
@@ -192,7 +196,6 @@ function onContextmenu(e: PointerEvent) {
 }
 
 function onInputBlur() {
-  console.log('onInputBlur')
   editing.value = false
   if (editValue.value) {
     ;(props.node as any).name = editValue.value
