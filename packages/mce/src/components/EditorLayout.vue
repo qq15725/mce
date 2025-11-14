@@ -33,6 +33,7 @@ import Frames from './Frames.vue'
 import GoBackSelectedArea from './GoBackSelectedArea.vue'
 import Hover from './Hover.vue'
 import Layers from './Layers.vue'
+import MadeWith from './MadeWith.vue'
 import Rulers from './Rulers.vue'
 import Scrollbars from './Scrollbars.vue'
 import Selector from './Selector.vue'
@@ -75,6 +76,7 @@ else {
 provide(IconsSymbol, createIcons())
 
 const {
+  showMadeWith,
   config,
   drawboardDom,
   renderEngine,
@@ -452,6 +454,7 @@ async function onDoubleclick(event: MouseEvent) {
         >
           <Layers />
         </FloatPanel>
+        <MadeWith v-if="showMadeWith" />
         <Toolbelt />
         <slot name="drawboard" />
       </div>

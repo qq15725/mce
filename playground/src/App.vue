@@ -10,6 +10,7 @@ import gifWorkerUrl from 'modern-gif/worker?url'
 import 'mce/styles'
 
 const editor = new Editor({
+  showMadeWith: true,
   plugins: [
     bigesj({ font: true }),
     gaoding(),
