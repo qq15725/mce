@@ -526,7 +526,6 @@ const slotProps = {
   position: relative;
   width: 100%;
   height: 100%;
-  display: flex;
   flex-direction: column;
   background-color: rgb(var(--mce-theme-surface));
   color: rgb(var(--mce-theme-on-surface));
