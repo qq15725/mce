@@ -70,7 +70,7 @@ interface LayoutProvide {
 export const MceLayoutKey: InjectionKey<LayoutProvide> = Symbol.for('mce:layout')
 export const MceLayoutItemKey: InjectionKey<{ id: string }> = Symbol.for('mce:layout-item')
 
-const ROOT_ZINDEX = 999
+const ROOT_ZINDEX = 500
 
 export function makeLayoutProps() {
   return {
