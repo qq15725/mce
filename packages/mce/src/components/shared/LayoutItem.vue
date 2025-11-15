@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import type { PropType } from 'vue'
-import { computed, toRef } from 'vue'
+import { computed, normalizeClass, normalizeStyle, toRef } from 'vue'
 import { makeLayoutItemProps, useLayoutItem } from '../../composables/layout'
 
 const props = defineProps({
+  class: [String, Array, Object],
+  style: {
+    type: [String, Array, Object],
+    default: null,
+  },
   position: {
     type: String as PropType<'top' | 'right' | 'bottom' | 'left'>,
     required: true,
@@ -26,17 +31,17 @@ const { layoutItemStyles } = useLayoutItem({
   elementSize: toRef(() => props.size),
   layoutSize: toRef(() => props.size),
   active: toRef(() => props.modelValue),
-  absolute: toRef(() => props.absolute),
 })
 </script>
 
 <template>
   <div
-    class="mce-layout-item"
-    :class="[
+    :class="normalizeClass([
+      'mce-layout-item',
       `mce-layout-item--${props.position}`,
-    ]"
-    :style="[layoutItemStyles]"
+      props.class,
+    ])"
+    :style="normalizeStyle([layoutItemStyles, props.style])"
   >
     <slot />
   </div>

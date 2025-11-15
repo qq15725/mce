@@ -52,7 +52,6 @@ interface LayoutProvide {
       elementSize: Ref<number | string | undefined>
       active: Ref<boolean>
       disableTransitions?: Ref<boolean>
-      absolute: Ref<boolean | undefined>
     },
   ) => {
     layoutItemStyles: Ref<CSSProperties>
@@ -71,7 +70,7 @@ interface LayoutProvide {
 export const MceLayoutKey: InjectionKey<LayoutProvide> = Symbol.for('mce:layout')
 export const MceLayoutItemKey: InjectionKey<{ id: string }> = Symbol.for('mce:layout-item')
 
-const ROOT_ZINDEX = 1000
+const ROOT_ZINDEX = 999
 
 export function makeLayoutProps() {
   return {
@@ -92,7 +91,6 @@ export function makeLayoutItemProps() {
       type: [Number, String],
       default: 0,
     },
-    absolute: Boolean,
   }
 }
 
@@ -117,7 +115,6 @@ export function useLayoutItem(options: {
   elementSize: Ref<number | string | undefined>
   active: Ref<boolean>
   disableTransitions?: Ref<boolean>
-  absolute: Ref<boolean | undefined>
 }) {
   const layout = inject(MceLayoutKey)
 
@@ -274,7 +271,6 @@ export function createLayout(props: { overlaps?: string[], fullHeight?: boolean 
         elementSize,
         active,
         disableTransitions,
-        absolute,
       },
     ) => {
       priorities.set(id, order)
@@ -304,7 +300,6 @@ export function createLayout(props: { overlaps?: string[], fullHeight?: boolean 
           [position.value]: 0,
           zIndex: zIndex.value,
           transform: `translate${isHorizontal ? 'X' : 'Y'}(${(active.value ? 0 : -(size === 0 ? 100 : size)) * (isOppositeHorizontal || isOppositeVertical ? -1 : 1)}${unit})`,
-          position: absolute.value || rootZIndex.value !== ROOT_ZINDEX ? 'absolute' : 'fixed',
           ...(transitionsEnabled.value ? undefined : { transition: 'none' }),
         } as const
 

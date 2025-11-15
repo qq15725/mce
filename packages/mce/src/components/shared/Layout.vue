@@ -1,7 +1,13 @@
 <script setup lang="ts">
+import { normalizeClass, normalizeStyle } from 'vue'
 import { createLayout, makeLayoutProps } from '../../composables/layout'
 
 const props = defineProps({
+  class: [String, Array, Object],
+  style: {
+    type: [String, Array, Object],
+    default: null,
+  },
   ...makeLayoutProps(),
 })
 
@@ -22,8 +28,8 @@ defineExpose({
 <template>
   <div
     :ref="layoutRef"
-    :class="[layoutClasses]"
-    :style="[layoutStyles]"
+    :class="normalizeClass([layoutClasses, props.class])"
+    :style="normalizeStyle([layoutStyles, props.style])"
   >
     <slot />
   </div>
