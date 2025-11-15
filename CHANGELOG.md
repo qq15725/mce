@@ -1,3 +1,12 @@
+## [0.13.8](https://github.com/qq15725/mce/compare/v0.13.7...v0.13.8) (2025-11-15)
+
+
+### Bug Fixes
+
+* ROOT_ZINDEX ([f652778](https://github.com/qq15725/mce/commit/f6527785bdb490053fc0c3013569b3ecf6959132))
+
+
+
 ## [0.13.7](https://github.com/qq15725/mce/compare/v0.13.6...v0.13.7) (2025-11-14)
 
 
