@@ -432,14 +432,22 @@ function start(event?: MouseEvent, index?: number): boolean {
       ) {
         const offset = rotatePoint(rotatedOffset, { x: 0, y: 0 }, -rotate)
         const dx = sign.x * offset.x
-        const dy = sign.y * offset.y * aspectRatio
-        const _offset = Math.abs(dx) < Math.abs(dy) ? dx : dy
-        // TODO
+        const dy = sign.y * offset.y
+        let newCurrentPoint
+        if (dx > dy * aspectRatio) {
+          newCurrentPoint = {
+            x: startPoint.x + sign.x * dx,
+            y: startPoint.y + sign.y * dx / aspectRatio,
+          }
+        }
+        else {
+          newCurrentPoint = {
+            x: startPoint.x + sign.x * dy * aspectRatio,
+            y: startPoint.y + sign.y * dy,
+          }
+        }
         newRotatedCurrentPoint = rotatePoint(
-          {
-            x: startPoint.x + sign.x * _offset,
-            y: startPoint.y + sign.y * _offset / aspectRatio,
-          },
+          newCurrentPoint,
           centerPoint,
           rotate,
         )
