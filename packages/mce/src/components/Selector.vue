@@ -130,8 +130,10 @@ const selectionTransform = computed({
         borderRadius: Math.round(style.borderRadius + offsetStyle.borderRadius),
       }
 
-      newStyle.left = snap(newStyle.left, 'x')
-      newStyle.top = snap(newStyle.top, 'y')
+      if (handle === 'move') {
+        newStyle.left = snap(newStyle.left, 'x')
+        newStyle.top = snap(newStyle.top, 'y')
+      }
 
       if (handle.startsWith('resize')) {
         resizeElement(
