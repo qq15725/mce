@@ -46,15 +46,13 @@ export default defineMixin((editor, options) => {
     config,
   } = editor
 
-  // UI
   registerConfig('theme', 'system')
-  // Editor
   registerConfig('viewMode', 'edgeless')
   registerConfig('watermark', undefined)
   registerConfig('checkerboard', false)
   registerConfig('checkerboardStyle', 'grid')
   registerConfig('pixelGrid', false)
-  registerConfig('pixelate', true)
+  registerConfig('pixelate', false)
   registerConfig('camera', false)
   registerConfig('timeline', false)
   registerConfig('statusbar', false)
@@ -63,7 +61,6 @@ export default defineMixin((editor, options) => {
   registerConfig('typographyStrategy', 'autoHeight')
   registerConfig('handleShape', 'rect')
   registerConfig('screenCenterOffset', { left: 0, top: 0, bottom: 0, right: 0 })
-  // DB
   registerConfig('localDb', false)
 
   return () => {
