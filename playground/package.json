@@ -18,7 +18,7 @@
     "@mce/openxml": "workspace:*",
     "@mce/pdf": "workspace:*",
     "@mce/svg": "workspace:*",
-    "@tsconfig/node22": "^22.0.3",
+    "@tsconfig/node22": "^22.0.4",
     "@vitejs/plugin-vue": "^6.0.1",
     "@vue/tsconfig": "^0.8.1",
     "mce": "workspace:*",
