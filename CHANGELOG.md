@@ -1,3 +1,30 @@
+## [0.13.10](https://github.com/qq15725/mce/compare/v0.13.9...v0.13.10) (2025-11-17)
+
+
+### Bug Fixes
+
+* gif paste ([225c429](https://github.com/qq15725/mce/commit/225c4290ae5dd27cb66ad8e9c9be6ef75ba30720))
+* madeWith ([83a0da8](https://github.com/qq15725/mce/commit/83a0da8a303ed54440ddd69f0e1d0ac2da84f035))
+* pixelate ([c64b954](https://github.com/qq15725/mce/commit/c64b954d06b2a059c4b5c0dd124248e03b536fc2))
+* round ([13d5d17](https://github.com/qq15725/mce/commit/13d5d176e20c59e68649ccb84bb4d88c99549110))
+* snapThreshold ([be206d9](https://github.com/qq15725/mce/commit/be206d91bded81db1bf3aeb0dc18c2f66973eba0))
+* timeline ([4e86a6d](https://github.com/qq15725/mce/commit/4e86a6d714a730f3f8a7ff3ed1922c42dffc8ffc))
+* transformable ([4506052](https://github.com/qq15725/mce/commit/4506052f1162e4a43fedb13ecc05f588df06b515))
+
+
+### Features
+
+* add madeWith plugin ([f4d6843](https://github.com/qq15725/mce/commit/f4d6843b32ad7119885498b97eddcb287730d6f8))
+* frame plugin ([e13f391](https://github.com/qq15725/mce/commit/e13f3917eb02c93d99c8e0c1819c592f61314a55))
+* hover plugin ([59801f1](https://github.com/qq15725/mce/commit/59801f1fdb66c0285f3333e45c71dabd76591a86))
+* menu plugin ([9833358](https://github.com/qq15725/mce/commit/9833358f4370a4b651abd39a47d487ab30e7a394))
+* opz code ([916b523](https://github.com/qq15725/mce/commit/916b523bc0f25da905e7802948169112a5a49b92))
+* panels plugin ([8fcb2ed](https://github.com/qq15725/mce/commit/8fcb2edc0a4795f056b3b48ab6cf02943aaf6ecd))
+* plugin support components ([3074a07](https://github.com/qq15725/mce/commit/3074a073d36737a3bc8a0ab3a59b93a1e4dde765))
+* ruler plugin ([c09980e](https://github.com/qq15725/mce/commit/c09980e524742f16e7025430380a33a85967a6bb))
+
+
+
 ## [0.13.9](https://github.com/qq15725/mce/compare/v0.13.8...v0.13.9) (2025-11-15)
 
 
