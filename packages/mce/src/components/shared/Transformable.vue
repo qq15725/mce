@@ -388,7 +388,7 @@ function start(event?: MouseEvent, index?: number): boolean {
       const offset = rotatePoint(rotatedOffset, { x: 0, y: 0 }, -rotate)
       const dx = -sign.x * offset.x
       const dy = -sign.y * offset.y
-      const _offset = Math.abs(dx) < Math.abs(dy) ? dy : dx
+      const _offset = dx < dy ? dy : dx
       updated.borderRadius = borderRadius + _offset
     }
     else if (isHorizontalVertical) {
@@ -446,11 +446,7 @@ function start(event?: MouseEvent, index?: number): boolean {
             y: startPoint.y + sign.y * dy,
           }
         }
-        newRotatedCurrentPoint = rotatePoint(
-          newCurrentPoint,
-          centerPoint,
-          rotate,
-        )
+        newRotatedCurrentPoint = rotatePoint(newCurrentPoint, centerPoint, rotate)
       }
       else {
         newRotatedCurrentPoint = rotatedCurrentPoint
