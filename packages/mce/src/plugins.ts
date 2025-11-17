@@ -9,6 +9,7 @@ import _flip from './plugins/flip'
 import _gif from './plugins/gif'
 import _group from './plugins/group'
 import _history from './plugins/history'
+import _hover from './plugins/hover'
 import _html from './plugins/html'
 import _image from './plugins/image'
 import _import from './plugins/import'
@@ -42,6 +43,7 @@ export const plugins = [
   _gif,
   _group,
   _history,
+  _hover,
   _html,
   _image,
   _import,

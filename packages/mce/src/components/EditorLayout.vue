@@ -28,7 +28,6 @@ import Drawing from './Drawing.vue'
 import Floatbar from './Floatbar.vue'
 import ForegroundCropper from './ForegroundCropper.vue'
 import Frames from './Frames.vue'
-import Hover from './Hover.vue'
 import Layers from './Layers.vue'
 import Selector from './Selector.vue'
 import FloatPanel from './shared/FloatPanel.vue'
@@ -412,10 +411,13 @@ const slotProps = {
           ref="canvasTpl"
           class="mce-editor__canvas"
         />
+
         <TextEditor ref="textEditorTpl" />
-        <Hover />
+
         <Frames />
+
         <Drawing />
+
         <Selector
           ref="selectorTpl"
           :selected-area="selectedArea"
@@ -430,6 +432,7 @@ const slotProps = {
             <slot name="selector" :box="box" v-bind="slotProps" />
           </template>
         </Selector>
+
         <Floatbar
           v-if="$slots.floatbar || $slots['floatbar-top']"
           location="top-start"
@@ -440,6 +443,7 @@ const slotProps = {
           <slot name="floatbar" v-bind="slotProps" />
           <slot name="floatbar-top" v-bind="slotProps" />
         </Floatbar>
+
         <Floatbar
           v-if="$slots['floatbar-bottom']"
           location="bottom-start"
@@ -447,6 +451,7 @@ const slotProps = {
         >
           <slot name="floatbar-bottom" v-bind="slotProps" />
         </Floatbar>
+
         <FloatPanel
           v-if="config.layers"
           v-model="config.layers"
@@ -460,11 +465,14 @@ const slotProps = {
         >
           <Layers />
         </FloatPanel>
+
         <Toolbelt />
+
         <Component
           :is="overlay"
           v-for="(overlay, key) in overlays" :key="key"
         />
+
         <slot name="drawboard" v-bind="slotProps" />
       </div>
     </Main>
