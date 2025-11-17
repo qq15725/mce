@@ -1,7 +1,7 @@
 import type { Element2D, Node, Vector2Data } from 'modern-canvas'
 import type { Element } from 'modern-idoc'
 import type { AxisAlignedBoundingBox } from '../types'
-import { defineMixin } from '../editor'
+import { defineMixin } from '../mixin'
 import { isOverlappingObb } from '../utils'
 
 declare global {

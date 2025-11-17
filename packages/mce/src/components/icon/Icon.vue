@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, useAttrs } from 'vue'
-import { makeIconProps, useIcon } from '../../composables'
+import { useIcon } from '../../composables/icon'
+import { makeIconProps } from './makeIconProps'
 
 const props = defineProps({
   disabled: Boolean,

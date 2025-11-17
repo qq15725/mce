@@ -1,5 +1,5 @@
 import { saveAs as _saveAs } from 'file-saver'
-import { definePlugin } from '../editor'
+import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {

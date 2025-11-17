@@ -1,5 +1,5 @@
 import type { Element2D } from 'modern-canvas'
-import { defineMixin } from '../editor'
+import { defineMixin } from '../mixin'
 
 declare global {
   namespace Mce {

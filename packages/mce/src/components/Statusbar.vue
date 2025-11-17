@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useEditor } from '../composables/editor'
-import Icon from './shared/Icon.vue'
+import { Icon } from './icon'
 import ProgressIndicator from './shared/ProgressIndicator.vue'
 
 const {

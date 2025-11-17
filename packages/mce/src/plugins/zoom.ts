@@ -1,6 +1,6 @@
 import { useResizeObserver } from '@vueuse/core'
 import { watch } from 'vue'
-import { definePlugin } from '../editor'
+import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {

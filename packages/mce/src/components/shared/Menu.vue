@@ -3,7 +3,7 @@ import type { PropType } from 'vue'
 import { computed, inject, onBeforeUnmount, provide, ref, shallowRef, useId, useTemplateRef } from 'vue'
 import { makeMceOverlayProps, MceMenuSymbol } from '../../composables'
 import { isClickInsideElement } from '../../utils'
-import Icon from './Icon.vue'
+import { Icon } from '../icon'
 import Overlay from './Overlay.vue'
 
 defineOptions({

@@ -1,7 +1,7 @@
 import type { Ref, WritableComputedRef } from 'vue'
 import { isClient, useEventListener } from '@vueuse/core'
 import { ref } from 'vue'
-import { defineMixin } from '../editor'
+import { defineMixin } from '../mixin'
 import { isInputEvent, isMac, isWindows } from '../utils'
 
 declare global {

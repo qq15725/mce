@@ -24,18 +24,15 @@ import {
 } from '../composables/strategy'
 import { Editor } from '../editor'
 import { isPointInsideAabb } from '../utils/box'
-import Auxiliary from './Auxiliary.vue'
 import ContextMenu from './ContextMenu.vue'
 import Drawing from './Drawing.vue'
 import Floatbar from './Floatbar.vue'
 import ForegroundCropper from './ForegroundCropper.vue'
 import Frames from './Frames.vue'
-import GoBackSelectedArea from './GoBackSelectedArea.vue'
 import Hover from './Hover.vue'
 import Layers from './Layers.vue'
 import MadeWith from './MadeWith.vue'
 import Rulers from './Rulers.vue'
-import Scrollbars from './Scrollbars.vue'
 import Selector from './Selector.vue'
 import FloatPanel from './shared/FloatPanel.vue'
 import Layout from './shared/Layout.vue'
@@ -80,6 +77,7 @@ editor.setup()
 provide(IconsSymbol, createIcons())
 
 const {
+  overlays,
   isElement,
   showMadeWith,
   config,
@@ -418,14 +416,11 @@ const slotProps = {
           ref="canvasTpl"
           class="mce-editor__canvas"
         />
-
         <TextEditor ref="textEditorTpl" />
-        <Auxiliary />
         <Hover />
         <Frames />
         <Drawing />
         <Rulers v-if="config.ruler" />
-        <Scrollbars v-if="config.scrollbar" />
         <MadeWith v-if="showMadeWith" />
         <Selector
           ref="selectorTpl"
@@ -459,7 +454,6 @@ const slotProps = {
           <slot name="floatbar-bottom" v-bind="slotProps" />
         </Floatbar>
         <ContextMenu />
-        <GoBackSelectedArea />
         <FloatPanel
           v-if="config.layers"
           v-model="config.layers"
@@ -474,6 +468,10 @@ const slotProps = {
           <Layers />
         </FloatPanel>
         <Toolbelt />
+        <Component
+          :is="overlay"
+          v-for="(overlay, key) in overlays" :key="key"
+        />
         <slot name="drawboard" v-bind="slotProps" />
       </div>
     </Main>

@@ -3,7 +3,7 @@ import type { ComputedRef } from 'vue'
 import type { AxisAlignedBoundingBox, OrientedBoundingBox } from '../types'
 import { DEG_TO_RAD, Transform2D } from 'modern-canvas'
 import { computed } from 'vue'
-import { defineMixin } from '../editor'
+import { defineMixin } from '../mixin'
 
 function noop(..._args: any): void {}
 

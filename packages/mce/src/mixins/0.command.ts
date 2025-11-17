@@ -1,6 +1,6 @@
 import type { Ref } from 'vue'
 import { ref } from 'vue'
-import { defineMixin } from '../editor'
+import { defineMixin } from '../mixin'
 
 declare global {
   namespace Mce {

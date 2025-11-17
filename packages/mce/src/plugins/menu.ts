@@ -1,7 +1,7 @@
 import type { CheckerboardStyle } from 'modern-canvas'
 import type { ComputedRef } from 'vue'
 import { computed } from 'vue'
-import { definePlugin } from '../editor'
+import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {

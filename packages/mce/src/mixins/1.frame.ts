@@ -2,7 +2,7 @@ import type { Element2D, Node } from 'modern-canvas'
 import type { ComputedRef, Ref } from 'vue'
 import type { AxisAlignedBoundingBox } from '../types'
 import { computed, ref, watch } from 'vue'
-import { defineMixin } from '../editor'
+import { defineMixin } from '../mixin'
 
 declare global {
   namespace Mce {

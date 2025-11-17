@@ -1,6 +1,6 @@
 import type { FontLoadedResult, FontLoadOptions, FontSource } from 'modern-font'
 import { ref } from 'vue'
-import { defineMixin } from '../editor'
+import { defineMixin } from '../mixin'
 
 declare global {
   namespace Mce {

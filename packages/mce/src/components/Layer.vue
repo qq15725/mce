@@ -3,8 +3,8 @@ import type { Node } from 'modern-canvas'
 import type { PropType } from 'vue'
 import { computed, nextTick, ref } from 'vue'
 import { useEditor, useLayerItem } from '../composables'
+import { Icon } from './icon'
 import Btn from './shared/Btn.vue'
-import Icon from './shared/Icon.vue'
 
 defineOptions({
   name: 'MceLayer',

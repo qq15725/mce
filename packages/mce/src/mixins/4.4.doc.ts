@@ -1,6 +1,6 @@
 import type { Document, Element } from 'modern-idoc'
 import { throttle } from 'lodash-es'
-import { defineMixin } from '../editor'
+import { defineMixin } from '../mixin'
 import { Doc } from '../models'
 
 declare global {

@@ -2,7 +2,7 @@ import type { Node } from 'modern-canvas'
 import type { ComputedRef, Ref, WritableComputedRef } from 'vue'
 import { assets, clamp, TimelineNode } from 'modern-canvas'
 import { computed, ref } from 'vue'
-import { defineMixin } from '../editor'
+import { defineMixin } from '../mixin'
 
 declare global {
   namespace Mce {

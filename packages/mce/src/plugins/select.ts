@@ -1,4 +1,5 @@
-import { definePlugin } from '../editor'
+import GoBackSelectedArea from '../components/GoBackSelectedArea.vue'
+import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {
@@ -77,6 +78,9 @@ export default definePlugin((editor) => {
       { command: 'selectParent', key: 'Alt+\\' },
       { command: 'previousSelection', key: 'Alt+[' },
       { command: 'nextSelection', key: 'Alt+]' },
+    ],
+    components: [
+      { type: 'overlay', component: GoBackSelectedArea },
     ],
   }
 })

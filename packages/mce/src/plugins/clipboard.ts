@@ -2,7 +2,7 @@ import type { Element } from 'modern-idoc'
 import type { Ref } from 'vue'
 import { cloneDeep } from 'lodash-es'
 import { onBeforeUnmount, ref } from 'vue'
-import { definePlugin } from '../editor'
+import { definePlugin } from '../plugin'
 import { isInputEvent, SUPPORTS_CLIPBOARD } from '../utils'
 
 declare global {

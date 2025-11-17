@@ -1,6 +1,6 @@
 import type { Ref } from 'vue'
 import { ref } from 'vue'
-import { definePlugin } from '../editor'
+import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {

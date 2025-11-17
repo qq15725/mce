@@ -1,7 +1,7 @@
 import type { Element2D } from 'modern-canvas'
 import type { AxisAlignedBoundingBox } from '../types'
 import { clamp } from 'modern-canvas'
-import { defineMixin } from '../editor'
+import { defineMixin } from '../mixin'
 
 declare global {
   namespace Mce {

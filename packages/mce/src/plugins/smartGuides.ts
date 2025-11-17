@@ -1,14 +1,15 @@
 import type { Element2D } from 'modern-canvas'
 import type { ComputedRef } from 'vue'
 import { computed } from 'vue'
-import { definePlugin } from '../editor'
+import SmartGuides from '../components/SmartGuides.vue'
+import { definePlugin } from '../plugin'
 import { isOverlappingAabb } from '../utils'
 import { BSTree } from '../utils/BSTree'
 
 declare global {
   namespace Mce {
     interface Editor {
-      auxiliaryLines: ComputedRef<Record<string, any>[]>
+      snapLines: ComputedRef<Record<string, any>[]>
       getAdsorptionPoints: (resizing?: boolean) => { x: number[], y: number[] }
     }
   }
@@ -50,36 +51,6 @@ interface BoundingBox {
   width: number
   height: number
   rotate?: number
-}
-
-function createLine(pos: number, type: LineType, box?: Box): Line {
-  return { pos, type, box }
-}
-
-function toBoundingBox(value: Line | Box) {
-  const box = ('box' in value ? value.box : value) as Box
-  return {
-    left: box.hl.pos,
-    top: box.vt.pos,
-    width: box.hr.pos - box.hl.pos,
-    height: box.vb.pos - box.vt.pos,
-  }
-}
-
-function flipType(type: string): LineType {
-  if (type === 'vt')
-    return 'vb'
-  if (type === 'vb')
-    return 'vt'
-  if (type === 'hl')
-    return 'hr'
-  if (type === 'hr')
-    return 'hl'
-  return type as LineType
-}
-
-function isLeftTopLine(line: Line) {
-  return ['vt', 'hl'].includes(line.type)
 }
 
 export default definePlugin((editor) => {
@@ -355,7 +326,7 @@ export default definePlugin((editor) => {
 
   const scaled = (v: number) => v
 
-  const auxiliaryLines = computed(() => {
+  const snapLines = computed(() => {
     if (state.value !== 'transforming')
       return []
     const offset = { left: 0, top: 0 }
@@ -370,7 +341,7 @@ export default definePlugin((editor) => {
       const itemProps: Record<string, any> = {}
 
       if (type === 'alignment') {
-        itemProps.class = 'mce-auxiliary__alignment'
+        itemProps.class = ['alignment']
 
         if (vertical) {
           const left = Math.min(boxSource.hl.pos, boxTarget.hl.pos)
@@ -392,12 +363,10 @@ export default definePlugin((editor) => {
         }
       }
       else if (type === 'area') {
-        itemProps.class = [
-          'mce-auxiliary__area',
-          {
-            'mce-auxiliary__area--vertical': vertical,
-          },
-        ]
+        itemProps.class = ['area']
+        if (vertical) {
+          itemProps.class.push('area--vertical')
+        }
 
         const isCanvas = isCanvasLine(target) || isCanvasLine(source)
 
@@ -489,11 +458,44 @@ export default definePlugin((editor) => {
   }
 
   Object.assign(editor, {
-    auxiliaryLines,
+    snapLines,
     getAdsorptionPoints,
   })
 
   return {
-    name: 'mce:auxiliary',
+    name: 'mce:smartGuides',
+    components: [
+      { type: 'overlay', component: SmartGuides },
+    ],
   }
 })
+
+function createLine(pos: number, type: LineType, box?: Box): Line {
+  return { pos, type, box }
+}
+
+function toBoundingBox(value: Line | Box) {
+  const box = ('box' in value ? value.box : value) as Box
+  return {
+    left: box.hl.pos,
+    top: box.vt.pos,
+    width: box.hr.pos - box.hl.pos,
+    height: box.vb.pos - box.vt.pos,
+  }
+}
+
+function flipType(type: string): LineType {
+  if (type === 'vt')
+    return 'vb'
+  if (type === 'vb')
+    return 'vt'
+  if (type === 'hl')
+    return 'hr'
+  if (type === 'hr')
+    return 'hl'
+  return type as LineType
+}
+
+function isLeftTopLine(line: Line) {
+  return ['vt', 'hl'].includes(line.type)
+}

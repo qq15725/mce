@@ -1,9 +1,9 @@
 import type { RemovableRef } from '@vueuse/core'
 import type { ObservableEvents } from 'modern-idoc'
-import type { App, InjectionKey } from 'vue'
+import type { App, Component, InjectionKey } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
 import { Observable } from 'modern-idoc'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { mixins as presetMixins } from './mixins'
 import { plugins as presetPlugins } from './plugins'
 
@@ -30,6 +30,13 @@ export class Editor extends Observable<Events> {
   declare config: RemovableRef<Mce.Config>
   onEmit?: <K extends keyof Events & string>(event: K, ...args: Events[K]) => void
   plugins = new Map<string, PluginObject>()
+  overlays = computed<Component[]>(() => {
+    return Array.from(this.plugins.values())
+      .flatMap(p => p.components?.filter((c) => {
+        return c.type === 'overlay' && c.ignore?.() !== true
+      }) ?? [])
+      .map(c => c.component)
+  })
 
   protected _setups: (() => void | Promise<void>)[] = []
 
@@ -183,32 +190,4 @@ export class Editor extends Observable<Events> {
   install = (app: App): void => {
     app.provide(Editor.injectionKey, this)
   }
-}
-
-export interface PluginObject {
-  name: string
-  ignore?: boolean | (() => boolean)
-  events?: { [K in keyof Events]: (...args: Events[K]) => void }
-  commands?: Mce.Command[]
-  hotkeys?: Mce.Hotkey[]
-  loaders?: Mce.Loader[]
-  exporters?: Mce.Exporter[]
-  setup?: () => void | Promise<void>
-}
-
-export type Plugin = PluginObject | ((editor: Editor, options: Options) => PluginObject)
-
-export function definePlugin(cb: Plugin): Plugin {
-  return cb
-}
-
-export type Mixin = (editor: Editor, options: Options) =>
-  | (() => (void | Promise<void>))
-  | Mixin[]
-  | Record<string, any>
-  | undefined
-  | void
-
-export function defineMixin(cb: Mixin): Mixin {
-  return cb
 }

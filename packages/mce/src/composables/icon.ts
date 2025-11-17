@@ -1,78 +1,9 @@
 import type { Component, MaybeRefOrGetter } from 'vue'
-import {
-  computed,
-  createElementVNode,
-  createVNode,
-  defineComponent,
-  inject,
-  mergeProps,
-  toValue,
-} from 'vue'
+import { computed, inject, toValue } from 'vue'
+import { ComponentIcon, SvgIcon } from '../components/icon'
 import { IconsSymbol } from './icons'
 
 export type IconValue = string | (string | [path: string, opacity: number])[] | Component
-
-export function makeIconProps() {
-  return {
-    icon: {
-      type: [String, Function, Object, Array],
-    },
-    tag: {
-      type: [String, Object, Function],
-      default: 'i',
-    },
-  }
-}
-
-export const MceSvgIcon = defineComponent({
-  name: 'MceSvgIcon',
-  inheritAttrs: false,
-  props: makeIconProps(),
-  setup(props, { attrs }) {
-    return () => {
-      return createVNode(props.tag as any, mergeProps(attrs, { style: null }), {
-        default: () => [
-          createElementVNode('svg', {
-            'class': 'mce-icon__svg',
-            'xmlns': 'http://www.w3.org/2000/svg',
-            'viewBox': '0 0 24 24',
-            'role': 'img',
-            'aria-hidden': 'true',
-          }, [
-            Array.isArray(props.icon)
-              ? props.icon.map(path => Array.isArray(path)
-                  ? createElementVNode('path', {
-                      'd': path[0],
-                      'fill-opacity': path[1],
-                    }, null)
-                  : createElementVNode('path', {
-                      d: path,
-                    }, null))
-              : createElementVNode('path', {
-                  d: props.icon,
-                }, null),
-          ]),
-        ],
-      })
-    }
-  },
-})
-
-export const MceComponentIcon = defineComponent({
-  name: 'MceComponentIcon',
-  props: makeIconProps(),
-  setup(props, { slots }) {
-    return () => {
-      return createVNode(props.tag as any, null, {
-        default: () => [
-          props.icon
-            ? createVNode(props.icon as any, null, null)
-            : slots.default?.(),
-        ],
-      })
-    }
-  },
-})
 
 export function useIcon(props: MaybeRefOrGetter<IconValue | undefined>) {
   const icons = inject(IconsSymbol)
@@ -83,7 +14,7 @@ export function useIcon(props: MaybeRefOrGetter<IconValue | undefined>) {
     const iconAlias = toValue(props)
     if (!iconAlias) {
       return {
-        component: MceComponentIcon,
+        component: ComponentIcon,
       }
     }
     let icon: any = iconAlias
@@ -97,13 +28,13 @@ export function useIcon(props: MaybeRefOrGetter<IconValue | undefined>) {
       console.warn(`Could not find aliased icon "${iconAlias}"`)
     if (Array.isArray(icon)) {
       return {
-        component: MceSvgIcon,
+        component: SvgIcon,
         icon,
       }
     }
     else if (typeof icon !== 'string') {
       return {
-        component: MceComponentIcon,
+        component: ComponentIcon,
         icon,
       }
     }

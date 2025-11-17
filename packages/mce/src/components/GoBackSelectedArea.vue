@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useEditor } from '../composables'
+import { useEditor } from '../composables/editor'
 import { isOverlappingAabb } from '../utils'
-import Icon from './shared/Icon.vue'
+import { Icon } from './icon'
 
 const {
   selectionAabb,

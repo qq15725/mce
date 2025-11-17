@@ -3,7 +3,7 @@ import { useFileDialog } from '@vueuse/core'
 import { saveAs } from 'file-saver'
 import { getObjectValueByPath, setObjectValueByPath } from 'modern-idoc'
 import { computed } from 'vue'
-import { defineMixin } from '../editor'
+import { defineMixin } from '../mixin'
 
 declare global {
   namespace Mce {

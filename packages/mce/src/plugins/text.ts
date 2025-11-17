@@ -1,5 +1,5 @@
 import type { Element2D, Vector2Data } from 'modern-canvas'
-import { definePlugin } from '../editor'
+import { definePlugin } from '../plugin'
 import { createTextElement } from '../utils'
 
 declare global {

@@ -1,4 +1,4 @@
-import { definePlugin } from '../editor'
+import { definePlugin } from '../plugin'
 import { createImageElement, imageExtRe } from '../utils'
 
 export default definePlugin(() => {

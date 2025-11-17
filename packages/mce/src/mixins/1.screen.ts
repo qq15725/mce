@@ -1,6 +1,6 @@
 import type { ComputedRef } from 'vue'
 import { computed } from 'vue'
-import { defineMixin } from '../editor'
+import { defineMixin } from '../mixin'
 
 declare global {
   namespace Mce {

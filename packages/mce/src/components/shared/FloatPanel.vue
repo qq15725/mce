@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { OrientedBoundingBox } from '../../types'
 import { ref } from 'vue'
+import { Icon } from '../icon'
 import Btn from './Btn.vue'
-import Icon from './Icon.vue'
 import Transformable from './Transformable.vue'
 
 const props = defineProps<{

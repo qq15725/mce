@@ -1,6 +1,6 @@
 import type { Element2D } from 'modern-canvas'
 import { onBeforeUnmount, onMounted } from 'vue'
-import { definePlugin } from '../editor'
+import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {

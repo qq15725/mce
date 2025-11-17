@@ -1,4 +1,4 @@
-import { definePlugin } from '../editor'
+import { definePlugin } from '../plugin'
 
 export default definePlugin(() => {
   const RE = /\.html$/i

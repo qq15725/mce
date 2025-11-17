@@ -1,7 +1,7 @@
 import type { Element2D } from 'modern-canvas'
 import type { NormalizedElement } from 'modern-idoc'
 import { idGenerator } from 'modern-idoc'
-import { definePlugin } from '../editor'
+import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {

@@ -5,7 +5,7 @@ import { isEqualObject, normalizeCRLF } from 'modern-idoc'
 import { measureText } from 'modern-text'
 import { TextEditor } from 'modern-text/web-components'
 import { computed } from 'vue'
-import { defineMixin } from '../editor'
+import { defineMixin } from '../mixin'
 
 declare global {
   namespace Mce {

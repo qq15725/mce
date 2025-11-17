@@ -1,7 +1,7 @@
 import type { Element2D, Node } from 'modern-canvas'
 import type { Element } from 'modern-idoc'
 import { render } from 'modern-canvas'
-import { defineMixin } from '../editor'
+import { defineMixin } from '../mixin'
 
 declare global {
   namespace Mce {

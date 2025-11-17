@@ -1,5 +1,5 @@
 import type { Node } from 'modern-canvas'
-import { definePlugin } from '../editor'
+import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {

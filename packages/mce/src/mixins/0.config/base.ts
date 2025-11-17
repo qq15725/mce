@@ -1,6 +1,6 @@
 import type { CheckerboardStyle } from 'modern-canvas'
 import { watch } from 'vue'
-import { defineMixin } from '../../editor'
+import { defineMixin } from '../../mixin'
 
 declare global {
   namespace Mce {

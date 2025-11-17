@@ -1,6 +1,6 @@
 import type { Element2D, Vector2Data } from 'modern-canvas'
 import { DrawboardEffect, render } from 'modern-canvas'
-import { definePlugin } from '../editor'
+import { definePlugin } from '../plugin'
 import { createImageElement, imageExtRe, imageExts } from '../utils'
 
 declare global {

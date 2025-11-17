@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { useEditor } from '../composables/editor'
 
-const { auxiliaryLines } = useEditor()
+const { snapLines } = useEditor()
 </script>
 
 <template>
-  <div class="mce-auxiliary">
+  <div class="mce-smart-guides">
     <div
-      v-for="(item, key) in auxiliaryLines"
+      v-for="(item, key) in snapLines"
       :key="key"
-      :class="item.class"
+      :class="item.class.map(v => `mce-smart-guides__${v}`)"
       :style="{
         left: `${item.style.left}px`,
         top: `${item.style.top}px`,
@@ -21,7 +21,7 @@ const { auxiliaryLines } = useEditor()
 </template>
 
 <style lang="scss">
-  .mce-auxiliary {
+  .mce-smart-guides {
     position: absolute;
     overflow: hidden;
     left: 0;

@@ -2,7 +2,7 @@ import type { NormalizedElement } from 'modern-idoc'
 import type { Ref } from 'vue'
 import { useFileDialog } from '@vueuse/core'
 import { ref } from 'vue'
-import { defineMixin } from '../editor'
+import { defineMixin } from '../mixin'
 
 declare global {
   namespace Mce {

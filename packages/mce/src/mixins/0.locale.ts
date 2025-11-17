@@ -1,8 +1,8 @@
 import { merge } from 'lodash-es'
 import { computed } from 'vue'
-import { defineMixin } from '../editor'
 import en from '../locale/en'
 import zhHans from '../locale/zh-Hans'
+import { defineMixin } from '../mixin'
 
 declare global {
   namespace Mce {

@@ -1,6 +1,6 @@
 import type { Element } from 'modern-idoc'
 import { normalizeElement } from 'modern-idoc'
-import { defineMixin } from '../editor'
+import { defineMixin } from '../mixin'
 
 declare global {
   namespace Mce {
