@@ -1,3 +1,12 @@
+## [0.13.11](https://github.com/qq15725/mce/compare/v0.13.10...v0.13.11) (2025-11-17)
+
+
+### Bug Fixes
+
+* snap ([65ca27f](https://github.com/qq15725/mce/commit/65ca27f87ad4dde3efdef92b56b2623714a57ba6))
+
+
+
 ## [0.13.10](https://github.com/qq15725/mce/compare/v0.13.9...v0.13.10) (2025-11-17)
 
 
