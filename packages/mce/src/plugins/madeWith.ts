@@ -1,10 +1,21 @@
 import MadeWith from '../components/MadeWith.vue'
 import { definePlugin } from '../plugin'
 
+declare global {
+  namespace Mce {
+    interface Config {
+      madeWith: boolean
+    }
+  }
+}
+
 export default definePlugin((editor) => {
   const {
-    showMadeWith,
+    config,
+    registerConfig,
   } = editor
+
+  registerConfig('madeWith', false)
 
   return {
     name: 'mce:madeWith',
@@ -12,7 +23,7 @@ export default definePlugin((editor) => {
       {
         type: 'overlay',
         component: MadeWith,
-        ignore: () => !showMadeWith.value,
+        ignore: () => !config.value.madeWith,
       },
     ],
   }

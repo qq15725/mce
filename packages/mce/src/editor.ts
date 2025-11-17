@@ -10,7 +10,6 @@ import { plugins as presetPlugins } from './plugins'
 
 export interface Options extends Mce.Options {
   debug?: boolean
-  showMadeWith?: boolean
   plugins?: Plugin[]
   configCacheInLocal?: boolean
 }
@@ -27,7 +26,6 @@ export class Editor extends Observable<Events> {
   static injectionKey: InjectionKey<Editor> = Symbol.for('EditorKey')
 
   debug = ref(false)
-  showMadeWith = ref(false)
   declare config: RemovableRef<Mce.Config>
   onEmit?: <K extends keyof Events & string>(event: K, ...args: Events[K]) => void
   plugins = new Map<string, PluginObject>()
@@ -75,13 +73,11 @@ export class Editor extends Observable<Events> {
   protected _setupOptions(options: Options): void {
     const {
       debug = false,
-      showMadeWith = false,
       plugins = [],
       configCacheInLocal,
     } = options
 
     this.debug.value = debug
-    this.showMadeWith.value = showMadeWith
     this.config = configCacheInLocal
       ? useLocalStorage<Mce.Config>('config', () => ({} as any))
       : ref({} as any)
