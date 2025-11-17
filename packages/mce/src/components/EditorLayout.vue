@@ -31,7 +31,6 @@ import ForegroundCropper from './ForegroundCropper.vue'
 import Frames from './Frames.vue'
 import Hover from './Hover.vue'
 import Layers from './Layers.vue'
-import MadeWith from './MadeWith.vue'
 import Rulers from './Rulers.vue'
 import Selector from './Selector.vue'
 import FloatPanel from './shared/FloatPanel.vue'
@@ -79,7 +78,6 @@ provide(IconsSymbol, createIcons())
 const {
   overlays,
   isElement,
-  showMadeWith,
   config,
   drawboardDom,
   renderEngine,
@@ -421,7 +419,6 @@ const slotProps = {
         <Frames />
         <Drawing />
         <Rulers v-if="config.ruler" />
-        <MadeWith v-if="showMadeWith" />
         <Selector
           ref="selectorTpl"
           :selected-area="selectedArea"

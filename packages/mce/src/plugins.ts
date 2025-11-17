@@ -16,6 +16,7 @@ import _json from './plugins/json'
 import _layerOrder from './plugins/layerOrder'
 import _layerPosition from './plugins/layerPosition'
 import _lock from './plugins/lock'
+import _madeWith from './plugins/madeWith'
 import _menu from './plugins/menu'
 import _move from './plugins/move'
 import _new from './plugins/new'
@@ -47,6 +48,7 @@ export const plugins = [
   _layerOrder,
   _layerPosition,
   _lock,
+  _madeWith,
   _menu,
   _move,
   _new,

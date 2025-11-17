@@ -27,8 +27,8 @@ export default definePlugin((editor) => {
     components: [
       {
         type: 'overlay',
-        ignore: () => !config.value.scrollbar,
         component: Scrollbars,
+        ignore: () => !config.value.scrollbar,
       },
     ],
   }
