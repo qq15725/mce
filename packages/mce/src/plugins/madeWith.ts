@@ -1,12 +1,6 @@
 import MadeWith from '../components/MadeWith.vue'
 import { definePlugin } from '../plugin'
 
-declare global {
-  namespace Mce {
-
-  }
-}
-
 export default definePlugin((editor) => {
   const {
     showMadeWith,

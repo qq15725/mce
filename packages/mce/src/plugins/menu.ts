@@ -1,6 +1,7 @@
 import type { CheckerboardStyle } from 'modern-canvas'
 import type { ComputedRef } from 'vue'
 import { computed } from 'vue'
+import ContextMenu from '../components/ContextMenu.vue'
 import { definePlugin } from '../plugin'
 
 declare global {
@@ -286,5 +287,8 @@ export default definePlugin((editor, options) => {
 
   return {
     name: 'mce:menu',
+    components: [
+      { type: 'overlay', component: ContextMenu },
+    ],
   }
 })

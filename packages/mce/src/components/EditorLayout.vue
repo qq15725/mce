@@ -24,7 +24,6 @@ import {
 } from '../composables/strategy'
 import { Editor } from '../editor'
 import { isPointInsideAabb } from '../utils/box'
-import ContextMenu from './ContextMenu.vue'
 import Drawing from './Drawing.vue'
 import Floatbar from './Floatbar.vue'
 import ForegroundCropper from './ForegroundCropper.vue'
@@ -450,7 +449,6 @@ const slotProps = {
         >
           <slot name="floatbar-bottom" v-bind="slotProps" />
         </Floatbar>
-        <ContextMenu />
         <FloatPanel
           v-if="config.layers"
           v-model="config.layers"
