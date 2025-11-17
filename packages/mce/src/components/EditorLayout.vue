@@ -27,9 +27,7 @@ import { isPointInsideAabb } from '../utils/box'
 import Drawing from './Drawing.vue'
 import Floatbar from './Floatbar.vue'
 import ForegroundCropper from './ForegroundCropper.vue'
-import Layers from './Layers.vue'
 import Selector from './Selector.vue'
-import FloatPanel from './shared/FloatPanel.vue'
 import Layout from './shared/Layout.vue'
 import LayoutItem from './shared/LayoutItem.vue'
 import Main from './shared/Main.vue'
@@ -72,7 +70,7 @@ editor.setup()
 provide(IconsSymbol, createIcons())
 
 const {
-  overlays,
+  typedPlugins,
   isElement,
   config,
   drawboardDom,
@@ -89,8 +87,6 @@ const {
   elementSelection,
   drawboardAabb,
   drawboardPointer,
-  screenCenterOffset,
-  t,
 } = editor
 
 const overlayContainer = useTemplateRef('overlayContainerTpl')
@@ -449,25 +445,11 @@ const slotProps = {
           <slot name="floatbar-bottom" v-bind="slotProps" />
         </Floatbar>
 
-        <FloatPanel
-          v-if="config.layers"
-          v-model="config.layers"
-          :title="t('layers')"
-          :default-transform="{
-            width: 240,
-            height: drawboardAabb.height * .7,
-            top: screenCenterOffset.top + 24,
-            left: screenCenterOffset.left + 24,
-          }"
-        >
-          <Layers />
-        </FloatPanel>
-
         <Toolbelt />
 
         <Component
-          :is="overlay"
-          v-for="(overlay, key) in overlays" :key="key"
+          :is="p.component"
+          v-for="(p, key) in typedPlugins.overlay" :key="key"
         />
 
         <slot name="drawboard" v-bind="slotProps" />

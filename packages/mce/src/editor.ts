@@ -1,6 +1,7 @@
 import type { RemovableRef } from '@vueuse/core'
 import type { ObservableEvents } from 'modern-idoc'
-import type { App, Component, InjectionKey } from 'vue'
+import type { App, InjectionKey } from 'vue'
+import type { PluginComponent, PluginObject } from './plugin'
 import { useLocalStorage } from '@vueuse/core'
 import { Observable } from 'modern-idoc'
 import { computed, ref } from 'vue'
@@ -30,12 +31,11 @@ export class Editor extends Observable<Events> {
   declare config: RemovableRef<Mce.Config>
   onEmit?: <K extends keyof Events & string>(event: K, ...args: Events[K]) => void
   plugins = new Map<string, PluginObject>()
-  overlays = computed<Component[]>(() => {
-    return Array.from(this.plugins.values())
-      .flatMap(p => p.components?.filter((c) => {
-        return c.type === 'overlay' && c.ignore?.() !== true
-      }) ?? [])
-      .map(c => c.component)
+  typedPlugins = computed(() => {
+    return {
+      overlay: this.getPlugins('overlay'),
+      panel: this.getPlugins('panel'),
+    }
   })
 
   protected _setups: (() => void | Promise<void>)[] = []
@@ -52,6 +52,13 @@ export class Editor extends Observable<Events> {
     this.once = this.once.bind(this)
     this.off = this.off.bind(this)
     this.emit = this.emit.bind(this)
+  }
+
+  getPlugins = (type: PluginComponent['type']) => {
+    return Array.from(this.plugins.values())
+      .flatMap(p => p.components?.filter((c) => {
+        return c.type === type && c.ignore?.() !== true
+      }) ?? [])
   }
 
   log = (...args: any[]): void => {

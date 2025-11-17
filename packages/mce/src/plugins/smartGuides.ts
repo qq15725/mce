@@ -463,7 +463,7 @@ export default definePlugin((editor) => {
   })
 
   return {
-    name: 'mce:smartGuide',
+    name: 'mce:smartGuides',
     components: [
       { type: 'overlay', component: SmartGuides },
     ],

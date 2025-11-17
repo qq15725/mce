@@ -6,7 +6,7 @@ import _clipboard from './plugins/clipboard'
 import _copyAs from './plugins/copyAs'
 import _delete from './plugins/delete'
 import _flip from './plugins/flip'
-import _frame from './plugins/frame'
+import _frames from './plugins/frames'
 import _gif from './plugins/gif'
 import _group from './plugins/group'
 import _history from './plugins/history'
@@ -17,18 +17,19 @@ import _import from './plugins/import'
 import _json from './plugins/json'
 import _layerOrder from './plugins/layerOrder'
 import _layerPosition from './plugins/layerPosition'
+import _layers from './plugins/layers'
 import _lock from './plugins/lock'
 import _madeWith from './plugins/madeWith'
 import _menu from './plugins/menu'
 import _move from './plugins/move'
 import _new from './plugins/new'
 import _open from './plugins/open'
-import _panel from './plugins/panel'
+import _panels from './plugins/panels'
 import _ruler from './plugins/ruler'
 import _saveAs from './plugins/saveAs'
 import _scroll from './plugins/scroll'
 import _select from './plugins/select'
-import _smartGuide from './plugins/smartGuide'
+import _smartGuides from './plugins/smartGuides'
 import _text from './plugins/text'
 import _ui from './plugins/ui'
 import _url from './plugins/url'
@@ -41,7 +42,7 @@ export const plugins = [
   _copyAs,
   _delete,
   _flip,
-  _frame,
+  _frames,
   _gif,
   _group,
   _history,
@@ -52,18 +53,19 @@ export const plugins = [
   _json,
   _layerOrder,
   _layerPosition,
+  _layers,
   _lock,
   _madeWith,
   _menu,
   _move,
   _new,
   _open,
-  _panel,
+  _panels,
   _ruler,
   _saveAs,
   _scroll,
   _select,
-  _smartGuide,
+  _smartGuides,
   _text,
   _ui,
   _url,

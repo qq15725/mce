@@ -36,6 +36,7 @@ export default definePlugin((editor, options) => {
     textSelection,
     config,
     exporters,
+    typedPlugins,
   } = editor
 
   const {
@@ -119,9 +120,9 @@ export default definePlugin((editor, options) => {
 
   const panelsMenu = computed(() => ({
     key: 'panels',
-    children: [
-      { key: 'panels:layers', checked: config.value.layers },
-    ],
+    children: typedPlugins.value.panel.map((p) => {
+      return { key: `panels:${p.name}`, checked: config.value[p.name] }
+    }),
   }))
 
   function setCheckerboard(value: CheckerboardStyle) {

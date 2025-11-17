@@ -1,9 +1,14 @@
+import _Panels from '../components/Panels.vue'
 import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {
     interface Panels {
-      layers: []
+      //
+    }
+
+    interface Config extends Record<keyof Panels, boolean> {
+      //
     }
 
     interface Commands {
@@ -18,12 +23,15 @@ export default definePlugin((editor) => {
   } = editor
 
   return {
-    name: 'mce:panel',
+    name: 'mce:panels',
     commands: [
-      { command: 'panels', handle: panel => (config.value as any)[panel] = !(config.value as any)[panel] },
+      { command: 'panels', handle: panel => config.value[panel] = !config.value[panel] },
     ],
     hotkeys: [
       { command: 'panels:layers', key: 'Alt+¡' },
+    ],
+    components: [
+      { type: 'overlay', component: _Panels },
     ],
   }
 })

@@ -3,7 +3,7 @@ import { definePlugin } from '../plugin'
 
 export default definePlugin(() => {
   return {
-    name: 'mce:frame',
+    name: 'mce:frames',
     components: [
       { type: 'overlay', component: Frames },
     ],

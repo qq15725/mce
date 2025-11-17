@@ -1,11 +1,23 @@
 import type { Component } from 'vue'
 import type { Editor, Events, Options } from './editor'
 
-export interface PluginComponent {
-  type: 'overlay'
+export interface BasePluginComponent {
   ignore?: boolean | (() => boolean)
   component: Component
 }
+
+export interface PanelPluginComponent extends BasePluginComponent {
+  name: string
+  type: 'panel'
+}
+
+export interface OverlayPluginComponent extends BasePluginComponent {
+  type: 'overlay'
+}
+
+export type PluginComponent
+  = | OverlayPluginComponent
+    | PanelPluginComponent
 
 export interface PluginObject {
   name: string
