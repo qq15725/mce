@@ -7,8 +7,8 @@ declare global {
       scrollToSelection: (options?: ScrollToOptions) => void
     }
 
-    interface Editor {
-      //
+    interface Config {
+      scrollbar: boolean
     }
   }
 }
@@ -17,7 +17,10 @@ export default definePlugin((editor) => {
   const {
     scrollTo,
     config,
+    registerConfig,
   } = editor
+
+  registerConfig('scrollbar', false)
 
   return {
     name: 'mce:scroll',

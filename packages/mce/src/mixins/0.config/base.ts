@@ -28,8 +28,6 @@ declare global {
       pixelGrid: boolean
       pixelate: boolean
       camera: boolean
-      ruler: boolean
-      scrollbar: boolean
       layers: boolean
       timeline: boolean
       statusbar: boolean
@@ -59,8 +57,6 @@ export default defineMixin((editor, options) => {
   registerConfig('pixelGrid', false)
   registerConfig('pixelate', true)
   registerConfig('camera', false)
-  registerConfig('ruler', false)
-  registerConfig('scrollbar', false)
   registerConfig('layers', false)
   registerConfig('timeline', false)
   registerConfig('statusbar', false)
