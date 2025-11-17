@@ -30,7 +30,6 @@ import ForegroundCropper from './ForegroundCropper.vue'
 import Frames from './Frames.vue'
 import Hover from './Hover.vue'
 import Layers from './Layers.vue'
-import Rulers from './Rulers.vue'
 import Selector from './Selector.vue'
 import FloatPanel from './shared/FloatPanel.vue'
 import Layout from './shared/Layout.vue'
@@ -417,7 +416,6 @@ const slotProps = {
         <Hover />
         <Frames />
         <Drawing />
-        <Rulers v-if="config.ruler" />
         <Selector
           ref="selectorTpl"
           :selected-area="selectedArea"

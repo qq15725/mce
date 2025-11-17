@@ -22,6 +22,7 @@ import _move from './plugins/move'
 import _new from './plugins/new'
 import _open from './plugins/open'
 import _panels from './plugins/panels'
+import _ruler from './plugins/ruler'
 import _saveAs from './plugins/saveAs'
 import _scroll from './plugins/scroll'
 import _select from './plugins/select'
@@ -54,6 +55,7 @@ export const plugins = [
   _new,
   _open,
   _panels,
+  _ruler,
   _saveAs,
   _scroll,
   _select,
