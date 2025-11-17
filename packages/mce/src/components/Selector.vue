@@ -111,7 +111,7 @@ const selectionTransform = computed({
         }
       }
       if (minDist <= snapThreshold.value) {
-        return closest
+        return closest ?? currentPos
       }
       else {
         return currentPos

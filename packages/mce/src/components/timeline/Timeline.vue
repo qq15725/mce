@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { Element2D } from 'modern-canvas'
-import { Animation } from 'modern-canvas'
+import { Animation, IN_MAC_OS } from 'modern-canvas'
 import { computed, onBeforeUnmount, ref, useTemplateRef } from 'vue'
 import { useEditor } from '../../composables'
 import { Icon } from '../icon'
@@ -23,8 +23,7 @@ const {
 const fps = ref(1000 / 30)
 const ruler = useTemplateRef('rulerTpl')
 const paused = ref(true)
-const position = ref([0, 0])
-const wheelSensitivity = 0.02
+const offset = ref([0, 0])
 
 const elements = computed(() => {
   return root.value.findAll<Element2D>((node) => {
@@ -38,25 +37,19 @@ const elements = computed(() => {
 })
 
 function onWheel(e: WheelEvent) {
-  if (e.ctrlKey) {
-    const isTouchPad = (e as any).wheelDeltaY
-      ? Math.abs(Math.abs((e as any).wheelDeltaY) - Math.abs(3 * e.deltaY)) < 3
-      : e.deltaMode === 0
-
-    if (!isTouchPad) {
-      e.preventDefault()
-      const zoom = msPerPx.value
-      const logCur = Math.log(zoom)
-      const logDelta = -e.deltaY * wheelSensitivity
-      const logNew = logCur + logDelta
-      msPerPx.value = Math.exp(logNew)
-    }
+  if (e.ctrlKey || e.metaKey) {
+    e.preventDefault()
+    const factor = e.ctrlKey && IN_MAC_OS ? 10 : 1
+    const delta = e.deltaY * (e.deltaMode === 1 ? 0.05 : e.deltaMode ? 1 : 0.002) * factor
+    const logCur = Math.log(msPerPx.value)
+    const logNew = logCur + delta
+    msPerPx.value = Math.exp(logNew)
   }
   else {
     e.preventDefault()
-    position.value = [
-      Math.min(0, position.value[0] - e.deltaX),
-      Math.min(0, position.value[1] - e.deltaY),
+    offset.value = [
+      Math.min(0, offset.value[0] - e.deltaX),
+      Math.min(0, offset.value[1] - e.deltaY),
     ]
   }
 }
@@ -64,9 +57,9 @@ function onWheel(e: WheelEvent) {
 function onMousedown(e: MouseEvent) {
   const box = ruler.value?.box
   if (box) {
-    currentTime.value = (e.clientX - box.left + position.value[0]) * msPerPx.value
+    currentTime.value = (e.clientX - box.left - offset.value[0]) * msPerPx.value
     const move = (e: MouseEvent) => {
-      currentTime.value = (e.clientX - box.left + position.value[0]) * msPerPx.value
+      currentTime.value = (e.clientX - box.left - offset.value[0]) * msPerPx.value
     }
     const up = () => {
       window.removeEventListener('mousemove', move)
@@ -142,7 +135,7 @@ onBeforeUnmount(pause)
         <div class="mce-timeline__left-wrapper">
           <div
             :style="{
-              transform: `translateY(${position[1]}px)`,
+              transform: `translateY(${offset[1]}px)`,
             }"
           >
             <Trackhead
@@ -166,7 +159,7 @@ onBeforeUnmount(pause)
               :unit="100"
               :unit-fractions="[1, 3]"
               style="position: relative;"
-              :position="position[0]"
+              :position="-offset[0]"
               :label-format="rulerLabelFormat"
             />
           </div>
@@ -175,7 +168,7 @@ onBeforeUnmount(pause)
             <div
               :style="{
                 width: `${endTime / msPerPx}px`,
-                transform: `translate(${position[0]}px, ${position[1]}px)`,
+                transform: `translate(${offset[0]}px, ${offset[1]}px)`,
               }"
             >
               <Track
@@ -193,7 +186,7 @@ onBeforeUnmount(pause)
 
           <Playhead
             :style="{
-              transform: `translate(${position[0] + Math.ceil(currentTime / msPerPx)}px, 0px)`,
+              transform: `translate(${offset[0] + Math.ceil(currentTime / msPerPx)}px, 0px)`,
             }"
           />
         </div>

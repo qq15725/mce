@@ -1,4 +1,4 @@
-import type { Element2D } from 'modern-canvas'
+import type { Element2D, Node } from 'modern-canvas'
 import type { ComputedRef } from 'vue'
 import { computed } from 'vue'
 import SmartGuides from '../components/SmartGuides.vue'
@@ -25,7 +25,7 @@ interface Line {
 }
 
 interface Box {
-  id: number
+  id: number | string
   vt: Line
   vm: Line
   vb: Line
@@ -56,6 +56,7 @@ interface BoundingBox {
 
 export default definePlugin((editor) => {
   const {
+    isNode,
     isElement,
     elementSelection,
     selectionObb,
@@ -71,9 +72,9 @@ export default definePlugin((editor) => {
       [elementSelection.value[0]?.id].filter(Boolean),
     )
   })
-  const activeBox = computed(() => createBox(selectionObb.value)!)
+  const activeBox = computed(() => createBox(selectionObb.value))
   const parnet = computed(() => elementSelection.value[0]?.parent ?? root.value)
-  const parentBox = computed(() => createBox(parnet.value)!)
+  const parentBox = computed(() => createBox(parnet.value))
   const boxes = computed(() => {
     return parnet.value
       .children
@@ -96,7 +97,7 @@ export default definePlugin((editor) => {
     )
   })
 
-  function createBox(node?: Element2D | BoundingBox | undefined): Box | undefined {
+  function createBox(node?: Node | BoundingBox | undefined): Box | undefined {
     if (!node)
       return undefined
     const box = {} as Box
@@ -104,13 +105,21 @@ export default definePlugin((editor) => {
     let left: number
     let height: number
     let width: number
-    if (isElement(node)) {
-      box.id = node.id
-      ;({ top, left, height, width } = getObb(node))
+    if (isNode(node)) {
+      if (isElement(node)) {
+        box.id = node.id
+        ;({ top, left, height, width } = getObb(node))
+      }
+      else {
+        return undefined
+      }
     }
     else {
       box.id = Math.random()
       ;({ top, left, height, width } = node)
+    }
+    if (!width || !height) {
+      return undefined
     }
     box.vt = createLine(top, 'vt', box)
     box.vm = createLine(top + height / 2, 'vm', box)
@@ -130,13 +139,15 @@ export default definePlugin((editor) => {
     const flippedAxis = axis === 'vertical' ? 'horizontal' : 'vertical'
     const isLeftTop = isLeftTopLine(source)
     let type = flipType(source.type)
-    if (isLeftTop) {
-      if (source.pos > parentBox.value[type].pos)
-        return []
-    }
-    else {
-      if (source.pos < parentBox.value[type].pos)
-        return []
+    if (parentBox.value) {
+      if (isLeftTop) {
+        if (source.pos > parentBox.value[type].pos)
+          return []
+      }
+      else {
+        if (source.pos < parentBox.value[type].pos)
+          return []
+      }
     }
     const items: Line[] = []
     let prev: Line
@@ -216,6 +227,9 @@ export default definePlugin((editor) => {
   const linePairs = computed(() => {
     const { vLines, hLines } = store.value
     const box = activeBox.value
+    if (!box) {
+      return []
+    }
     const areaLine: Record<'vt' | 'vb' | 'hl' | 'hr', Line[]> = { vt: [], vb: [], hl: [], hr: [] }
     const linePairs: LinePair[] = [];
 

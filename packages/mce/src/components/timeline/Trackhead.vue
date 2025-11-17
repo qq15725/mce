@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { Element2D } from 'modern-canvas'
+import type { Node } from 'modern-canvas'
 
 defineProps<{
-  node: Element2D
+  node: Node
 }>()
 </script>
 

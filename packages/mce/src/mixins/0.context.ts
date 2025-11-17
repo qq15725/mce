@@ -50,6 +50,7 @@ declare global {
       stateContext: Ref<StateContext | undefined>
       getGlobalPointer: () => Vector2Data
       parseAnchor: (anchor: Anchor, isRtl?: boolean) => ParsedAnchor
+      isNode: (value: any) => value is Node
       isRoot: (value: any) => value is Node
       isElement: (value: any) => value is Element2D
       isFrame: (value: any) => value is Element2D
@@ -154,8 +155,12 @@ export default defineMixin((editor) => {
     } as Mce.ParsedAnchor
   }
 
+  function isNode(value: any): value is Node {
+    return value instanceof Node
+  }
+
   function isRoot(value: any): value is Node {
-    return value instanceof Node && root.value.equal(value)
+    return isNode(value) && root.value.equal(value)
   }
 
   function isElement(value: any): value is Element2D {
@@ -207,6 +212,7 @@ export default defineMixin((editor) => {
     drawboardPointer,
     getGlobalPointer,
     parseAnchor,
+    isNode,
     isRoot,
     isElement,
     isFrame,
