@@ -13,8 +13,8 @@ const { snapLines } = useEditor()
       :style="{
         left: `${item.style.left}px`,
         top: `${item.style.top}px`,
-        width: `${item.style.width || 1}px`,
-        height: `${item.style.height || 1}px`,
+        width: `${item.style.width}px`,
+        height: `${item.style.height}px`,
       }"
     />
   </div>

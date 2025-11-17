@@ -9,8 +9,9 @@ import { BSTree } from '../utils/BSTree'
 declare global {
   namespace Mce {
     interface Editor {
+      snapThreshold: ComputedRef<number>
       snapLines: ComputedRef<Record<string, any>[]>
-      getAdsorptionPoints: (resizing?: boolean) => { x: number[], y: number[] }
+      getSnapPoints: (resizing?: boolean) => { x: number[], y: number[] }
     }
   }
 }
@@ -56,73 +57,27 @@ interface BoundingBox {
 export default definePlugin((editor) => {
   const {
     isElement,
-    currentFrame,
     elementSelection,
+    selectionObb,
     state,
     getObb,
     root,
+    camera,
   } = editor
 
-  function createBox(node?: Element2D | BoundingBox | undefined): Box | undefined {
-    if (!node)
-      return undefined
-    const box = {} as Box
-    let top: number
-    let left: number
-    let height: number
-    let width: number
-    if ((node as Element2D).instanceId) {
-      box.id = (node as Element2D).instanceId
-      ;({ top, left, height, width } = getObb(node as Element2D, 'drawboard'))
-    }
-    else {
-      box.id = Math.random()
-      ;({ top, left, height, width } = node as BoundingBox)
-    }
-    box.vt = createLine(top, 'vt', box)
-    box.vm = createLine(top + height / 2, 'vm', box)
-    box.vb = createLine(top + height, 'vb', box)
-    box.hl = createLine(left, 'hl', box)
-    box.hm = createLine(left + width / 2, 'hm', box)
-    box.hr = createLine(left + width, 'hr', box)
-    return box
-  }
-
-  const threshold = computed(() => 4)
-
+  const snapThreshold = computed(() => Math.max(1, 5 / camera.value.zoom.x))
   const excluded = computed(() => {
     return new Set(
-      [
-        elementSelection.value[0]?.instanceId,
-      ].filter(Boolean),
+      [elementSelection.value[0]?.id].filter(Boolean),
     )
   })
-
-  const activatedBox = computed(() => {
-    if (elementSelection.value[0]) {
-      return createBox(elementSelection.value[0])!
-    }
-    return undefined
-  })
-
-  const parnet = computed(() => {
-    const p = elementSelection.value[0].parent
-    return isElement(p) ? p : undefined
-  })
-
-  const parentBox = computed(() => createBox(
-    parnet.value ?? { left: 0, top: 0, width: 0, height: 0 },
-  )!)
-
+  const activeBox = computed(() => createBox(selectionObb.value)!)
+  const parnet = computed(() => elementSelection.value[0]?.parent ?? root.value)
+  const parentBox = computed(() => createBox(parnet.value)!)
   const boxes = computed(() => {
-    const elements = [
-      ...(parnet.value?.children ?? root.value.children),
-    ]
-    if (currentFrame.value && parnet.value?.equal(currentFrame.value)) {
-      elements.push(parnet.value)
-    }
-    return elements
-      .filter(node => !excluded.value.has(node.instanceId))
+    return parnet.value
+      .children
+      .filter(node => !excluded.value.has(node.id))
       .map(node => createBox(node as Element2D)!)
       .filter(Boolean) as Box[]
   })
@@ -140,6 +95,31 @@ export default definePlugin((editor) => {
       },
     )
   })
+
+  function createBox(node?: Element2D | BoundingBox | undefined): Box | undefined {
+    if (!node)
+      return undefined
+    const box = {} as Box
+    let top: number
+    let left: number
+    let height: number
+    let width: number
+    if (isElement(node)) {
+      box.id = node.id
+      ;({ top, left, height, width } = getObb(node))
+    }
+    else {
+      box.id = Math.random()
+      ;({ top, left, height, width } = node)
+    }
+    box.vt = createLine(top, 'vt', box)
+    box.vm = createLine(top + height / 2, 'vm', box)
+    box.vb = createLine(top + height, 'vb', box)
+    box.hl = createLine(left, 'hl', box)
+    box.hm = createLine(left + width / 2, 'hm', box)
+    box.hr = createLine(left + width, 'hr', box)
+    return box
+  }
 
   function isCanvasLine(line: Line) {
     return line.box?.id === -1
@@ -214,7 +194,7 @@ export default definePlugin((editor) => {
         break
       const distance = Math.abs(target.pos - source.pos)
       if (i === 2) {
-        if (Math.abs(prevDistance - distance) > threshold.value)
+        if (Math.abs(prevDistance - distance) > snapThreshold.value)
           break
         prevDistance = distance
       }
@@ -234,11 +214,8 @@ export default definePlugin((editor) => {
   }
 
   const linePairs = computed(() => {
-    if (!activatedBox.value) {
-      return []
-    }
     const { vLines, hLines } = store.value
-    const box = activatedBox.value
+    const box = activeBox.value
     const areaLine: Record<'vt' | 'vb' | 'hl' | 'hr', Line[]> = { vt: [], vb: [], hl: [], hr: [] }
     const linePairs: LinePair[] = [];
 
@@ -253,7 +230,7 @@ export default definePlugin((editor) => {
         if (!target)
           continue
         const distance = Math.abs(target.pos - source.pos)
-        if (distance >= threshold.value)
+        if (distance >= snapThreshold.value)
           continue
         linePairs.push({ source, target, type: 'alignment', distance })
       }
@@ -288,7 +265,7 @@ export default definePlugin((editor) => {
       if (targetA && targetB && (!isCanvasLine(targetA) || !isCanvasLine(targetB))) {
         const distanceA = Math.abs(sourceA.pos - targetA.pos)
         const distanceB = Math.abs(sourceB.pos - targetB.pos)
-        if (Math.abs(distanceA - distanceB) < threshold.value) {
+        if (Math.abs(distanceA - distanceB) < snapThreshold.value) {
           const isLeftTop = isLeftTopLine(sourceA)
           linePairs.push({
             target: targetA,
@@ -324,82 +301,88 @@ export default definePlugin((editor) => {
     return linePairs
   })
 
-  const scaled = (v: number) => v
-
   const snapLines = computed(() => {
     if (state.value !== 'transforming')
       return []
+    const { zoom, position } = camera.value
 
-    const offset = { left: 0, top: 0 }
+    const scaleX = (v: number) => v * zoom.x
+    const scaleY = (v: number) => v * zoom.y
+
     return linePairs.value.map((linePair) => {
       const { target, source, type } = linePair
 
       const boxSource = source.box!
-
       const boxTarget = target.box!
       const vertical = ['vt', 'vm', 'vb'].includes(target.type)
 
       const itemProps: Record<string, any> = {}
 
-      if (type === 'alignment') {
-        itemProps.class = ['alignment']
+      switch (type) {
+        case 'alignment': {
+          itemProps.class = ['alignment']
 
-        if (vertical) {
-          const left = Math.min(boxSource.hl.pos, boxTarget.hl.pos)
-          const right = Math.max(boxSource.hr.pos, boxTarget.hr.pos)
-          itemProps.style = {
-            top: offset.top + scaled(target.pos),
-            left: offset.left + scaled(left),
-            width: scaled(right - left),
+          if (vertical) {
+            const left = Math.min(boxSource.hl.pos, boxTarget.hl.pos)
+            const right = Math.max(boxSource.hr.pos, boxTarget.hr.pos)
+            itemProps.style = {
+              left: scaleX(left) - position.left,
+              top: scaleY(target.pos) - position.top,
+              width: scaleX(right - left),
+              height: 1,
+            }
           }
-        }
-        else {
-          const top = Math.min(boxTarget.vt.pos, boxSource.vt.pos)
-          const bottom = Math.max(boxTarget.vb.pos, boxSource.vb.pos)
-          itemProps.style = {
-            top: offset.top + scaled(top),
-            left: offset.left + scaled(target.pos),
-            height: scaled(bottom - top),
+          else {
+            const top = Math.min(boxTarget.vt.pos, boxSource.vt.pos)
+            const bottom = Math.max(boxTarget.vb.pos, boxSource.vb.pos)
+            itemProps.style = {
+              left: scaleX(target.pos) - position.left,
+              top: scaleY(top) - position.top,
+              width: 1,
+              height: scaleY(bottom - top),
+            }
           }
+          break
         }
-      }
-      else if (type === 'area') {
-        itemProps.class = ['area']
-        if (vertical) {
-          itemProps.class.push('area--vertical')
-        }
+        case 'area': {
+          itemProps.class = ['area']
+          if (vertical) {
+            itemProps.class.push('area--vertical')
+          }
 
-        const isCanvas = isCanvasLine(target) || isCanvasLine(source)
+          const isCanvas = isCanvasLine(target) || isCanvasLine(source)
 
-        if (vertical) {
-          const top = Math.min(source.pos, target.pos)
-          const left = isCanvas
-            ? Math.max(boxSource.hl.pos, boxTarget.hl.pos)
-            : Math.min(boxSource.hl.pos, boxTarget.hl.pos)
-          const right = isCanvas
-            ? Math.min(boxSource.hr.pos, boxTarget.hr.pos)
-            : Math.max(boxSource.hr.pos, boxTarget.hr.pos)
-          itemProps.style = {
-            top: offset.top + scaled(top),
-            left: offset.left + scaled(left),
-            width: scaled(right - left),
-            height: scaled(linePair.distance),
+          if (vertical) {
+            const top = Math.min(source.pos, target.pos)
+            const left = isCanvas
+              ? Math.max(boxSource.hl.pos, boxTarget.hl.pos)
+              : Math.min(boxSource.hl.pos, boxTarget.hl.pos)
+            const right = isCanvas
+              ? Math.min(boxSource.hr.pos, boxTarget.hr.pos)
+              : Math.max(boxSource.hr.pos, boxTarget.hr.pos)
+            itemProps.style = {
+              left: scaleX(left) - position.left,
+              top: scaleY(top) - position.top,
+              width: scaleX(right - left),
+              height: scaleY(linePair.distance),
+            }
           }
-        }
-        else {
-          const min = Math.min(source.pos, target.pos)
-          const top = isCanvas
-            ? Math.max(boxTarget.vt.pos, boxSource.vt.pos)
-            : Math.min(boxTarget.vt.pos, boxSource.vt.pos)
-          const bottom = isCanvas
-            ? Math.min(boxTarget.vb.pos, boxSource.vb.pos)
-            : Math.max(boxTarget.vb.pos, boxSource.vb.pos)
-          itemProps.style = {
-            top: offset.top + scaled(top),
-            left: offset.left + scaled(min),
-            height: scaled(bottom - top),
-            width: scaled(linePair.distance),
+          else {
+            const min = Math.min(source.pos, target.pos)
+            const top = isCanvas
+              ? Math.max(boxTarget.vt.pos, boxSource.vt.pos)
+              : Math.min(boxTarget.vt.pos, boxSource.vt.pos)
+            const bottom = isCanvas
+              ? Math.min(boxTarget.vb.pos, boxSource.vb.pos)
+              : Math.max(boxTarget.vb.pos, boxSource.vb.pos)
+            itemProps.style = {
+              left: scaleX(min) - position.left,
+              top: scaleY(top) - position.top,
+              width: scaleX(linePair.distance),
+              height: scaleY(bottom - top),
+            }
           }
+          break
         }
       }
 
@@ -407,7 +390,7 @@ export default definePlugin((editor) => {
     })
   })
 
-  function getAdsorptionPoints(resizing = false): { x: number[], y: number[] } {
+  function getSnapPoints(resizing = false): { x: number[], y: number[] } {
     const x: number[] = []
     const y: number[] = []
     for (const linePair of linePairs.value) {
@@ -459,8 +442,9 @@ export default definePlugin((editor) => {
   }
 
   Object.assign(editor, {
+    snapThreshold,
     snapLines,
-    getAdsorptionPoints,
+    getSnapPoints,
   })
 
   return {

@@ -33,6 +33,8 @@ const {
   isFrame,
   isLock,
   config,
+  snapThreshold,
+  getSnapPoints,
 } = useEditor()
 
 const transformable = useTemplateRef('transformableRef')
@@ -95,6 +97,27 @@ const selectionTransform = computed({
       rotate: (val.rotate ?? 0) - (oldTransform.rotate ?? 0),
       borderRadius: ((val.borderRadius ?? 0) - (oldTransform.borderRadius ?? 0)) / zoom.y,
     }
+
+    const points = getSnapPoints()
+    const snap = (currentPos: number, type: 'x' | 'y'): number => {
+      let closest: undefined | number
+      let minDist = Infinity
+      for (const pt of points[type]) {
+        const dist = pt - currentPos
+        const absDist = Math.abs(dist)
+        if (absDist < minDist) {
+          minDist = absDist
+          closest = pt
+        }
+      }
+      if (minDist <= snapThreshold.value) {
+        return closest
+      }
+      else {
+        return currentPos
+      }
+    }
+
     const handle: string = transformable.value?.activeHandle ?? 'move'
     elementSelection.value.forEach((element) => {
       const style = element.style
@@ -106,6 +129,10 @@ const selectionTransform = computed({
         rotate: style.rotate + offsetStyle.rotate,
         borderRadius: style.borderRadius + offsetStyle.borderRadius,
       }
+
+      newStyle.left = snap(newStyle.left, 'x')
+      newStyle.top = snap(newStyle.top, 'y')
+
       if (handle.startsWith('resize')) {
         resizeElement(
           element,
