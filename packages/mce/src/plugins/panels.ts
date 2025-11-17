@@ -25,7 +25,7 @@ export default definePlugin((editor) => {
   return {
     name: 'mce:panels',
     commands: [
-      { command: 'panels', handle: panel => config.value[panel] = !config.value[panel] },
+      { command: 'panels', handle: panel => (config.value as any)[panel] = !(config.value as any)[panel] },
     ],
     hotkeys: [
       { command: 'panels:layers', key: 'Alt+¡' },

@@ -17,8 +17,8 @@ const {
       v-for="(p, key) in typedPlugins.panel" :key="key"
     >
       <FloatPanel
-        v-if="config[p.name]"
-        v-model="config[p.name]"
+        v-if="(config as any)[p.name]"
+        v-model="(config as any)[p.name]"
         :title="t(p.name)"
         :default-transform="{
           width: 240,

@@ -1,7 +1,8 @@
 import type { RemovableRef } from '@vueuse/core'
 import type { ObservableEvents } from 'modern-idoc'
 import type { App, InjectionKey } from 'vue'
-import type { PluginComponent, PluginObject } from './plugin'
+import type { Mixin } from './mixin'
+import type { OverlayPluginComponent, PanelPluginComponent, Plugin, PluginComponent, PluginObject } from './plugin'
 import { useLocalStorage } from '@vueuse/core'
 import { Observable } from 'modern-idoc'
 import { computed, ref } from 'vue'
@@ -31,8 +32,8 @@ export class Editor extends Observable<Events> {
   plugins = new Map<string, PluginObject>()
   typedPlugins = computed(() => {
     return {
-      overlay: this.getPlugins('overlay'),
-      panel: this.getPlugins('panel'),
+      overlay: this.getPlugins('overlay') as OverlayPluginComponent[],
+      panel: this.getPlugins('panel') as PanelPluginComponent[],
     }
   })
 

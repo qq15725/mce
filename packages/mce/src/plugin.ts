@@ -2,7 +2,7 @@ import type { Component } from 'vue'
 import type { Editor, Events, Options } from './editor'
 
 export interface BasePluginComponent {
-  ignore?: boolean | (() => boolean)
+  ignore?: () => boolean
   component: Component
 }
 
@@ -21,7 +21,7 @@ export type PluginComponent
 
 export interface PluginObject {
   name: string
-  ignore?: boolean | (() => boolean)
+  ignore?: () => boolean
   events?: { [K in keyof Events]: (...args: Events[K]) => void }
   commands?: Mce.Command[]
   hotkeys?: Mce.Hotkey[]

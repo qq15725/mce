@@ -329,6 +329,7 @@ export default definePlugin((editor) => {
   const snapLines = computed(() => {
     if (state.value !== 'transforming')
       return []
+
     const offset = { left: 0, top: 0 }
     return linePairs.value.map((linePair) => {
       const { target, source, type } = linePair

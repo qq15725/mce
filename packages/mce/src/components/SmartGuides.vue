@@ -9,7 +9,7 @@ const { snapLines } = useEditor()
     <div
       v-for="(item, key) in snapLines"
       :key="key"
-      :class="item.class.map(v => `mce-smart-guides__${v}`)"
+      :class="item.class.map((v: string) => `mce-smart-guides__${v}`)"
       :style="{
         left: `${item.style.left}px`,
         top: `${item.style.top}px`,

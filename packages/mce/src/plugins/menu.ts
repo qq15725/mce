@@ -121,7 +121,7 @@ export default definePlugin((editor, options) => {
   const panelsMenu = computed(() => ({
     key: 'panels',
     children: typedPlugins.value.panel.map((p) => {
-      return { key: `panels:${p.name}`, checked: config.value[p.name] }
+      return { key: `panels:${p.name}`, checked: (config.value as any)[p.name] }
     }),
   }))
 
