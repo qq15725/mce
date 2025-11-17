@@ -122,12 +122,12 @@ const selectionTransform = computed({
     elementSelection.value.forEach((element) => {
       const style = element.style
       const newStyle = {
-        left: style.left + offsetStyle.left,
-        top: style.top + offsetStyle.top,
+        left: Math.round(style.left + offsetStyle.left),
+        top: Math.round(style.top + offsetStyle.top),
         width: style.width + offsetStyle.width,
         height: style.height + offsetStyle.height,
         rotate: style.rotate + offsetStyle.rotate,
-        borderRadius: style.borderRadius + offsetStyle.borderRadius,
+        borderRadius: Math.round(style.borderRadius + offsetStyle.borderRadius),
       }
 
       newStyle.left = snap(newStyle.left, 'x')
