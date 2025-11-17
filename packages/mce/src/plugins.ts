@@ -6,6 +6,7 @@ import _clipboard from './plugins/clipboard'
 import _copyAs from './plugins/copyAs'
 import _delete from './plugins/delete'
 import _flip from './plugins/flip'
+import _frame from './plugins/frame'
 import _gif from './plugins/gif'
 import _group from './plugins/group'
 import _history from './plugins/history'
@@ -22,12 +23,12 @@ import _menu from './plugins/menu'
 import _move from './plugins/move'
 import _new from './plugins/new'
 import _open from './plugins/open'
-import _panels from './plugins/panels'
+import _panel from './plugins/panel'
 import _ruler from './plugins/ruler'
 import _saveAs from './plugins/saveAs'
 import _scroll from './plugins/scroll'
 import _select from './plugins/select'
-import _smartGuides from './plugins/smartGuides'
+import _smartGuide from './plugins/smartGuide'
 import _text from './plugins/text'
 import _ui from './plugins/ui'
 import _url from './plugins/url'
@@ -40,6 +41,7 @@ export const plugins = [
   _copyAs,
   _delete,
   _flip,
+  _frame,
   _gif,
   _group,
   _history,
@@ -56,12 +58,12 @@ export const plugins = [
   _move,
   _new,
   _open,
-  _panels,
+  _panel,
   _ruler,
   _saveAs,
   _scroll,
   _select,
-  _smartGuides,
+  _smartGuide,
   _text,
   _ui,
   _url,

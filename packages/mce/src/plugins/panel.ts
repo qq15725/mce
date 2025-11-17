@@ -18,7 +18,7 @@ export default definePlugin((editor) => {
   } = editor
 
   return {
-    name: 'mce:panels',
+    name: 'mce:panel',
     commands: [
       { command: 'panels', handle: panel => (config.value as any)[panel] = !(config.value as any)[panel] },
     ],

@@ -27,7 +27,6 @@ import { isPointInsideAabb } from '../utils/box'
 import Drawing from './Drawing.vue'
 import Floatbar from './Floatbar.vue'
 import ForegroundCropper from './ForegroundCropper.vue'
-import Frames from './Frames.vue'
 import Layers from './Layers.vue'
 import Selector from './Selector.vue'
 import FloatPanel from './shared/FloatPanel.vue'
@@ -413,8 +412,6 @@ const slotProps = {
         />
 
         <TextEditor ref="textEditorTpl" />
-
-        <Frames />
 
         <Drawing />
 
