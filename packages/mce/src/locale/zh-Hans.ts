@@ -41,6 +41,7 @@ export default {
   'previousSelection': '选择前一个',
   'nextSelection': '选择后一个',
   'view': '视图',
+  'view:msaa': '多重采样抗锯齿',
   'view:checkerboard': '棋盘',
   'view:pixelGrid': '像素网格',
   'view:ruler': '标尺',

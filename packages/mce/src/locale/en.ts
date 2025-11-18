@@ -40,6 +40,7 @@ export default {
   'previousSelection': 'Previous selection',
   'nextSelection': 'Next selection',
   'view': 'View',
+  'view:msaa': 'MSAA',
   'view:checkerboard': 'Checkerboard',
   'view:pixelGrid': 'Pixel grid',
   'view:ruler': 'Ruler',

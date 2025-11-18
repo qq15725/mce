@@ -22,6 +22,7 @@ const editor = new Editor({
   theme: 'system',
   viewMode: 'edgeless',
   watermark: '/example.jpg',
+  msaa: true,
   checkerboard: true,
   checkerboardStyle: 'grid',
   pixelGrid: true,

@@ -23,6 +23,7 @@ declare global {
       theme: Theme
       viewMode: ViewMode
       watermark?: string
+      msaa: boolean
       checkerboard: boolean
       checkerboardStyle: CheckerboardStyle
       pixelGrid: boolean
@@ -49,6 +50,7 @@ export default defineMixin((editor, options) => {
   registerConfig('theme', 'system')
   registerConfig('viewMode', 'edgeless')
   registerConfig('watermark', undefined)
+  registerConfig('msaa', false)
   registerConfig('checkerboard', false)
   registerConfig('checkerboardStyle', 'grid')
   registerConfig('pixelGrid', false)
@@ -75,6 +77,12 @@ export default defineMixin((editor, options) => {
         ;(config.value as any)[key] = (options as any)[key]
       }
     })
+
+    watch(
+      () => config.value.msaa,
+      value => renderEngine.value.msaa = value,
+      { immediate: true },
+    )
 
     watch(
       () => config.value.pixelate,

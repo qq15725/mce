@@ -47,6 +47,7 @@ npm i mce
     theme: 'system',
     viewMode: 'edgeless',
     watermark: '/example.jpg',
+    msaa: true,
     checkerboard: true,
     checkerboardStyle: 'grid',
     pixelGrid: true,

@@ -3,6 +3,7 @@ import { definePlugin } from '../plugin'
 declare global {
   namespace Mce {
     interface Views {
+      msaa: []
       checkerboard: []
       pixelGrid: []
       ruler: []

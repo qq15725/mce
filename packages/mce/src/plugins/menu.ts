@@ -155,6 +155,7 @@ export default definePlugin((editor, options) => {
     key: 'view',
     children: [
       checkerboardMenu.value,
+      { key: 'view:msaa', checked: config.value.msaa },
       { key: 'view:pixelGrid', checked: config.value.pixelGrid },
       { key: 'view:ruler', checked: config.value.ruler },
       { key: 'view:scrollbar', checked: config.value.scrollbar },
