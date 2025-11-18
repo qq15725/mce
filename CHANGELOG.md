@@ -1,3 +1,12 @@
+## [0.13.12](https://github.com/qq15725/mce/compare/v0.13.11...v0.13.12) (2025-11-18)
+
+
+### Features
+
+* msaa ([6176d4f](https://github.com/qq15725/mce/commit/6176d4f8effbe9d1d530a92974733efb45076b80))
+
+
+
 ## [0.13.11](https://github.com/qq15725/mce/compare/v0.13.10...v0.13.11) (2025-11-17)
 
 
