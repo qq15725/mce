@@ -15,5 +15,8 @@ export default definePlugin(() => {
     components: [
       { name: 'timeline', type: 'panel', position: 'bottom', size: 160, component: Timeline },
     ],
+    hotkeys: [
+      { command: 'panels:timeline', key: 'Alt+™' },
+    ],
   }
 })
