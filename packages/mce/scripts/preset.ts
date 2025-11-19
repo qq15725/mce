@@ -48,7 +48,7 @@ const dts = [
   { name: 'plugins', type: 'plugin' },
 ]
 dts.forEach((item) => {
-  const typedPluginsOut = path.resolve(__dirname, `../src/${item.name}.ts`)
+  const pluginsComponentsOut = path.resolve(__dirname, `../src/${item.name}.ts`)
   const imports: string[] = []
   const entries: string[] = []
   getFiles().forEach((file) => {
@@ -69,5 +69,5 @@ export const ${item.name} = [
 ${entries.join('\n')}
 ]
 `
-  fs.writeFileSync(typedPluginsOut, content, 'utf8')
+  fs.writeFileSync(pluginsComponentsOut, content, 'utf8')
 })

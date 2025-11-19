@@ -9,6 +9,9 @@ export interface BasePluginComponent {
 export interface PanelPluginComponent extends BasePluginComponent {
   name: string
   type: 'panel'
+  position: 'top' | 'right' | 'bottom' | 'left' | 'float'
+  size?: number
+  order?: number
 }
 
 export interface OverlayPluginComponent extends BasePluginComponent {

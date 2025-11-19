@@ -1,4 +1,3 @@
-import _Panels from '../components/Panels.vue'
 import { definePlugin } from '../plugin'
 
 declare global {
@@ -29,9 +28,6 @@ export default definePlugin((editor) => {
     ],
     hotkeys: [
       { command: 'panels:layers', key: 'Alt+¡' },
-    ],
-    components: [
-      { type: 'overlay', component: _Panels },
     ],
   }
 })

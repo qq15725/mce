@@ -30,7 +30,9 @@ import _saveAs from './plugins/saveAs'
 import _scroll from './plugins/scroll'
 import _select from './plugins/select'
 import _smartGuides from './plugins/smartGuides'
+import _statusbar from './plugins/statusbar'
 import _text from './plugins/text'
+import _timeline from './plugins/timeline'
 import _ui from './plugins/ui'
 import _url from './plugins/url'
 import _view from './plugins/view'
@@ -66,7 +68,9 @@ export const plugins = [
   _scroll,
   _select,
   _smartGuides,
+  _statusbar,
   _text,
+  _timeline,
   _ui,
   _url,
   _view,

@@ -36,7 +36,7 @@ export default definePlugin((editor, options) => {
     textSelection,
     config,
     exporters,
-    typedPlugins,
+    pluginsComponents,
   } = editor
 
   const {
@@ -120,7 +120,7 @@ export default definePlugin((editor, options) => {
 
   const panelsMenu = computed(() => ({
     key: 'panels',
-    children: typedPlugins.value.panel.map((p) => {
+    children: pluginsComponents.value.panel.map((p) => {
       return { key: `panels:${p.name}`, checked: (config.value as any)[p.name] }
     }),
   }))
@@ -158,8 +158,6 @@ export default definePlugin((editor, options) => {
       { key: 'view:pixelGrid', checked: config.value.pixelGrid },
       { key: 'view:ruler', checked: config.value.ruler },
       { key: 'view:scrollbar', checked: config.value.scrollbar },
-      { key: 'view:timeline', checked: config.value.timeline },
-      { key: 'view:statusbar', checked: config.value.statusbar },
       { key: 'view:frameOutline', checked: config.value.frameOutline },
       { type: 'divider' },
       { key: 'msaa', checked: config.value.msaa, handle: () => config.value.msaa = !config.value.msaa },

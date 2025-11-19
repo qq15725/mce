@@ -30,7 +30,7 @@ export class Editor extends Observable<Events> {
   declare config: RemovableRef<Mce.Config>
   onEmit?: <K extends keyof Events & string>(event: K, ...args: Events[K]) => void
   plugins = new Map<string, PluginObject>()
-  typedPlugins = computed(() => {
+  pluginsComponents = computed(() => {
     return {
       overlay: this.getPlugins('overlay') as OverlayPluginComponent[],
       panel: this.getPlugins('panel') as PanelPluginComponent[],

@@ -13,7 +13,7 @@ export default definePlugin(() => {
   return {
     name: 'mce:layers',
     components: [
-      { name: 'layers', type: 'panel', component: Layers },
+      { name: 'layers', type: 'panel', position: 'float', component: Layers },
     ],
   }
 })

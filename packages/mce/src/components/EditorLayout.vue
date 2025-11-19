@@ -28,12 +28,11 @@ import Drawing from './Drawing.vue'
 import Floatbar from './Floatbar.vue'
 import ForegroundCropper from './ForegroundCropper.vue'
 import Selector from './Selector.vue'
+import FloatPanel from './shared/FloatPanel.vue'
 import Layout from './shared/Layout.vue'
 import LayoutItem from './shared/LayoutItem.vue'
 import Main from './shared/Main.vue'
-import Statusbar from './Statusbar.vue'
 import TextEditor from './TextEditor.vue'
-import Timeline from './timeline/Timeline.vue'
 import Toolbelt from './Toolbelt.vue'
 
 const props = defineProps({
@@ -70,7 +69,7 @@ editor.setup()
 provide(IconsSymbol, createIcons())
 
 const {
-  typedPlugins,
+  pluginsComponents,
   isElement,
   config,
   drawboardDom,
@@ -87,6 +86,8 @@ const {
   elementSelection,
   drawboardAabb,
   drawboardPointer,
+  t,
+  screenCenterOffset,
 } = editor
 
 const overlayContainer = useTemplateRef('overlayContainerTpl')
@@ -447,10 +448,31 @@ const slotProps = {
 
         <Toolbelt />
 
-        <Component
-          :is="p.component"
-          v-for="(p, key) in typedPlugins.overlay" :key="key"
-        />
+        <template
+          v-for="(p, key) in pluginsComponents.overlay"
+          :key="key"
+        >
+          <Component :is="p.component" />
+        </template>
+
+        <template
+          v-for="(p, key) in pluginsComponents.panel.filter(p => p.position === 'float')"
+          :key="key"
+        >
+          <FloatPanel
+            v-if="(config as any)[p.name]"
+            v-model="(config as any)[p.name]"
+            :title="t(p.name)"
+            :default-transform="{
+              width: 240,
+              height: drawboardAabb.height * .7,
+              top: screenCenterOffset.top + 24,
+              left: screenCenterOffset.left + 24,
+            }"
+          >
+            <Component :is="p.component" />
+          </FloatPanel>
+        </template>
 
         <slot name="drawboard" v-bind="slotProps" />
       </div>
@@ -458,21 +480,20 @@ const slotProps = {
 
     <slot v-bind="slotProps" />
 
-    <LayoutItem
-      v-model="config.statusbar"
-      position="bottom"
-      :size="24"
+    <template
+      v-for="(p, key) in pluginsComponents.panel.filter(p => p.position !== 'float')"
+      :key="key"
     >
-      <Statusbar />
-    </LayoutItem>
-
-    <LayoutItem
-      v-model="config.timeline"
-      position="bottom"
-      :size="160"
-    >
-      <Timeline />
-    </LayoutItem>
+      <LayoutItem
+        v-if="(config as any)[p.name]"
+        v-model="(config as any)[p.name]"
+        :position="p.position as any"
+        :size="p.size || 200"
+        :order="p.order || 0"
+      >
+        <Component :is="p.component" />
+      </LayoutItem>
+    </template>
 
     <div
       ref="overlayContainerTpl"

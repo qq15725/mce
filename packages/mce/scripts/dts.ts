@@ -4,7 +4,7 @@ import { getFiles } from './preset'
 
 const typedGlobal = path.resolve(__dirname, '../src/typed-global.d.ts')
 const typedGlobalOut = path.resolve(__dirname, '../dist/typed-global.d.ts')
-const typedPluginsOut = path.resolve(__dirname, '../dist/typed-plugins.d.ts')
+const pluginsComponentsOut = path.resolve(__dirname, '../dist/typed-plugins.d.ts')
 
 const imports: string[] = []
 
@@ -21,5 +21,5 @@ ${imports.join('\n')}
 export {}
 `
 
-fs.writeFileSync(typedPluginsOut, content, 'utf8')
+fs.writeFileSync(pluginsComponentsOut, content, 'utf8')
 fs.writeFileSync(typedGlobalOut, fs.readFileSync(typedGlobal, 'utf8'), 'utf8')
