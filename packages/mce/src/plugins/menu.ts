@@ -160,8 +160,26 @@ export default definePlugin((editor, options) => {
       { key: 'view:scrollbar', checked: config.value.scrollbar },
       { key: 'view:frameOutline', checked: config.value.frameOutline },
       { type: 'divider' },
-      { key: 'msaa', checked: config.value.msaa, handle: () => config.value.msaa = !config.value.msaa },
-      { key: 'pixelate', checked: config.value.pixelate, handle: () => config.value.pixelate = !config.value.pixelate },
+      {
+        key: 'msaa',
+        checked: config.value.msaa,
+        handle: () => {
+          config.value.msaa = !config.value.msaa
+          if (config.value.msaa) {
+            config.value.pixelate = false
+          }
+        },
+      },
+      {
+        key: 'pixelate',
+        checked: config.value.pixelate,
+        handle: () => {
+          config.value.pixelate = !config.value.pixelate
+          if (config.value.pixelate) {
+            config.value.msaa = false
+          }
+        },
+      },
       panelsMenu.value,
       { type: 'divider' },
       ...zoomViewMenu.value.children,

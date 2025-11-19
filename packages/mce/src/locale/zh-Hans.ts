@@ -52,7 +52,7 @@ export default {
   'panels:layers': '图层',
   'panels:statusbar': '状态栏',
   'panels:timeline': '时间线',
-  'msaa': '多重采样抗锯齿',
+  'msaa': '抗锯齿',
   'pixelate': '像素化',
   'layers': '图层',
   'zoomIn': '放大',
