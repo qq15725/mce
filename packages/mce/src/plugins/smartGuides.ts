@@ -59,16 +59,16 @@ export default definePlugin((editor) => {
     isNode,
     isElement,
     elementSelection,
-    selectionObb,
+    selectionAabb,
     state,
-    getObb,
+    getAabb,
     root,
     camera,
   } = editor
 
   const snapThreshold = computed(() => Math.max(1, 5 / camera.value.zoom.x))
   const excluded = computed(() => new Set(elementSelection.value.map(el => el.id)))
-  const activeBox = computed(() => createBox(selectionObb.value))
+  const activeBox = computed(() => createBox(selectionAabb.value))
   const parnet = computed(() => elementSelection.value[0]?.parent ?? root.value)
   const parentBox = computed(() => createBox(parnet.value))
   const boxes = computed(() => {
@@ -104,7 +104,7 @@ export default definePlugin((editor) => {
     if (isNode(node)) {
       if (isElement(node)) {
         box.id = node.id
-        ;({ top, left, height, width } = getObb(node))
+        ;({ top, left, height, width } = getAabb(node))
       }
       else {
         return undefined
