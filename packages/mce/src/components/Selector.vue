@@ -122,8 +122,8 @@ const selectionTransform = computed({
     elementSelection.value.forEach((element) => {
       const style = element.style
       const newStyle = {
-        left: Math.round(style.left + offsetStyle.left),
-        top: Math.round(style.top + offsetStyle.top),
+        left: style.left + offsetStyle.left,
+        top: style.top + offsetStyle.top,
         width: style.width + offsetStyle.width,
         height: style.height + offsetStyle.height,
         rotate: style.rotate + offsetStyle.rotate,
@@ -131,11 +131,13 @@ const selectionTransform = computed({
       }
 
       if (handle === 'move') {
-        newStyle.left = snap(newStyle.left, 'x')
-        newStyle.top = snap(newStyle.top, 'y')
+        newStyle.left = snap(Math.round(newStyle.left), 'x')
+        newStyle.top = snap(Math.round(newStyle.top), 'y')
       }
-
-      if (handle.startsWith('resize')) {
+      else if (handle.startsWith('rotate')) {
+        newStyle.rotate = Math.round(newStyle.rotate * 10_000) / 10_000
+      }
+      else if (handle.startsWith('resize')) {
         resizeElement(
           element,
           newStyle.width / element.style.width,
@@ -149,6 +151,7 @@ const selectionTransform = computed({
         newStyle.width = element.style.width
         newStyle.height = element.style.height
       }
+
       Object.assign(style, newStyle)
       element.updateGlobalTransform()
       element.findAncestor((ancestor) => {
