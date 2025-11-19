@@ -1,3 +1,23 @@
+## [0.13.13](https://github.com/qq15725/mce/compare/v0.13.12...v0.13.13) (2025-11-19)
+
+
+### Bug Fixes
+
+* i18n ([79fd2dc](https://github.com/qq15725/mce/commit/79fd2dcff35fec33ec9b77134d8a813d671ae0ce))
+* msaa ([57d16ef](https://github.com/qq15725/mce/commit/57d16efc6b3f2562ddf613ed4e9c5658db7e2f3a))
+* msaa and pixelate ([c5c0263](https://github.com/qq15725/mce/commit/c5c02635d4bdade04230b9079b94dba95a0d89e1))
+* msaa menu ([09e7428](https://github.com/qq15725/mce/commit/09e7428dd7c7da3729e94b124f647184a5921512))
+* selection transform ([19e779c](https://github.com/qq15725/mce/commit/19e779c9ef26df205c93ddeb78d955fdc02a6e88))
+* selection transform ([a8e7b82](https://github.com/qq15725/mce/commit/a8e7b82e1804027b7604c9a197a5f137464c8b1d))
+* smart guides ([6fa1c32](https://github.com/qq15725/mce/commit/6fa1c32adb5d28eceb6fa8522f5e36ef89f18e8f))
+
+
+### Features
+
+* panel ([1812719](https://github.com/qq15725/mce/commit/181271946e367655718774724a9e49d8cbe848f3))
+
+
+
 ## [0.13.12](https://github.com/qq15725/mce/compare/v0.13.11...v0.13.12) (2025-11-18)
 
 
