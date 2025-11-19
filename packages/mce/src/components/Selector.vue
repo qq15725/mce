@@ -135,9 +135,13 @@ const selectionTransform = computed({
         newStyle.top = snap(Math.round(newStyle.top), 'y')
       }
       else if (handle.startsWith('rotate')) {
-        newStyle.rotate = Math.round(newStyle.rotate * 10_000) / 10_000
+        newStyle.rotate = Math.round(newStyle.rotate * 100) / 100
       }
       else if (handle.startsWith('resize')) {
+        const scale = newStyle.rotate ? 100 : 1
+        newStyle.width = Math.round(newStyle.width * scale) / scale
+        newStyle.height = Math.round(newStyle.height * scale) / scale
+
         resizeElement(
           element,
           newStyle.width / element.style.width,

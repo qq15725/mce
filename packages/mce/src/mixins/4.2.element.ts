@@ -305,10 +305,10 @@ export default defineMixin((editor) => {
 
     function handle(element: Element2D) {
       const style = element.style
-      style.left = Math.round(style.left * scaleX)
-      style.top = Math.round(style.top * scaleY)
-      style.width = Math.round(style.width * scaleX)
-      style.height = Math.round(style.height * scaleY)
+      style.left = style.left * scaleX
+      style.top = style.top * scaleY
+      style.width = style.width * scaleX
+      style.height = style.height * scaleY
       element?.requestRedraw?.() // TODO
     }
 
