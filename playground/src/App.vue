@@ -26,7 +26,6 @@ const editor = new Editor({
   checkerboard: true,
   checkerboardStyle: 'grid',
   pixelGrid: true,
-  pixelate: true,
   camera: true,
   ruler: true,
   scrollbar: true,

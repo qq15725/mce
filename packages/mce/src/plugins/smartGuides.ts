@@ -67,11 +67,7 @@ export default definePlugin((editor) => {
   } = editor
 
   const snapThreshold = computed(() => Math.max(1, 5 / camera.value.zoom.x))
-  const excluded = computed(() => {
-    return new Set(
-      [elementSelection.value[0]?.id].filter(Boolean),
-    )
-  })
+  const excluded = computed(() => new Set(elementSelection.value.map(el => el.id)))
   const activeBox = computed(() => createBox(selectionObb.value))
   const parnet = computed(() => elementSelection.value[0]?.parent ?? root.value)
   const parentBox = computed(() => createBox(parnet.value))
@@ -219,7 +215,9 @@ export default definePlugin((editor) => {
       return []
     areas[0]._ctx = {
       type: line.type,
-      pos: isLeftTop ? closestPos + prevDistance : closestPos - prevDistance,
+      pos: isLeftTop
+        ? closestPos + prevDistance
+        : closestPos - prevDistance,
     }
     return areas
   }
@@ -230,7 +228,12 @@ export default definePlugin((editor) => {
     if (!box) {
       return []
     }
-    const areaLine: Record<'vt' | 'vb' | 'hl' | 'hr', Line[]> = { vt: [], vb: [], hl: [], hr: [] }
+    const areaLine: Record<'vt' | 'vb' | 'hl' | 'hr', Line[]> = {
+      vt: [],
+      vb: [],
+      hl: [],
+      hr: [],
+    }
     const linePairs: LinePair[] = [];
 
     [
