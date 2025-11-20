@@ -1,5 +1,5 @@
-import type { Ref } from 'vue'
-import { ref } from 'vue'
+import type { Reactive } from 'vue'
+import { reactive } from 'vue'
 import { defineMixin } from '../mixin'
 
 declare global {
@@ -20,7 +20,7 @@ declare global {
     }
 
     interface Editor {
-      commands: Ref<Map<string, Command>>
+      commands: Reactive<Map<string, Command>>
       registerCommand: (value: Command | Command[]) => void
       unregisterCommand: (command: string) => void
       exec: <K extends keyof Commands>(command: K & string, ...args: Parameters<Commands[K]>) => ReturnType<Commands[K]>
@@ -32,19 +32,19 @@ export default defineMixin((editor) => {
     emit,
   } = editor
 
-  const commands: Mce.Editor['commands'] = ref(new Map())
+  const commands: Mce.Editor['commands'] = reactive(new Map())
 
   const registerCommand: Mce.Editor['registerCommand'] = (value) => {
     if (Array.isArray(value)) {
       value.forEach(item => registerCommand(item))
     }
     else {
-      commands.value.set(value.command, value)
+      commands.set(value.command, value)
     }
   }
 
   const unregisterCommand: Mce.Editor['unregisterCommand'] = (command) => {
-    commands.value.delete(command)
+    commands.delete(command)
   }
 
   const exec: Mce.Editor['exec'] = (command, ...args) => {
@@ -52,7 +52,7 @@ export default defineMixin((editor) => {
     if (arg1 !== undefined) {
       (args as any).unshift(arg1)
     }
-    const item = commands.value.get(name)
+    const item = commands.get(name)
     if (!item) {
       throw new Error(`Command "${name}" not found`)
     }

@@ -1,6 +1,6 @@
-import type { Ref, WritableComputedRef } from 'vue'
+import type { Reactive, WritableComputedRef } from 'vue'
 import { isClient, useEventListener } from '@vueuse/core'
-import { ref } from 'vue'
+import { reactive } from 'vue'
 import { defineMixin } from '../mixin'
 import { isInputEvent, isMac, isWindows } from '../utils'
 
@@ -38,7 +38,7 @@ declare global {
 
     interface Editor {
       hotkeysData: WritableComputedRef<HotkeyData[]>
-      hotkeys: Ref<Map<string, Hotkey>>
+      hotkeys: Reactive<Map<string, Hotkey>>
       registerHotkey: (value: Hotkey | Hotkey[]) => void
       unregisterHotkey: (command: string) => void
       getKbd: (command: string) => string
@@ -52,7 +52,7 @@ export default defineMixin((editor) => {
   } = editor
 
   const hotkeysData = registerConfig<Mce.HotkeyData[]>('hotkeys', [])
-  const hotkeys = ref(new Map<string, Mce.Hotkey>())
+  const hotkeys: Mce.Editor['hotkeys'] = reactive(new Map())
 
   function registerHotkey(value: Mce.Hotkey | Mce.Hotkey[]): void {
     if (Array.isArray(value)) {
@@ -74,7 +74,7 @@ export default defineMixin((editor) => {
         hotkeyData,
       ]
 
-      hotkeys.value.set(command, value)
+      hotkeys.set(command, value)
     }
   }
 
@@ -174,7 +174,7 @@ export default defineMixin((editor) => {
 
         hotkeysData.value.forEach((hotkeyData) => {
           const command = hotkeyData.command
-          const hotkey = hotkeys.value.get(command)
+          const hotkey = hotkeys.get(command)
           const keys = Array.isArray(hotkeyData.key) ? hotkeyData.key : [hotkeyData.key]
           keys.forEach((key) => {
             const tKey = key

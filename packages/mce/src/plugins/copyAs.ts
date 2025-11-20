@@ -25,7 +25,7 @@ export default definePlugin((editor) => {
       ...options,
     })
 
-    const exporter = exporters.value.get(key)
+    const exporter = exporters.get(key)
     if (exporter && typeof exporter.copyAs === 'function') {
       res = exporter.copyAs(res)
     }

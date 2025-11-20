@@ -1,6 +1,6 @@
 import type { Element2D } from 'modern-canvas'
-import type { Ref } from 'vue'
-import { ref } from 'vue'
+import type { Reactive, Ref } from 'vue'
+import { reactive, ref } from 'vue'
 import { defineMixin } from '../mixin'
 
 declare global {
@@ -23,7 +23,7 @@ declare global {
     }
 
     interface Editor {
-      exporters: Ref<Map<string, Exporter>>
+      exporters: Reactive<Map<string, Exporter>>
       registerExporter: (value: Exporter | Exporter[]) => void
       unregisterExporter: (name: string) => void
       export: <K extends keyof Exporters>(name: K, options?: ExportOptions) => Exporters[K]
@@ -35,7 +35,7 @@ declare global {
 }
 
 export default defineMixin((editor) => {
-  const exporters: Mce.Editor['exporters'] = ref(new Map<string, Mce.Exporter>())
+  const exporters: Mce.Editor['exporters'] = reactive(new Map())
   const exporting = ref(false)
   const exportProgress = ref(0)
 
@@ -44,16 +44,16 @@ export default defineMixin((editor) => {
       value.forEach(item => registerExporter(item))
     }
     else {
-      exporters.value.set(value.name, value)
+      exporters.set(value.name, value)
     }
   }
 
   const unregisterExporter: Mce.Editor['unregisterExporter'] = (name) => {
-    exporters.value.delete(name)
+    exporters.delete(name)
   }
 
   const to: Mce.Editor['to'] = (name, options = {}) => {
-    const res = exporters.value.get(name)?.handle({
+    const res = exporters.get(name)?.handle({
       ...options,
       onProgress: (progress) => {
         exportProgress.value = progress

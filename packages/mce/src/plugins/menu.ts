@@ -47,7 +47,7 @@ export default definePlugin((editor, options) => {
 
   const exportMenu = computed(() => ({
     key: 'export',
-    children: [...exporters.value.values()]
+    children: [...exporters.values()]
       .filter(v => Boolean(v.saveAs))
       .map(v => ({ key: `saveAs:${v.name}` })),
   }))
@@ -71,7 +71,7 @@ export default definePlugin((editor, options) => {
   const copyAsMenu = computed(() => ({
     key: 'copyAs',
     disabled: !hasSelected.value,
-    children: [...exporters.value.values()]
+    children: [...exporters.values()]
       .filter(v => Boolean(v.copyAs))
       .map(v => ({ key: `copyAs:${v.name}` })),
   }))

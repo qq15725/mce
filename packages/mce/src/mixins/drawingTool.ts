@@ -21,9 +21,9 @@ declare global {
 
     interface Editor {
       drawingTools: Reactive<Map<string, Mce.DrawingTool>>
+      activeDrawingTool: Ref<Mce.DrawingTool>
       registerDrawingTool: (tool: Mce.DrawingTool | Mce.DrawingTool[]) => void
       unregisterDrawingTool: (tool: string) => void
-      activeDrawingTool: Ref<Mce.DrawingTool>
       setActiveDrawingTool: (tool: string | keyof DrawingTools | undefined) => void
     }
   }
@@ -34,7 +34,7 @@ export default defineMixin((editor) => {
     state,
   } = editor
 
-  const drawingTools = reactive(new Map<string, Mce.DrawingTool>())
+  const drawingTools: Mce.Editor['drawingTools'] = reactive(new Map())
   const activeDrawingTool = ref<Mce.DrawingTool>()
 
   const registerDrawingTool: Mce.Editor['registerDrawingTool'] = (tool): void => {
