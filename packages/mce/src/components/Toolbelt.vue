@@ -48,10 +48,10 @@ const shapeItems = computed(() => {
 const items = computed(() => {
   return [
     {
-      key: ['grab', 'grabbing'].includes(state.value || '') ? 'hand' : 'move',
-      active: [undefined, 'grab', 'grabbing'].includes(state.value),
+      key: ['hand'].includes(state.value || '') ? 'hand' : 'move',
+      active: state.value !== 'drawing',
       handle: () => {
-        if (['grab', 'grabbing'].includes(state.value || '')) {
+        if (['hand'].includes(state.value || '')) {
           //
         }
         else {
@@ -60,7 +60,7 @@ const items = computed(() => {
       },
       children: [
         { key: 'move', handle: () => setActiveDrawingTool(undefined) },
-        { key: 'hand', handle: () => state.value = 'grab' },
+        { key: 'hand', handle: () => state.value = 'hand' },
       ],
     },
     {

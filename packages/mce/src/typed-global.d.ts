@@ -29,8 +29,7 @@ declare global {
 
     type State
       = | 'loading'
-        | 'grab'
-        | 'grabbing'
+        | 'hand'
         | 'drawing'
         | 'selecting'
         | 'transforming'

@@ -93,6 +93,7 @@ const overlayContainer = useTemplateRef('overlayContainerTpl')
 const canvas = useTemplateRef('canvasTpl')
 const selector = useTemplateRef('selectorTpl')
 const textEditor = useTemplateRef('textEditorTpl')
+const grabbing = ref(false)
 const selectedArea = ref({ left: 0, top: 0, width: 0, height: 0 })
 const resizeStrategy = computed(() => {
   const first = elementSelection.value[0]
@@ -174,9 +175,11 @@ function onPointerdown(downEvent: PointerInputEvent): void {
   }
 
   const drawing = state.value === 'drawing'
+  const hand = state.value === 'hand'
   const element = downEvent.target
   const start = { x: downEvent.clientX, y: downEvent.clientY }
   let current = { ...start }
+  let prev = { ...current }
   let dragging = false
   let selecting = false
   let isUp = false
@@ -213,6 +216,9 @@ function onPointerdown(downEvent: PointerInputEvent): void {
         y: current.y - drawboardAabb.value.top,
       }),
     )
+  }
+  else if (hand) {
+    grabbing.value = true
   }
 
   function onDrag(event: PointerInputEvent): void {
@@ -282,7 +288,7 @@ function onPointerdown(downEvent: PointerInputEvent): void {
   }
 
   function onEngineMove(moveEvent: PointerInputEvent) {
-    if (drawing) {
+    if (drawing || hand) {
       //
     }
     else {
@@ -318,6 +324,12 @@ function onPointerdown(downEvent: PointerInputEvent): void {
         }),
       )
     }
+    else if (hand) {
+      camera.value.position.add(
+        Math.round(prev.x - current.x),
+        Math.round(prev.y - current.y),
+      )
+    }
     else {
       if (!inSelection) {
         if (!element) {
@@ -325,6 +337,7 @@ function onPointerdown(downEvent: PointerInputEvent): void {
         }
       }
     }
+    prev = { ...current }
   }
 
   async function onUp(upEvent: PointerEvent) {
@@ -336,6 +349,9 @@ function onPointerdown(downEvent: PointerInputEvent): void {
           y: current.y - drawboardAabb.value.top,
         }),
       )
+    }
+    else if (hand) {
+      grabbing.value = false
     }
     else {
       if (state.value) {
@@ -432,6 +448,7 @@ const slotProps = {
     class="mce-editor"
     :class="[
       `mce-editor--${state}`,
+      grabbing && `mce-editor--grabbing`,
     ]"
   >
     <Main>
@@ -572,7 +589,7 @@ const slotProps = {
     cursor: crosshair;
   }
 
-  &--grab {
+  &--hand {
     cursor: grab;
   }
 
