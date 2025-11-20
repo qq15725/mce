@@ -54,6 +54,7 @@ npm i mce
     camera: true,
     ruler: true,
     scrollbar: true,
+    toolbelt: true,
     statusbar: true,
     frameGap: 48,
     typographyStrategy: 'autoHeight',
