@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { mergeProps, useTemplateRef } from 'vue'
+import { useTemplateRef } from 'vue'
 import { makeMceOverlayProps } from '../../composables'
 import Overlay from './Overlay.vue'
 
@@ -35,13 +35,12 @@ defineExpose({
     <template v-if="$slots.activator" #activator="slotProps">
       <slot
         name="activator"
-        v-bind="mergeProps(slotProps, {
-          props: {
-            ...slotProps.props,
-            onMouseenter: () => isActive = true,
-            onMouseleave: () => isActive = false,
-          },
-        })"
+        v-bind="slotProps"
+        :props="{
+          ...slotProps.props,
+          onMouseenter: () => isActive = true,
+          onMouseleave: () => isActive = false,
+        }"
       />
     </template>
 

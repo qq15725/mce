@@ -95,9 +95,9 @@ const items = computed(() => {
         <Tooltip location="top">
           <template #activator="{ props: slotProps }">
             <Btn
-              v-bind="slotProps"
               class="mce-toolbelt__btn"
               :active="item.active || (item as any).checked || false"
+              v-bind="slotProps"
               @click="item.handle"
             >
               <Icon :icon="`$${item.key}`" />
