@@ -1,50 +1,34 @@
 <script setup lang="ts">
-import { useMouse } from '@vueuse/core'
 import { useEditor } from '../composables/editor'
 
 const {
+  drawboardPointer,
   state,
-  stateContext,
+  activeDrawingTool,
   t,
-  camera,
-  drawboardAabb,
-  setCursor,
 } = useEditor()
-
-const { x, y } = useMouse()
-
-function onMousedown(e: MouseEvent) {
-  const pos = camera.value.toGlobal({
-    x: e.clientX - drawboardAabb.value.left,
-    y: e.clientY - drawboardAabb.value.top,
-  })
-  stateContext.value?.callback?.(pos)
-  setCursor(undefined)
-}
 </script>
 
 <template>
   <div
-    v-if="state === 'drawing'"
+    v-if="state === 'drawing' && drawboardPointer"
     class="mce-drawing"
     :style="{
-      left: `${x}px`,
-      top: `${y}px`,
+      left: `${drawboardPointer.x}px`,
+      top: `${drawboardPointer.y}px`,
     }"
-    @mousedown="onMousedown"
   >
-    <div v-if="stateContext?.content" class="mce-drawing__content">
-      {{ t(stateContext.content) }}
+    <div v-if="activeDrawingTool?.name" class="mce-drawing__tip">
+      {{ t(activeDrawingTool.name) }}
     </div>
   </div>
 </template>
 
 <style lang="scss">
 .mce-drawing {
-  pointer-events: auto !important;
-  position: fixed;
+  position: absolute;
 
-  &__content {
+  &__tip {
     margin: 4px;
     border: 1px solid #0000002b;
     border-radius: 4px;

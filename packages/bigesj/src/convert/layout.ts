@@ -1,19 +1,19 @@
-import type { NormalizedBackground, NormalizedElement } from 'modern-idoc'
-import { idGenerator, isGradient } from 'modern-idoc'
+import type { NormalizedElement } from 'modern-idoc'
+import type { BigeLayout } from './types'
+import { idGenerator } from 'modern-idoc'
+import { convertBackground } from './background'
 import { convertElement } from './element'
+import { getStyle } from './style'
 
 export async function convertLayout(
-  layout: Record<string, any>,
+  layout: BigeLayout,
   isFrame = true,
   context?: {
     endTime: number
   },
 ): Promise<NormalizedElement> {
   const id = idGenerator()
-
-  const style = {
-    ...(layout.style ?? layout),
-  }
+  const style = { ...getStyle(layout) }
 
   delete style.right
   delete style.bottom
@@ -32,32 +32,11 @@ export async function convertLayout(
     meta.rawName = layout.name
   }
 
-  let background: NormalizedBackground | undefined
-  if (layout.background) {
-    if (layout.background.color) {
-      if (isGradient(layout.background.color ?? '')) {
-        background = {
-          image: layout.background.color,
-        }
-      }
-      else {
-        background = {
-          color: layout.background.color,
-        }
-      }
-    }
-    if (layout.background.image) {
-      background = {
-        image: layout.background.image,
-      }
-    }
-  }
-
   return {
     id,
     name: isFrame ? `Frame ${id}` : layout.name,
     style, // TODO 过滤掉部分属性
-    background,
+    background: convertBackground(layout),
     children: (await Promise.all(
       layout.elements.map(async (element: any) => {
         try {

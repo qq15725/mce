@@ -76,22 +76,19 @@ defineExpose({
     @click:item="onClickItem"
   >
     <template #title="{ item }">
-      <span class="mce-context-menu__title">{{ t(item.key) }}</span>
-      <span v-if="hotkeys.has(item.key)" class="mce-context-menu__kbd">{{ getKbd(item.key) }}</span>
+      {{ t(item.key) }}
+    </template>
+
+    <template #kbd="{ item }">
+      <template v-if="hotkeys.has(item.key)">
+        {{ getKbd(item.key) }}
+      </template>
     </template>
   </Menu>
 </template>
 
 <style lang="scss">
 .mce-context-menu {
-  &__title {
-    flex: 1;
-  }
-
-  &__kbd {
-    letter-spacing: .08em;
-    margin-left: 24px;
-    opacity: .3;
-  }
+  //
 }
 </style>

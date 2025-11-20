@@ -28,6 +28,7 @@ const editor = new Editor({
   camera: true,
   ruler: true,
   scrollbar: true,
+  toolbelt: true,
   timeline: false,
   statusbar: true,
   frameOutline: false,

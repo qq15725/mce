@@ -23,6 +23,9 @@ const emit = defineEmits<{
 
 defineSlots<{
   title?: (props: { item: MenuItem }) => any
+  kbd?: (props: { item: MenuItem }) => any
+  prepend?: (props: { item: MenuItem }) => any
+  append?: (props: { item: MenuItem }) => any
   activator?: (props: any) => any
 }>()
 
@@ -71,7 +74,9 @@ onBeforeUnmount(() => {
 })
 
 const activatorProps = computed(() => {
-  const _props: Record<string, any> = {}
+  const _props: Record<string, any> = {
+    onClick: () => isActive.value = !isActive.value,
+  }
   if (props.openOnHover) {
     _props.onMouseenter = () => isActive.value = true
   }
@@ -133,7 +138,10 @@ defineExpose({
       <slot
         name="activator"
         v-bind="slotProps"
-        :props="{ ...slotProps.props, ...activatorProps }"
+        :props="{
+          ...slotProps.props,
+          ...activatorProps,
+        }"
       />
     </template>
 
@@ -166,11 +174,15 @@ defineExpose({
               ]"
               @click="e => onClickItem(item, index, e)"
             >
-              <div v-if="hasPrepend" class="mce-list-item__prepend">
+              <div v-if="hasPrepend" class="mce-list-item__checked">
                 <Icon
                   v-if="item.checked"
                   icon="$check"
                 />
+              </div>
+
+              <div v-if="$slots.prepend" class="mce-list-item__prepend">
+                <slot name="prepend" :item="item" />
               </div>
 
               <div class="mce-list-item__title">
@@ -180,10 +192,22 @@ defineExpose({
               </div>
 
               <div
-                v-if="item.children?.length"
+                v-if="$slots.kbd"
+                class="mce-list-item__kbd"
+              >
+                <slot name="kbd" :item="item" />
+              </div>
+
+              <div
+                v-if="item.children?.length || $slots.append"
                 class="mce-list-item__append"
               >
-                <Icon icon="$arrowRight" />
+                <slot name="append" :item="item" />
+
+                <Icon
+                  v-if="item.children?.length"
+                  icon="$arrowRight"
+                />
               </div>
             </div>
           </div>
@@ -204,6 +228,15 @@ defineExpose({
       >
         <template v-if="$slots.title" #title="slotProps">
           <slot name="title" v-bind="slotProps" />
+        </template>
+        <template v-if="$slots.kbd" #kbd="slotProps">
+          <slot name="kbd" v-bind="slotProps" />
+        </template>
+        <template v-if="$slots.prepend" #prepend="slotProps">
+          <slot name="prepend" v-bind="slotProps" />
+        </template>
+        <template v-if="$slots.append" #append="slotProps">
+          <slot name="append" v-bind="slotProps" />
         </template>
       </MceMenu>
     </div>
@@ -253,7 +286,8 @@ defineExpose({
     opacity: .4;
   }
 
-  &__prepend {
+  &__prepend,
+  &__checked {
     width: 12px;
     height: 12px;
     display: flex;
@@ -268,6 +302,14 @@ defineExpose({
     align-items: center;
     font-size: 12px;
     white-space: nowrap;
+  }
+
+  &__kbd {
+    font-size: 12px;
+    white-space: nowrap;
+    letter-spacing: .08em;
+    margin-left: 24px;
+    opacity: .3;
   }
 
   &__append {

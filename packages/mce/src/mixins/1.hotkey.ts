@@ -46,16 +46,12 @@ declare global {
   }
 }
 
-const defaultHotkeys: Mce.HotkeyData[] = [
-  { command: 'cancel', key: 'Esc', editable: false },
-]
-
 export default defineMixin((editor) => {
   const {
     registerConfig,
   } = editor
 
-  const hotkeysData = registerConfig('hotkeys', defaultHotkeys)
+  const hotkeysData = registerConfig<Mce.HotkeyData[]>('hotkeys', [])
   const hotkeys = ref(new Map<string, Mce.Hotkey>())
 
   function registerHotkey(value: Mce.Hotkey | Mce.Hotkey[]): void {

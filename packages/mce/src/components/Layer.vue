@@ -265,21 +265,22 @@ function onInputBlur() {
 
       <div class="mce-layer__action">
         <template v-if="props.root">
-          <div
-            class="mce-btn"
+          <Btn
+            class="mce-layer__btn"
             :class="{
-              'mce-btn--hide': !hovering && !isLock(props.node),
+              'mce-layer__btn--hide': !hovering && !isLock(props.node),
             }"
             @click="setLock(props.node, !isLock(props.node))"
           >
             <Icon :icon="isLock(props.node) ? '$lock' : '$unlock'" />
-          </div>
+          </Btn>
         </template>
 
         <template v-else>
           <Btn
+            class="mce-layer__btn"
             :class="{
-              'mce-btn--hide': !hovering && !isLock(props.node),
+              'mce-layer__btn--hide': !hovering && !isLock(props.node),
             }"
             @click.prevent.stop="setLock(props.node, !isLock(props.node))"
           >
@@ -287,8 +288,9 @@ function onInputBlur() {
           </Btn>
 
           <Btn
+            class="mce-layer__btn"
             :class="{
-              'mce-btn--hide': !hovering && isVisible(props.node),
+              'mce-layer__btn--hide': !hovering && isVisible(props.node),
             }"
             @click.prevent.stop="setVisible(props.node, !isVisible(props.node))"
           >
@@ -440,19 +442,15 @@ function onInputBlur() {
       display: flex;
       align-items: center;
     }
-  }
 
-  .mce-btn {
-    &--hide {
-      opacity: 0;
-    }
+    &__btn {
+      &--hide {
+        opacity: 0;
+      }
 
-    &:hover {
-      background-color: rgb(var(--mce-theme-background));
-    }
-
-    + .mce-btn {
-      margin-left: -4px;
+      + .mce-layer__btn {
+        margin-left: -4px;
+      }
     }
   }
 </style>

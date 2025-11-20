@@ -9,30 +9,22 @@ import {
 } from '@floating-ui/vue'
 import { onClickOutside, useEventListener } from '@vueuse/core'
 import { computed, onBeforeUnmount, onMounted, ref, useTemplateRef } from 'vue'
-import { makeMceOverlayProps, useOverlay } from '../../composables/overlay'
+import { makeMceOverlayProps, useOverlay } from '../../composables'
 
 defineOptions({
   inheritAttrs: false,
 })
 
 const props = defineProps({
-  modelValue: {
-    type: Boolean,
-    default: false,
-  },
   ...makeMceOverlayProps(),
 })
 
 const emit = defineEmits<{
   'click:outside': [event: MouseEvent]
-  'update:modelValue': [val: boolean]
 }>()
 
 const overlayItem = useOverlay()
-const isActive = computed({
-  get: () => props.modelValue,
-  set: val => emit('update:modelValue', val),
-})
+const isActive = defineModel<boolean>()
 const activatorEl = ref<any>()
 const virtualElement = {
   getBoundingClientRect() {
@@ -99,7 +91,7 @@ onMounted(() => {
         emit('click:outside', e as any)
       }
     },
-    { controls: true },
+    { controls: true, ignore: computed(() => [activatorEl.value]) },
   ) as any
 
   clearup = [

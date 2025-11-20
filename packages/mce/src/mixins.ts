@@ -21,6 +21,7 @@ import _4_0_text from './mixins/4.0.text'
 import _4_2_element from './mixins/4.2.element'
 import _4_3_frame from './mixins/4.3.frame'
 import _4_4_doc from './mixins/4.4.doc'
+import _drawingTool from './mixins/drawingTool'
 import _scroll from './mixins/scroll'
 import _snapshot from './mixins/snapshot'
 import _zoom from './mixins/zoom'
@@ -45,6 +46,7 @@ export const mixins = [
   _4_2_element,
   _4_3_frame,
   _4_4_doc,
+  _drawingTool,
   _scroll,
   _snapshot,
   _zoom,

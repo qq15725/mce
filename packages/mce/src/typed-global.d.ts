@@ -1,3 +1,4 @@
+import type { Vector2Data } from 'modern-canvas'
 import 'modern-canvas'
 
 declare module 'modern-canvas' {
@@ -28,6 +29,8 @@ declare global {
 
     type State
       = | 'loading'
+        | 'grab'
+        | 'grabbing'
         | 'drawing'
         | 'selecting'
         | 'transforming'
@@ -37,7 +40,12 @@ declare global {
         | 'shapeReplacing'
         | undefined
 
-    type StateContext = Record<string, any>
+    interface DrawingContext {
+      tip?: string
+      start?: (position: Vector2Data) => void
+      move?: (position: Vector2Data) => void
+      end?: (position: Vector2Data) => void
+    }
   }
 }
 

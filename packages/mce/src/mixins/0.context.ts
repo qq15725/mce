@@ -46,8 +46,6 @@ declare global {
       textSelection: Ref<IndexCharacter[] | undefined>
       hoverElement: Ref<Element2D | undefined>
       state: Ref<State | undefined>
-      setState: (state: State, context?: StateContext) => void
-      stateContext: Ref<StateContext | undefined>
       getGlobalPointer: () => Vector2Data
       parseAnchor: (anchor: Anchor, isRtl?: boolean) => ParsedAnchor
       isNode: (value: any) => value is Node
@@ -58,10 +56,6 @@ declare global {
       setVisible: (node: Node, visible: boolean) => void
       isLock: (node: Node) => boolean
       setLock: (node: Node, lock: boolean) => void
-    }
-
-    interface Events {
-      setState: [state: State]
     }
   }
 }
@@ -104,18 +98,6 @@ export default defineMixin((editor) => {
   const hoverElement = ref<Element2D>()
   const drawboardPointer = ref<Vector2Data>()
   const state = ref<Mce.State>()
-  const stateContext = ref<Mce.StateContext>()
-
-  function setState(value: Mce.State, context?: Mce.StateContext): void {
-    state.value = value
-    stateContext.value = context
-    switch (value) {
-      case 'drawing':
-        setCursor('crosshair')
-        break
-    }
-    emit('setState', value)
-  }
 
   function setCursor(mode: Cursor | undefined): void {
     renderEngine.value.input.setCursor(mode)
@@ -206,8 +188,6 @@ export default defineMixin((editor) => {
     drawboardDom,
     drawboardAabb,
     state,
-    stateContext,
-    setState,
     setCursor,
     drawboardPointer,
     getGlobalPointer,

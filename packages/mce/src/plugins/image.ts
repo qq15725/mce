@@ -1,4 +1,4 @@
-import type { Element2D, Vector2Data } from 'modern-canvas'
+import type { Element2D } from 'modern-canvas'
 import { DrawboardEffect, render } from 'modern-canvas'
 import { definePlugin } from '../plugin'
 import { createImageElement, imageExtRe, imageExts } from '../utils'
@@ -11,7 +11,6 @@ declare global {
 
     interface Commands {
       insertImage: (url: string, options?: InsertImageOptions) => Promise<Element2D>
-      drawImage: () => void
     }
 
     interface Exporters {
@@ -19,12 +18,15 @@ declare global {
       jpeg: Promise<Blob>
       webp: Promise<Blob>
     }
+
+    interface DrawingTools {
+      image: []
+    }
   }
 }
 
 export default definePlugin((editor) => {
   const {
-    setState,
     exec,
     addElement,
     to,
@@ -38,15 +40,6 @@ export default definePlugin((editor) => {
       sizeToFit: true,
       position: 'right',
       ...options,
-    })
-  }
-
-  const drawImage: Mce.Commands['drawImage'] = () => {
-    setState('drawing', {
-      content: 'image',
-      callback: (position: Vector2Data) => {
-        exec('import', { position })
-      },
     })
   }
 
@@ -89,7 +82,6 @@ export default definePlugin((editor) => {
     name: 'mce:image',
     commands: [
       { command: 'insertImage', handle: insertImage },
-      { command: 'drawImage', handle: drawImage },
     ],
     exporters: [
       { ...createExporter('png'), copyAs: true },
@@ -121,8 +113,12 @@ export default definePlugin((editor) => {
         },
       },
     ],
+    drawingTools: [
+      { name: 'image', handle: position => exec('import', { position }) },
+    ],
     hotkeys: [
       { command: 'copyAs:png', key: 'Shift+CmdOrCtrl+c' },
+      { command: 'setActiveDrawingTool:image', key: 'Shift+CmdOrCtrl+k' },
     ],
   }
 })

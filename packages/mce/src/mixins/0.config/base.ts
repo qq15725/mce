@@ -29,8 +29,6 @@ declare global {
       pixelGrid: boolean
       pixelate: boolean
       camera: boolean
-      timeline: boolean
-      statusbar: boolean
       frameOutline: boolean
       frameGap: number
       typographyStrategy: TypographyStrategy
@@ -56,8 +54,6 @@ export default defineMixin((editor, options) => {
   registerConfig('pixelGrid', false)
   registerConfig('pixelate', false)
   registerConfig('camera', false)
-  registerConfig('timeline', false)
-  registerConfig('statusbar', false)
   registerConfig('frameOutline', false)
   registerConfig('frameGap', 48)
   registerConfig('typographyStrategy', 'autoHeight')

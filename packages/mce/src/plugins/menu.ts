@@ -180,6 +180,11 @@ export default definePlugin((editor, options) => {
           }
         },
       },
+      {
+        key: 'toolbelt',
+        checked: config.value.toolbelt,
+        handle: () => config.value.toolbelt = !config.value.toolbelt,
+      },
       panelsMenu.value,
       { type: 'divider' },
       ...zoomViewMenu.value.children,

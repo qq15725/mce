@@ -133,17 +133,19 @@ export class Editor extends Observable<Events> {
       this.plugins.set(result.name, result)
 
       const {
+        events,
         commands = [],
         hotkeys = [],
         loaders = [],
         exporters = [],
-        events,
+        drawingTools = [],
       } = result
 
       this.registerCommand(commands)
       this.registerHotkey(hotkeys)
       this.registerLoader(loaders)
       this.registerExporter(exporters)
+      this.registerDrawingTool(drawingTools)
 
       if (events) {
         for (const k in events) {

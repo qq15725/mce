@@ -30,6 +30,7 @@ export interface PluginObject {
   hotkeys?: Mce.Hotkey[]
   loaders?: Mce.Loader[]
   exporters?: Mce.Exporter[]
+  drawingTools?: Mce.DrawingTool[]
   components?: PluginComponent[]
   setup?: () => void | Promise<void>
 }

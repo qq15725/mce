@@ -3,17 +3,33 @@ import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {
+    interface Config {
+      statusbar: boolean
+    }
+
     interface Panels {
       statusbar: []
     }
   }
 }
 
-export default definePlugin(() => {
+export default definePlugin((editor) => {
+  const {
+    registerConfig,
+  } = editor
+
+  registerConfig('statusbar', false)
+
   return {
     name: 'mce:statusbar',
     components: [
-      { name: 'statusbar', type: 'panel', position: 'bottom', size: 24, component: Statusbar },
+      {
+        name: 'statusbar',
+        type: 'panel',
+        position: 'bottom',
+        size: 24,
+        component: Statusbar,
+      },
     ],
   }
 })

@@ -5,7 +5,6 @@ import Cropper from './shared/Cropper.vue'
 
 const {
   state,
-  setState,
   elementSelection,
 } = useEditor()
 
@@ -20,6 +19,6 @@ const element = computed(() => elementSelection.value[0])
     :image="element.foreground.image!"
     class="pointer-events-auto"
     @update:style="(val) => element.style.setProperties(val)"
-    @end="() => setState(undefined)"
+    @end="() => state = undefined"
   />
 </template>

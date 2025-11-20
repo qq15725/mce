@@ -29,9 +29,8 @@ export default definePlugin((editor) => {
     const files = await openFileDialog({ multiple: true })
 
     return addElement((await Promise.all(files.map(file => load(file)))).flat(), {
-      ...options,
       sizeToFit: true,
-      position: 'right',
+      ...options,
     })
   }
 

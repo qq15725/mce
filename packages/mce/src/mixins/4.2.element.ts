@@ -54,7 +54,6 @@ export default defineMixin((editor) => {
   const {
     doc,
     rootAabb,
-    currentFrame,
     emit,
     textFontSizeToFit,
     textToFit,
@@ -64,7 +63,6 @@ export default defineMixin((editor) => {
     isLock,
     getObb,
     config,
-    getAncestorFrame,
     getAabb,
     getGlobalPointer,
     screenCenter,
@@ -83,7 +81,7 @@ export default defineMixin((editor) => {
       frameGap,
     } = config.value
 
-    let {
+    const {
       parent,
       index,
       sizeToFit,
@@ -92,22 +90,6 @@ export default defineMixin((editor) => {
       regenId,
     } = options
 
-    if (!parent) {
-      if (config.value.viewMode === 'frame') {
-        parent = currentFrame.value
-      }
-      else {
-        const node = selection.value[0]
-        if (node) {
-          if (isFrame(node)) {
-            parent = node
-          }
-          else {
-            parent = getAncestorFrame(node)
-          }
-        }
-      }
-    }
     const parentAabb = parent ? getAabb(parent) : undefined
 
     const isArray = Array.isArray(value)
@@ -163,8 +145,8 @@ export default defineMixin((editor) => {
       })
 
       const aabb = getAabb(elements)
-      let globalPosition: { x: number, y: number } | undefined
 
+      let globalPosition: { x: number, y: number } | undefined
       if (typeof position === 'string') {
         switch (position) {
           case 'pointer':
@@ -235,6 +217,9 @@ export default defineMixin((editor) => {
             break
           }
         }
+      }
+      else if (position) {
+        globalPosition = { x: position.x, y: position.y }
       }
 
       if (position === 'pointer') {

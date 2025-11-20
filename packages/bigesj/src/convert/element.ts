@@ -1,20 +1,22 @@
 import type { NormalizedElement } from 'modern-idoc'
+import type { BigeElement } from './types'
 import { idGenerator } from 'modern-idoc'
 import { parseAnimations } from './animation'
 import { convertImageElementToUrl } from './image'
+import { getStyle } from './style'
 import { convertSvgElementToUrl } from './svg'
 import { convertTextContent, convertTextEffects, convertTextStyle } from './text'
 
 const percentageToPx = (per: string) => (Number.parseFloat(per) || 0) / 100
 
 export async function convertElement(
-  el: Record<string, any>,
+  el: BigeElement,
   parent: Record<string, any> | undefined,
   context?: {
     endTime: number
   },
 ): Promise<NormalizedElement> {
-  const style = { ...(el.style ?? el) }
+  const style = { ...getStyle(el) }
 
   delete style.bottom
   delete style.right

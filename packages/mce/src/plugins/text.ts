@@ -1,44 +1,49 @@
-import type { Element2D, Vector2Data } from 'modern-canvas'
+import type { Element2D } from 'modern-canvas'
 import { definePlugin } from '../plugin'
 import { createTextElement } from '../utils'
 
 declare global {
   namespace Mce {
-    interface InsertTextOptions extends AddElementOptions {
+    interface addTextElementOptions extends AddElementOptions {
+      content?: string
       style?: Record<string, any>
     }
 
     interface Commands {
-      insertText: (content?: string, options?: InsertTextOptions) => Element2D
-      drawText: (content?: string, options?: InsertTextOptions) => void
+      addTextElement: (options?: addTextElementOptions) => Element2D
+    }
+
+    interface DrawingTools {
+      text: [options?: addTextElementOptions]
     }
   }
 }
 
 export default definePlugin((editor) => {
   const {
-    setState,
     t,
-    exec,
     addElement,
+    setActiveDrawingTool,
   } = editor
 
-  const insertText: Mce.Commands['insertText'] = (content = t('clickEditText'), options = {}) => {
-    const { style, ...restOptions } = options
-    return addElement(createTextElement(content, style), {
-      sizeToFit: true,
-      position: 'right',
-      ...restOptions,
-    })
-  }
+  const addTextElement: Mce.Commands['addTextElement'] = (options = {}) => {
+    const {
+      content = t('doubleClickEditText'),
+      style,
+      ...restOptions
+    } = options
 
-  const drawText: Mce.Commands['drawText'] = (content, options) => {
-    setState('drawing', {
-      content: 'text',
-      callback: (position: Vector2Data) => {
-        exec('insertText', content, { ...options, position })
+    return addElement(
+      createTextElement(content, {
+        fontSize: 64,
+        ...style,
+      }),
+      {
+        sizeToFit: true,
+        active: true,
+        ...restOptions,
       },
-    })
+    )
   }
 
   const RE = /\.txt$/i
@@ -46,8 +51,7 @@ export default definePlugin((editor) => {
   return {
     name: 'mce:text',
     commands: [
-      { command: 'insertText', handle: insertText },
-      { command: 'drawText', handle: drawText },
+      { command: 'addTextElement', handle: addTextElement },
     ],
     loaders: [
       {
@@ -70,6 +74,20 @@ export default definePlugin((editor) => {
           return createTextElement(await source.text())
         },
       },
+    ],
+    drawingTools: [
+      {
+        name: 'text',
+        handle: (position) => {
+          addTextElement({
+            position,
+          })
+          setActiveDrawingTool(undefined)
+        },
+      },
+    ],
+    hotkeys: [
+      { command: 'setActiveDrawingTool:text', key: 't' },
     ],
   }
 })
