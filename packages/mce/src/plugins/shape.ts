@@ -105,8 +105,8 @@ export default definePlugin((editor) => {
       })
       return {
         move: (move) => {
-          el.style.width = move.x - start.x
-          el.style.height = move.y - start.y
+          el.style.width = Math.abs(move.x - start.x)
+          el.style.height = Math.abs(move.y - start.y)
         },
         end: () => {
           setActiveDrawingTool(undefined)
