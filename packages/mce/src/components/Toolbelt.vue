@@ -89,35 +89,35 @@ const items = computed(() => {
 <template>
   <div class="mce-toolbelt">
     <template
-      v-for="(item, key) in items" :key="key"
+      v-for="(tool, key) in items" :key="key"
     >
       <div class="mce-toolbelt__group">
         <Tooltip location="top">
           <template #activator="{ props: slotProps }">
             <Btn
               class="mce-toolbelt__btn"
-              :active="item.active || (item as any).checked || false"
+              :active="tool.active || (tool as any).checked || false"
               v-bind="slotProps"
-              @click="item.handle"
+              @click="tool.handle"
             >
-              <Icon :icon="`$${item.key}`" />
+              <Icon :icon="`$${tool.key}`" />
             </Btn>
           </template>
 
           <template #default>
-            <span>{{ t(item.key) }}</span>
-            <template v-if="hotkeys.has(`setState:${item.key}`)">
-              <span class="mce-toolbelt__kbd">{{ getKbd(`setState:${item.key}`) }}</span>
+            <span>{{ t(tool.key) }}</span>
+            <template v-if="hotkeys.has(`setState:${tool.key}`)">
+              <span class="mce-toolbelt__kbd">{{ getKbd(`setState:${tool.key}`) }}</span>
             </template>
-            <template v-else-if="hotkeys.has(`setActiveDrawingTool:${item.key}`)">
-              <span class="mce-toolbelt__kbd">{{ getKbd(`setActiveDrawingTool:${item.key}`) }}</span>
+            <template v-else-if="hotkeys.has(`setActiveDrawingTool:${tool.key}`)">
+              <span class="mce-toolbelt__kbd">{{ getKbd(`setActiveDrawingTool:${tool.key}`) }}</span>
             </template>
           </template>
         </Tooltip>
 
-        <template v-if="item.children?.length">
+        <template v-if="tool.children?.length">
           <Menu
-            :items="item.children"
+            :items="tool.children"
             :offset="12"
             location="top-start"
           >

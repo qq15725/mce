@@ -61,10 +61,6 @@ declare global {
 }
 
 export default defineMixin((editor) => {
-  const {
-    emit,
-  } = editor
-
   const fonts = markRaw(new Fonts()) as Fonts
   const timeline = ref(new Timeline({ startTime: 0, endTime: 0, loop: true, paused: true }))
   const _renderEngine = new Engine({
