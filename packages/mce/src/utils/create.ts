@@ -1,11 +1,10 @@
 import type { Element, Fill, Outline } from 'modern-idoc'
-import { idGenerator, normalizeTextContent } from 'modern-idoc'
+import { normalizeTextContent } from 'modern-idoc'
 import { measureText } from 'modern-text'
 import { getImageSizeFromUrl } from './image'
 
-export function createShapeElement(shape: Element['shape'], fill?: Fill, outline?: Outline): Element {
+export function createShapeElement(shape?: Element['shape'], fill?: Fill, outline?: Outline): Element {
   return {
-    id: idGenerator(),
     shape,
     fill,
     outline,
@@ -19,7 +18,6 @@ export function createTextElement(content: string, style?: Record<string, any>):
   const box = measureText({ style, content }).boundingBox
 
   return {
-    id: idGenerator(),
     style: {
       ...style,
       width: box.width,
@@ -34,7 +32,6 @@ export function createTextElement(content: string, style?: Record<string, any>):
 
 export async function createImageElement(image: string): Promise<Element> {
   return {
-    id: idGenerator(),
     style: {
       ...await getImageSizeFromUrl(image),
     },

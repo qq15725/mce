@@ -24,7 +24,9 @@ export default definePlugin((editor) => {
             name: 'pencil',
             outline: {
               color: '#d9d9d9',
-              width: 10,
+              width: 5,
+              lineCap: 'round',
+              lineJoin: 'round',
             },
             meta: {
               inPptIs: 'Shape',

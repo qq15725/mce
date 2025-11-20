@@ -19,7 +19,7 @@
     "@mce/pdf": "workspace:*",
     "@mce/svg": "workspace:*",
     "@tsconfig/node22": "^22.0.5",
-    "@vitejs/plugin-vue": "^6.0.1",
+    "@vitejs/plugin-vue": "^6.0.2",
     "@vue/tsconfig": "^0.8.1",
     "mce": "workspace:*",
     "npm-run-all2": "^8.0.4",
