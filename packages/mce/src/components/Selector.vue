@@ -37,7 +37,7 @@ const {
   getSnapPoints,
 } = useEditor()
 
-const transformable = useTemplateRef('transformableRef')
+const transformable = useTemplateRef('transformableTpl')
 
 onBeforeMount(() => {
   registerCommand({ command: 'startTransform', handle: e => Boolean(transformable.value?.start(e)) })
@@ -246,7 +246,7 @@ defineExpose({
 
   <Transformable
     v-if="selectionTransform.width && selectionTransform.height"
-    ref="transformableRef"
+    ref="transformableTpl"
     v-model="selectionTransform"
     :movable="movable"
     :resizable="resizable"

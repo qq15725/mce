@@ -101,10 +101,7 @@ export default defineMixin((editor) => {
 
   function getGlobalPointer(): Vector2Data {
     const { x = 0, y = 0 } = drawboardPointer.value ?? {}
-    return camera.value.toGlobal({
-      x: x - drawboardAabb.value.left,
-      y: y - drawboardAabb.value.top,
-    }, { x: 0, y: 0 })
+    return camera.value.toGlobal({ x, y }, { x: 0, y: 0 })
   }
 
   const block = ['top', 'bottom']

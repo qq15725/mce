@@ -43,7 +43,7 @@ const props = defineProps({
   editor: Editor,
 })
 
-defineSlots<{
+const slots = defineSlots<{
   'selector'?: (props: { box: OrientedBoundingBox }) => void
   'transformer'?: (props: { box: Partial<OrientedBoundingBox> }) => void
   'floatbar'?: () => void
@@ -396,7 +396,10 @@ function onPointermove(event: PointerInputEvent): void {
     return
   }
 
-  drawboardPointer.value = { x: event.clientX, y: event.clientY }
+  drawboardPointer.value = {
+    x: event.clientX - drawboardAabb.value.left,
+    y: event.clientY - drawboardAabb.value.top,
+  }
 
   if (
     camera.value.grabbing
@@ -483,7 +486,7 @@ const slotProps = {
         </Selector>
 
         <Floatbar
-          v-if="$slots.floatbar || $slots['floatbar-top']"
+          v-if="slots.floatbar || slots['floatbar-top']"
           location="top-start"
           :target="state === 'typing'
             ? textEditor?.textEditor
@@ -494,7 +497,7 @@ const slotProps = {
         </Floatbar>
 
         <Floatbar
-          v-if="$slots['floatbar-bottom']"
+          v-if="slots['floatbar-bottom']"
           location="bottom-start"
           :target="selector?.transformable?.$el"
         >

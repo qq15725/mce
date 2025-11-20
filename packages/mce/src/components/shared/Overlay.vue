@@ -17,14 +17,19 @@ defineOptions({
 
 const props = defineProps({
   ...makeMceOverlayProps(),
+  modelValue: Boolean,
 })
 
 const emit = defineEmits<{
+  'update:modelValue': [val: boolean]
   'click:outside': [event: MouseEvent]
 }>()
 
 const overlayItem = useOverlay()
-const isActive = defineModel<boolean>()
+const isActive = computed({
+  get: () => props.modelValue,
+  set: val => emit('update:modelValue', val),
+})
 const activatorEl = ref<any>()
 const virtualElement = {
   getBoundingClientRect() {
@@ -91,7 +96,13 @@ onMounted(() => {
         emit('click:outside', e as any)
       }
     },
-    { controls: true, ignore: computed(() => [activatorEl.value]) },
+    {
+      controls: true,
+      ignore: computed(() => [
+        contentEl.value,
+        activatorEl.value,
+      ]),
+    },
   ) as any
 
   clearup = [
