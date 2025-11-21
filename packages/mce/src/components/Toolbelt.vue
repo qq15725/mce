@@ -116,6 +116,7 @@ const items = computed(() => {
         <Tooltip
           location="top"
           :offset="12"
+          show-arrow
         >
           <template #activator="{ props: slotProps }">
             <Btn
@@ -130,11 +131,14 @@ const items = computed(() => {
 
           <template #default>
             <span>{{ t(tool.key) }}</span>
+          </template>
+
+          <template #kbd>
             <template v-if="hotkeys.has(`setState:${tool.key}`)">
-              <span class="mce-toolbelt__kbd">{{ getKbd(`setState:${tool.key}`) }}</span>
+              <span>{{ getKbd(`setState:${tool.key}`) }}</span>
             </template>
             <template v-else-if="hotkeys.has(`setActiveDrawingTool:${tool.key}`)">
-              <span class="mce-toolbelt__kbd">{{ getKbd(`setActiveDrawingTool:${tool.key}`) }}</span>
+              <span>{{ getKbd(`setActiveDrawingTool:${tool.key}`) }}</span>
             </template>
           </template>
         </Tooltip>
