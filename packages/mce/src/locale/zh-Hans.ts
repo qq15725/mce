@@ -23,6 +23,7 @@ export default {
   'polygon': '多边形',
   'star': '星形',
   'image': '图片',
+  'pen': '钢笔',
   'pencil': '铅笔',
   'file': '文件',
   'new': '新建',

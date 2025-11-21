@@ -33,7 +33,7 @@ const progress = defineModel<number>({ default: 0 })
     gap: 12px;
 
     &__status {
-      font-size: 12px;
+      font-size: 0.75rem;
       color: rgb(var(--mce-theme-on-surface));
     }
 

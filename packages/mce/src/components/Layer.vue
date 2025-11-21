@@ -318,7 +318,7 @@ function onInputBlur() {
     display: flex;
     align-items: center;
     height: 32px;
-    font-size: 12px;
+    font-size: 0.75rem;
     padding-left: var(--indent-padding, 0);
     width: 100%;
     min-width: max-content;
@@ -413,7 +413,7 @@ function onInputBlur() {
       align-items: center;
       width: 12px;
       height: 100%;
-      font-size: 12px;
+      font-size: 0.75rem;
       overflow: hidden;
       margin-right: 4px;
     }

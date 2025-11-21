@@ -1,3 +1,4 @@
+import type { Element2D } from 'modern-canvas'
 import { Path2D } from 'modern-path2d'
 import { definePlugin } from '../plugin'
 
@@ -14,9 +15,50 @@ export default definePlugin((editor) => {
     addElement,
   } = editor
 
+  let pening = false
+  let el: Element2D | undefined
+  let path: Path2D | undefined
+
   return {
     name: 'mce:pen',
     drawingTools: [
+      {
+        name: 'pen',
+        handle: (start) => {
+          if (pening) {
+            path!.lineTo(start.x, start.y)
+            path!.moveTo(start.x, start.y)
+            el!.shape.paths = [
+              { data: path!.toData() },
+            ]
+            const box = path!.getBoundingBox()
+            el!.style.left = box.left
+            el!.style.top = box.top
+            el!.style.width = box.width
+            el!.style.height = box.height
+          }
+          else {
+            pening = true
+            el = addElement({
+              name: 'pen',
+              outline: {
+                color: '#d9d9d9',
+                width: 5,
+                lineCap: 'round',
+                lineJoin: 'round',
+              },
+              meta: {
+                inPptIs: 'Shape',
+              },
+            }, {
+              active: true,
+              position: start,
+            })
+            path = new Path2D()
+            path.moveTo(start.x, start.y)
+          }
+        },
+      },
       {
         name: 'pencil',
         handle: (start) => {
@@ -57,6 +99,7 @@ export default definePlugin((editor) => {
       },
     ],
     hotkeys: [
+      { command: 'setActiveDrawingTool:pen', key: 'p' },
       { command: 'setActiveDrawingTool:pencil', key: 'Shift+p' },
     ],
   }

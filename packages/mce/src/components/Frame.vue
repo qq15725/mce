@@ -90,7 +90,7 @@ async function onPointerdown(ev: PointerEvent) {
     left: 0;
     transform: translate(0%, -100%) translate(0px, -4px);
     transform-origin: left bottom;
-    font-size: 12px;
+    font-size: 0.75rem;
     line-height: 1.5;
     white-space: nowrap;
     pointer-events: auto;

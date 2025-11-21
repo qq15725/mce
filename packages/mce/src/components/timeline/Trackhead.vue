@@ -24,7 +24,7 @@ defineProps<{
     min-height: 22px;
     align-items: center;
     color: rgba(var(--mce-theme-on-surface), .6);
-    font-size: 12px;
+    font-size: 0.75rem;
     width: 100%;
     white-space: nowrap;
     overflow: hidden;

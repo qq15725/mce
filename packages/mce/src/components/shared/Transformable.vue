@@ -805,7 +805,7 @@ function Diagonal() {
     transform: translate(-50%, calc(100% + 8px));
     background-color: rgb(var(--mce-theme-primary));
     color: rgb(var(--mce-theme-on-primary));
-    font-size: 12px;
+    font-size: 0.75rem;
     padding: 2px 4px;
     border-radius: 3px;
     text-wrap: nowrap;

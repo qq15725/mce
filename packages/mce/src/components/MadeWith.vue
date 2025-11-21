@@ -17,7 +17,7 @@
     opacity: .38;
     color: #000;
     text-align: center;
-    font-size: 12px;
+    font-size: 0.75rem;
     line-height: 1;
     border: 2px solid currentColor;
     padding: 2px 4px;

@@ -55,15 +55,16 @@ defineExpose({
   background: rgb(var(--mce-theme-surface-variant));
   color: rgb(var(--mce-theme-on-surface-variant));
   border-radius: 4px;
-  font-size: 0.875rem;
-  line-height: 1.6;
+  font-size: 0.75rem;
+  line-height: 1;
   display: inline-block;
-  padding: 5px 16px;
+  padding: 8px;
   text-transform: initial;
   width: auto;
   opacity: 1;
   transition-property: opacity, transform;
   overflow-wrap: break-word;
+  box-shadow: var(--mce-shadow);
 
   &__content {
     display: flex;

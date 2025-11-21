@@ -22,7 +22,7 @@ defineProps<{
     border-radius: 4px;
     height: 24px;
     width: 24px;
-    font-size: 12px;
+    font-size: 0.75rem;
     display: flex;
     align-items: center;
     justify-content: center;

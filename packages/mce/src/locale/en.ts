@@ -22,6 +22,7 @@ export default {
   'polygon': 'Polygon',
   'star': 'Star',
   'image': 'Image',
+  'pen': 'Pen',
   'pencil': 'Pencil',
   'file': 'File',
   'new': 'New',

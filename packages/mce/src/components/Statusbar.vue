@@ -96,7 +96,7 @@ const {
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1;
   width: 100%;
   height: 100%;
@@ -135,7 +135,7 @@ const {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 12px;
+    font-size: 0.75rem;
     padding: 0 2px;
     font-family: system-ui, -apple-system, sans-serif;
   }

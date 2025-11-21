@@ -50,7 +50,7 @@ const style = computed(() => {
 <style lang="scss">
   .mce-segment {
     display: flex;
-    font-size: 12px;
+    font-size: 0.75rem;
     align-items: center;
     position: absolute;
     top: 2px;

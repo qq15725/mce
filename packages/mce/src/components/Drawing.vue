@@ -35,7 +35,7 @@ const {
     width: fit-content;
     height: 22px;
     padding: 0 4px;
-    font-size: 14px;
+    font-size: 0.875rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

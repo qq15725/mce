@@ -15,10 +15,11 @@ const {
   getKbd,
 } = useEditor()
 
-const activeShapeIndex = ref(0)
+const activeShape = ref(0)
+const activePen = ref(0)
 
 const shapeItems = computed(() => {
-  const shapes = [
+  const keys = [
     'rectangle',
     'line',
     'arrow',
@@ -28,11 +29,11 @@ const shapeItems = computed(() => {
   ]
 
   return [
-    ...shapes.map((key, index) => {
+    ...keys.map((key, index) => {
       return {
         key,
         handle: () => {
-          activeShapeIndex.value = index
+          activeShape.value = index
           setActiveDrawingTool(key)
         },
         checked: activeDrawingTool.value?.name === key,
@@ -45,6 +46,27 @@ const shapeItems = computed(() => {
     },
   ]
 })
+
+const penItems = computed(() => {
+  const keys = [
+    'pen',
+    'pencil',
+  ]
+
+  return [
+    ...keys.map((key, index) => {
+      return {
+        key,
+        handle: () => {
+          activePen.value = index
+          setActiveDrawingTool(key)
+        },
+        checked: activeDrawingTool.value?.name === key,
+      }
+    }),
+  ]
+})
+
 const items = computed(() => {
   return [
     {
@@ -69,7 +91,7 @@ const items = computed(() => {
       handle: () => setActiveDrawingTool('frame'),
     },
     {
-      ...(shapeItems.value.find(v => v.checked) ?? shapeItems.value[0]),
+      ...(shapeItems.value.find(v => v.checked) ?? shapeItems.value[activeShape.value]),
       children: shapeItems.value,
     },
     {
@@ -78,9 +100,8 @@ const items = computed(() => {
       handle: () => setActiveDrawingTool('text'),
     },
     {
-      key: 'pencil',
-      active: activeDrawingTool.value?.name === 'pencil',
-      handle: () => setActiveDrawingTool('pencil'),
+      ...(penItems.value.find(v => v.checked) ?? penItems.value[activePen.value]),
+      children: penItems.value,
     },
   ]
 })
@@ -92,7 +113,10 @@ const items = computed(() => {
       v-for="(tool, key) in items" :key="key"
     >
       <div class="mce-toolbelt__group">
-        <Tooltip location="top">
+        <Tooltip
+          location="top"
+          :offset="12"
+        >
           <template #activator="{ props: slotProps }">
             <Btn
               class="mce-toolbelt__btn"
@@ -168,7 +192,7 @@ const items = computed(() => {
     cursor: default;
 
     &__kbd {
-      font-size: 12px;
+      font-size: 0.75rem;
       white-space: nowrap;
       letter-spacing: .08em;
       margin-left: 16px;
@@ -189,13 +213,13 @@ const items = computed(() => {
     }
 
     &__icon {
-      font-size: 16px;
+      font-size: 1rem;
     }
 
     &__arrow {
       width: 16px;
       height: 100%;
-      font-size: 12px;
+      font-size: 0.75rem;
       border-radius: 4px;
     }
   }

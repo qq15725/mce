@@ -351,7 +351,7 @@ defineExpose({
     :target="tipPos"
     :offset="24"
   >
-    <div style="font-size: 12px; text-wrap: nowrap">
+    <div style="font-size: 0.75rem; text-wrap: nowrap">
       {{ tipText }}
     </div>
   </Tooltip>

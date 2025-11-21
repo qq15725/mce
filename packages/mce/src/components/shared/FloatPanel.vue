@@ -71,7 +71,7 @@ const transform = ref({
       justify-content: space-between;
       align-items: center;
       padding: 8px;
-      font-size: 12px;
+      font-size: 0.75rem;
       font-weight: bold;
       border-bottom: 1px solid rgba(var(--mce-border-color), var(--mce-border-opacity));
     }

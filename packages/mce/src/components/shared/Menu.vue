@@ -293,19 +293,19 @@ defineExpose({
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
+    font-size: 0.875rem;
   }
 
   &__title {
     flex: 1;
     display: flex;
     align-items: center;
-    font-size: 12px;
+    font-size: 0.75rem;
     white-space: nowrap;
   }
 
   &__kbd {
-    font-size: 12px;
+    font-size: 0.75rem;
     white-space: nowrap;
     letter-spacing: .08em;
     margin-left: 24px;
@@ -318,7 +318,7 @@ defineExpose({
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 12px;
+    font-size: 0.75rem;
     margin-right: -6px;
   }
 }

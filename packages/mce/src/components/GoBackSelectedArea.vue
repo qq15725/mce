@@ -48,7 +48,7 @@ const isActive = computed(() => {
     transform: translateX(-50%);
     backdrop-filter: blur(var(--mce-blur));
     border-radius: 8px;
-    font-size: 14px;
+    font-size: 0.875rem;
     cursor: pointer;
   }
 </style>
