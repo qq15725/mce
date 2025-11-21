@@ -31,7 +31,7 @@ export default definePlugin((editor) => {
       ...restOptions,
     })
 
-    const exporter = exporters.value.get(key)
+    const exporter = exporters.get(key)
     if (exporter && typeof exporter.saveAs === 'function') {
       res = exporter.saveAs(res)
     }
