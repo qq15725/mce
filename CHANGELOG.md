@@ -1,3 +1,14 @@
+## [0.14.1](https://github.com/qq15725/mce/compare/v0.14.0...v0.14.1) (2025-12-08)
+
+
+### Bug Fixes
+
+* frame / shape drawing tool ([053bb0a](https://github.com/qq15725/mce/commit/053bb0ae6b3740a7a27d8a0ae3ea0ac5bfbe4fd7))
+* pen ([2cd856e](https://github.com/qq15725/mce/commit/2cd856e54ead56919edfaeb0ef941164781520bd))
+* pen ([4c31215](https://github.com/qq15725/mce/commit/4c312150f985fc177341db548ddf9f3737a019c5))
+
+
+
 # [0.14.0](https://github.com/qq15725/mce/compare/v0.13.16...v0.14.0) (2025-12-08)
 
 
