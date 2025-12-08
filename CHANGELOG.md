@@ -1,3 +1,21 @@
+# [0.14.0](https://github.com/qq15725/mce/compare/v0.13.16...v0.14.0) (2025-12-08)
+
+
+### Bug Fixes
+
+* bug ([5ad1f41](https://github.com/qq15725/mce/commit/5ad1f414f581dca4cca8f6ae54a7132398635721))
+
+
+### Features
+
+* cursor ([4f1c9e6](https://github.com/qq15725/mce/commit/4f1c9e63318b9657bfb658b5cdcb9cb02383db78))
+* pen ([a881457](https://github.com/qq15725/mce/commit/a881457d9e37721d19088230627d55a2daacf1bc))
+* ref map to reactive map ([f9f0d5c](https://github.com/qq15725/mce/commit/f9f0d5cfc7db756e327cfa398ff371c8554e3b35))
+* tooltip show-arrow ([8524f89](https://github.com/qq15725/mce/commit/8524f89d4a944a7e33459de7ab85578b8de8bea1))
+* up GL render pipe ([91bec22](https://github.com/qq15725/mce/commit/91bec22cf13a81f665f11ff641f372434702a480))
+
+
+
 ## [0.13.16](https://github.com/qq15725/mce/compare/v0.13.15...v0.13.16) (2025-11-20)
 
 
