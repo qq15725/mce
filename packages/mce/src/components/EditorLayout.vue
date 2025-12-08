@@ -450,7 +450,7 @@ const slotProps = {
   <Layout
     class="mce-editor"
     :class="[
-      `mce-editor--${state}`,
+      state && `mce-editor--${state}`,
       activeDrawingTool && `mce-editor--drawing-tool-${activeDrawingTool.name}`,
       grabbing && `mce-editor--grabbing`,
     ]"

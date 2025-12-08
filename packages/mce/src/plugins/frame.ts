@@ -31,8 +31,14 @@ export default definePlugin((editor) => {
           el.style.backgroundColor = '#ffffff'
           return {
             move: (move) => {
-              el.style.width = Math.abs(move.x - start.x)
-              el.style.height = Math.abs(move.y - start.y)
+              const minX = Math.min(move.x, start.x)
+              const minY = Math.min(move.y, start.y)
+              const maxX = Math.max(move.x, start.x)
+              const maxY = Math.max(move.y, start.y)
+              el.style.left = minX
+              el.style.top = minY
+              el.style.width = maxX - minX
+              el.style.height = maxY - minY
             },
             end: () => {
               setActiveDrawingTool(undefined)
