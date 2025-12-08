@@ -478,7 +478,7 @@ export class Doc extends Model {
       node = reactive(
         Node.parse({
           meta: {
-            inCanvasIs: yNode.get('meta')?.get('inCanvasIs'),
+            inCanvasIs: yNode.get('meta')?.get('inCanvasIs') as string | undefined,
           },
         }),
       ) as Node
