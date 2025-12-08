@@ -464,7 +464,7 @@ export class Doc extends Model {
       })
       ;(node as any)._text = markRaw((node as any)._text)
       node.text.update()
-      node.requestRedraw()
+      node.requestRender()
     }
 
     this._proxyChildren(node, yEle.get('childrenIds'))

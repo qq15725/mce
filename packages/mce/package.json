@@ -66,14 +66,14 @@
   },
   "dependencies": {
     "@floating-ui/vue": "^1.1.9",
-    "@vueuse/components": "^14.0.0",
-    "@vueuse/core": "^14.0.0",
+    "@vueuse/components": "^14.1.0",
+    "@vueuse/core": "^14.1.0",
     "diff": "^8.0.2",
     "file-saver": "^2.0.5",
     "lodash-es": "^4.17.21",
-    "modern-canvas": "^0.13.4",
+    "modern-canvas": "^0.14.3",
     "modern-font": "^0.4.4",
-    "modern-idoc": "^0.10.5",
+    "modern-idoc": "^0.10.6",
     "modern-text": "^1.10.4",
     "yjs": "^13.6.27"
   },

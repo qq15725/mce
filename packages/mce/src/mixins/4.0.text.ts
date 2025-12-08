@@ -92,7 +92,7 @@ export default defineMixin((editor) => {
         })
       }
 
-      element.requestRedraw()
+      element.requestRender()
     }
 
     _handle(element)
@@ -141,7 +141,7 @@ export default defineMixin((editor) => {
       ) {
         element.style.width = boundingBox.width
         element.style.height = boundingBox.height
-        element.requestRedraw()
+        element.requestRender()
       }
     }
 
@@ -320,7 +320,7 @@ export default defineMixin((editor) => {
       })
       el.text.content = content
     }
-    element.value.requestRedraw()
+    element.value.requestRender()
     textToFit(element.value)
   }
 

@@ -294,7 +294,7 @@ export default defineMixin((editor) => {
       style.top = style.top * scaleY
       style.width = style.width * scaleX
       style.height = style.height * scaleY
-      element?.requestRedraw?.() // TODO
+      element?.requestRender?.() // TODO
     }
 
     handle(element)
