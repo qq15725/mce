@@ -16,8 +16,8 @@ export default definePlugin((editor) => {
   const {
     addElement,
     renderEngine,
-    drawboardPointer,
     activeDrawingTool,
+    getGlobalPointer,
     state,
   } = editor
 
@@ -77,7 +77,7 @@ export default definePlugin((editor) => {
             currentPath.currentCurve.addCurve(currentLine)
 
             const onMove = () => {
-              const move = drawboardPointer.value
+              const move = getGlobalPointer()
               if (currentLine && move) {
                 currentLine.p2.x = move.x
                 currentLine.p2.y = move.y
