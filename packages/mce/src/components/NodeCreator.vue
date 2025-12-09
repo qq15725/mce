@@ -64,15 +64,17 @@ function cancel() {
 function create() {
   isActive.value = false
   const name = activeNodeName.value
-  addNode({
-    name,
-    meta: {
-      inCanvasIs: name,
-    },
-  }, {
-    parent: selection.value[0],
-    active: true,
-  })
+  if (name) {
+    addNode({
+      name,
+      meta: {
+        inCanvasIs: name,
+      },
+    }, {
+      parent: selection.value[0],
+      active: true,
+    })
+  }
 }
 
 function Node(props: any = {}): any {
