@@ -1,3 +1,12 @@
+## [0.14.2](https://github.com/qq15725/mce/compare/v0.14.1...v0.14.2) (2025-12-09)
+
+
+### Bug Fixes
+
+* effect ([ae07738](https://github.com/qq15725/mce/commit/ae077383537a43fd332aee8473a78656addd84d9))
+
+
+
 ## [0.14.1](https://github.com/qq15725/mce/compare/v0.14.0...v0.14.1) (2025-12-08)
 
 
