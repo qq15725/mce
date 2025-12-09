@@ -22,6 +22,7 @@ const {
   isElement,
   state,
   resizeElement,
+  selection,
   elementSelection,
   selectionObb,
   selectionObbInDrawboard,
@@ -48,11 +49,11 @@ onBeforeUnmount(() => {
 })
 
 const parentObbs = computed(() => {
-  if (elementSelection.value.length !== 1) {
+  if (selection.value.length !== 1) {
     return []
   }
   const obbs: OrientedBoundingBox[] = []
-  elementSelection.value[0]?.findAncestor((ancestor) => {
+  selection.value[0]?.findAncestor((ancestor) => {
     if (isElement(ancestor)) {
       obbs.push(getObb(ancestor as Element2D, 'drawboard'))
     }

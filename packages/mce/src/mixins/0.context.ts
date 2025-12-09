@@ -37,6 +37,7 @@ declare global {
       drawboardDom: Ref<HTMLElement | undefined>
       drawboardAabb: Ref<AxisAlignedBoundingBox>
       drawboardPointer: Ref<Vector2Data | undefined>
+      drawboardContextMenuPointer: Ref<Vector2Data | undefined>
       doc: Ref<Doc>
       root: ComputedRef<Node>
       nodes: Ref<Node[]>
@@ -81,6 +82,8 @@ export default defineMixin((editor) => {
 
   const drawboardDom = ref<HTMLElement>()
   const drawboardAabb = ref({ left: 0, top: 0, width: 0, height: 0 })
+  const drawboardPointer = ref<Vector2Data>()
+  const drawboardContextMenuPointer = ref<Vector2Data>()
   const doc = ref(new Doc())
   const root = computed(() => doc.value.root)
   const nodes = ref<Node[]>([])
@@ -92,7 +95,6 @@ export default defineMixin((editor) => {
   })
   const textSelection = ref<any[]>()
   const hoverElement = ref<Element2D>()
-  const drawboardPointer = ref<Vector2Data>()
   const state = ref<Mce.State>()
 
   function setCursor(mode: Cursor | undefined): void {
@@ -180,9 +182,10 @@ export default defineMixin((editor) => {
     hoverElement,
     drawboardDom,
     drawboardAabb,
+    drawboardPointer,
+    drawboardContextMenuPointer,
     state,
     setCursor,
-    drawboardPointer,
     getGlobalPointer,
     parseAnchor,
     isNode,

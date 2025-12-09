@@ -33,7 +33,7 @@ defineProps<{
       background: rgb(var(--mce-theme-background));
     }
 
-    &#{$root}--icon {
+    &--icon {
       height: 24px;
       width: 24px;
     }

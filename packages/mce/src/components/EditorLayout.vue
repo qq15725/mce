@@ -85,6 +85,7 @@ const {
   elementSelection,
   drawboardAabb,
   drawboardPointer,
+  drawboardContextMenuPointer,
   screenCenterOffset,
   activeDrawingTool,
 } = editor
@@ -544,8 +545,8 @@ const slotProps = {
         :default-transform="{
           width: 240,
           height: drawboardAabb.height * .7,
-          top: screenCenterOffset.top + 24,
-          left: screenCenterOffset.left + 24,
+          left: drawboardAabb.left + (drawboardPointer?.x ?? drawboardContextMenuPointer?.x ?? (screenCenterOffset.left + 24)),
+          top: drawboardAabb.top + (drawboardPointer?.y ?? drawboardContextMenuPointer?.y ?? (screenCenterOffset.top + 24)),
         }"
       >
         <template #default="{ isActive }">

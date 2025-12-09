@@ -6,6 +6,7 @@ import Menu from './shared/Menu.vue'
 const {
   drawboardDom,
   drawboardAabb,
+  drawboardContextMenuPointer,
   contextMenu,
   exec,
   getKbd,
@@ -15,7 +16,7 @@ const {
   unregisterCommand,
 } = useEditor()
 
-const model = defineModel<boolean>()
+const isActive = defineModel<boolean>()
 const position = defineModel<{ x: number, y: number }>('position', {
   default: () => ({ x: 0, y: 0 }),
 })
@@ -29,16 +30,26 @@ onBeforeUnmount(() => {
   unregisterCommand('openContextMenu')
 })
 
+watch(isActive, (isActive) => {
+  if (!isActive) {
+    drawboardContextMenuPointer.value = undefined
+  }
+})
+
 function updateLocation() {
   menuRef.value?.updateLocation()
 }
 
-function onContextmenu(e: MouseEvent) {
-  e.preventDefault()
-  model.value = true
+function onContextmenu(event: MouseEvent) {
+  event.preventDefault()
+  isActive.value = true
   position.value = {
-    x: e.clientX,
-    y: e.clientY,
+    x: event.clientX,
+    y: event.clientY,
+  }
+  drawboardContextMenuPointer.value = {
+    x: event.clientX - drawboardAabb.value.left,
+    y: event.clientY - drawboardAabb.value.top,
   }
   updateLocation()
 }
@@ -64,7 +75,7 @@ defineExpose({
 <template>
   <Menu
     ref="menuTplRef"
-    v-model="model"
+    v-model="isActive"
     :offset="10"
     class="mce-context-menu"
     :target="position"

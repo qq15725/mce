@@ -4,8 +4,6 @@ import { computed, h, ref } from 'vue'
 import { useEditor } from '../composables'
 import Btn from './shared/Btn.vue'
 
-const isActive = defineModel<boolean>('isActive')
-
 interface ClassType { new (...args: any[]): any }
 
 interface ClassNode {
@@ -20,11 +18,20 @@ const {
   selection,
 } = useEditor()
 
+const isActive = defineModel<boolean>('isActive')
 const activeNodeName = ref<string>()
+const exclude = new Set([
+  'RenderTarget',
+  'Window',
+  'DrawboardEffect',
+])
 
 function buildInheritanceTree(classMap: Map<string, ClassType>): ClassNode[] {
   const nodes = new Map<string, ClassNode>()
   for (const [name, ctor] of classMap.entries()) {
+    if (exclude.has(name)) {
+      continue
+    }
     nodes.set(name, { ctor, name, children: [] })
   }
 
