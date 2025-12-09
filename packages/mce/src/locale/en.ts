@@ -1,5 +1,6 @@
 export default {
   'cancel': 'Cancel',
+  'create': 'Create',
   'constrainToAxis': 'Constrain to axis',
   'loading': 'Loading',
   'drawing': 'Drawing',
@@ -38,6 +39,7 @@ export default {
   'saveAs:pdf': 'Save as PDF',
   'saveAs:pptx': 'Save as PPTX',
   'saveAs:json': 'Save as JSON',
+  'addSubNode': 'Add sub node',
   'edit': 'Edit',
   'undo': 'Undo',
   'redo': 'Redo',
@@ -66,6 +68,8 @@ export default {
   'panels:layers': 'Open layers panel',
   'panels:timeline': 'Open timeline panel',
   'panels:statusbar': 'Open statusbar panel',
+  'panels:nodeCreator': 'Open node creator panel',
+  'nodeCreator': 'Create node',
   'toolbelt': 'Toolbelt',
   'msaa': 'MSAA',
   'pixelate': 'Pixelate',

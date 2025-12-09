@@ -8,13 +8,13 @@ import { markRaw, reactive } from 'vue'
 import * as Y from 'yjs'
 import { Model } from './Model'
 
-interface AddElementOptions {
+interface AddNodeOptions {
   parentId?: string
   index?: number
   regenId?: boolean
 }
 
-export type YElement = Y.Map<unknown> & {
+export type YNode = Y.Map<unknown> & {
   get:
     & ((prop: 'id') => string)
     & ((prop: 'name') => string)
@@ -32,9 +32,9 @@ export type YElement = Y.Map<unknown> & {
     & (<T = unknown>(prop: string) => T)
 }
 
-export interface YElementResult {
+export interface YNodeResult {
   id: string
-  element: YElement
+  node: YNode
 }
 
 function initYElement(
@@ -85,18 +85,18 @@ function initYElement(
   }
 }
 
-export function iElementToYElements(
+export function iElementToYNodes(
   element: Element,
   parentId: string | undefined,
   regenId = false,
-): YElementResult[] {
-  const results: YElementResult[] = []
-  const yElement = new Y.Map<unknown>() as YElement
-  const { normalized, yChildrenIds } = initYElement(yElement, element, parentId, regenId)
+): YNodeResult[] {
+  const results: YNodeResult[] = []
+  const yNode = new Y.Map<unknown>() as YNode
+  const { normalized, yChildrenIds } = initYElement(yNode, element, parentId, regenId)
   const id = normalized.id
-  results.push({ id, element: yElement })
+  results.push({ id, node: yNode })
   normalized.children?.forEach((iChild) => {
-    const result = iElementToYElements(iChild, id, regenId)
+    const result = iElementToYNodes(iChild, id, regenId)
     yChildrenIds.push([result[0].id])
     results.push(...result)
   })
@@ -115,13 +115,13 @@ export interface Doc {
 }
 
 export class Doc extends Model {
-  _yChildren: Y.Map<YElement>
-  _yChildrenIds: Y.Array<string>
+  protected _yChildren: Y.Map<YNode>
+  protected _yChildrenIds: Y.Array<string>
 
   @property({ default: 'doc' }) declare name: string
 
   readonly root = reactive(new Node()) as Node
-  nodeMap = new Map<string, Node>()
+  protected _nodeMap = new Map<string, Node>()
 
   get meta() { return this.root.meta }
   set meta(val) { this.root.meta = val }
@@ -201,8 +201,8 @@ export class Doc extends Model {
           }
           break
         case 'delete':
-          this.nodeMap.get(key)?.remove()
-          this.nodeMap.delete(key)
+          this._nodeMap.get(key)?.remove()
+          this._nodeMap.delete(key)
           break
       }
     })
@@ -212,22 +212,22 @@ export class Doc extends Model {
     super.reset()
     this._yChildren.clear()
     this._yChildrenIds.delete(0, this._yChildrenIds.length)
-    this.nodeMap.clear()
+    this._nodeMap.clear()
     this.undoManager.clear()
     this.indexeddb?.clearData()
     return this
   }
 
-  protected _addElement(element: Element, options: AddElementOptions = {}): Node {
+  protected _addNode(node: Element, options: AddNodeOptions = {}): Node {
     const { parentId, index, regenId } = options
-    const yNodes = iElementToYElements(element, parentId, regenId)
-    yNodes.forEach(result => this._yChildren.set(result.id, result.element))
-    const nodeMap = yNodes.map(result => this._getOrCreateNode(result.element))
-    const first = nodeMap[0]
+    const yNodes = iElementToYNodes(node, parentId, regenId)
+    yNodes.forEach(result => this._yChildren.set(result.id, result.node))
+    const _nodeMap = yNodes.map(result => this._getOrCreateNode(result.node))
+    const first = _nodeMap[0]
     let parent
     let childrenIds
     if (parentId && parentId !== this.root.id) {
-      parent = this.nodeMap.get(parentId)
+      parent = this._nodeMap.get(parentId)
       childrenIds = this._yChildren.get(parentId)?.get('childrenIds')
     }
     else {
@@ -247,22 +247,18 @@ export class Doc extends Model {
     return first
   }
 
-  addElement(element: Element, options?: AddElementOptions): Node {
-    return this.transact(() => {
-      return this._addElement(element, options)
-    })
+  addNode(node: Element, options?: AddNodeOptions): Node {
+    return this.transact(() => this._addNode(node, options))
   }
 
-  addElements(elements: Element[], options?: AddElementOptions): Node[] {
-    return this.transact(() => {
-      return elements.map(element => this._addElement(element, options))
-    })
+  addNodes(nodes: Element[], options?: AddNodeOptions): Node[] {
+    return this.transact(() => nodes.map(element => this._addNode(element, options)))
   }
 
   set(source: Document): this {
     const { children = [], meta = {}, ...props } = source
     this.reset()
-    this.addElements(children)
+    this.addNodes(children)
     this.setProperties(props)
     this._yProps.clear()
     for (const key in props) {
@@ -272,8 +268,8 @@ export class Doc extends Model {
     return this
   }
 
-  protected _deleteElement(id: string): void {
-    const node = this.nodeMap.get(id)
+  protected _deleteNode(id: string): void {
+    const node = this._nodeMap.get(id)
     const yNode = this._yChildren.get(id)
     if (!yNode || !node) {
       return
@@ -288,16 +284,20 @@ export class Doc extends Model {
         parentChildrenIds.delete(index)
       }
     }
-    yNode.get('childrenIds').forEach(id => this._deleteElement(id))
+    yNode.get('childrenIds').forEach(id => this._deleteNode(id))
     node.remove()
   }
 
-  deleteElement(id: string): void {
-    this.transact(() => this._deleteElement(id))
+  deleteNode(id: string): void {
+    this.transact(() => this._deleteNode(id))
   }
 
-  moveElement(id: string, toIndex: number): void {
-    const node = this.nodeMap.get(id)
+  getNode<T extends Node = Node>(id: string): T | undefined {
+    return this._nodeMap.get(id) as T
+  }
+
+  moveNode(id: string, toIndex: number): void {
+    const node = this._nodeMap.get(id)
     if (!node) {
       return
     }
@@ -414,7 +414,7 @@ export class Doc extends Model {
         if (action.insert) {
           const ids = Array.isArray(action.insert) ? action.insert : [action.insert]
           ids.forEach((id, index) => {
-            let child = this.nodeMap.get(id)
+            let child = this._nodeMap.get(id)
             const cb = (child: Node): void => {
               node.moveChild(child, retain + index)
             }
@@ -423,7 +423,7 @@ export class Doc extends Model {
             }
             else {
               setTimeout(() => {
-                child = this.nodeMap.get(id)
+                child = this._nodeMap.get(id)
                 child && cb(child)
               }, 0)
             }
@@ -438,7 +438,7 @@ export class Doc extends Model {
     childrenIds.observe(observeFn)
   }
 
-  protected _proxyNode(node: Node, yEle: YElement): void {
+  protected _proxyNode(node: Node, yEle: YNode): void {
     this._proxyProps(node, yEle)
 
     const meta = yEle.get('meta')
@@ -470,9 +470,9 @@ export class Doc extends Model {
     this._proxyChildren(node, yEle.get('childrenIds'))
   }
 
-  protected _getOrCreateNode(yNode: YElement): Node {
+  protected _getOrCreateNode(yNode: YNode): Node {
     const id = yNode.get('id')
-    let node = this.nodeMap.get(id)
+    let node = this._nodeMap.get(id)
     if (!node) {
       this.undoManager.addToScope(yNode)
       node = reactive(
@@ -483,7 +483,7 @@ export class Doc extends Model {
         }),
       ) as Node
       this._proxyNode(node, yNode)
-      this.nodeMap.set(id, node)
+      this._nodeMap.set(id, node)
     }
     return node
   }

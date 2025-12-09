@@ -120,6 +120,7 @@ const items = computed(() => {
         >
           <template #activator="{ props: slotProps }">
             <Btn
+              icon
               class="mce-toolbelt__btn"
               :active="tool.active || (tool as any).checked || false"
               v-bind="slotProps"
@@ -150,7 +151,7 @@ const items = computed(() => {
             location="top-start"
           >
             <template #activator="{ props }">
-              <Btn class="mce-toolbelt__arrow" v-bind="props">
+              <Btn icon class="mce-toolbelt__arrow" v-bind="props">
                 <Icon icon="$arrowDown" />
               </Btn>
             </template>

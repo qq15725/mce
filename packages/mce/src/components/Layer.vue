@@ -185,12 +185,10 @@ function onMouseleave() {
 }
 
 function onContextmenu(e: PointerEvent) {
-  if (isElement(props.node)) {
-    if (!selection.value.some(v => v.equal(props.node))) {
-      selection.value = [props.node]
-    }
-    exec('openContextMenu', e)
+  if (!selection.value.some(v => v.equal(props.node))) {
+    selection.value = [props.node]
   }
+  exec('openContextMenu', e)
 }
 
 function onInputBlur() {
@@ -264,6 +262,7 @@ function onInputBlur() {
       <div class="mce-layer__action">
         <template v-if="props.root">
           <Btn
+            icon
             class="mce-layer__btn"
             :class="{
               'mce-layer__btn--hide': !hovering && !isLock(props.node),
@@ -276,6 +275,7 @@ function onInputBlur() {
 
         <template v-else>
           <Btn
+            icon
             class="mce-layer__btn"
             :class="{
               'mce-layer__btn--hide': !hovering && !isLock(props.node),
@@ -286,6 +286,7 @@ function onInputBlur() {
           </Btn>
 
           <Btn
+            icon
             class="mce-layer__btn"
             :class="{
               'mce-layer__btn--hide': !hovering && isVisible(props.node),

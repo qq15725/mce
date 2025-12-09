@@ -1,6 +1,7 @@
 <script setup lang="ts">
 defineProps<{
   active?: boolean
+  icon?: boolean
 }>()
 </script>
 
@@ -9,6 +10,7 @@ defineProps<{
     class="mce-btn"
     :class="{
       'mce-btn--active': active,
+      'mce-btn--icon': icon,
     }"
   >
     <slot />
@@ -20,8 +22,6 @@ defineProps<{
     $root: &;
     padding: 4px;
     border-radius: 4px;
-    height: 24px;
-    width: 24px;
     font-size: 0.75rem;
     display: flex;
     align-items: center;
@@ -31,6 +31,11 @@ defineProps<{
     &:hover {
       color: rgb(var(--mce-theme-on-background));
       background: rgb(var(--mce-theme-background));
+    }
+
+    &#{$root}--icon {
+      height: 24px;
+      width: 24px;
     }
 
     &#{$root}--active {

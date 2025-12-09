@@ -98,7 +98,7 @@ export default defineMixin((editor) => {
     const elements = doc.value.transact(() => {
       const values = isArray ? value : [value]
       const elements = values.map((element) => {
-        const el = doc.value.addElement(element, {
+        const el = doc.value.addNode(element, {
           parentId: parent?.id,
           index: offsetIndex,
           regenId,
@@ -268,7 +268,7 @@ export default defineMixin((editor) => {
     if (id === selection.value[0]?.id) {
       selection.value = []
     }
-    doc.value.deleteElement(id)
+    doc.value.deleteNode(id)
   }
 
   function updateElement(id: string, properties: Record<string, any>): void {
@@ -276,7 +276,7 @@ export default defineMixin((editor) => {
   }
 
   function getElement(id: string): Element2D | undefined {
-    return doc.value.nodeMap.get(id) as Element2D | undefined
+    return doc.value.getNode<Element2D>(id)
   }
 
   function resizeElement(

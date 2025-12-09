@@ -1,5 +1,6 @@
 export default {
   'cancel': '取消',
+  'create': '创建',
   'constrainToAxis': '约束到轴',
   'loading': '加载中...',
   'drawing': '绘制中...',
@@ -39,6 +40,7 @@ export default {
   'saveAs:pdf': '另存为 PDF',
   'saveAs:pptx': '另存为 PPTX',
   'saveAs:json': '另存为 JSON',
+  'addSubNode': '添加子节点',
   'edit': '编辑',
   'undo': '撤销',
   'redo': '重做',
@@ -67,6 +69,8 @@ export default {
   'panels:layers': '打开图层面板',
   'panels:statusbar': '打开状态栏面板',
   'panels:timeline': '打开时间线面板',
+  'panels:nodeCreator': '打开节点创建面板',
+  'nodeCreator': '创建节点',
   'toolbelt': '工具腰带',
   'msaa': '抗锯齿',
   'pixelate': '像素化',

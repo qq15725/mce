@@ -19,6 +19,10 @@ const transform = ref({
   top: 60,
   ...props.defaultTransform,
 })
+
+const defaultSlotProps = {
+  isActive,
+}
 </script>
 
 <template>
@@ -35,7 +39,7 @@ const transform = ref({
     >
       <div v-if="title" class="mce-float-panel__title">
         <div>{{ title }}</div>
-        <Btn @click="isActive = false">
+        <Btn icon @click="isActive = false">
           <Icon icon="$close" />
         </Btn>
       </div>
@@ -44,7 +48,7 @@ const transform = ref({
         class="mce-float-panel__content"
         @pointerdown.stop
       >
-        <slot />
+        <slot v-bind="defaultSlotProps" />
       </div>
     </div>
   </Transformable>
@@ -54,6 +58,7 @@ const transform = ref({
   .mce-float-panel {
     position: absolute;
     pointer-events: auto !important;
+    z-index: 2000;
 
     &__card {
       display: flex;

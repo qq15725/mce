@@ -512,25 +512,6 @@ const slotProps = {
           <Component :is="p.component" />
         </template>
 
-        <template
-          v-for="(p, key) in pluginsComponents.panel.filter(p => p.position === 'float')"
-          :key="key"
-        >
-          <FloatPanel
-            v-if="(config as any)[p.name]"
-            v-model="(config as any)[p.name]"
-            :title="t(p.name)"
-            :default-transform="{
-              width: 240,
-              height: drawboardAabb.height * .7,
-              top: screenCenterOffset.top + 24,
-              left: screenCenterOffset.left + 24,
-            }"
-          >
-            <Component :is="p.component" />
-          </FloatPanel>
-        </template>
-
         <slot name="drawboard" v-bind="slotProps" />
       </div>
     </Main>
@@ -550,6 +531,30 @@ const slotProps = {
       >
         <Component :is="p.component" />
       </LayoutItem>
+    </template>
+
+    <template
+      v-for="(p, key) in pluginsComponents.panel.filter(p => p.position === 'float')"
+      :key="key"
+    >
+      <FloatPanel
+        v-if="(config as any)[p.name]"
+        v-model="(config as any)[p.name]"
+        :title="t(p.name)"
+        :default-transform="{
+          width: 240,
+          height: drawboardAabb.height * .7,
+          top: screenCenterOffset.top + 24,
+          left: screenCenterOffset.left + 24,
+        }"
+      >
+        <template #default="{ isActive }">
+          <Component
+            :is="p.component"
+            v-model:is-active="isActive.value"
+          />
+        </template>
+      </FloatPanel>
     </template>
 
     <div

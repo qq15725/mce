@@ -37,6 +37,7 @@ export default definePlugin((editor, options) => {
     config,
     exporters,
     pluginsComponents,
+    isElement,
   } = editor
 
   const {
@@ -75,6 +76,10 @@ export default definePlugin((editor, options) => {
       .filter(v => Boolean(v.copyAs))
       .map(v => ({ key: `copyAs:${v.name}` })),
   }))
+
+  const nodeMenu = computed(() => [
+    { key: 'addSubNode' },
+  ])
 
   const editMenus1 = computed(() => [
     { key: 'copy', disabled: !hasSelected.value },
@@ -267,8 +272,10 @@ export default definePlugin((editor, options) => {
           ...editMenus1.value,
         ]
       }
-      else {
+      else if (selection.value.filter(isElement).length > 0) {
         return [
+          ...nodeMenu.value,
+          { type: 'divider' },
           ...editMenus1.value,
           { type: 'divider' },
           ...objectMenu1.value,
@@ -280,6 +287,13 @@ export default definePlugin((editor, options) => {
           zoomViewMenu.value,
           { type: 'divider' },
           exportMenu.value,
+        ]
+      }
+      else {
+        return [
+          ...nodeMenu.value,
+          { type: 'divider' },
+          ...editMenus1.value,
         ]
       }
     }

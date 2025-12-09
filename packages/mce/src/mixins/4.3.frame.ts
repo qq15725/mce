@@ -56,7 +56,7 @@ export default defineMixin((editor) => {
         ? currentFrameIndex.value + 1
         : frames.value.length - 1
     )
-    doc.value.addElement(element, { index })
+    doc.value.addNode(element, { index })
     setCurrentFrame(index)
     emit('addFrame', index)
   }
@@ -65,7 +65,7 @@ export default defineMixin((editor) => {
     const page = root.value.children[index]
     if (!page)
       return
-    doc.value.addElement(page.toJSON(), {
+    doc.value.addNode(page.toJSON(), {
       index: index + 1,
       regenId: true,
     })
@@ -76,7 +76,7 @@ export default defineMixin((editor) => {
     const id = root.value.children[fromIndex]?.id
     if (!id)
       return
-    doc.value.moveElement(id, toIndex)
+    doc.value.moveNode(id, toIndex)
     frameThumbs.value.splice(
       toIndex,
       0,
@@ -93,7 +93,7 @@ export default defineMixin((editor) => {
     const id = root.value.children[index]?.id
     if (!id)
       return
-    doc.value.deleteElement(id)
+    doc.value.deleteNode(id)
     frameThumbs.value.splice(index, 1)
     setCurrentFrame(index)
     emit('deleteFrame', index)
