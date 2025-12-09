@@ -9,7 +9,7 @@ const typedPluginsOut = path.resolve(__dirname, '../dist/typed-plugins.d.ts')
 const imports: string[] = []
 
 getFiles().forEach((file) => {
-  imports.push(`import '${file.path}'`)
+  imports.push(`import './${path.join(file.dir, file.path)}'`)
 })
 
 const content = `/* eslint-disable */
