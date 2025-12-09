@@ -1,3 +1,14 @@
+## [0.14.3](https://github.com/qq15725/mce/compare/v0.14.2...v0.14.3) (2025-12-09)
+
+
+### Features
+
+* add node plugin ([9ff4edc](https://github.com/qq15725/mce/commit/9ff4edc426d4ed78c2431e465abab6d146a68305))
+* NodeCreator ([94cae37](https://github.com/qq15725/mce/commit/94cae374c5f882057e806b0cbb0610eddaeae6f1))
+* NodeCreator ([f55361d](https://github.com/qq15725/mce/commit/f55361d9ed4c991da44fd8b02f3e5f3881ee54e1))
+
+
+
 ## [0.14.2](https://github.com/qq15725/mce/compare/v0.14.1...v0.14.2) (2025-12-09)
 
 
