@@ -77,7 +77,7 @@ const thumbnailIcon = computed(() => {
   if (isFrame(node)) {
     return '$frame'
   }
-  else if (node.children.length) {
+  else if (node.children.filter(isElement).length) {
     return '$group'
   }
   else if (isElement(node)) {
@@ -101,52 +101,50 @@ function onClickExpand() {
 
 function onClickContent(e: MouseEvent) {
   selecting.value = true
-  if (isElement(props.node)) {
-    if (e.shiftKey) {
-      const _nodes = [
-        ...selection.value.filter(v => !v.equal(props.node)),
-        props.node,
-      ]
-      let min: number | undefined
-      let max: number | undefined
-      _nodes.forEach((el) => {
-        const index = nodeIndexMap.get(el.id)
-        if (index !== undefined) {
-          min = min === undefined ? index : Math.min(min, index)
-          max = max === undefined ? index : Math.max(max, index)
+  if (e.shiftKey) {
+    const _nodes = [
+      ...selection.value.filter(v => !v.equal(props.node)),
+      props.node,
+    ]
+    let min: number | undefined
+    let max: number | undefined
+    _nodes.forEach((el) => {
+      const index = nodeIndexMap.get(el.id)
+      if (index !== undefined) {
+        min = min === undefined ? index : Math.min(min, index)
+        max = max === undefined ? index : Math.max(max, index)
+      }
+    })
+    if (min !== undefined && max !== undefined) {
+      let _selection = nodes.value.slice(min, max + 1)
+
+      // compact selection
+      const result = new Set<string>(_selection.map(node => node.id))
+      const parents = new Set<Node>()
+      _selection.forEach(node => node.parent && parents.add(node.parent))
+      parents.forEach((parent) => {
+        if (parent.children.every(ch => result.has(ch.id))) {
+          const ids = new Set<string>(parent.children.map(ch => ch.id))
+          _selection = [
+            ..._selection.filter(v => !ids.has(v.id)),
+            parent,
+          ]
         }
       })
-      if (min !== undefined && max !== undefined) {
-        let _selection = nodes.value.slice(min, max + 1)
-
-        // compact selection
-        const result = new Set<string>(_selection.map(node => node.id))
-        const parents = new Set<Node>()
-        _selection.forEach(node => node.parent && parents.add(node.parent))
-        parents.forEach((parent) => {
-          if (parent.children.every(ch => result.has(ch.id))) {
-            const ids = new Set<string>(parent.children.map(ch => ch.id))
-            _selection = [
-              ..._selection.filter(v => !ids.has(v.id)),
-              parent,
-            ]
-          }
-        })
-        selection.value = _selection
-      }
+      selection.value = _selection
     }
-    else if (e.ctrlKey || e.metaKey) {
-      const filtered = selection.value.filter(v => !v.equal(props.node))
-      if (filtered.length !== selection.value.length) {
-        selection.value = filtered
-      }
-      else {
-        selection.value = [...filtered, props.node]
-      }
+  }
+  else if (e.ctrlKey || e.metaKey) {
+    const filtered = selection.value.filter(v => !v.equal(props.node))
+    if (filtered.length !== selection.value.length) {
+      selection.value = filtered
     }
     else {
-      selection.value = [props.node]
+      selection.value = [...filtered, props.node]
     }
+  }
+  else {
+    selection.value = [props.node]
   }
   nextTick().then(() => {
     selecting.value = false

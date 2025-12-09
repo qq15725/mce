@@ -265,7 +265,9 @@ defineExpose({
     </template>
   </Transformable>
 
-  <template v-if="selectionTransform.width && selectionTransform.height && $slots.default">
+  <template
+    v-if="selectionTransform.width && selectionTransform.height && $slots.default"
+  >
     <div
       class="mce-selector__slot"
       :style="boundingBoxToStyle(selectionTransform)"

@@ -12,7 +12,7 @@ const props = defineProps({
 })
 
 const {
-  selection,
+  elementSelection,
   selectionAabbInDrawboard,
   isFrame,
 } = useEditor()
@@ -43,7 +43,7 @@ const style = computed(() => {
 
 const offset = computed(() => {
   if (
-    selection.value.some(v => isFrame(v))
+    elementSelection.value.some(v => isFrame(v))
     || props.location?.startsWith('bottom')
   ) {
     return 32
@@ -74,7 +74,7 @@ defineExpose({
     :attach="false"
     :model-value="true"
   >
-    <template v-if="selection.length > 0">
+    <template v-if="elementSelection.length > 0">
       <slot />
     </template>
   </Overlay>
