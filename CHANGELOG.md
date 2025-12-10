@@ -1,3 +1,12 @@
+## [0.14.4](https://github.com/qq15725/mce/compare/v0.14.3...v0.14.4) (2025-12-10)
+
+
+### Features
+
+* up deps ([ee777c4](https://github.com/qq15725/mce/commit/ee777c47a05b457c4bd95439d576d6a582bfab2b))
+
+
+
 ## [0.14.3](https://github.com/qq15725/mce/compare/v0.14.2...v0.14.3) (2025-12-09)
 
 
