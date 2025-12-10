@@ -1,4 +1,4 @@
-import type { Vector2Data } from 'modern-canvas'
+import type { Vector2Like } from 'modern-canvas'
 import type { Reactive, Ref } from 'vue'
 import { reactive, ref, watch } from 'vue'
 import { defineMixin } from '../mixin'
@@ -9,9 +9,9 @@ declare global {
       //
     }
 
-    type DrawingToolHandle = (position: Vector2Data) => {
-      move?: (position: Vector2Data) => void
-      end?: (position: Vector2Data) => void
+    type DrawingToolHandle = (position: Vector2Like) => {
+      move?: (position: Vector2Like) => void
+      end?: (position: Vector2Like) => void
     } | void
 
     interface DrawingTool {

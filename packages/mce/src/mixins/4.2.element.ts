@@ -1,4 +1,4 @@
-import type { Element2D, Node, Vector2Data } from 'modern-canvas'
+import type { Element2D, Node, Vector2Like } from 'modern-canvas'
 import type { Element } from 'modern-idoc'
 import type { AxisAlignedBoundingBox } from '../types'
 import { defineMixin } from '../mixin'
@@ -7,7 +7,7 @@ import { isOverlappingObb } from '../utils'
 declare global {
   namespace Mce {
     type AddElementPosition
-      = | Vector2Data
+      = | Vector2Like
         | Anchor
         | 'screenCenter'
         | 'pointer'

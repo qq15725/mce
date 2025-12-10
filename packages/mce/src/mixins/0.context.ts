@@ -1,4 +1,4 @@
-import type { Cursor, Vector2Data } from 'modern-canvas'
+import type { Cursor, Vector2Like } from 'modern-canvas'
 import type { IndexCharacter } from 'modern-text/web-components'
 import type { ComputedRef, Ref } from 'vue'
 import type { AxisAlignedBoundingBox } from '../types'
@@ -36,8 +36,8 @@ declare global {
       setCursor: (mode: Cursor | undefined) => void
       drawboardDom: Ref<HTMLElement | undefined>
       drawboardAabb: Ref<AxisAlignedBoundingBox>
-      drawboardPointer: Ref<Vector2Data | undefined>
-      drawboardContextMenuPointer: Ref<Vector2Data | undefined>
+      drawboardPointer: Ref<Vector2Like | undefined>
+      drawboardContextMenuPointer: Ref<Vector2Like | undefined>
       doc: Ref<Doc>
       root: ComputedRef<Node>
       nodes: Ref<Node[]>
@@ -47,7 +47,7 @@ declare global {
       textSelection: Ref<IndexCharacter[] | undefined>
       hoverElement: Ref<Element2D | undefined>
       state: Ref<State | undefined>
-      getGlobalPointer: () => Vector2Data
+      getGlobalPointer: () => Vector2Like
       parseAnchor: (anchor: Anchor, isRtl?: boolean) => ParsedAnchor
       isNode: (value: any) => value is Node
       isRoot: (value: any) => value is Node
@@ -82,8 +82,8 @@ export default defineMixin((editor) => {
 
   const drawboardDom = ref<HTMLElement>()
   const drawboardAabb = ref({ left: 0, top: 0, width: 0, height: 0 })
-  const drawboardPointer = ref<Vector2Data>()
-  const drawboardContextMenuPointer = ref<Vector2Data>()
+  const drawboardPointer = ref<Vector2Like>()
+  const drawboardContextMenuPointer = ref<Vector2Like>()
   const doc = ref(new Doc())
   const root = computed(() => doc.value.root)
   const nodes = ref<Node[]>([])
@@ -101,7 +101,7 @@ export default defineMixin((editor) => {
     renderEngine.value.input.setCursor(mode)
   }
 
-  function getGlobalPointer(): Vector2Data {
+  function getGlobalPointer(): Vector2Like {
     const { x = 0, y = 0 } = drawboardPointer.value ?? {}
     return camera.value.toGlobal({ x, y }, { x: 0, y: 0 })
   }

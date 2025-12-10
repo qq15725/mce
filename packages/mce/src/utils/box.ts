@@ -1,4 +1,4 @@
-import type { Vector2Data } from 'modern-canvas'
+import type { Vector2Like } from 'modern-canvas'
 import type { AxisAlignedBoundingBox, OrientedBoundingBox } from '../types'
 
 export function boundingBoxToStyle(box: OrientedBoundingBox): Record<string, any> {
@@ -14,7 +14,7 @@ export function boundingBoxToStyle(box: OrientedBoundingBox): Record<string, any
   return style
 }
 
-export function isPointInsideAabb(point: Vector2Data, box: AxisAlignedBoundingBox): boolean {
+export function isPointInsideAabb(point: Vector2Like, box: AxisAlignedBoundingBox): boolean {
   const right = box.left + box.width
   const bottom = box.top + box.height
   return (

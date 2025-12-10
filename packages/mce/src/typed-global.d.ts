@@ -1,4 +1,4 @@
-import type { Vector2Data } from 'modern-canvas'
+import type { Vector2Like } from 'modern-canvas'
 import 'modern-canvas'
 
 declare module 'modern-canvas' {
@@ -41,9 +41,9 @@ declare global {
 
     interface DrawingContext {
       tip?: string
-      start?: (position: Vector2Data) => void
-      move?: (position: Vector2Data) => void
-      end?: (position: Vector2Data) => void
+      start?: (position: Vector2Like) => void
+      move?: (position: Vector2Like) => void
+      end?: (position: Vector2Like) => void
     }
   }
 }
