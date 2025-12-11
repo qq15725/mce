@@ -1,9 +1,9 @@
 import type { Element2D, Node } from 'modern-canvas'
 import type { ComputedRef } from 'vue'
+import { Aabb2D } from 'modern-canvas'
 import { computed } from 'vue'
 import SmartGuides from '../components/SmartGuides.vue'
 import { definePlugin } from '../plugin'
-import { isOverlappingAabb } from '../utils'
 import { BSTree } from '../utils/BSTree'
 
 declare global {
@@ -161,13 +161,13 @@ export default definePlugin((editor) => {
       const isCanvas = isCanvasLine(target)
       if (type !== target.type && !isCanvas)
         return
-      if (!isOverlappingAabb(toBoundingBox(source), toBoundingBox(target), flippedAxis))
+      if (!toBoundingBox(source).overlapsOnAxis(toBoundingBox(target), flippedAxis))
         return
       if (
         !isCanvas
         && prev
         && prev.box!.id !== target.box!.id
-        && isOverlappingAabb(toBoundingBox(prev), toBoundingBox(target), axis)
+        && toBoundingBox(prev).overlapsOnAxis(toBoundingBox(target), axis)
       ) {
         return
       }
@@ -476,14 +476,14 @@ function createLine(pos: number, type: LineType, box?: Box): Line {
   return { pos, type, box }
 }
 
-function toBoundingBox(value: Line | Box) {
+function toBoundingBox(value: Line | Box): Aabb2D {
   const box = ('box' in value ? value.box : value) as Box
-  return {
-    left: box.hl.pos,
-    top: box.vt.pos,
+  return new Aabb2D({
+    x: box.hl.pos,
+    y: box.vt.pos,
     width: box.hr.pos - box.hl.pos,
     height: box.vb.pos - box.vt.pos,
-  }
+  })
 }
 
 function flipType(type: string): LineType {

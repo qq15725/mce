@@ -1,4 +1,5 @@
 import { useResizeObserver } from '@vueuse/core'
+import { Aabb2D } from 'modern-canvas'
 import { watch } from 'vue'
 import { definePlugin } from '../plugin'
 
@@ -76,7 +77,7 @@ export default definePlugin((editor) => {
       useResizeObserver(drawboardDom, (entries) => {
         const { left: _left, top: _top, width, height } = entries[0].contentRect
         const { left = _left, top = _top } = drawboardDom.value?.getBoundingClientRect() ?? {}
-        drawboardAabb.value = { left, top, width, height }
+        drawboardAabb.value = new Aabb2D(left, top, width, height)
         exec('zoomToFit')
       })
     },

@@ -28,6 +28,7 @@ const {
   selecting,
   openedItems,
   domItems,
+  getIdByNode,
 } = createLayer({
   sortedSelection,
 })
@@ -39,7 +40,7 @@ watch(selection, (selection) => {
   let last: Node | undefined
   selection.forEach((node) => {
     node.findAncestor((ancestor) => {
-      const opened = openedItems.get(ancestor.id)
+      const opened = openedItems.get(getIdByNode(ancestor) ?? '')
       if (opened) {
         opened.value = true
       }
@@ -49,7 +50,7 @@ watch(selection, (selection) => {
   })
   if (last) {
     nextTick().then(() => {
-      domItems.get(last!.id)?.value?.scrollIntoView({
+      domItems.get(getIdByNode(last!) ?? '')?.value?.scrollIntoView({
         block: 'center',
       })
     })
@@ -84,18 +85,18 @@ watch(selection, (selection) => {
       min-width: 100%;
     }
 
-    .mce-layer__expand {
+    .mce-layer__prepend {
       opacity: 0;
     }
 
     .mce-layer--root:hover {
-      .mce-layer__expand {
+      .mce-layer__prepend {
         opacity: 1;
       }
     }
 
     &:hover .mce-layer:not(.mce-layer--root) {
-      .mce-layer__expand {
+      .mce-layer__prepend {
         opacity: 1;
       }
     }

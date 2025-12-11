@@ -70,6 +70,7 @@ export function plugin() {
               child.style ??= {}
               child.style.left = 0
               child.style.top = Number(child.style.top)
+              child.style.overflow = 'hidden'
               ;(child.meta as any).inEditorIs = 'Frame'
             })
 

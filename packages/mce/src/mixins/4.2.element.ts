@@ -1,8 +1,7 @@
-import type { Element2D, Node, Vector2Like } from 'modern-canvas'
+import type { Aabb2D, Element2D, Node, Vector2Like } from 'modern-canvas'
 import type { Element } from 'modern-idoc'
-import type { AxisAlignedBoundingBox } from '../types'
+import { Obb2D } from 'modern-canvas'
 import { defineMixin } from '../mixin'
-import { isOverlappingObb } from '../utils'
 
 declare global {
   namespace Mce {
@@ -41,7 +40,7 @@ declare global {
         height: number,
         options?: ResizeElementOptions,
       ) => void
-      selectArea: (areaInDrawboard: AxisAlignedBoundingBox) => Element2D[]
+      selectArea: (areaInDrawboard: Aabb2D) => Element2D[]
     }
 
     interface Events {
@@ -310,7 +309,8 @@ export default defineMixin((editor) => {
     options.textFontSizeToFit && textFontSizeToFit(element, scaleX)
   }
 
-  function selectArea(areaInDrawboard: AxisAlignedBoundingBox): Element2D[] {
+  function selectArea(areaInDrawboard: Aabb2D): Element2D[] {
+    const area = new Obb2D(areaInDrawboard) // TODO
     const selected = root.value
       ?.children
       .flatMap((node) => {
@@ -322,7 +322,7 @@ export default defineMixin((editor) => {
       .filter((node) => {
         return 'isVisibleInTree' in node
           && node.isVisibleInTree()
-          && isOverlappingObb(areaInDrawboard, getObb(node, 'drawboard'))
+          && getObb(node, 'drawboard').overlapsOnAxis(area)
           && !isLock(node)
       }) ?? []
     selection.value = selected

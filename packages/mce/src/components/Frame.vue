@@ -2,7 +2,6 @@
 import type { Element2D } from 'modern-canvas'
 import { nextTick, ref, useTemplateRef } from 'vue'
 import { useEditor } from '../composables'
-import { boundingBoxToStyle } from '../utils/box'
 
 const frame = defineModel<Element2D>({ required: true })
 const input = useTemplateRef('inputTpl')
@@ -39,7 +38,7 @@ async function onPointerdown(ev: PointerEvent) {
 <template>
   <div
     v-show="frame.visible"
-    :style="boundingBoxToStyle(getObb(frame, 'drawboard'))"
+    :style="getObb(frame, 'drawboard').toCssStyle()"
     class="mce-frame"
     :class="[
       config.frameOutline && 'mce-frame--outline',

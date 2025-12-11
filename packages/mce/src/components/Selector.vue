@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { Element2D } from 'modern-canvas'
-import type { AxisAlignedBoundingBox, OrientedBoundingBox } from '../types'
+import type { Element2D, Obb2D } from 'modern-canvas'
 import type { TransformableValue } from './shared/Transformable.vue'
+import { Aabb2D } from 'modern-canvas'
 import { computed, onBeforeMount, onBeforeUnmount, useTemplateRef } from 'vue'
 import { useEditor } from '../composables/editor'
 import { boundingBoxToStyle } from '../utils/box'
@@ -13,9 +13,9 @@ defineOptions({
 
 const props = withDefaults(defineProps<{
   resizeStrategy?: 'lockAspectRatio' | 'lockAspectRatioDiagonal'
-  selectedArea?: AxisAlignedBoundingBox
+  selectedArea?: Aabb2D
 }>(), {
-  selectedArea: () => ({ left: 0, top: 0, width: 0, height: 0 }),
+  selectedArea: () => new Aabb2D(),
 })
 
 const {
@@ -36,6 +36,8 @@ const {
   config,
   snapThreshold,
   getSnapPoints,
+  frames,
+  root,
 } = useEditor()
 
 const transformable = useTemplateRef('transformableTpl')
@@ -52,7 +54,7 @@ const parentObbs = computed(() => {
   if (selection.value.length !== 1) {
     return []
   }
-  const obbs: OrientedBoundingBox[] = []
+  const obbs: Obb2D[] = []
   selection.value[0]?.findAncestor((ancestor) => {
     if (isElement(ancestor)) {
       obbs.push(getObb(ancestor as Element2D, 'drawboard'))
@@ -80,8 +82,13 @@ const selectionObbs = computed(() => {
 
 const _selectionTransform = computed(() => {
   const zoom = camera.value.zoom
+  const { left, top, width, height, rotationDegrees } = selectionObbInDrawboard.value
   return {
-    ...selectionObbInDrawboard.value,
+    left,
+    top,
+    width,
+    height,
+    rotate: rotationDegrees,
     borderRadius: (elementSelection.value[0]?.style.borderRadius ?? 0) * zoom.x,
   }
 })
@@ -168,6 +175,32 @@ const selectionTransform = computed({
         }
         return false
       })
+
+      // move to frame
+      const source = element.getGlobalAabb()
+      const aArea = source.getArea()
+      let flag = true
+      for (let i = 0, len = frames.value.length; i < len; i++) {
+        const frame = frames.value[i]
+        if (element.equal(frame)) {
+          continue
+        }
+        const target = frame.getGlobalAabb()
+        if (source && target) {
+          if (source.getIntersectionRect(target).getArea() > aArea * 0.5) {
+            if (!element.findAncestor(ancestor => ancestor.equal(frame))) {
+              element.parent?.removeChild(element)
+              frame.appendChild(element)
+            }
+            flag = false
+            break
+          }
+        }
+      }
+      if (flag) {
+        element.parent?.removeChild(element)
+        root.value.moveChild(element, 0)
+      }
     })
   },
 })
@@ -221,7 +254,7 @@ defineExpose({
     class="mce-selector__parent-element"
     :style="{
       borderColor: 'currentColor',
-      ...boundingBoxToStyle(obb),
+      ...obb.toCssStyle(),
     }"
   />
 
@@ -230,7 +263,7 @@ defineExpose({
     class="mce-selector__selected-area"
     :style="{
       borderColor: 'currentcolor',
-      ...boundingBoxToStyle(props.selectedArea),
+      ...props.selectedArea.toCssStyle(),
     }"
   />
 
@@ -241,7 +274,7 @@ defineExpose({
     :style="{
       borderColor: 'currentcolor',
       borderRadius: `${(item.element.style.borderRadius ?? 0) * camera.zoom.x}px`,
-      ...boundingBoxToStyle(item.box),
+      ...item.box.toCssStyle(),
     }"
   />
 

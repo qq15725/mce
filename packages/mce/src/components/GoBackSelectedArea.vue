@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useEditor } from '../composables/editor'
-import { isOverlappingAabb } from '../utils'
 import { Icon } from './icon'
 
 const {
@@ -15,8 +14,7 @@ const {
 const isActive = computed(() => {
   return selectionAabb.value.width
     && selectionAabb.value.height
-    && !isOverlappingAabb(
-      drawboardAabb.value,
+    && !drawboardAabb.value.overlapsOnAxis(
       aabbToDrawboardAabb(selectionAabb.value),
     )
 })

@@ -2,7 +2,6 @@
 import type { TextEditor as _TextEditor } from 'modern-text/web-components'
 import { computed, nextTick, onBeforeMount, onBeforeUnmount, ref } from 'vue'
 import { useEditor } from '../composables/editor'
-import { boundingBoxToStyle } from '../utils/box'
 
 const {
   elementSelection,
@@ -33,10 +32,7 @@ const textEditorStyle = computed(() => {
     obb.left += textBox.left
     obb.top += textBox.top
   }
-  const style = boundingBoxToStyle(obb)
-  return {
-    ...style,
-  }
+  return obb.toCssStyle()
 })
 
 function onUpdateTextSelection(e: CustomEvent): void {

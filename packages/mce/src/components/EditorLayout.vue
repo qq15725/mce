@@ -2,6 +2,7 @@
 import type { Cursor, Element2D, PointerInputEvent } from 'modern-canvas'
 import type { OrientedBoundingBox } from '../types'
 import { useResizeObserver } from '@vueuse/core'
+import { Aabb2D, Vector2 } from 'modern-canvas'
 import {
   computed,
   nextTick,
@@ -23,7 +24,6 @@ import {
   makeMceStrategyProps,
 } from '../composables/strategy'
 import { Editor } from '../editor'
-import { isPointInsideAabb } from '../utils/box'
 import Floatbar from './Floatbar.vue'
 import ForegroundCropper from './ForegroundCropper.vue'
 import Selector from './Selector.vue'
@@ -95,7 +95,7 @@ const canvas = useTemplateRef('canvasTpl')
 const selector = useTemplateRef('selectorTpl')
 const textEditor = useTemplateRef('textEditorTpl')
 const grabbing = ref(false)
-const selectedArea = ref({ left: 0, top: 0, width: 0, height: 0 })
+const selectedArea = ref(new Aabb2D())
 const resizeStrategy = computed(() => {
   const first = elementSelection.value[0]
   if (first) {
@@ -137,10 +137,10 @@ function onHover(event: PointerInputEvent) {
   let hovered: Element2D | undefined
   if (
     elementSelection.value.length > 1
-    && isPointInsideAabb(
-      { x: event.clientX, y: event.clientY },
-      selectionAabbInDrawboard.value,
-    )
+    && selectionAabbInDrawboard.value.containsPoint({
+      x: event.clientX,
+      y: event.clientY,
+    })
   ) {
     cursor = 'move'
   }
@@ -186,10 +186,10 @@ function onPointerdown(downEvent: PointerInputEvent): void {
   let isUp = false
   let selected: Element2D[] = []
   let ctxState: Mce.State | undefined
-  const inSelection = isPointInsideAabb({
+  const inSelection = selectionAabbInDrawboard.value.containsPoint({
     x: start.x - drawboardAabb.value.left,
     y: start.y - drawboardAabb.value.top,
-  }, selectionAabbInDrawboard.value)
+  })
 
   if (downEvent.button === 2) {
     if (!inSelection) {
@@ -242,12 +242,10 @@ function onPointerdown(downEvent: PointerInputEvent): void {
     if (state.value !== 'selecting') {
       state.value = 'selecting'
     }
-    selectedArea.value = {
-      left: Math.min(start.x, current.x) - drawboardAabb.value.left,
-      top: Math.min(start.y, current.y) - drawboardAabb.value.top,
-      width: Math.abs(start.x - current.x),
-      height: Math.abs(start.y - current.y),
-    }
+    selectedArea.value.x = Math.min(start.x, current.x) - drawboardAabb.value.left
+    selectedArea.value.y = Math.min(start.y, current.y) - drawboardAabb.value.top
+    selectedArea.value.width = Math.abs(start.x - current.x)
+    selectedArea.value.height = Math.abs(start.y - current.y)
     selected = selectArea(selectedArea.value)
   }
 
@@ -397,10 +395,10 @@ function onPointermove(event: PointerInputEvent): void {
     return
   }
 
-  drawboardPointer.value = {
-    x: event.clientX - drawboardAabb.value.left,
-    y: event.clientY - drawboardAabb.value.top,
-  }
+  drawboardPointer.value = new Vector2(
+    event.clientX - drawboardAabb.value.left,
+    event.clientY - drawboardAabb.value.top,
+  )
 
   if (
     camera.value.grabbing

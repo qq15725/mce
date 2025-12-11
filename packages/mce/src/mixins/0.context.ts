@@ -1,7 +1,6 @@
-import type { Cursor, Vector2Like } from 'modern-canvas'
+import type { Aabb2D, Cursor, Vector2, Vector2Like } from 'modern-canvas'
 import type { IndexCharacter } from 'modern-text/web-components'
 import type { ComputedRef, Ref } from 'vue'
-import type { AxisAlignedBoundingBox } from '../types'
 import { Camera2D, DrawboardEffect, Element2D, Engine, Node, Timeline } from 'modern-canvas'
 import { Fonts } from 'modern-font'
 import { computed, markRaw, reactive, ref, watch } from 'vue'
@@ -35,9 +34,9 @@ declare global {
       drawboardEffect: Ref<DrawboardEffect>
       setCursor: (mode: Cursor | undefined) => void
       drawboardDom: Ref<HTMLElement | undefined>
-      drawboardAabb: Ref<AxisAlignedBoundingBox>
-      drawboardPointer: Ref<Vector2Like | undefined>
-      drawboardContextMenuPointer: Ref<Vector2Like | undefined>
+      drawboardAabb: Ref<Aabb2D>
+      drawboardPointer: Ref<Vector2 | undefined>
+      drawboardContextMenuPointer: Ref<Vector2 | undefined>
       doc: Ref<Doc>
       root: ComputedRef<Node>
       nodes: Ref<Node[]>

@@ -1,18 +1,9 @@
 import { definePlugin } from '../plugin'
-import { createImageElement, imageExtRe } from '../utils'
 
-export default definePlugin(() => {
-  async function isImage(url: string) {
-    try {
-      const response = await fetch(url, { method: 'HEAD' })
-      const contentType = response.headers.get('Content-Type')
-      return contentType && contentType.startsWith('image/')
-    }
-    // eslint-disable-next-line unused-imports/no-unused-vars
-    catch (_error: any) {
-      return false
-    }
-  }
+export default definePlugin((editor) => {
+  const {
+    load,
+  } = editor
 
   return {
     name: 'mce:url',
@@ -21,18 +12,15 @@ export default definePlugin(() => {
         name: 'url',
         test: (source) => {
           return typeof source === 'string'
-            && (
-              source.startsWith('http')
-              || imageExtRe.test(source)
-            )
         },
-        load: async (source: string) => {
-          if (imageExtRe.test(source) || await isImage(source)) {
-            return await createImageElement(source)
+        load: async (url: string) => {
+          const blob = await fetch(url).then(rep => rep.blob())
+          const file = new File([blob], url, { type: blob.type })
+          try {
+            return await load(file)
           }
-          else {
-            // TODO
-            throw new Error(`Failed to load url, ${source}`)
+          catch (error) {
+            throw new Error(`Failed to load source "${url}", ${error}`)
           }
         },
       },

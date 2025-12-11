@@ -45,8 +45,11 @@ const dom = ref<HTMLElement>()
 const {
   selecting,
   sortedSelection,
+  dragging,
+  dropping,
+  onMousedown,
+  id,
 } = useLayerItem({
-  id: props.node.id,
   opened,
   node: computed(() => props.node),
   dom: computed(() => dom.value),
@@ -91,15 +94,11 @@ const thumbnailIcon = computed(() => {
   return '$shape'
 })
 
-function onMousedown() {
-  // TODO
-}
-
 function onClickExpand() {
   opened.value = !opened.value
 }
 
-function onClickContent(e: MouseEvent) {
+function onMousedownContent(e: MouseEvent) {
   selecting.value = true
   if (e.shiftKey) {
     const _nodes = [
@@ -149,6 +148,7 @@ function onClickContent(e: MouseEvent) {
   nextTick().then(() => {
     selecting.value = false
   })
+  onMousedown(e)
 }
 
 function onDblclickThumbnail(e: MouseEvent) {
@@ -160,7 +160,7 @@ function onDblclickThumbnail(e: MouseEvent) {
   }
 }
 
-function onDblclickContent() {
+function onDblclickName() {
   editing.value = true
   editValue.value = props.node.name
   nextTick().then(() => {
@@ -173,7 +173,7 @@ function onDblclickContent() {
 }
 
 function onMouseenter() {
-  if (isElement(props.node)) {
+  if (!dragging.value && isElement(props.node)) {
     hoverElement.value = props.node
     hovering.value = true
   }
@@ -211,30 +211,32 @@ function onInputBlur() {
       isLast && 'mce-layer--last',
       opened && 'mce-layer--open',
       isHoverElement && 'mce-layer--hover',
+      dropping && 'mce-layer--dropping',
     ]"
     :style=" {
       '--indent-padding': `${props.indent * 16}px`,
     }"
-    @mousedown="onMousedown"
+    :data-id="id"
+    @mousedown="onMousedownContent"
     @mouseenter="onMouseenter"
     @mouseleave="onMouseleave"
     @contextmenu="onContextmenu"
   >
-    <div
-      class="mce-layer__expand"
-      @click="onClickExpand"
-    >
-      <Icon
-        v-if="props.node.children.length"
-        icon="$arrowRight"
-      />
-    </div>
+    <span class="mce-layer__underlay" />
+    <span class="mce-layer__overlay" />
 
     <div
       class="mce-layer__content"
-      @click="onClickContent"
-      @dblclick="onDblclickContent"
     >
+      <div class="mce-layer__prepend">
+        <Icon
+          v-if="props.node.children.length"
+          icon="$arrowRight"
+          @click="onClickExpand"
+          @mousedown.stop
+        />
+      </div>
+
       <div
         class="mce-layer__thumbnail"
         @dblclick="onDblclickThumbnail"
@@ -242,7 +244,10 @@ function onInputBlur() {
         <Icon :icon="thumbnailIcon" />
       </div>
 
-      <div class="mce-layer__name">
+      <div
+        class="mce-layer__name"
+        @dblclick="onDblclickName"
+      >
         <input
           v-show="editing"
           ref="inputDom"
@@ -312,6 +317,7 @@ function onInputBlur() {
 
 <style lang="scss">
   .mce-layer {
+    $root: &;
     position: relative;
     flex: none;
     display: flex;
@@ -323,8 +329,7 @@ function onInputBlur() {
     min-width: max-content;
     border-radius: 4px;
 
-    &:before {
-      content: '';
+    &__underlay {
       position: absolute;
       left: 0;
       right: 0;
@@ -335,8 +340,7 @@ function onInputBlur() {
       border-radius: inherit;
     }
 
-    &:after {
-      content: '';
+    &__overlay {
       position: absolute;
       left: 0;
       right: 0;
@@ -351,7 +355,7 @@ function onInputBlur() {
       margin-bottom: 4px;
       font-weight: bold;
 
-      .mce-layer__thumbnail {
+      #{$root}__thumbnail {
         display: none;
       }
     }
@@ -360,19 +364,19 @@ function onInputBlur() {
       --overlay-color: rgba(var(--mce-theme-on-background), var(--mce-hover-opacity));
     }
 
-    &--active:before {
+    &--active #{$root}__underlay {
       top: 0;
       bottom: 0;
       border-radius: 0;
     }
 
-    &--first:before {
+    &--first #{$root}__underlay {
       border-top-left-radius: 4px;
       border-top-right-radius: 4px;
       top: 4px;
     }
 
-    &--last:before {
+    &--last #{$root}__underlay {
       border-bottom-left-radius: 4px;
       border-bottom-right-radius: 4px;
       bottom: 4px;
@@ -387,12 +391,12 @@ function onInputBlur() {
     }
 
     &--open {
-      .mce-layer__expand .mce-icon {
+      #{$root}__prepend .mce-icon {
         transform: rotate(90deg);
       }
     }
 
-    &__expand {
+    &__prepend {
       display: flex;
       align-items: center;
       width: 16px;
@@ -400,7 +404,22 @@ function onInputBlur() {
       flex: none;
     }
 
+    &--dropping {
+      #{$root}__content:after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 2px;
+        background-color: rgb(var(--mce-theme-on-background));
+        pointer-events: none;
+        border-radius: inherit;
+      }
+    }
+
     &__content {
+      position: relative;
       flex: 1;
       display: flex;
       align-items: center;

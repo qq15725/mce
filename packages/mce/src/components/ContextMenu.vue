@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Vector2 } from 'modern-canvas'
 import { onBeforeMount, onBeforeUnmount, useTemplateRef, watch } from 'vue'
 import { useEditor } from '../composables/editor'
 import Menu from './shared/Menu.vue'
@@ -47,10 +48,10 @@ function onContextmenu(event: MouseEvent) {
     x: event.clientX,
     y: event.clientY,
   }
-  drawboardContextMenuPointer.value = {
-    x: event.clientX - drawboardAabb.value.left,
-    y: event.clientY - drawboardAabb.value.top,
-  }
+  drawboardContextMenuPointer.value = new Vector2(
+    event.clientX - drawboardAabb.value.left,
+    event.clientY - drawboardAabb.value.top,
+  )
   updateLocation()
 }
 

@@ -1,4 +1,5 @@
 import type { Element2D } from 'modern-canvas'
+import { Vector2 } from 'modern-canvas'
 import { onBeforeUnmount, onMounted } from 'vue'
 import { definePlugin } from '../plugin'
 
@@ -52,10 +53,10 @@ export default definePlugin((editor) => {
 
       function onDragover(e: DragEvent) {
         e.preventDefault()
-        drawboardPointer.value = {
-          x: e.clientX - drawboardAabb.value.left,
-          y: e.clientY - drawboardAabb.value.top,
-        }
+        drawboardPointer.value = new Vector2(
+          e.clientX - drawboardAabb.value.left,
+          e.clientY - drawboardAabb.value.top,
+        )
         if (e.dataTransfer) {
           e.dataTransfer.dropEffect = 'copy'
         }

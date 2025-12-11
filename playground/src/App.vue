@@ -50,8 +50,12 @@ window.doc = editor.doc
 const searchParams = new URL(window.location.href).searchParams
 const tid = searchParams.get('tid')
 const bid = searchParams.get('bid')
+const url = searchParams.get('url')
 if (tid || bid) {
   editor.loadDoc({ tid, bid })
+}
+else if (url) {
+  editor.loadDoc(url)
 }
 </script>
 
@@ -59,17 +63,9 @@ if (tid || bid) {
   <div style="width: 100vw; height: 100vh">
     <EditorLayout :editor="editor">
       <template #selector />
-
       <template #transformer />
-
-      <template #floatbar-top>
-        <span>FloatbarTop</span>
-      </template>
-
-      <template #floatbar-bottom>
-        <span>FloatbarBottom</span>
-      </template>
-
+      <template #floatbar-top />
+      <template #floatbar-bottom />
       <template #drawboard />
 
       <EditorLayoutItem

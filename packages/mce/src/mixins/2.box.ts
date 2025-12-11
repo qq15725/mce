@@ -1,7 +1,6 @@
 import type { Element2D, Node } from 'modern-canvas'
 import type { ComputedRef } from 'vue'
-import type { AxisAlignedBoundingBox, OrientedBoundingBox } from '../types'
-import { DEG_TO_RAD, Transform2D } from 'modern-canvas'
+import { Aabb2D, Obb2D, Transform2D } from 'modern-canvas'
 import { computed } from 'vue'
 import { defineMixin } from '../mixin'
 
@@ -11,14 +10,14 @@ declare global {
   namespace Mce {
     interface Editor {
       obbToFit: (element: Element2D) => void
-      getObb: (node: Node | Node[] | undefined, inTarget?: 'drawboard' | 'frame' | 'parent') => OrientedBoundingBox
-      getAabb: (node: Node | Node[] | undefined, inTarget?: 'drawboard' | 'frame' | 'parent') => AxisAlignedBoundingBox
-      aabbToDrawboardAabb: (aabb: AxisAlignedBoundingBox) => AxisAlignedBoundingBox
-      rootAabb: ComputedRef<AxisAlignedBoundingBox>
-      selectionAabb: ComputedRef<AxisAlignedBoundingBox>
-      selectionAabbInDrawboard: ComputedRef<AxisAlignedBoundingBox>
-      selectionObb: ComputedRef<OrientedBoundingBox>
-      selectionObbInDrawboard: ComputedRef<OrientedBoundingBox>
+      getObb: (node: Node | Node[] | undefined, inTarget?: 'drawboard' | 'frame' | 'parent') => Obb2D
+      getAabb: (node: Node | Node[] | undefined, inTarget?: 'drawboard' | 'frame' | 'parent') => Aabb2D
+      aabbToDrawboardAabb: (aabb: Aabb2D) => Aabb2D
+      rootAabb: ComputedRef<Aabb2D>
+      selectionAabb: ComputedRef<Aabb2D>
+      selectionAabbInDrawboard: ComputedRef<Aabb2D>
+      selectionObb: ComputedRef<Obb2D>
+      selectionObbInDrawboard: ComputedRef<Obb2D>
     }
   }
 }
@@ -33,29 +32,31 @@ export default defineMixin((editor) => {
   } = editor
 
   function obbToFit(element: Element2D): void {
-    const minmax = {
-      minX: Number.MAX_SAFE_INTEGER,
-      minY: Number.MAX_SAFE_INTEGER,
-      maxX: Number.MIN_SAFE_INTEGER,
-      maxY: Number.MIN_SAFE_INTEGER,
+    const min = {
+      x: Number.MAX_SAFE_INTEGER,
+      y: Number.MAX_SAFE_INTEGER,
+    }
+    const max = {
+      x: Number.MIN_SAFE_INTEGER,
+      y: Number.MIN_SAFE_INTEGER,
     }
     let flag = false
     element.children.forEach((child) => {
       if (isElement(child)) {
-        const _minmax = child.getAabb().toMinmax()
-        minmax.minX = Math.min(minmax.minX, _minmax.minX)
-        minmax.minY = Math.min(minmax.minY, _minmax.minY)
-        minmax.maxX = Math.max(minmax.maxX, _minmax.maxX)
-        minmax.maxY = Math.max(minmax.maxY, _minmax.maxY)
+        const { min: _min, max: _max } = child.getAabb().toMinmax()
+        min.x = Math.min(min.x, _min.x)
+        min.y = Math.min(min.y, _min.y)
+        max.x = Math.max(max.x, _max.x)
+        max.y = Math.max(max.y, _max.y)
         flag = true
       }
     })
     if (flag) {
       const box = {
-        left: minmax.minX,
-        top: minmax.minY,
-        width: minmax.maxX - minmax.minX,
-        height: minmax.maxY - minmax.minY,
+        left: min.x,
+        top: min.y,
+        width: max.x - min.x,
+        height: max.y - min.y,
       }
 
       const aabbs: Record<number, any> = {}
@@ -103,31 +104,24 @@ export default defineMixin((editor) => {
   function getObb(
     node: Node | Node[] | undefined,
     inTarget?: 'drawboard' | 'frame' | 'parent',
-  ): OrientedBoundingBox {
+  ): Obb2D {
     let obb
     if (Array.isArray(node) && node.length > 0) {
       if (node.length === 1) {
         obb = getObb(node[0])
       }
       else {
-        obb = { ...getAabb(node), rotate: 0 }
+        obb = new Obb2D(getAabb(node))
       }
     }
     else if (isElement(node)) {
       // for vue reactive
       const style = node.style
       noop([style.left, style.top, style.width, style.height, style.rotate])
-      const { rect, rotation } = node.getGlobalObb()
-      obb = {
-        left: rect.left,
-        top: rect.top,
-        width: rect.width,
-        height: rect.height,
-        rotate: rotation / DEG_TO_RAD,
-      }
+      obb = node.getGlobalObb()
     }
     else {
-      obb = { left: 0, top: 0, width: 0, height: 0, rotate: 0 }
+      obb = new Obb2D()
     }
     if (inTarget === 'drawboard') {
       const zoom = camera.value.zoom
@@ -166,50 +160,46 @@ export default defineMixin((editor) => {
   function getAabb(
     node: Node | Node[] | undefined,
     inTarget?: 'drawboard' | 'frame' | 'parent',
-  ): AxisAlignedBoundingBox {
-    let aabb: AxisAlignedBoundingBox
+  ): Aabb2D {
+    let aabb: Aabb2D
     if (Array.isArray(node) && node.length > 0) {
       if (node.length === 1) {
         aabb = getAabb(node[0])
       }
       else {
-        const minmax = {
-          minX: Number.MAX_SAFE_INTEGER,
-          minY: Number.MAX_SAFE_INTEGER,
-          maxX: Number.MIN_SAFE_INTEGER,
-          maxY: Number.MIN_SAFE_INTEGER,
+        const min = {
+          x: Number.MAX_SAFE_INTEGER,
+          y: Number.MAX_SAFE_INTEGER,
+        }
+        const max = {
+          x: Number.MIN_SAFE_INTEGER,
+          y: Number.MIN_SAFE_INTEGER,
         }
         node.forEach((child) => {
           if (isElement(child)) {
             const aabb = getAabb(child)
-            minmax.minX = Math.min(minmax.minX, aabb.left)
-            minmax.minY = Math.min(minmax.minY, aabb.top)
-            minmax.maxX = Math.max(minmax.maxX, aabb.left + aabb.width)
-            minmax.maxY = Math.max(minmax.maxY, aabb.top + aabb.height)
+            min.x = Math.min(min.x, aabb.left)
+            min.y = Math.min(min.y, aabb.top)
+            max.x = Math.max(max.x, aabb.left + aabb.width)
+            max.y = Math.max(max.y, aabb.top + aabb.height)
           }
         })
-        aabb = {
-          left: minmax.minX,
-          top: minmax.minY,
-          width: minmax.maxX - minmax.minX,
-          height: minmax.maxY - minmax.minY,
-        }
+        aabb = new Aabb2D(
+          min.x,
+          min.y,
+          max.x - min.x,
+          max.y - min.y,
+        )
       }
     }
     else if (isElement(node)) {
       // for vue reactive
       const style = node.style
       noop([style.left, style.top, style.width, style.height, style.rotate])
-      const rect = node.getGlobalAabb()
-      aabb = {
-        left: rect.left,
-        top: rect.top,
-        width: rect.width,
-        height: rect.height,
-      }
+      aabb = node.getGlobalAabb()
     }
     else {
-      aabb = { left: 0, top: 0, width: 0, height: 0 }
+      aabb = new Aabb2D()
     }
     if (inTarget === 'drawboard') {
       aabb = aabbToDrawboardAabb(aabb)
@@ -238,8 +228,8 @@ export default defineMixin((editor) => {
     return aabb
   }
 
-  function aabbToDrawboardAabb(aabb: AxisAlignedBoundingBox): AxisAlignedBoundingBox {
-    const _aabb = { ...aabb }
+  function aabbToDrawboardAabb(aabb: Aabb2D): Aabb2D {
+    const _aabb = new Aabb2D(aabb)
     const zoom = camera.value.zoom
     const position = camera.value.position
     _aabb.left *= zoom.x
