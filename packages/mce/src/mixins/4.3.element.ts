@@ -31,9 +31,6 @@ declare global {
         (element: Element, options?: AddElementOptions): Element2D
         (element: Element[], options?: AddElementOptions): Element2D[]
       }
-      deleteElement: (id: string) => void
-      updateElement: (id: string, properties: Record<string, any>) => void
-      getElement: (id: string) => Element2D | undefined
       resizeElement: (
         element: Element2D,
         width: number,
@@ -268,21 +265,6 @@ export default defineMixin((editor) => {
     return isArray ? elements : elements[0]
   }
 
-  function deleteElement(id: string): void {
-    if (id === selection.value[0]?.id) {
-      selection.value = []
-    }
-    doc.value.deleteNode(id)
-  }
-
-  function updateElement(id: string, properties: Record<string, any>): void {
-    getElement(id)?.setProperties(properties)
-  }
-
-  function getElement(id: string): Element2D | undefined {
-    return doc.value.getNode<Element2D>(id)
-  }
-
   function resizeElement(
     element: Element2D,
     scaleX: number,
@@ -336,9 +318,6 @@ export default defineMixin((editor) => {
 
   Object.assign(editor, {
     addElement,
-    deleteElement,
-    updateElement,
-    getElement,
     resizeElement,
     selectArea,
   })

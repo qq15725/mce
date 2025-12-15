@@ -14,15 +14,14 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    deleteElement,
     selection,
     hoverElement,
   } = editor
 
   function _delete() {
     if (selection.value.length) {
-      selection.value.forEach((element) => {
-        deleteElement(element.id)
+      selection.value.forEach((node) => {
+        node.remove()
       })
       selection.value = []
     }

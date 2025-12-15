@@ -115,7 +115,7 @@ export class Doc extends Model {
       return
     }
 
-    this._debug('_yChildrenChange', event)
+    this._debug('yChildrenChange', event)
 
     const { keysChanged, changes } = event
 
@@ -202,37 +202,6 @@ export class Doc extends Model {
     this._transacting = true
     this.addNodes(children)
     return this
-  }
-
-  deleteNode(id: string): void {
-    this.transact(() => this._nodeMap.get(id)?.remove())
-  }
-
-  getNode<T extends Node = Node>(id: string): T | undefined {
-    return this._nodeMap.get(id) as T
-  }
-
-  moveNode(id: string, toIndex: number): void {
-    const node = this._nodeMap.get(id)
-    if (!node) {
-      return
-    }
-    const parent = node.parent
-    const childrenIds = parent?.id
-      ? this._yChildren.get(parent.id)?.get('childrenIds')
-      : this._yChildrenIds
-    if (!childrenIds) {
-      return
-    }
-    const fromIndex = childrenIds.toJSON().indexOf(id)
-    childrenIds.delete(fromIndex, 1)
-    childrenIds.insert(toIndex, [id])
-    if (parent && !parent.equal(this.root)) {
-      parent.moveChild(node, toIndex)
-    }
-    else {
-      this.root.moveChild(node, toIndex)
-    }
   }
 
   protected _proxyProps(obj: CoreObject, yMap: Y.Map<any>, isMeta = false): void {

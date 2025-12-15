@@ -22,7 +22,6 @@ export default definePlugin((editor) => {
     getAabb,
     elementSelection,
     addElement,
-    deleteElement,
     doc,
   } = editor
 
@@ -55,7 +54,7 @@ export default definePlugin((editor) => {
         active: true,
         regenId: true,
       })
-      elements.forEach(v => deleteElement(v.id))
+      elements.forEach(node => node.remove())
     })
   }
 
@@ -78,7 +77,7 @@ export default definePlugin((editor) => {
         active: true,
         regenId: true,
       })
-      deleteElement(element.id)
+      element.remove()
     })
   }
 
