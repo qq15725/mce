@@ -177,6 +177,7 @@ const transform = computed({
         const scale = newStyle.rotate ? 100 : 1
         newStyle.width = Math.round(newStyle.width * scale) / scale
         newStyle.height = Math.round(newStyle.height * scale) / scale
+        const shape = element.shape
 
         resizeElement(
           element,
@@ -184,9 +185,14 @@ const transform = computed({
           newStyle.height / element.style.height,
           isFrame(element)
             ? undefined
-            : handle.split('-').length > 2
-              ? { deep: true, textFontSizeToFit: true }
-              : { deep: true, textToFit: true },
+            : (
+                !shape.enabled
+                || !(shape as any)._path2DSet.paths.length
+              )
+                ? handle.split('-').length > 2
+                  ? { deep: true, textFontSizeToFit: true }
+                  : { deep: true, textToFit: true }
+                : undefined,
         )
         newStyle.width = element.style.width
         newStyle.height = element.style.height
