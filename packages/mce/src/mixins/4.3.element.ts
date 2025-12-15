@@ -27,10 +27,8 @@ declare global {
     }
 
     interface Editor {
-      addElement: {
-        (element: Element, options?: AddElementOptions): Element2D
-        (element: Element[], options?: AddElementOptions): Element2D[]
-      }
+      addElement: (element: Element, options?: AddElementOptions) => Element2D
+      addElements: (element: Element[], options?: AddElementOptions) => Element2D[]
       resizeElement: (
         element: Element2D,
         width: number,
@@ -39,10 +37,6 @@ declare global {
       ) => void
       selectArea: (areaInDrawboard: Aabb2D) => Element2D[]
     }
-
-    interface Events {
-      addElement: [element: Element2D[]]
-    }
   }
 }
 
@@ -50,7 +44,6 @@ export default defineMixin((editor) => {
   const {
     doc,
     rootAabb,
-    emit,
     textFontSizeToFit,
     textToFit,
     log,
@@ -260,8 +253,6 @@ export default defineMixin((editor) => {
       handleElementInsideFrame(elements[0])
     }
 
-    emit('addElement', elements)
-
     return isArray ? elements : elements[0]
   }
 
@@ -318,6 +309,7 @@ export default defineMixin((editor) => {
 
   Object.assign(editor, {
     addElement,
+    addElements: addElement,
     resizeElement,
     selectArea,
   })

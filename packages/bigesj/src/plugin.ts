@@ -49,6 +49,7 @@ async function setupFonts(editor: Editor, api: Record<string, any>): Promise<voi
     off,
     root,
     isElement,
+    renderEngine,
   } = editor
 
   const {
@@ -73,29 +74,24 @@ async function setupFonts(editor: Editor, api: Record<string, any>): Promise<voi
         }
       })
     }
-  }
 
-  function preloadNodes(node: Node[]) {
-    node.forEach((child) => {
-      preloadNode(child)
-      child.findOne((descendant) => {
-        preloadNode(descendant)
-        return false
-      })
+    node.findOne((descendant) => {
+      preloadNode(descendant)
+      return false
     })
   }
 
   async function preload() {
-    root.value && preloadNodes([root.value])
+    root.value && preloadNode(root.value)
   }
 
   onBeforeUnmount(() => {
     off('setDoc', preload)
-    off('addElement', preloadNodes)
+    renderEngine.value.off('nodeEnter', preloadNode)
   })
 
   on('setDoc', preload)
-  on('addElement', preloadNodes)
+  renderEngine.value.on('nodeEnter', preloadNode)
 
   await loadBigeFonts(api.fonts)
 }

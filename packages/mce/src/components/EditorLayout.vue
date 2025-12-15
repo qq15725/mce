@@ -246,7 +246,7 @@ function onPointerdown(downEvent: PointerInputEvent): void {
     selectedArea.value.y = Math.min(start.y, current.y) - drawboardAabb.value.top
     selectedArea.value.width = Math.abs(start.x - current.x)
     selectedArea.value.height = Math.abs(start.y - current.y)
-    selected = selectArea(selectedArea.value)
+    selected = selectArea(selectedArea.value as any)
   }
 
   function onActivate() {
@@ -472,7 +472,7 @@ const slotProps = {
 
         <Selector
           ref="selectorTpl"
-          :selected-area="selectedArea"
+          :selected-area="selectedArea as any"
           :resize-strategy="resizeStrategy"
         >
           <template #transformable="{ box }">

@@ -22,6 +22,7 @@ export default definePlugin((editor) => {
     getAabb,
     elementSelection,
     addElement,
+    addElements,
     doc,
   } = editor
 
@@ -42,7 +43,12 @@ export default definePlugin((editor) => {
     doc.value.transact(() => {
       addElement({
         name: inEditorIs === 'Frame' ? 'Frame' : 'Group',
-        style: { ...aabb },
+        style: {
+          left: aabb.left,
+          top: aabb.top,
+          width: aabb.width,
+          height: aabb.height,
+        },
         children,
         meta: {
           inPptIs: 'GroupShape',
@@ -71,7 +77,7 @@ export default definePlugin((editor) => {
       return cloned
     })
     doc.value.transact(() => {
-      addElement(items, {
+      addElements(items, {
         parent: element.parent,
         index: element.getIndex(),
         active: true,

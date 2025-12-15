@@ -40,7 +40,7 @@ export default definePlugin((editor, options) => {
     exec,
     canLoad,
     load,
-    addElement,
+    addElements,
   } = editor
 
   const copiedData = ref<any>()
@@ -113,7 +113,7 @@ export default definePlugin((editor, options) => {
       }
     }
     if (elements.length) {
-      addElement(elements, {
+      addElements(elements, {
         position: 'pointer',
         active: true,
         regenId: true,
@@ -169,7 +169,7 @@ export default definePlugin((editor, options) => {
         }
         else if (copiedData.value) {
           if (Array.isArray(copiedData.value)) {
-            addElement(copiedData.value?.map(el => cloneDeep(el)) ?? [], {
+            addElements(copiedData.value?.map(el => cloneDeep(el)) ?? [], {
               position: 'pointer',
               active: true,
               regenId: true,
@@ -188,7 +188,7 @@ export default definePlugin((editor, options) => {
       return
     }
 
-    addElement(
+    addElements(
       selection.value.map(v => v.toJSON()),
       {
         parent: selection.value[0].parent,
