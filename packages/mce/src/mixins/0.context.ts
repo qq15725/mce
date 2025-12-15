@@ -1,7 +1,7 @@
-import type { Aabb2D, Cursor, Vector2, Vector2Like } from 'modern-canvas'
+import type { Cursor, Vector2, Vector2Like } from 'modern-canvas'
 import type { IndexCharacter } from 'modern-text/web-components'
 import type { ComputedRef, Ref } from 'vue'
-import { Camera2D, DrawboardEffect, Element2D, Engine, Node, Timeline } from 'modern-canvas'
+import { Aabb2D, Camera2D, DrawboardEffect, Element2D, Engine, Node, Timeline } from 'modern-canvas'
 import { Fonts } from 'modern-font'
 import { computed, markRaw, reactive, ref, watch } from 'vue'
 import { Doc } from '../crdt'
@@ -80,7 +80,7 @@ export default defineMixin((editor) => {
   renderEngine.value.start()
 
   const drawboardDom = ref<HTMLElement>()
-  const drawboardAabb = ref({ left: 0, top: 0, width: 0, height: 0 })
+  const drawboardAabb = ref(new Aabb2D())
   const drawboardPointer = ref<Vector2Like>()
   const drawboardContextMenuPointer = ref<Vector2Like>()
   const doc = ref(new Doc())
