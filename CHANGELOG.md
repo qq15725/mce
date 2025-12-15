@@ -1,3 +1,12 @@
+## [0.15.2](https://github.com/qq15725/mce/compare/v0.15.1...v0.15.2) (2025-12-15)
+
+
+### Bug Fixes
+
+* drawboardAabb ([fd243f7](https://github.com/qq15725/mce/commit/fd243f750ff149b4ddca068ffa18b1e6368a18da))
+
+
+
 ## [0.15.1](https://github.com/qq15725/mce/compare/v0.15.0...v0.15.1) (2025-12-15)
 
 
