@@ -49,7 +49,7 @@ onBeforeUnmount(() => {
   unregisterCommand('startTransform')
 })
 
-const parentObbs = computed(() => {
+const parentObbStyles = computed(() => {
   if (selection.value.length !== 1) {
     return []
   }
@@ -60,10 +60,10 @@ const parentObbs = computed(() => {
     }
     return false
   })
-  return obbs
+  return obbs.map(obb => obb.toCssStyle())
 })
 
-const selectionObbs = computed(() => {
+const selectionObbStyles = computed(() => {
   if (
     state.value !== 'selecting'
     && elementSelection.value.length === 1
@@ -72,14 +72,15 @@ const selectionObbs = computed(() => {
   }
 
   return elementSelection.value.map((el) => {
+    const box = getObb(el, 'drawboard')
     return {
-      element: el,
-      box: getObb(el, 'drawboard'),
+      ...box.toCssStyle(),
+      borderRadius: `${(el.style.borderRadius ?? 0) * camera.value.zoom.x}px`,
     }
   })
 })
 
-const _selectionTransform = computed(() => {
+const _transform = computed(() => {
   const zoom = camera.value.zoom
   const { left, top, width, height, rotationDegrees } = selectionObbInDrawboard.value
   return {
@@ -91,41 +92,73 @@ const _selectionTransform = computed(() => {
     borderRadius: (elementSelection.value[0]?.style.borderRadius ?? 0) * zoom.x,
   }
 })
-const selectionTransform = computed({
-  get: () => _selectionTransform.value,
+
+function snap(currentPos: number, type: 'x' | 'y'): number {
+  const points = getSnapPoints()
+  const zoom = camera.value.zoom
+  const position = camera.value.position
+  let closest: undefined | number
+  let minDist = Infinity
+
+  if (type === 'x') {
+    currentPos += position.x / zoom.x
+  }
+  else {
+    currentPos += position.y / zoom.y
+  }
+
+  for (const pt of points[type]) {
+    const dist = pt - currentPos
+    const absDist = Math.abs(dist)
+    if (absDist < minDist) {
+      minDist = absDist
+      closest = pt
+    }
+  }
+
+  if (minDist <= snapThreshold.value) {
+    currentPos = closest ?? currentPos
+  }
+
+  if (type === 'x') {
+    currentPos -= position.x / zoom.x
+  }
+  else {
+    currentPos -= position.y / zoom.y
+  }
+
+  return currentPos
+}
+
+const transform = computed({
+  get: () => _transform.value,
   set: (val: TransformableValue) => {
-    const zoom = camera.value.zoom
-    const oldTransform = _selectionTransform.value
-    const offsetStyle = {
-      left: (val.left - oldTransform.left) / zoom.x,
-      top: (val.top - oldTransform.top) / zoom.y,
-      width: Math.max(1, val.width / zoom.x) - oldTransform.width / zoom.x,
-      height: Math.max(1, val.height / zoom.y) - oldTransform.height / zoom.y,
-      rotate: (val.rotate ?? 0) - (oldTransform.rotate ?? 0),
-      borderRadius: ((val.borderRadius ?? 0) - (oldTransform.borderRadius ?? 0)) / zoom.y,
-    }
-
-    const points = getSnapPoints()
-    const snap = (currentPos: number, type: 'x' | 'y'): number => {
-      let closest: undefined | number
-      let minDist = Infinity
-      for (const pt of points[type]) {
-        const dist = pt - currentPos
-        const absDist = Math.abs(dist)
-        if (absDist < minDist) {
-          minDist = absDist
-          closest = pt
-        }
-      }
-      if (minDist <= snapThreshold.value) {
-        return closest ?? currentPos
-      }
-      else {
-        return currentPos
-      }
-    }
-
     const handle: string = transformable.value?.activeHandle ?? 'move'
+    const zoom = camera.value.zoom
+    const oldTransform = _transform.value
+    const transform = {
+      left: val.left / zoom.x,
+      top: val.top / zoom.y,
+      width: Math.max(1, val.width / zoom.x),
+      height: Math.max(1, val.height / zoom.y),
+      rotate: val.rotate ?? 0,
+      borderRadius: (val.borderRadius ?? 0) / zoom.y,
+    }
+
+    if (handle === 'move') {
+      transform.left = snap(Math.round(transform.left), 'x')
+      transform.top = snap(Math.round(transform.top), 'y')
+    }
+
+    const offsetStyle = {
+      left: transform.left - oldTransform.left / zoom.x,
+      top: transform.top - oldTransform.top / zoom.y,
+      width: transform.width - oldTransform.width / zoom.x,
+      height: transform.height - oldTransform.height / zoom.y,
+      rotate: transform.rotate - (oldTransform.rotate ?? 0),
+      borderRadius: transform.borderRadius - (oldTransform.borderRadius ?? 0) / zoom.y,
+    }
+
     elementSelection.value.forEach((element) => {
       const style = element.style
       const newStyle = {
@@ -137,11 +170,7 @@ const selectionTransform = computed({
         borderRadius: Math.round(style.borderRadius + offsetStyle.borderRadius),
       }
 
-      if (handle === 'move') {
-        newStyle.left = snap(Math.round(newStyle.left), 'x')
-        newStyle.top = snap(Math.round(newStyle.top), 'y')
-      }
-      else if (handle.startsWith('rotate')) {
+      if (handle.startsWith('rotate')) {
         newStyle.rotate = Math.round(newStyle.rotate * 100) / 100
       }
       else if (handle.startsWith('resize')) {
@@ -226,11 +255,11 @@ defineExpose({
 
 <template>
   <div
-    v-for="(obb, index) in parentObbs" :key="index"
+    v-for="(style, index) in parentObbStyles" :key="index"
     class="mce-selector__parent-element"
     :style="{
       borderColor: 'currentColor',
-      ...obb.toCssStyle(),
+      ...style,
     }"
   />
 
@@ -244,20 +273,19 @@ defineExpose({
   />
 
   <div
-    v-for="(item, index) in selectionObbs"
+    v-for="(style, index) in selectionObbStyles"
     :key="index"
     class="mce-selector__element"
     :style="{
       borderColor: 'currentcolor',
-      borderRadius: `${(item.element.style.borderRadius ?? 0) * camera.zoom.x}px`,
-      ...item.box.toCssStyle(),
+      ...style,
     }"
   />
 
   <Transformable
-    v-if="selectionTransform.width && selectionTransform.height"
+    v-if="transform.width && transform.height"
     ref="transformableTpl"
-    v-model="selectionTransform"
+    v-model="transform"
     :movable="movable"
     :resizable="resizable"
     :rotatable="rotatable"
@@ -276,13 +304,13 @@ defineExpose({
   </Transformable>
 
   <template
-    v-if="selectionTransform.width && selectionTransform.height && $slots.default"
+    v-if="transform.width && transform.height && $slots.default"
   >
     <div
       class="mce-selector__slot"
-      :style="boundingBoxToStyle(selectionTransform)"
+      :style="boundingBoxToStyle(transform)"
     >
-      <slot :box="selectionTransform" />
+      <slot :box="transform" />
     </div>
   </template>
 </template>
