@@ -1,3 +1,14 @@
+## [0.15.1](https://github.com/qq15725/mce/compare/v0.15.0...v0.15.1) (2025-12-15)
+
+
+### Bug Fixes
+
+* hover ([e4d25fe](https://github.com/qq15725/mce/commit/e4d25fe97b499b450d7dd68be98ab01873800052))
+* pen ([86963e7](https://github.com/qq15725/mce/commit/86963e713a7bc3830f8321b5b3ad465e3b47fc55))
+* snap ([66754f8](https://github.com/qq15725/mce/commit/66754f8efdc7ff66535ca38458272403f2dffada))
+
+
+
 # [0.15.0](https://github.com/qq15725/mce/compare/v0.14.4...v0.15.0) (2025-12-15)
 
 
