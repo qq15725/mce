@@ -71,7 +71,7 @@
     "diff": "^8.0.2",
     "file-saver": "^2.0.5",
     "lodash-es": "^4.17.21",
-    "modern-canvas": "^0.14.9",
+    "modern-canvas": "^0.14.15",
     "modern-font": "^0.4.4",
     "modern-idoc": "^0.10.6",
     "modern-text": "^1.10.5",
@@ -101,7 +101,7 @@
   "devDependencies": {
     "@types/file-saver": "^2.0.7",
     "@types/lodash-es": "^4.17.12",
-    "@vitejs/plugin-vue": "^6.0.2",
+    "@vitejs/plugin-vue": "^6.0.3",
     "jiti": "^2.6.1",
     "modern-gif": "^2.0.4",
     "sass-embedded": "^1.96.0"

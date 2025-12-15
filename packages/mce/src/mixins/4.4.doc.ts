@@ -1,7 +1,7 @@
 import type { Document, Element } from 'modern-idoc'
 import { throttle } from 'lodash-es'
+import { Doc } from '../crdt'
 import { defineMixin } from '../mixin'
-import { Doc } from '../models'
 
 declare global {
   namespace Mce {

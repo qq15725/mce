@@ -19,8 +19,8 @@ import _2_load from './2.load'
 import _3_view from './3.view'
 import _4_0_node from './4.0.node'
 import _4_1_text from './4.1.text'
-import _4_2_element from './4.2.element'
-import _4_3_frame from './4.3.frame'
+import _4_2_frame from './4.2.frame'
+import _4_3_element from './4.3.element'
 import _4_4_doc from './4.4.doc'
 import _drawingTool from './drawingTool'
 import _scroll from './scroll'
@@ -45,8 +45,8 @@ export const mixins = [
   _3_view,
   _4_0_node,
   _4_1_text,
-  _4_2_element,
-  _4_3_frame,
+  _4_2_frame,
+  _4_3_element,
   _4_4_doc,
   _drawingTool,
   _scroll,

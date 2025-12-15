@@ -36,8 +36,7 @@ const {
   config,
   snapThreshold,
   getSnapPoints,
-  frames,
-  root,
+  handleElementInsideFrame,
 } = useEditor()
 
 const transformable = useTemplateRef('transformableTpl')
@@ -177,30 +176,7 @@ const selectionTransform = computed({
       })
 
       // move to frame
-      const source = element.getGlobalAabb()
-      const aArea = source.getArea()
-      let flag = true
-      for (let i = 0, len = frames.value.length; i < len; i++) {
-        const frame = frames.value[i]
-        if (element.equal(frame)) {
-          continue
-        }
-        const target = frame.getGlobalAabb()
-        if (source && target) {
-          if (source.getIntersectionRect(target).getArea() > aArea * 0.5) {
-            if (!element.findAncestor(ancestor => ancestor.equal(frame))) {
-              element.parent?.removeChild(element)
-              frame.appendChild(element)
-            }
-            flag = false
-            break
-          }
-        }
-      }
-      if (flag) {
-        element.parent?.removeChild(element)
-        root.value.moveChild(element, 0)
-      }
+      handleElementInsideFrame(element)
     })
   },
 })

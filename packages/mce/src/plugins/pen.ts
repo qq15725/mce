@@ -1,4 +1,5 @@
 import type { Element2D } from 'modern-canvas'
+import { Aabb2D } from 'modern-canvas'
 import { LineCurve, Path2D, Vector2 } from 'modern-path2d'
 import { watch } from 'vue'
 import { definePlugin } from '../plugin'
@@ -33,8 +34,8 @@ export default definePlugin((editor) => {
       const box = currentPath!.getBoundingBox()
       el.style.left = box.left
       el.style.top = box.top
-      el.style.width = box.width
-      el.style.height = box.height
+      el.style.width = box.width || 1
+      el.style.height = box.height || 1
     }
   }
 
@@ -57,6 +58,10 @@ export default definePlugin((editor) => {
           else {
             el = addElement({
               name: 'pen',
+              style: {
+                width: 1,
+                height: 1,
+              },
               outline: {
                 color: '#d9d9d9',
                 width: 5,
@@ -75,6 +80,7 @@ export default definePlugin((editor) => {
               new Vector2(start.x, start.y),
             )
             currentPath.currentCurve.addCurve(currentLine)
+            update()
 
             const onMove = () => {
               const move = getGlobalPointer()
@@ -101,6 +107,10 @@ export default definePlugin((editor) => {
         handle: (start) => {
           const el = addElement({
             name: 'pencil',
+            style: {
+              width: 1,
+              height: 1,
+            },
             outline: {
               color: '#d9d9d9',
               width: 5,
@@ -113,20 +123,30 @@ export default definePlugin((editor) => {
           }, {
             position: start,
           })
+
+          const parentAabb = el.getParent<Element2D>()?.getGlobalAabb() ?? new Aabb2D()
+
           const path = new Path2D()
-          path.moveTo(start.x, start.y)
+          path.moveTo(start.x - parentAabb.x, start.y - parentAabb.y)
+
+          const update = () => {
+            el.shape.paths = [
+              { data: path.toData() },
+            ]
+            const box = path.getBoundingBox()
+            el.style.left = box.left
+            el.style.top = box.top
+            el.style.width = box.width || 1
+            el.style.height = box.height || 1
+          }
+
+          update()
+
           return {
             move: (move) => {
-              path.lineTo(move.x, move.y)
-              path.moveTo(move.x, move.y)
-              el.shape.paths = [
-                { data: path.toData() },
-              ]
-              const box = path.getBoundingBox()
-              el.style.left = box.left
-              el.style.top = box.top
-              el.style.width = box.width
-              el.style.height = box.height
+              path.lineTo(move.x - parentAabb.x, move.y - parentAabb.y)
+              path.moveTo(move.x - parentAabb.x, move.y - parentAabb.y)
+              update()
             },
           }
         },

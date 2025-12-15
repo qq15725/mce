@@ -125,10 +125,17 @@ export function createLayer(options: Pick<LayerProvide, 'sortedSelection'>) {
           const to = nodeItems.get(droppingItemId.value)?.value
 
           if (to && from && !from.equal(to)) {
-            from.parent?.removeChild(from)
+            let toIndex = to.getIndex() + 1
+            if (
+              to.parent
+              && from.parent
+              && to.parent.equal(from.parent)
+            ) {
+              toIndex--
+            }
             to.parent?.moveChild(
               from,
-              to.getIndex() + 1,
+              toIndex,
             )
           }
         }

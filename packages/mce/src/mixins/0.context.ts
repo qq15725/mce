@@ -4,8 +4,8 @@ import type { ComputedRef, Ref } from 'vue'
 import { Camera2D, DrawboardEffect, Element2D, Engine, Node, Timeline } from 'modern-canvas'
 import { Fonts } from 'modern-font'
 import { computed, markRaw, reactive, ref, watch } from 'vue'
+import { Doc } from '../crdt'
 import { defineMixin } from '../mixin'
-import { Doc } from '../models'
 
 declare global {
   namespace Mce {
