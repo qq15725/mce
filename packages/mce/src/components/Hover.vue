@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useEditor } from '../composables/editor'
-import { boundingBoxToStyle } from '../utils/box'
 
 const {
   selection,
@@ -21,7 +20,7 @@ const hoverElementObb = computed(() => getObb(hoverElement.value, 'drawboard'))
     :style="{
       borderColor: 'currentcolor',
       borderRadius: `${(hoverElement.style.borderRadius ?? 0) * camera.zoom.x}px`,
-      ...boundingBoxToStyle(hoverElementObb),
+      ...hoverElementObb.toCssStyle(),
     }"
   />
 </template>
