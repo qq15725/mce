@@ -1,3 +1,20 @@
+# [0.15.0](https://github.com/qq15725/mce/compare/v0.14.4...v0.15.0) (2025-12-15)
+
+
+### Bug Fixes
+
+* crdt ([2099410](https://github.com/qq15725/mce/commit/20994100038744afc5ed577ed94d8ef86418b8fd))
+* crdt ([1f3985c](https://github.com/qq15725/mce/commit/1f3985cd2806ab87cedf400b4dfbd6c1a1dbbeb2))
+
+
+### Features
+
+* add move element to frame inside / outside logic ([b7c981f](https://github.com/qq15725/mce/commit/b7c981f08f111bc9779f3aa2de606ad8a1e98f19))
+* remove addElement event ([f1a557b](https://github.com/qq15725/mce/commit/f1a557b74c2a0e5cd706d7b85ba64154728cc9cd))
+* remove frame curd / element curd ([11e2d3f](https://github.com/qq15725/mce/commit/11e2d3f1408dec453112876bd287d4560c0a3dd3))
+
+
+
 ## [0.14.4](https://github.com/qq15725/mce/compare/v0.14.3...v0.14.4) (2025-12-10)
 
 
