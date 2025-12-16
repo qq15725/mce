@@ -185,10 +185,7 @@ const transform = computed({
           newStyle.height / element.style.height,
           isFrame(element)
             ? undefined
-            : (
-                !shape.enabled
-                || !(shape as any)._path2DSet.paths.length
-              )
+            : !shape.isValid()
                 ? handle.split('-').length > 2
                   ? { deep: true, textFontSizeToFit: true }
                   : { deep: true, textToFit: true }

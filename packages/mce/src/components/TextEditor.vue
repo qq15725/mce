@@ -41,10 +41,7 @@ function onUpdateTextSelection(e: CustomEvent): void {
 
 function onUpdate(): void {
   const element = elementSelection.value[0]!
-  if (
-    !element.shape.enabled
-    || !(element.shape as any)._path2DSet.paths.length
-  ) {
+  if (!element.shape.isValid()) {
     textToFit(element)
   }
 }
