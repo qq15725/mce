@@ -13,6 +13,8 @@ const {
   state,
   config,
   exec,
+  renderEngine,
+  drawboardDom,
 } = useEditor()
 
 const editing = ref(false)
@@ -26,11 +28,15 @@ async function onDblclick() {
   }
 }
 
-async function onPointerdown(ev: PointerEvent) {
+async function onPointerdown(event: PointerEvent) {
   if (!editing.value) {
-    selection.value = [frame.value]
-    await nextTick()
-    exec('startTransform', ev)
+    // TODO
+    const cloend = (renderEngine.value.input as any)._clonePointerEvent(event)
+    cloend.srcElement = drawboardDom.value
+    cloend.target = frame.value
+    exec('startPointerdown', cloend, {
+      allowRootFrame: true,
+    })
   }
 }
 </script>

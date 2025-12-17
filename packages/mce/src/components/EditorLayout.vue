@@ -69,6 +69,7 @@ provide(IconsSymbol, createIcons())
 const {
   pluginsComponents,
   isElement,
+  isRootFrame,
   config,
   drawboardDom,
   renderEngine,
@@ -151,7 +152,7 @@ function onHover(event: PointerInputEvent) {
       event,
       editor,
     })
-    if (result && !isElement(result)) {
+    if (result && 'element' in result) {
       hovered = result.element
       cursor = result.cursor
     }
@@ -159,11 +160,20 @@ function onHover(event: PointerInputEvent) {
       hovered = result
     }
   }
+
+  if (!(isElement(hovered) && !isRootFrame(hovered))) {
+    hovered = undefined
+    cursor = undefined
+  }
+
   hoverElement.value = hovered
   setCursor(cursor)
 }
 
-function onPointerdown(downEvent: PointerInputEvent): void {
+function onPointerdown(
+  downEvent: PointerInputEvent,
+  options: Mce.StartPointerdownOptions = {},
+): void {
   if (
     (
       downEvent.srcElement !== drawboardDom.value
@@ -173,6 +183,14 @@ function onPointerdown(downEvent: PointerInputEvent): void {
     || ![0, 2].includes(downEvent.button)
   ) {
     return
+  }
+
+  const {
+    allowRootFrame = false,
+  } = options
+
+  function isIncluded(node: any): node is Element2D {
+    return isElement(node) && (allowRootFrame || !isRootFrame(node))
   }
 
   const drawing = state.value === 'drawing'
@@ -198,12 +216,16 @@ function onPointerdown(downEvent: PointerInputEvent): void {
         event: downEvent,
         editor,
       })
-      if (result && !isElement(result)) {
-        selected = result.element ? [result.element] : []
+
+      let _element = result && 'element' in result
+        ? result.element
+        : result
+
+      if (!isIncluded(_element)) {
+        _element = undefined
       }
-      else {
-        selected = result ? [result] : []
-      }
+
+      selected = _element ? [_element] : []
       elementSelection.value = selected
     }
     return
@@ -228,12 +250,16 @@ function onPointerdown(downEvent: PointerInputEvent): void {
       event,
       editor,
     })
-    if (result && !isElement(result)) {
-      selected = result.element ? [result.element] : []
+
+    let _element: Element2D | undefined = result && 'element' in result
+      ? result.element
+      : result
+
+    if (!isIncluded(_element)) {
+      _element = undefined
     }
-    else {
-      selected = result ? [result] : []
-    }
+
+    selected = _element ? [_element] : []
     elementSelection.value = selected
   }
 
@@ -257,12 +283,16 @@ function onPointerdown(downEvent: PointerInputEvent): void {
     })
 
     let _element: Element2D | undefined
-    if (result && !isElement(result)) {
+    if (result && 'element' in result) {
       _element = result.element
       ctxState = result.state
     }
     else {
       _element = result
+    }
+
+    if (!isIncluded(_element)) {
+      _element = undefined
     }
 
     if (_element && (downEvent?.ctrlKey || downEvent?.shiftKey || downEvent?.metaKey)) {
@@ -331,7 +361,7 @@ function onPointerdown(downEvent: PointerInputEvent): void {
     }
     else {
       if (!inSelection) {
-        if (!element) {
+        if (!isIncluded(element)) {
           onSelectArea()
         }
       }
@@ -389,6 +419,8 @@ function onPointerdown(downEvent: PointerInputEvent): void {
   document.addEventListener('pointermove', onMove)
   document.addEventListener('pointerup', onUp)
 }
+
+editor.registerCommand({ command: 'startPointerdown', handle: onPointerdown })
 
 function onPointermove(event: PointerInputEvent): void {
   if (event.srcElement !== drawboardDom.value) {

@@ -1,10 +1,16 @@
+import type { PointerInputEvent } from 'modern-canvas'
 import type { AxisAlignedBoundingBox } from '../types'
 import { watch } from 'vue'
 import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {
+    interface StartPointerdownOptions {
+      allowRootFrame?: boolean
+    }
+
     interface Commands {
+      startPointerdown: (e: PointerInputEvent, options?: StartPointerdownOptions) => void
       startTyping: (e?: MouseEvent | PointerEvent) => Promise<boolean>
       startTransform: (e?: MouseEvent | PointerEvent) => boolean
       openContextMenu: (e?: MouseEvent | PointerEvent) => boolean
