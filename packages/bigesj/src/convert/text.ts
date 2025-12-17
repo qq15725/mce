@@ -16,7 +16,6 @@ export async function convertTextStyle(
   const elStyle = getStyle(el)
 
   const style: Partial<StyleObject> = {
-    ...elStyle,
     highlightReferImage,
     listStyleType: 'none',
     listStyleImage: 'none',

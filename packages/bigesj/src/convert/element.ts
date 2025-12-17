@@ -3,6 +3,7 @@ import type { BigeElement } from './types'
 import { idGenerator } from 'modern-idoc'
 import { parseAnimations } from './animation'
 import { convertImageElementToUrl } from './image'
+import { convertShapeElementToShape } from './shape'
 import { getStyle } from './style'
 import { convertSvgElementToUrl } from './svg'
 import { convertTextContent, convertTextEffects, convertTextStyle } from './text'
@@ -133,9 +134,12 @@ export async function convertElement(
       else {
         style.height = Math.ceil(style.height + style.letterSpacing)
       }
+      element.style = {
+        ...style,
+        ...(await convertTextStyle(el)),
+      }
       element.text = {
         content: await convertTextContent(el),
-        style: await convertTextStyle(el),
         effects: await convertTextEffects(el),
         // plugins: [deformation(el.deformation?.type?.endsWith("byWord") ? -1 : 999, () => el.deformation)],
       } as any
@@ -144,28 +148,41 @@ export async function convertElement(
     case 'com':
       meta.inCanvasIs = 'Element2D'
       meta.inPptIs = 'GroupShape'
-      element.children = (await Promise.all(
-        el.children.map(async (child: any) => {
-          try {
-            return await convertElement(child, el, context)
-          }
-          catch (e) {
-            console.warn(e)
-            return undefined
-          }
-        }),
-      )).filter(Boolean)
+      element.children!.push(
+        ...(
+          await Promise.all(
+            el.children.map(async (child: any) => {
+              try {
+                return await convertElement(child, el, context)
+              }
+              catch (e) {
+                console.warn(e)
+                return undefined
+              }
+            }),
+          )
+        ),
+      )
       break
     case 'anim':
       meta.inCanvasIs = 'Lottie2D'
       ;(element as any).src = el.url
+      break
+    case 'shape':
+      meta.inCanvasIs = 'Element2D'
+      meta.inPptIs = 'Shape'
+      element.shape = convertShapeElementToShape(el)
+      element.fill = { color: el.fill }
+      element.outline = {
+        color: el.stroke,
+        width: el.strokeWidth,
+      }
       break
     case 'pic':
     case 'mosaic':
     case 'image_squence':
     case 'background':
     case 'legend':
-    case 'shape':
     case 'ppt':
     case 'wordcloud':
     case 'table':

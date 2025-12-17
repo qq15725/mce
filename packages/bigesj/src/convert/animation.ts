@@ -440,9 +440,7 @@ export function parseAnimations(
   }
 
   const startTime = _animIn?.delay ?? 0
-  const endTime = _animOut
-    ? (_animOut.delay - startTime) + _animOut.duration
-    : 0
+  let endTime = startTime
 
   const animations = []
   if (_animIn) {
@@ -452,6 +450,7 @@ export function parseAnimations(
         delay: 0,
       }, 'in'),
     )
+    endTime = _animIn.delay + _animIn.duration
   }
 
   if (_animStay) {
@@ -461,6 +460,7 @@ export function parseAnimations(
         delay: _animStay.delay - startTime,
       }, 'stay'),
     )
+    endTime = _animStay.delay + _animStay.duration
   }
 
   if (_animOut) {
@@ -470,11 +470,12 @@ export function parseAnimations(
         delay: _animOut.delay - startTime,
       }, 'out'),
     )
+    endTime = _animOut.delay + _animOut.duration
   }
 
   return {
     delay: startTime,
-    duration: endTime - startTime,
+    duration: Math.max(0, endTime - startTime),
     animations: animations.filter(v => !!v?.keyframes),
   }
 }

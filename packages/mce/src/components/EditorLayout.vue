@@ -176,7 +176,8 @@ function onPointerdown(
 ): void {
   if (
     (
-      downEvent.srcElement !== drawboardDom.value
+      downEvent.srcElement
+      && downEvent.srcElement !== drawboardDom.value
       && (downEvent.srcElement as HTMLElement).dataset?.pointerdown_to_drawboard === undefined
     )
     || camera.value.spaceKey

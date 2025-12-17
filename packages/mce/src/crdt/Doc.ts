@@ -89,13 +89,13 @@ export class Doc extends Model {
 
   override async load(initFn?: () => void | Promise<void>): Promise<this> {
     return super.load(async () => {
+      await initFn?.()
       this._proxyNode(
         this.root,
         this._yProps as any,
         this._yChildrenIds,
       )
       this._yChildren.observe(this._yChildrenChange.bind(this) as any)
-      await initFn?.()
     })
   }
 
@@ -194,7 +194,6 @@ export class Doc extends Model {
     }
     this.reset()
     this.setProperties(props)
-    this._yProps.clear()
     for (const key in props) {
       this._yProps.set(key, (props as any)[key])
     }
