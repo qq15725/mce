@@ -1,3 +1,13 @@
+## [0.15.3](https://github.com/qq15725/mce/compare/v0.15.2...v0.15.3) (2025-12-17)
+
+
+### Features
+
+* startPointerdown ([d16d129](https://github.com/qq15725/mce/commit/d16d1297646c5525b7cc3d5609046c7e4805b590))
+* supports display flex ([4b6d4cf](https://github.com/qq15725/mce/commit/4b6d4cfb3af444005d4245bc09037016c2e434b1))
+
+
+
 ## [0.15.2](https://github.com/qq15725/mce/compare/v0.15.1...v0.15.2) (2025-12-15)
 
 
