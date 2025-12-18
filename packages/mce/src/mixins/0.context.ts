@@ -52,7 +52,7 @@ declare global {
       isRoot: (value: any) => value is Node
       isElement: (value: any) => value is Element2D
       isFrame: (value: any) => value is Element2D
-      isRootFrame: (value: any) => value is Element2D
+      isTopLevelFrame: (value: any) => value is Element2D
       isVisible: (node: Node) => boolean
       setVisible: (node: Node, visible: boolean) => void
       isLock: (node: Node) => boolean
@@ -148,7 +148,7 @@ export default defineMixin((editor) => {
     return isElement(value) && value.meta.inEditorIs === 'Frame'
   }
 
-  function isRootFrame(value: any): value is Element2D {
+  function isTopLevelFrame(value: any): value is Element2D {
     return isFrame(value) && Boolean((value as Element2D).parent?.equal(root.value as any))
   }
 
@@ -196,7 +196,7 @@ export default defineMixin((editor) => {
     isRoot,
     isElement,
     isFrame,
-    isRootFrame,
+    isTopLevelFrame,
     isVisible,
     setVisible,
     isLock,

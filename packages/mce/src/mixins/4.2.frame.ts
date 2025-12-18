@@ -22,6 +22,7 @@ export default defineMixin((editor) => {
     selection,
     frames,
     config,
+    isTopLevelFrame,
   } = editor
 
   function setCurrentFrame(index = currentFrameIndex.value): void {
@@ -38,31 +39,35 @@ export default defineMixin((editor) => {
   }
 
   function handleElementInsideFrame(element: Element2D): void {
-    const source = element.getGlobalAabb()
-    const aArea = source.getArea()
+    const frame1 = element.findAncestor(node => isTopLevelFrame(node))
+    const aabb1 = element.getGlobalAabb()
+    const area1 = aabb1.getArea()
     let flag = true
     for (let i = 0, len = frames.value.length; i < len; i++) {
-      const frame = frames.value[i]
-      if (element.equal(frame)) {
+      const frame2 = frames.value[i]
+      if (frame2.equal(element)) {
         continue
       }
-      const target = frame.getGlobalAabb()
-      if (source && target) {
-        if (source.getIntersectionRect(target).getArea() > aArea * 0.5) {
-          if (!element.findAncestor(ancestor => ancestor.equal(frame))) {
-            frame.appendChild(element)
-            element.style.left = source.x - target.x
-            element.style.top = source.y - target.y
+      const aabb2 = frame2.getGlobalAabb()
+      if (aabb1 && aabb2) {
+        if (aabb1.getIntersectionRect(aabb2).getArea() > area1 * 0.5) {
+          if (!frame2.equal(frame1)) {
+            frame2.appendChild(element)
+            element.style.left = aabb1.x - aabb2.x
+            element.style.top = aabb1.y - aabb2.y
           }
           flag = false
           break
         }
       }
     }
-    if (flag && element.parent && !element.parent.equal(root.value)) {
+    if (
+      flag
+      && frame1
+    ) {
       root.value.moveChild(element, 0)
-      element.style.left = source.x
-      element.style.top = source.y
+      element.style.left = aabb1.x
+      element.style.top = aabb1.y
     }
   }
 

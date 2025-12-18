@@ -272,10 +272,6 @@ export class Doc extends Model {
       }
       this.transact(() => {
         this._debug(`addChild ${child.id}`, child.name, newIndex)
-        if (!isReactive(child)) {
-          child = reactive(child) as any
-          node.children[newIndex] = child
-        }
         this._proxyNode(child)
         childrenIds.insert(newIndex, [child.id])
       })
@@ -387,6 +383,13 @@ export class Doc extends Model {
     }
 
     if (!this._nodeMap.has(id)) {
+      if (!isReactive(node)) {
+        node = reactive(node) as any
+        if (node.parent) {
+          node.parent.children[node.getIndex()] = node
+        }
+      }
+
       this._nodeMap.set(id, node)
 
       yNode.set('parentId', node.parent?.id)

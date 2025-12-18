@@ -22,6 +22,7 @@ export default definePlugin((editor) => {
             meta: {
               inPptIs: 'GroupShape',
               inEditorIs: 'Frame',
+              inCanvasIs: 'Element2D',
             },
           }, {
             position: start,

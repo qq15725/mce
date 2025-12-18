@@ -24,7 +24,9 @@ export async function convertLayout(
   const meta: Record<string, any> = {
     inPptIs: isFrame ? 'Slide' : 'GroupShape',
     inEditorIs: isFrame ? 'Frame' : 'Element',
+    inCanvasIs: 'Element2D',
   }
+
   if (layout.id) {
     meta.rawId = layout.id
   }
