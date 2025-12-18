@@ -1,3 +1,12 @@
+## [0.15.5](https://github.com/qq15725/mce/compare/v0.15.4...v0.15.5) (2025-12-18)
+
+
+### Bug Fixes
+
+* crdt ([718ed80](https://github.com/qq15725/mce/commit/718ed806e39ccd5aa3466a2bba5ba5f5ef69f48a))
+
+
+
 ## [0.15.4](https://github.com/qq15725/mce/compare/v0.15.3...v0.15.4) (2025-12-18)
 
 
