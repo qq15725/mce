@@ -4,7 +4,7 @@ import type { Transaction, YArrayEvent, YMapEvent } from 'yjs'
 import type { ModelEvents } from './Model'
 import { Element2D, Node } from 'modern-canvas'
 import { property } from 'modern-idoc'
-import { markRaw, reactive } from 'vue'
+import { isReactive, markRaw, reactive } from 'vue'
 import * as Y from 'yjs'
 import { Model } from './Model'
 
@@ -90,11 +90,6 @@ export class Doc extends Model {
   override async load(initFn?: () => void | Promise<void>): Promise<this> {
     return super.load(async () => {
       await initFn?.()
-      this._proxyNode(
-        this.root,
-        this._yProps as any,
-        this._yChildrenIds,
-      )
       this._yChildren.observe(this._yChildrenChange.bind(this) as any)
     })
   }
@@ -181,10 +176,6 @@ export class Doc extends Model {
     return this.transact(() => this._addNode(data, options))
   }
 
-  addNodes(dataItems: Element[], options?: AddNodeOptions): Node[] {
-    return this.transact(() => dataItems.map(data => this._addNode(data, options)))
-  }
-
   set(source: Document): this {
     const { children = [], meta = {}, ..._props } = source
     const props = {
@@ -199,7 +190,12 @@ export class Doc extends Model {
     }
     this._yProps.set('meta', new Y.Map(Object.entries(meta)))
     this._transacting = true
-    this.addNodes(children)
+    this._proxyNode(
+      this.root,
+      this._yProps as any,
+      this._yChildrenIds,
+    )
+    this.root.append(children)
     return this
   }
 
@@ -275,8 +271,13 @@ export class Doc extends Model {
         return
       }
       this.transact(() => {
-        childrenIds.insert(newIndex, [child.id])
         this._debug(`addChild ${child.id}`, child.name, newIndex)
+        if (!isReactive(child)) {
+          child = reactive(child) as any
+          node.children[newIndex] = child
+        }
+        this._proxyNode(child)
+        childrenIds.insert(newIndex, [child.id])
       })
     })
     node.on('removeChild', (child, oldIndex) => {
@@ -284,11 +285,11 @@ export class Doc extends Model {
         return
       }
       this.transact(() => {
+        this._debug(`removeChild ${child.id}`, child.name, oldIndex)
         const index = childrenIds.toJSON().indexOf(child.id)
         if (index > -1) {
           childrenIds.delete(index, 1)
         }
-        this._debug(`removeChild ${child.id}`, child.name, oldIndex)
       })
     })
 
@@ -395,6 +396,7 @@ export class Doc extends Model {
 
       node.on('destroy', () => {
         this._nodeMap.delete(node.id)
+        this._yChildren.delete(node.id)
         this._debug('destroy', node.id)
       })
 
