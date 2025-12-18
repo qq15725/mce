@@ -1,3 +1,17 @@
+## [0.15.4](https://github.com/qq15725/mce/compare/v0.15.3...v0.15.4) (2025-12-18)
+
+
+### Bug Fixes
+
+* crdt ([d5df9d6](https://github.com/qq15725/mce/commit/d5df9d67d449049013473b8e5c5935bb4459882d))
+
+
+### Features
+
+* clipboard ([c58f7e6](https://github.com/qq15725/mce/commit/c58f7e67b372ee487314323b9abd9a4076c7863d))
+
+
+
 ## [0.15.3](https://github.com/qq15725/mce/compare/v0.15.2...v0.15.3) (2025-12-17)
 
 
