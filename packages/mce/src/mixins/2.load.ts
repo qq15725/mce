@@ -56,6 +56,7 @@ export default defineMixin((editor) => {
   const load: Mce.Editor['load'] = async (source) => {
     state.value = 'loading'
     const items: any[] = []
+    let hasLoader = false
     try {
       for (const loader of loaders.values()) {
         if (await loader.test(source)) {
@@ -66,6 +67,7 @@ export default defineMixin((editor) => {
           else {
             items.push(res)
           }
+          hasLoader = true
           break
         }
       }
@@ -73,7 +75,7 @@ export default defineMixin((editor) => {
     finally {
       state.value = undefined
     }
-    if (!items.length) {
+    if (!hasLoader) {
       throw new Error(`Failed to load source "${source}"`)
     }
     return items

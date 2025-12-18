@@ -1,6 +1,8 @@
+import type { Node } from 'modern-canvas'
 import type { Element } from 'modern-idoc'
 import type { Ref } from 'vue'
 import { cloneDeep } from 'lodash-es'
+import { Element2D } from 'modern-canvas'
 import { onBeforeUnmount, ref } from 'vue'
 import { definePlugin } from '../plugin'
 import { isInputEvent, SUPPORTS_CLIPBOARD } from '../utils'
@@ -47,40 +49,82 @@ export default definePlugin((editor, options) => {
 
   const useClipboard = options.clipboard !== false && SUPPORTS_CLIPBOARD
 
-  function toClipboardItem(source: any): ClipboardItem {
+  const copy: Mce.Commands['copy'] = async (source) => {
     if (typeof source === 'string') {
-      const type = 'text/plain'
-      return new ClipboardItem({ [type]: new Blob([source], { type }) })
+      if (useClipboard) {
+        await navigator!.clipboard.write([
+          new ClipboardItem({
+            'text/plain': new Blob([source], { type: 'text/plain' }),
+          }),
+        ])
+      }
     }
     else if (source instanceof Blob) {
-      return new ClipboardItem({ [source.type]: source })
+      if (useClipboard) {
+        await navigator!.clipboard.write([
+          new ClipboardItem({
+            [source.type]: source,
+          }),
+        ])
+      }
     }
     else {
-      const type = 'text/html'
-      const content = `<mce-clipboard>${JSON.stringify(source)}</mce-clipboard>`
-      return new ClipboardItem({
-        [type]: new Blob([content], { type }),
-      })
-    }
-  }
+      if (useClipboard) {
+        const textItems: string[] = []
+        let html = ''
+        if (!source) {
+          const selected = selection.value
+          html += `<mce-clipboard>${JSON.stringify(selected.map((v) => {
+            const json = v.toJSON()
+            if (json.style) {
+              delete json.style.left
+              delete json.style.top
+            }
+            return json
+          }))}</mce-clipboard>`
 
-  const copy: Mce.Commands['copy'] = async (source) => {
-    if (source === undefined) {
-      source = selection.value.map((v) => {
-        const json = v.toJSON()
-        delete json.style.left
-        delete json.style.top
-        return json
-      })
-    }
-    if (useClipboard) {
-      await navigator!.clipboard.write([
-        toClipboardItem(source),
-      ])
-    }
-    else {
-      if (Array.isArray(source)) {
-        copiedData.value = source
+          const cb = (child: Node): boolean => {
+            if (child instanceof Element2D) {
+              const _text = child.text.base.toString()
+              textItems.push(_text)
+              html += `<span>${_text}</span>`
+            }
+            return false
+          }
+
+          selected.forEach((node) => {
+            cb(node)
+            node.findOne(cb)
+          })
+        }
+        else {
+          html += `<mce-clipboard>${JSON.stringify(source)}</mce-clipboard>`
+        }
+
+        const items: Record<string, any> = {}
+        if (textItems.length) {
+          items['text/plain'] = new Blob([textItems.join('\n')], { type: 'text/plain' })
+        }
+        if (html) {
+          items['text/html'] = new Blob([html], { type: 'text/html' })
+        }
+        await navigator!.clipboard.write([
+          new ClipboardItem(items),
+        ])
+      }
+      else {
+        if (source === undefined) {
+          source = selection.value.map((v) => {
+            const json = v.toJSON()
+            delete json.style.left
+            delete json.style.top
+            return json
+          })
+        }
+
+        if (Array.isArray(source)) {
+          copiedData.value = source
+        }
       }
     }
   }
@@ -102,10 +146,17 @@ export default definePlugin((editor, options) => {
   async function _paste(items: ClipboardItem[]): Promise<void> {
     const elements: Element[] = []
     for (const item of items) {
-      for (const type of item.types) {
+      const types = [...item.types]
+      const index = types.indexOf('text/html')
+      if (index > -1) {
+        types.splice(index, 1)
+        types.unshift('text/html')
+      }
+      for (const type of types) {
         const blob = await item.getType(type)
         if (await canLoad(blob)) {
           elements.push(...(await load(blob)))
+          break
         }
         else {
           console.warn(`Unhandled clipboard ${blob.type}`, await blob.text())
