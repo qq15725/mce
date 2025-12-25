@@ -88,8 +88,10 @@ export const defaultDoubleclickStrategy: DoubleclickStrategy = (context) => {
   const { editor } = context
   const { elementSelection } = editor
   const element = elementSelection.value[0]
-  if (element) {
-    return element.foreground.isValid() ? undefined : 'typing'
+  if (element && !element.meta.lock) {
+    return element.foreground.isValid()
+      ? undefined
+      : 'typing'
   }
   return undefined
 }
