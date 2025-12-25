@@ -70,6 +70,8 @@ const isLast = computed(() => {
 })
 const isActive = computed(() => selection.value.some(v => v.equal(props.node)))
 
+const children = computed(() => props.node.children)
+const childrenLength = computed(() => children.value.length)
 const inputDom = ref<HTMLInputElement>()
 const isHoverElement = computed(() => props.node?.equal(hoverElement.value))
 const hovering = ref(false)
@@ -230,7 +232,7 @@ function onInputBlur() {
     >
       <div class="mce-layer__prepend">
         <Icon
-          v-if="props.node.children.length"
+          v-if="childrenLength"
           icon="$arrowRight"
           @click="onClickExpand"
           @mousedown.stop
@@ -307,8 +309,8 @@ function onInputBlur() {
 
   <template v-if="opened">
     <MceLayer
-      v-for="(child, key) of props.node.children" :key="key"
-      :node="child"
+      v-for="i of childrenLength" :key="i"
+      :node="children[childrenLength - i]"
       :indent="root ? props.indent : (props.indent + 1)"
       :active="active || isActive"
     />
