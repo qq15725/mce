@@ -207,10 +207,8 @@ function onContextmenu(e: PointerEvent) {
 
 function onInputBlur() {
   editing.value = false
-  if (editValue.value) {
-    ;(props.node as any).name = editValue.value
-    editValue.value = undefined
-  }
+  ;(props.node as any).name = editValue.value
+  editValue.value = ''
 }
 </script>
 
@@ -281,7 +279,7 @@ function onInputBlur() {
       <div
         class="mce-layer__action"
         :class="{
-          'mce-layer__action--hide': !hovering && !isLock(props.node),
+          'mce-layer__action--hide': !hovering && !isLock(props.node) && isVisible(props.node),
         }"
       >
         <template v-if="props.root">
