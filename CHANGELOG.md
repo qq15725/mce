@@ -1,3 +1,21 @@
+## [0.15.6](https://github.com/qq15725/mce/compare/v0.15.5...v0.15.6) (2025-12-26)
+
+
+### Bug Fixes
+
+* layer ([186c8f3](https://github.com/qq15725/mce/commit/186c8f3db74d4517501ad9649c58a4a68624caf8))
+* layer ([e8fc219](https://github.com/qq15725/mce/commit/e8fc21918405b7576d86ddcfe1d6510061914065))
+* layer action sticky ([2ef1fd0](https://github.com/qq15725/mce/commit/2ef1fd0fd276b934cfbdff94fa78a5183ca61f34))
+* layers order ([a5c023d](https://github.com/qq15725/mce/commit/a5c023df007df4d6a2cf2fd5d61695ccb3c536d4))
+* typing lock ([cf07265](https://github.com/qq15725/mce/commit/cf07265b641b500d2af5083504ac63b125797fd0))
+
+
+### Features
+
+* up deps ([e39b351](https://github.com/qq15725/mce/commit/e39b3510090df600fb38097a50d78da142ad7c73))
+
+
+
 ## [0.15.5](https://github.com/qq15725/mce/compare/v0.15.4...v0.15.5) (2025-12-18)
 
 
