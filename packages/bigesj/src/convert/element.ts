@@ -2,11 +2,14 @@ import type { NormalizedElement } from 'modern-idoc'
 import type { BigeElement } from './types'
 import { idGenerator } from 'modern-idoc'
 import { parseAnimations } from './animation'
+import { convertBackground } from './background'
+import { croppingToCropRect } from './cropping'
 import { convertImageElementToUrl } from './image'
 import { convertShapeElementToShape } from './shape'
 import { getStyle } from './style'
 import { convertSvgElementToUrl } from './svg'
 import { convertTextContent, convertTextEffects, convertTextStyle } from './text'
+import { transformToCropRect } from './transform'
 
 const percentageToPx = (per: string) => (Number.parseFloat(per) || 0) / 100
 
@@ -17,10 +20,8 @@ export async function convertElement(
     endTime: number
   },
 ): Promise<NormalizedElement> {
-  const style = { ...getStyle(el) }
-
-  delete style.bottom
-  delete style.right
+  const oldStyle = getStyle(el)
+  const style = getStyle(el, true)
 
   const { children: _children, ...raw } = el
 
@@ -32,21 +33,30 @@ export async function convertElement(
 
   const element: NormalizedElement = {
     id: idGenerator(),
-    name: el.name ?? el.title ?? el.id,
+    name: el.name ?? el.title,
     style,
     meta,
     children: [],
+    background: convertBackground(el),
   }
 
-  if (style.borderRadius) {
-    style.borderRadius = (style.borderRadius * 0.01) * Math.max(style.height, style.width)
+  if (oldStyle.borderRadius) {
+    style.borderRadius = (oldStyle.borderRadius * 0.01) * Math.max(oldStyle.height, oldStyle.width)
   }
 
-  if (parent && el.groupStyle) {
-    style.width = parent.style.width * percentageToPx(el.groupStyle.width)
-    style.height = parent.style.height * percentageToPx(el.groupStyle.height)
-    style.left = parent.style.width * percentageToPx(el.groupStyle.left)
-    style.top = parent.style.height * percentageToPx(el.groupStyle.top)
+  if (parent) {
+    if (el.groupStyle) {
+      // new version
+      style.width = parent.style.width * percentageToPx(el.groupStyle.width)
+      style.height = parent.style.height * percentageToPx(el.groupStyle.height)
+      style.left = parent.style.width * percentageToPx(el.groupStyle.left)
+      style.top = parent.style.height * percentageToPx(el.groupStyle.top)
+    }
+    else {
+      // old version
+      style.left = oldStyle.left - parent.left
+      style.top = oldStyle.top - parent.top
+    }
   }
 
   if (el.editable === false) {
@@ -86,33 +96,18 @@ export async function convertElement(
         meta.rawForegroundImage = el.url
       }
       if (el.cropping) {
-        const width = el.style.width
-        const height = el.style.height
-        const {
-          imageWidth,
-          imageHeight,
-          maskWidth = width,
-          maskHeight = height,
-          translateX,
-          translateY,
-          zoom = 1,
-        } = el.cropping
-        const cvsWidth = imageWidth * zoom
-        const cvsHeight = imageHeight * zoom
-        const distX = (cvsWidth - maskWidth) / 2 - translateX
-        const distY = (cvsHeight - maskHeight) / 2 - translateY
-        const originX = distX + maskWidth / 2
-        const originY = distY + maskHeight / 2
-        const left = -(width / 2 - originX)
-        const top = -(height / 2 - originY)
-        const right = cvsWidth - (left + width)
-        const bottom = cvsHeight - (top + height)
-        element.foreground.cropRect = {
-          left: left / cvsWidth,
-          top: top / cvsHeight,
-          right: right / cvsWidth,
-          bottom: bottom / cvsHeight,
-        }
+        element.foreground.cropRect = croppingToCropRect(
+          el.cropping,
+          el.style.width,
+          el.style.height,
+        )
+      }
+      else if (el.transform) {
+        element.foreground.cropRect = transformToCropRect(
+          el.transform,
+          el.style.width,
+          el.style.height,
+        )
       }
       break
     case 'svg': {

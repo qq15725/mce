@@ -15,6 +15,7 @@ export default {
   'move': '移动',
   'hand': '抓手',
   'frame': '画板',
+  'group': '组合',
   'text': '文字',
   'doubleClickEditText': '双击编辑文字',
   'rectangle': '矩形',

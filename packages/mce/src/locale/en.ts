@@ -14,6 +14,7 @@ export default {
   'move': 'Move',
   'hand': 'Hand',
   'frame': 'Frame',
+  'group': 'Group',
   'text': 'Text',
   'doubleClickEditText': 'DoubleClickEditText',
   'rectangle': 'Rectangle',

@@ -37,6 +37,7 @@ const {
   zoomTo,
   hoverElement,
   exec,
+  t,
 } = useEditor()
 
 const opened = defineModel('opened', { default: false })
@@ -99,8 +100,17 @@ const thumbnailName = computed(() => {
   const node = props.node
   let value = node.name
   if (!value) {
-    if (isElement(node)) {
-      if (node.text.isValid()) {
+    if (isFrame(node)) {
+      return t('frame')
+    }
+    else if (node.children.length) {
+      value = t('group')
+    }
+    else if (isElement(node)) {
+      if (node.foreground.isValid() && node.foreground.image) {
+        value = t('image')
+      }
+      else if (node.text.isValid()) {
         value = node.text.getStringContent()
       }
     }
@@ -207,8 +217,10 @@ function onContextmenu(e: PointerEvent) {
 
 function onInputBlur() {
   editing.value = false
-  ;(props.node as any).name = editValue.value
-  editValue.value = ''
+  if (editValue.value !== thumbnailName.value) {
+    ;(props.node as any).name = editValue.value
+    editValue.value = ''
+  }
 }
 </script>
 

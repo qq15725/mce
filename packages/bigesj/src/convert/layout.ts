@@ -13,10 +13,8 @@ export async function convertLayout(
   },
 ): Promise<NormalizedElement> {
   const id = idGenerator()
-  const style = { ...getStyle(layout) }
+  const style = getStyle(layout, true)
 
-  delete style.right
-  delete style.bottom
   if (isFrame) {
     style.overflow = 'hidden'
   }
