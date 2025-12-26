@@ -95,6 +95,18 @@ const thumbnailIcon = computed(() => {
   }
   return '$shape'
 })
+const thumbnailName = computed(() => {
+  const node = props.node
+  let value = node.name
+  if (!value) {
+    if (isElement(node)) {
+      if (node.text.isValid()) {
+        value = node.text.getStringContent()
+      }
+    }
+  }
+  return value || node.id
+})
 
 function onClickExpand() {
   opened.value = !opened.value
@@ -164,11 +176,11 @@ function onDblclickThumbnail(e: MouseEvent) {
 
 function onDblclickName() {
   editing.value = true
-  editValue.value = props.node.name
+  editValue.value = thumbnailName.value
   nextTick().then(() => {
     const dom = inputDom.value
     if (dom) {
-      dom.focus()
+      dom.focus({ preventScroll: true })
       dom.select()
     }
   })
@@ -262,7 +274,7 @@ function onInputBlur() {
         <div
           :style="{ visibility: editing ? 'hidden' : undefined }"
         >
-          {{ editValue || props.node.name || props.node.id }}
+          {{ editValue || thumbnailName }}
         </div>
       </div>
 
@@ -437,6 +449,7 @@ function onInputBlur() {
     &__name {
       position: relative;
       flex: 1;
+      overscroll-behavior: none;
     }
 
     &__input {
@@ -459,10 +472,13 @@ function onInputBlur() {
       flex: none;
       display: flex;
       align-items: center;
-      background-color: rgb(var(--mce-theme-background));
+      background-color: var(--overlay-color, transparent);
+      backdrop-filter: blur(8px);
+      border-radius: 4px;
 
       &--hide {
         background-color: transparent;
+        backdrop-filter: none;
 
         #{$root}__btn {
           opacity: 0;

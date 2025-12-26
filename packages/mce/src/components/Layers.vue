@@ -51,6 +51,7 @@ watch(selection, (selection) => {
   if (last) {
     nextTick().then(() => {
       domItems.get(getIdByNode(last!) ?? '')?.value?.scrollIntoView({
+        inline: 'nearest',
         block: 'center',
       })
     })
