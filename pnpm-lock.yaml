@@ -82,8 +82,8 @@ importers:
         specifier: ^5
         version: 5.13.0
       modern-canvas:
-        specifier: ^0.14.22
-        version: 0.14.22(lottie-web@5.13.0)(modern-gif@2.0.4)(yoga-layout@3.2.1)
+        specifier: ^0.14.23
+        version: 0.14.23(lottie-web@5.13.0)(modern-gif@2.0.4)(yoga-layout@3.2.1)
       modern-font:
         specifier: ^0.4.4
         version: 0.4.4
@@ -91,8 +91,8 @@ importers:
         specifier: ^0.10.8
         version: 0.10.8
       modern-text:
-        specifier: ^1.10.6
-        version: 1.10.6
+        specifier: ^1.10.7
+        version: 1.10.7
       typescript:
         specifier: '>=4.7'
         version: 5.9.3
@@ -2204,8 +2204,8 @@ packages:
   mlly@1.8.0:
     resolution: {integrity: sha512-l8D9ODSRWLe2KHJSifWGwBqpTZXIXTeo8mlKjY+E2HAakaTeNpqAyBZ8GSqLzHgw4XmHmC8whvpjJNMbFZN7/g==}
 
-  modern-canvas@0.14.22:
-    resolution: {integrity: sha512-96HzPFcdDD2hCvssmBCn+3zSnYdIc5SjgU42ahgWk5oTcBQ2m+lnLWp8/fstysuEKXu0hW0k1acW7lDsimmcZA==}
+  modern-canvas@0.14.23:
+    resolution: {integrity: sha512-ax62NV89WoF1At8CV0BxYQs/0CYFhBpBPzaYY6OVSy6VomBYdXKvlxg7csJd3iFcQDf90YRyLv2znJ8o1DrnGQ==}
     peerDependencies:
       lottie-web: ^5
       modern-gif: ^2
@@ -2250,8 +2250,8 @@ packages:
   modern-pdf@1.3.2:
     resolution: {integrity: sha512-/i0KQeZNMz1JyMabZhuXVfBHb6ZZ4M5K0oR9v06qdsUpgN21AvJYeQKVyF/S13GCoprJF+vTMZI6W8MGkianig==}
 
-  modern-text@1.10.6:
-    resolution: {integrity: sha512-d3bKzaDInK3d+ro3e7zavoBkzB/nrzgV8jyBtD9PV/ffG3ZYHWbgHqUcmgWCwcGQ76D3R65kgwlZHOrSewtt5A==}
+  modern-text@1.10.7:
+    resolution: {integrity: sha512-Yxc/WlqRvpoL3GWkn6NFeFCRBlvUgvLZCCAsRlcwzlCg3+WPXmhXZegjRCw01iFIPru5xOSRJCk0OMnI2gvHPw==}
 
   mp4box@2.1.1:
     resolution: {integrity: sha512-gttYFNmlCjredsdnxqNC6ho0bx6zEwOqAwSKZNQXtsBqvSN1CjtzlTLY9Kfhvt14Co8Iu+qMuOOpnPIRjvvFtw==}
@@ -2750,8 +2750,8 @@ packages:
     resolution: {integrity: sha512-sf4i37nQ2LBx4m3wB74y+ubopq6W/dIzXg0FDGjsYnZHVa1Da8FH853wlL2gtUhg+xJXjfk3kUZS3BRoQeoQBQ==}
     engines: {node: '>=6'}
 
-  ts-api-utils@2.1.0:
-    resolution: {integrity: sha512-CUgTZL1irw8u29bzrOD/nH85jqyc74D6SshFgujOIA7osm2Rz7dYH77agkx7H4FBNxDq7Cjf+IjaX/8zwFW+ZQ==}
+  ts-api-utils@2.3.0:
+    resolution: {integrity: sha512-6eg3Y9SF7SsAvGzRHQvvc1skDAhwI4YQ32ui1scxD1Ccr0G5qIIbUBT3pFTKX8kmWIQClHobtUdNuaBgwdfdWg==}
     engines: {node: '>=18.12'}
     peerDependencies:
       typescript: '>=4.8.4'
@@ -3707,7 +3707,7 @@ snapshots:
       eslint: 9.39.2(jiti@2.6.1)
       ignore: 7.0.5
       natural-compare: 1.4.0
-      ts-api-utils: 2.1.0(typescript@5.9.3)
+      ts-api-utils: 2.3.0(typescript@5.9.3)
       typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
@@ -3749,7 +3749,7 @@ snapshots:
       '@typescript-eslint/utils': 8.50.1(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
       debug: 4.4.3
       eslint: 9.39.2(jiti@2.6.1)
-      ts-api-utils: 2.1.0(typescript@5.9.3)
+      ts-api-utils: 2.3.0(typescript@5.9.3)
       typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
@@ -3766,7 +3766,7 @@ snapshots:
       minimatch: 9.0.5
       semver: 7.7.3
       tinyglobby: 0.2.15
-      ts-api-utils: 2.1.0(typescript@5.9.3)
+      ts-api-utils: 2.3.0(typescript@5.9.3)
       typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
@@ -5234,14 +5234,14 @@ snapshots:
       pkg-types: 1.3.1
       ufo: 1.6.1
 
-  modern-canvas@0.14.22(lottie-web@5.13.0)(modern-gif@2.0.4)(yoga-layout@3.2.1):
+  modern-canvas@0.14.23(lottie-web@5.13.0)(modern-gif@2.0.4)(yoga-layout@3.2.1):
     dependencies:
       colord: 2.9.3
       earcut: 3.0.2
       modern-font: 0.4.4
       modern-idoc: 0.10.8
       modern-path2d: 1.4.16
-      modern-text: 1.10.6
+      modern-text: 1.10.7
     optionalDependencies:
       lottie-web: 5.13.0
       modern-gif: 2.0.4
@@ -5258,7 +5258,7 @@ snapshots:
   modern-idoc-svg@0.2.0:
     dependencies:
       modern-idoc: 0.10.8
-      modern-text: 1.10.6
+      modern-text: 1.10.7
 
   modern-idoc@0.10.8:
     dependencies:
@@ -5293,9 +5293,9 @@ snapshots:
       modern-font: 0.4.4
       modern-idoc: 0.9.11
       modern-path2d: 1.4.16
-      modern-text: 1.10.6
+      modern-text: 1.10.7
 
-  modern-text@1.10.6:
+  modern-text@1.10.7:
     dependencies:
       diff: 8.0.2
       modern-font: 0.4.4
@@ -5763,7 +5763,7 @@ snapshots:
 
   totalist@3.0.1: {}
 
-  ts-api-utils@2.1.0(typescript@5.9.3):
+  ts-api-utils@2.3.0(typescript@5.9.3):
     dependencies:
       typescript: 5.9.3
 
