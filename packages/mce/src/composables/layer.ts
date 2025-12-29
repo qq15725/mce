@@ -25,7 +25,6 @@ export interface LayerItem {
 
 export interface LayerProvide {
   selecting: Ref<boolean>
-  sortedSelection: Ref<{ node: Node, index: number }[]>
   register: (
     vm: ComponentInternalInstance,
     item: LayerItem,
@@ -39,7 +38,7 @@ export interface LayerProvide {
 export const MceLayerKey: InjectionKey<LayerProvide> = Symbol.for('mce:layer')
 export const MceLayerItemKey: InjectionKey<{ id: string }> = Symbol.for('mce:layer-item')
 
-export function createLayer(options: Pick<LayerProvide, 'sortedSelection'>) {
+export function createLayer() {
   const registered = ref<string[]>([])
   const nodeItems = new Map<string, Ref<Node>>()
   const openedItems = reactive(new Map<string, Ref<boolean>>())
@@ -60,7 +59,6 @@ export function createLayer(options: Pick<LayerProvide, 'sortedSelection'>) {
   }
 
   provide(MceLayerKey, {
-    ...options,
     selecting,
     dragging,
     droppingItemId,

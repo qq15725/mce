@@ -45,7 +45,6 @@ const dom = ref<HTMLElement>()
 
 const {
   selecting,
-  sortedSelection,
   dragging,
   dropping,
   onMousedown,
@@ -56,47 +55,7 @@ const {
   dom: computed(() => dom.value),
 })
 
-const classes = computed(() => {
-  let prev: { node: Node, index: number } | undefined
-  let current: { node: Node, index: number } | undefined
-  let next: { node: Node, index: number } | undefined
-  sortedSelection.value.forEach((item) => {
-    if (item.node.equal(props.node)) {
-      current = item
-    }
-    else {
-      if (!current) {
-        next = item
-      }
-      else if (!prev) {
-        prev = item
-      }
-    }
-  })
-  const classes: string[] = []
-  if (current) {
-    if (prev) {
-      if (prev.index !== current.index + 1) {
-        classes.push('mce-layer--first')
-      }
-    }
-    else {
-      classes.push('mce-layer--first')
-    }
-
-    if (next) {
-      if (next.index !== current.index - 1) {
-        classes.push('mce-layer--last')
-      }
-    }
-    else {
-      classes.push('mce-layer--last')
-    }
-  }
-  return classes
-})
 const isActive = computed(() => selection.value.some(v => v.equal(props.node)))
-
 const children = computed(() => props.node.children)
 const childrenLength = computed(() => children.value.length)
 const inputDom = ref<HTMLInputElement>()
@@ -264,7 +223,6 @@ function onInputBlur() {
       opened && 'mce-layer--open',
       isHoverElement && 'mce-layer--hover',
       dropping && 'mce-layer--dropping',
-      ...classes,
     ]"
     :style=" {
       '--indent-padding': `${props.indent * 16}px`,
@@ -422,13 +380,13 @@ function onInputBlur() {
       border-radius: 0;
     }
 
-    &--first #{$root}__underlay {
+    &--active:not(#{$root}--active + #{$root}--active) #{$root}__underlay {
       border-top-left-radius: 4px;
       border-top-right-radius: 4px;
       top: 4px;
     }
 
-    &--last #{$root}__underlay {
+    &--active:not(:has(+ #{$root}--active)) #{$root}__underlay {
       border-bottom-left-radius: 4px;
       border-bottom-right-radius: 4px;
       bottom: 4px;

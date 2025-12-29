@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Node } from 'modern-canvas'
-import { computed, nextTick, watch } from 'vue'
+import { nextTick, watch } from 'vue'
 import { createLayer } from '../composables'
 import { useEditor } from '../composables/editor'
 import Layer from './Layer.vue'
@@ -9,28 +9,14 @@ const {
   root,
   selection,
   state,
-  nodeIndexMap,
 } = useEditor()
-
-const sortedSelection = computed(() => {
-  return selection.value
-    .map((node) => {
-      return {
-        node,
-        index: nodeIndexMap.get(node.id) ?? 0,
-      }
-    })
-    .sort((a, b) => a.index - b.index)
-})
 
 const {
   selecting,
   openedItems,
   domItems,
   getIdByNode,
-} = createLayer({
-  sortedSelection,
-})
+} = createLayer()
 
 watch(selection, (selection) => {
   if (state.value === 'selecting' || selecting.value) {
