@@ -291,7 +291,8 @@ function onInputBlur() {
       <div
         class="mce-layer__action"
         :class="{
-          'mce-layer__action--hide': !hovering && !isLock(props.node) && isVisible(props.node),
+          'mce-layer__action--hover': hovering,
+          'mce-layer__action--show': hovering || isLock(props.node) || !isVisible(props.node),
         }"
       >
         <template v-if="props.root">
@@ -302,6 +303,9 @@ function onInputBlur() {
           <Btn
             icon
             class="mce-layer__btn"
+            :class="{
+              'mce-layer__btn--show': isLock(props.node),
+            }"
             @click.prevent.stop="setLock(props.node, !isLock(props.node))"
           >
             <Icon :icon="isLock(props.node) ? '$lock' : '$unlock'" />
@@ -310,6 +314,9 @@ function onInputBlur() {
           <Btn
             icon
             class="mce-layer__btn"
+            :class="{
+              'mce-layer__btn--show': !isVisible(props.node),
+            }"
             @click.prevent.stop="setVisible(props.node, !isVisible(props.node))"
           >
             <Icon :icon="isVisible(props.node) ? '$visible' : '$unvisible'" />
@@ -476,21 +483,30 @@ function onInputBlur() {
       flex: none;
       display: flex;
       align-items: center;
-      background-color: var(--overlay-color, transparent);
-      backdrop-filter: blur(8px);
       border-radius: 4px;
+      background-color: transparent;
+      backdrop-filter: none;
 
-      &--hide {
-        background-color: transparent;
-        backdrop-filter: none;
+      #{$root}__btn {
+        opacity: 0;
+      }
 
+      &--hover {
         #{$root}__btn {
-          opacity: 0;
+          opacity: 1;
         }
+      }
+
+      &--show {
+        background-color: var(--overlay-color, transparent);
+        backdrop-filter: blur(8px);
       }
     }
 
     &__btn {
+      &--show {
+        opacity: 1 !important;
+      }
 
       + .mce-layer__btn {
         margin-left: -4px;
