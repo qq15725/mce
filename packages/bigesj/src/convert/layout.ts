@@ -12,6 +12,8 @@ export async function convertLayout(
     endTime: number
   },
 ): Promise<NormalizedElement> {
+  const { elements, ...raw } = layout
+
   const id = idGenerator()
   const style = getStyle(layout, true)
 
@@ -20,16 +22,10 @@ export async function convertLayout(
   }
 
   const meta: Record<string, any> = {
+    raw,
     inPptIs: isFrame ? 'Slide' : 'GroupShape',
     inEditorIs: isFrame ? 'Frame' : 'Element',
     inCanvasIs: 'Element2D',
-  }
-
-  if (layout.id) {
-    meta.rawId = layout.id
-  }
-  if (layout.name) {
-    meta.rawName = layout.name
   }
 
   return {
@@ -38,7 +34,7 @@ export async function convertLayout(
     style, // TODO 过滤掉部分属性
     background: convertBackground(layout),
     children: (await Promise.all(
-      layout.elements.map(async (element: any) => {
+      elements.map(async (element: any) => {
         try {
           return await convertElement(element, undefined, context)
         }

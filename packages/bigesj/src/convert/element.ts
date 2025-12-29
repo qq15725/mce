@@ -20,10 +20,10 @@ export async function convertElement(
     endTime: number
   },
 ): Promise<NormalizedElement> {
+  const { children: _children, ...raw } = el
+
   const oldStyle = getStyle(el)
   const style = getStyle(el, true)
-
-  const { children: _children, ...raw } = el
 
   const meta: Record<string, any> = {
     raw,

@@ -1,44 +1,60 @@
 import type { NormalizedBackground } from 'modern-idoc'
 import type { BigeElement } from './types'
 import { isGradient } from 'modern-idoc'
+import { getStyle } from './style'
 import { transformToCropRect } from './transform'
 
 export function convertBackground(el: BigeElement): NormalizedBackground | undefined {
+  const style = getStyle(el)
+
   let background: NormalizedBackground | undefined
 
-  const backgroundColor = el.backgroundColor
+  const color = el.backgroundColor
     ?? el.background?.color
 
-  if (backgroundColor) {
-    if (isGradient(backgroundColor ?? '')) {
+  if (color) {
+    if (isGradient(color ?? '')) {
       background = {
-        image: backgroundColor,
+        image: color,
       }
     }
     else {
       background = {
-        color: backgroundColor,
+        color,
       }
     }
   }
 
-  const backgroundImage = el.backgroundImage
+  const image = el.backgroundImage
     ?? el.background?.image
 
-  if (backgroundImage) {
+  if (image) {
     background = {
-      image: backgroundImage.match(/url\((.+)\)/)?.[1] ?? backgroundImage,
+      image: image.match(/url\((.+)\)/)?.[1] ?? image,
     }
   }
 
-  const backgroundTransform = el.backgroundTransform
+  let transform = el.backgroundTransform
     ?? el.background?.transform
 
-  if (background && backgroundTransform) {
+  if (!transform && el.imageTransform) {
+    const imageTransform = el.imageTransform
+    transform = {
+      zoom: imageTransform?.scale || 1,
+      translateX: imageTransform?.translateX || 0,
+      translateY: imageTransform?.translateY || 0,
+      originWidth: imageTransform?.imageWidth,
+      originHeight: imageTransform?.imageHeight,
+      imageWidth: imageTransform?.imageWidth || style.width,
+      imageHeight: imageTransform?.imageHeight || style.height,
+    }
+  }
+
+  if (background && transform) {
     background.cropRect = transformToCropRect(
-      backgroundTransform,
-      el.style.width,
-      el.style.height,
+      transform,
+      style.width,
+      style.height,
     )
   }
 
