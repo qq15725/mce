@@ -21,7 +21,6 @@ const sortedSelection = computed(() => {
       }
     })
     .sort((a, b) => a.index - b.index)
-    .map(v => v.node)
 })
 
 const {
@@ -100,6 +99,10 @@ watch(selection, (selection) => {
       .mce-layer__prepend {
         opacity: 1;
       }
+    }
+
+    .mce-layer {
+      scroll-margin: 8px;
     }
   }
 </style>

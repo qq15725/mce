@@ -55,19 +55,45 @@ const {
   node: computed(() => props.node),
   dom: computed(() => dom.value),
 })
-const isFrist = computed(() => sortedSelection.value[0]?.equal(props.node))
-const isLast = computed(() => {
-  const last = sortedSelection.value[sortedSelection.value.length - 1]
-  if (last) {
-    if (last.equal(props.node)) {
-      if (!opened.value || !props.node?.children.length)
-        return true
+
+const classes = computed(() => {
+  let prev: { node: Node, index: number } | undefined
+  let current: { node: Node, index: number } | undefined
+  let next: { node: Node, index: number } | undefined
+  sortedSelection.value.forEach((item) => {
+    if (item.node.equal(props.node)) {
+      current = item
     }
-    else if (last.equal(props.node?.parent)) {
-      // TODO
+    else {
+      if (!current) {
+        next = item
+      }
+      else if (!prev) {
+        prev = item
+      }
+    }
+  })
+  const classes: string[] = []
+  if (current) {
+    if (prev) {
+      if (prev.index !== current.index + 1) {
+        classes.push('mce-layer--first')
+      }
+    }
+    else {
+      classes.push('mce-layer--first')
+    }
+
+    if (next) {
+      if (next.index !== current.index - 1) {
+        classes.push('mce-layer--last')
+      }
+    }
+    else {
+      classes.push('mce-layer--last')
     }
   }
-  return false
+  return classes
 })
 const isActive = computed(() => selection.value.some(v => v.equal(props.node)))
 
@@ -231,11 +257,10 @@ function onInputBlur() {
     :class="[
       props.root && 'mce-layer--root',
       (active || isActive) && 'mce-layer--active',
-      isFrist && 'mce-layer--first',
-      isLast && 'mce-layer--last',
       opened && 'mce-layer--open',
       isHoverElement && 'mce-layer--hover',
       dropping && 'mce-layer--dropping',
+      ...classes,
     ]"
     :style=" {
       '--indent-padding': `${props.indent * 16}px`,
@@ -278,6 +303,9 @@ function onInputBlur() {
           v-model="editValue"
           type="text"
           class="mce-layer__input"
+          spellcheck="false"
+          autocapitalize="off"
+          autocorrect="off"
           autofocus
           @blur="onInputBlur"
         >

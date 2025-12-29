@@ -25,7 +25,7 @@ export interface LayerItem {
 
 export interface LayerProvide {
   selecting: Ref<boolean>
-  sortedSelection: Ref<Node[]>
+  sortedSelection: Ref<{ node: Node, index: number }[]>
   register: (
     vm: ComponentInternalInstance,
     item: LayerItem,
