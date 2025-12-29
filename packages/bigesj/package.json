@@ -1,7 +1,7 @@
 {
   "name": "@mce/bigesj",
   "type": "module",
-  "version": "0.15.7",
+  "version": "0.15.8",
   "description": "Plugin for mce",
   "author": "wxm",
   "license": "MIT",

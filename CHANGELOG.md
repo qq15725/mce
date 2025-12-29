@@ -1,3 +1,25 @@
+## [0.15.8](https://github.com/qq15725/mce/compare/v0.15.7...v0.15.8) (2025-12-29)
+
+
+### Bug Fixes
+
+* layer action ([f47627c](https://github.com/qq15725/mce/commit/f47627cd342f67adbe46dabb77b9a3bd96d0a200))
+* layer class ([f72d7b5](https://github.com/qq15725/mce/commit/f72d7b5ddd616997a88e9aa53858f5812c9cd24f))
+* layer context menu ([d679736](https://github.com/qq15725/mce/commit/d6797368d3a6201558fd8ad1acc15e288120243b))
+* layers ([3ce2a9f](https://github.com/qq15725/mce/commit/3ce2a9f60b1785768c396002027d038f30d2fb41))
+* root layer action ([b4753ad](https://github.com/qq15725/mce/commit/b4753ad90a2931661177e34a6bb4ba9f7ff56c00))
+* third party ([f843732](https://github.com/qq15725/mce/commit/f84373281e706e696fdc9ecbbc15d815caec336b))
+* third party ([b7af939](https://github.com/qq15725/mce/commit/b7af939544514294fe7f47e5a670df3062987d86))
+
+
+### Features
+
+* rotate ([45c715c](https://github.com/qq15725/mce/commit/45c715c6a72b5ea6c56f7ad8a9db4a28f0f1a19a))
+* up deps ([4cc5eb2](https://github.com/qq15725/mce/commit/4cc5eb29a6a69fa2bb36589dfd135ba97a4fdf22))
+* up pdf dep ([d8e6add](https://github.com/qq15725/mce/commit/d8e6add21c7a1c7cc428e1347f650e868210f38b))
+
+
+
 ## [0.15.7](https://github.com/qq15725/mce/compare/v0.15.6...v0.15.7) (2025-12-26)
 
 
