@@ -295,13 +295,7 @@ function onInputBlur() {
         }"
       >
         <template v-if="props.root">
-          <Btn
-            icon
-            class="mce-layer__btn"
-            @click="setLock(props.node, !isLock(props.node))"
-          >
-            <Icon :icon="isLock(props.node) ? '$lock' : '$unlock'" />
-          </Btn>
+          <!-- TODO -->
         </template>
 
         <template v-else>
