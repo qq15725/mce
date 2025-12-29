@@ -149,6 +149,10 @@ function onClickExpand() {
 }
 
 function onMousedownContent(e: MouseEvent) {
+  if (e.button === 2) {
+    return
+  }
+
   selecting.value = true
   if (e.shiftKey) {
     const _nodes = [
@@ -401,7 +405,6 @@ function onInputBlur() {
     }
 
     &--root {
-      margin-bottom: 4px;
       font-weight: bold;
 
       #{$root}__thumbnail {
