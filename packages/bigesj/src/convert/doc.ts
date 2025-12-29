@@ -2,10 +2,13 @@ import type { NormalizedDocument } from 'modern-idoc'
 import { idGenerator } from 'modern-idoc'
 import { convertLayout } from './layout'
 
-export async function convertDoc(doc: Record<string, any>, gap = 0): Promise<NormalizedDocument> {
+export async function convertDoc(
+  doc: Record<string, any>,
+  gap = 0,
+): Promise<NormalizedDocument> {
   const {
     layouts,
-    metas = {},
+    raw = {},
   } = doc
 
   const context = {
@@ -49,14 +52,14 @@ export async function convertDoc(doc: Record<string, any>, gap = 0): Promise<Nor
 
   return {
     id: idGenerator(),
-    name: metas.name || 'doc',
+    name: raw.name || 'doc',
     style: {
-      width: metas?.width ?? minmax.maxX - minmax.minX,
-      height: metas?.height ?? minmax.maxY - minmax.minY,
+      width: raw?.width ?? minmax.maxX - minmax.minX,
+      height: raw?.height ?? minmax.maxY - minmax.minY,
     },
     children,
     meta: {
-      ...metas,
+      raw,
       endTime: context.endTime,
       inEditorIs: 'Doc',
     },

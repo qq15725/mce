@@ -15,7 +15,7 @@ const percentageToPx = (per: string) => (Number.parseFloat(per) || 0) / 100
 
 export async function convertElement(
   el: BigeElement,
-  parent: Record<string, any> | undefined,
+  parent?: Record<string, any>,
   context?: {
     endTime: number
   },

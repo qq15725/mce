@@ -38,8 +38,7 @@ export function bidTidLoader(editor: Editor, api: Record<string, any>): Mce.Load
             if (included !== undefined) {
               content.layouts = content.layouts.filter((_: any, index: number) => included.includes(index))
             }
-            doc = await convertDoc(content)
-            doc.meta!.raw = raw
+            doc = await convertDoc({ ...content, raw })
           }
           maxTime = Math.max(maxTime, doc.meta?.maxTime ?? 0)
           return doc

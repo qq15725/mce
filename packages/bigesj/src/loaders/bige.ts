@@ -16,9 +16,7 @@ export function bigeLoader(): Mce.Loader {
         ),
       )
       const { content, ...raw } = bigeDoc
-      const doc = await convertDoc(content)
-      doc.meta!.raw = raw
-      return doc
+      return await convertDoc({ ...content, raw })
     },
   }
 }
