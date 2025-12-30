@@ -1,5 +1,5 @@
 import type { Cursor, Vector2, Vector2Like } from 'modern-canvas'
-import type { IndexCharacter } from 'modern-text/web-components'
+import type { IndexCharacter as _IndexCharacter } from 'modern-text/web-components'
 import type { ComputedRef, Ref } from 'vue'
 import { Aabb2D, Camera2D, DrawboardEffect, Element2D, Engine, Node, Timeline } from 'modern-canvas'
 import { Fonts } from 'modern-font'
@@ -25,6 +25,8 @@ declare global {
       = | { side: 'center', align: 'center' }
         | { side: Tblock, align: 'left' | 'right' | 'center' }
         | { side: 'left' | 'right', align: Tblock | 'center' }
+
+    type IndexCharacter = _IndexCharacter
 
     interface Editor {
       fonts: Fonts
