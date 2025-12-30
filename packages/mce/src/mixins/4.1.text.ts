@@ -13,6 +13,7 @@ declare global {
     interface Editor {
       hasTextSelectionRange: Ref<boolean>
       isTextAllSelected: Ref<boolean>
+      handleTextSelection: (textSelection: IndexCharacter[], cb: (arg: Record<string, any>) => boolean) => void
       textFontSizeToFit: (element: Element2D, scale?: number) => void
       textToFit: (element: Element2D, typography?: Mce.TypographyStrategy) => void
       getTextStyle: (key: string) => any
@@ -183,7 +184,7 @@ export default defineMixin((editor) => {
     })
   }
 
-  function handleSelection([start, end]: IndexCharacter[], cb: (arg: Record<string, any>) => boolean) {
+  function handleTextSelection([start, end]: IndexCharacter[], cb: (arg: Record<string, any>) => boolean): void {
     let flag = true
     element.value?.text?.content.forEach((p, pIndex, pItems) => {
       if (!flag)
@@ -234,7 +235,7 @@ export default defineMixin((editor) => {
     if (hasTextSelectionRange.value) {
       const selection = textSelection.value
       if (selection && selection[0] && selection[1]) {
-        handleSelection(selection, ({ selected, fStyle }) => {
+        handleTextSelection(selection, ({ selected, fStyle }) => {
           if (selected && fStyle[key]) {
             value = fStyle[key]
             return false
@@ -278,7 +279,7 @@ export default defineMixin((editor) => {
     let newParagraph: NormalizedParagraph = { fragments: [] }
     let newFragment: NormalizedFragment | undefined
 
-    handleSelection(textSelection.value!, ({ selected, fIndex, fStyle, fLength, c, cIndex, cLength }) => {
+    handleTextSelection(textSelection.value!, ({ selected, fIndex, fStyle, fLength, c, cIndex, cLength }) => {
       if (fIndex === 0 && cIndex === 0) {
         newParagraph = { fragments: [] }
         newFragment = undefined
@@ -426,6 +427,7 @@ export default defineMixin((editor) => {
   Object.assign(editor, {
     hasTextSelectionRange,
     isTextAllSelected,
+    handleTextSelection,
     textFontSizeToFit,
     textToFit,
     setTextStyle,
