@@ -1,3 +1,12 @@
+## [0.15.12](https://github.com/qq15725/mce/compare/v0.15.11...v0.15.12) (2025-12-30)
+
+
+### Features
+
+* add docLoading ([ac5ddc3](https://github.com/qq15725/mce/commit/ac5ddc37340ff625744c0274d0216d0082d7a197))
+
+
+
 ## [0.15.11](https://github.com/qq15725/mce/compare/v0.15.10...v0.15.11) (2025-12-30)
 
 
