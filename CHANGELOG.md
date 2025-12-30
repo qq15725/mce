@@ -1,3 +1,18 @@
+## [0.15.9](https://github.com/qq15725/mce/compare/v0.15.8...v0.15.9) (2025-12-30)
+
+
+### Bug Fixes
+
+* crdt ([b55b985](https://github.com/qq15725/mce/commit/b55b9853976ee4ef72e596d405325a7d94d85bfd))
+
+
+### Features
+
+* text ([c0c65b7](https://github.com/qq15725/mce/commit/c0c65b711b2c583e5716d3e5ac6b1d4eb5e55616))
+* up deps ([b7d81ad](https://github.com/qq15725/mce/commit/b7d81ad93364050701fc6988f0a9b23e48cc9aa2))
+
+
+
 ## [0.15.8](https://github.com/qq15725/mce/compare/v0.15.7...v0.15.8) (2025-12-29)
 
 
