@@ -16,7 +16,7 @@ export default definePlugin((editor) => {
 
   function rotate(deg: number) {
     elementSelection.value.forEach((el) => {
-      el.style.rotate += deg
+      el.style.rotate = (el.style.rotate + deg) % 360
     })
   }
 
