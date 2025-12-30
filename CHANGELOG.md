@@ -1,3 +1,12 @@
+## [0.15.11](https://github.com/qq15725/mce/compare/v0.15.10...v0.15.11) (2025-12-30)
+
+
+### Features
+
+* add docLoading docLoaded event ([25e315b](https://github.com/qq15725/mce/commit/25e315b9a04d94aef955a2e1616d0ed8ae958104))
+
+
+
 ## [0.15.10](https://github.com/qq15725/mce/compare/v0.15.9...v0.15.10) (2025-12-30)
 
 
