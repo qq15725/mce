@@ -40,6 +40,7 @@ declare global {
       drawboardPointer: Ref<Vector2 | undefined>
       drawboardContextMenuPointer: Ref<Vector2 | undefined>
       doc: Ref<Doc>
+      docLoading: Ref<boolean>
       root: ComputedRef<Node>
       nodes: Ref<Node[]>
       nodeIndexMap: Map<string, number>
@@ -87,6 +88,7 @@ export default defineMixin((editor) => {
   const drawboardPointer = ref<Vector2Like>()
   const drawboardContextMenuPointer = ref<Vector2Like>()
   const doc = ref(new Doc())
+  const docLoading = ref(false)
   const root = computed(() => doc.value.root)
   const nodes = ref<Node[]>([])
   const nodeIndexMap = reactive(new Map<string, number>())
@@ -179,6 +181,7 @@ export default defineMixin((editor) => {
     camera,
     drawboardEffect,
     doc,
+    docLoading,
     root,
     nodes,
     nodeIndexMap,

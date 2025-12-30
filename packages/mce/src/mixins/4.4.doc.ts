@@ -42,6 +42,7 @@ declare global {
 export default defineMixin((editor, options) => {
   const {
     doc,
+    docLoading,
     renderEngine,
     emit,
     selection,
@@ -128,14 +129,17 @@ export default defineMixin((editor, options) => {
   }
 
   const loadDoc: Mce.Editor['loadDoc'] = async (source) => {
+    docLoading.value = true
     emit('docLoading', source)
     try {
       const _doc = await setDoc(await load(source))
       emit('docLoaded', source, _doc)
+      docLoading.value = false
       return _doc
     }
     catch (err: any) {
       emit('docLoaded', source, err)
+      docLoading.value = false
       throw err
     }
   }
