@@ -96,7 +96,7 @@ const thumbnailName = computed(() => {
         value = t('image')
       }
       else if (node.text.isValid()) {
-        value = node.text.innerText
+        value = node.text.textContent
       }
     }
   }
