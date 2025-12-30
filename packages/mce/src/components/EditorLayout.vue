@@ -161,7 +161,7 @@ function onHover(event: PointerInputEvent) {
     }
   }
 
-  if (!(isElement(hovered) && !isTopLevelFrame(hovered))) {
+  if (!(isElement(hovered) && !isLock(hovered) && !isTopLevelFrame(hovered))) {
     hovered = undefined
     cursor = undefined
   }
@@ -191,7 +191,9 @@ function onPointerdown(
   } = options
 
   function isIncluded(node: any): node is Element2D {
-    return isElement(node) && (allowRootFrame || !isTopLevelFrame(node))
+    return isElement(node)
+      && !isLock(node)
+      && (allowRootFrame || !isTopLevelFrame(node))
   }
 
   const drawing = state.value === 'drawing'
