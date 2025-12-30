@@ -1,3 +1,17 @@
+## [0.15.10](https://github.com/qq15725/mce/compare/v0.15.9...v0.15.10) (2025-12-30)
+
+
+### Bug Fixes
+
+* layer text ([5780c50](https://github.com/qq15725/mce/commit/5780c50730ad9f792bb764b63d89c6bd57209e30))
+
+
+### Features
+
+* handleTextSelection ([c74458a](https://github.com/qq15725/mce/commit/c74458aa2e368c8c6acf92aabaf548816358004a))
+
+
+
 ## [0.15.9](https://github.com/qq15725/mce/compare/v0.15.8...v0.15.9) (2025-12-30)
 
 
