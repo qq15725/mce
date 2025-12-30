@@ -1,6 +1,7 @@
 import type { Element2D } from 'modern-canvas'
 import type { NormalizedFill, NormalizedFragment, NormalizedParagraph, NormalizedTextContent } from 'modern-idoc'
 import type { IndexCharacter } from 'modern-text/web-components'
+import type { Ref } from 'vue'
 import { isEqualObject, normalizeCRLF } from 'modern-idoc'
 import { measureText } from 'modern-text'
 import { TextEditor } from 'modern-text/web-components'
@@ -10,12 +11,15 @@ import { defineMixin } from '../mixin'
 declare global {
   namespace Mce {
     interface Editor {
+      hasTextSelectionRange: Ref<boolean>
+      isTextAllSelected: Ref<boolean>
       textFontSizeToFit: (element: Element2D, scale?: number) => void
       textToFit: (element: Element2D, typography?: Mce.TypographyStrategy) => void
       getTextStyle: (key: string) => any
       setTextStyle: (key: string, value: any) => void
       getTextFill: () => NormalizedFill | undefined
       setTextFill: (value: NormalizedFill | undefined) => void
+      setTextContentByEachFragment: (handler: (fragment: NormalizedFragment) => void) => void
     }
   }
 }
@@ -27,6 +31,19 @@ export default defineMixin((editor) => {
     elementSelection,
     textSelection,
   } = editor
+
+  const element = computed(() => elementSelection.value[0])
+
+  const hasTextSelectionRange = computed(() => {
+    return (textSelection.value?.length ?? 0) > 1
+      && textSelection.value![0] !== textSelection.value![1]
+  })
+
+  const isTextAllSelected = computed(() => {
+    return textSelection.value?.[0].isFirst
+      && textSelection.value?.[1].isLast
+      && textSelection.value?.[1].isLastSelected
+  })
 
   function textFontSizeToFit(element: Element2D, scale?: number): void {
     function _handle(element: Element2D): void {
@@ -119,14 +136,26 @@ export default defineMixin((editor) => {
         return
       }
 
+      const isVertical = element.text.base.isVertical
+
       const style = element.style.toJSON()
 
       switch (strategy) {
         case 'autoWidth':
-          style.width = 'auto'
+          if (isVertical) {
+            style.height = 'auto'
+          }
+          else {
+            style.width = 'auto'
+          }
           break
         case 'autoHeight':
-          style.height = 'auto'
+          if (isVertical) {
+            style.width = 'auto'
+          }
+          else {
+            style.height = 'auto'
+          }
           break
       }
 
@@ -153,13 +182,6 @@ export default defineMixin((editor) => {
       return false
     })
   }
-
-  const element = computed(() => elementSelection.value[0])
-
-  const hasSelectionRange = computed(() => {
-    return (textSelection.value?.length ?? 0) > 1
-      && textSelection.value![0] !== textSelection.value![1]
-  })
 
   function handleSelection([start, end]: IndexCharacter[], cb: (arg: Record<string, any>) => boolean) {
     let flag = true
@@ -200,14 +222,16 @@ export default defineMixin((editor) => {
   }
 
   function getTextStyle(key: string): any {
-    if (!element.value) {
+    const el = element.value
+
+    if (!el) {
       return undefined
     }
 
-    let value = (element.value.style as any)[key]
-    const content = element.value.text.content
+    let value = (el.style as any)[key]
+    const content = el.text.content
 
-    if (hasSelectionRange.value) {
+    if (hasTextSelectionRange.value) {
       const selection = textSelection.value
       if (selection && selection[0] && selection[1]) {
         handleSelection(selection, ({ selected, fStyle }) => {
@@ -242,121 +266,148 @@ export default defineMixin((editor) => {
     return value
   }
 
-  function setTextStyle(key: string, value: any): void {
-    if (!element.value) {
+  function setTextContentByEachFragment(handler: (fragment: NormalizedFragment) => void): void {
+    const el = element.value
+
+    if (!el) {
       return
     }
 
-    let isAllSelected = false
-    if (hasSelectionRange.value) {
-      const selection = textSelection.value
-      if (selection && selection[0] && selection[1]) {
-        if (selection[0].isFirst && selection[1].isLast && selection[1].isLastSelected) {
-          isAllSelected = true
+    // TODO 生成新片段后，textSelection未关联更新
+    const newContent: NormalizedTextContent = []
+    let newParagraph: NormalizedParagraph = { fragments: [] }
+    let newFragment: NormalizedFragment | undefined
+
+    handleSelection(textSelection.value!, ({ selected, fIndex, fStyle, fLength, c, cIndex, cLength }) => {
+      if (fIndex === 0 && cIndex === 0) {
+        newParagraph = { fragments: [] }
+        newFragment = undefined
+      }
+      const style = { ...fStyle }
+
+      if (selected) {
+        handler(style)
+      }
+
+      if (newFragment) {
+        const { content: _, ..._style } = newFragment
+        if (isEqualObject(style, _style)) {
+          newFragment.content += c
         }
         else {
-          const newContent: NormalizedTextContent = []
-          let newParagraph: NormalizedParagraph = { fragments: [] }
-          let newFragment: NormalizedFragment | undefined
-          handleSelection(selection, ({ selected, fIndex, fStyle, fLength, c, cIndex, cLength }) => {
-            if (fIndex === 0 && cIndex === 0) {
-              newParagraph = { fragments: [] }
-              newFragment = undefined
-            }
-            const style = { ...fStyle }
-            if (selected) {
-              style[key] = value
-            }
-            if (newFragment) {
-              const { content: _, ..._style } = newFragment
-              if (isEqualObject(style, _style)) {
-                newFragment.content += c
-              }
-              else {
-                newParagraph.fragments.push(newFragment)
-                newFragment = { ...style, content: c }
-              }
-            }
-            else {
-              newFragment = { ...style, content: c }
-            }
-            if (fIndex === fLength - 1 && cIndex === cLength - 1) {
-              if (newFragment) {
-                newParagraph.fragments.push(newFragment)
-              }
-              if (newParagraph.fragments.length) {
-                newContent.push(newParagraph)
-                newParagraph = { fragments: [] }
-              }
-            }
-            return true
-          })
-          if (newContent.length) {
-            element.value.text.content = newContent
-          }
+          newParagraph.fragments.push(newFragment)
+          newFragment = { ...style, content: c }
         }
       }
-    }
-    else {
-      isAllSelected = true
-    }
-    if (isAllSelected) {
-      const el = element.value
-      switch (key) {
-        case 'fill':
-        case 'outline':
-          (el.text as any)[key] = value
-          break
-        default:
-          (el.style as any)[key] = value
-          break
+      else {
+        newFragment = { ...style, content: c }
       }
-      const content = element.value.text.content
-      content.forEach((p) => {
-        delete (p as any)[key]
-        p.fragments.forEach((f) => {
-          delete (f as any)[key]
-        })
-      })
-      el.text.content = content
+      if (fIndex === fLength - 1 && cIndex === cLength - 1) {
+        if (newFragment) {
+          newParagraph.fragments.push(newFragment)
+        }
+        if (newParagraph.fragments.length) {
+          newContent.push(newParagraph)
+          newParagraph = { fragments: [] }
+        }
+      }
+      return true
+    })
+
+    if (newContent.length) {
+      el.text = { ...el.text.toJSON(), content: newContent }
     }
-    element.value.requestRender()
-    textToFit(element.value)
+  }
+
+  function setTextStyle(key: string, value: any): void {
+    const el = element.value
+
+    if (!el) {
+      return
+    }
+
+    switch (key) {
+      case 'writingMode': {
+        if (el.style[key] !== value) {
+          const { width, height } = el.style
+          el.style.width = height
+          el.style.height = width
+          el.style[key] = value
+        }
+        break
+      }
+      default: {
+        if (hasTextSelectionRange.value && !isTextAllSelected.value) {
+          setTextContentByEachFragment((fragment) => {
+            (fragment as any)[key] = value
+          })
+        }
+        else {
+          switch (key) {
+            case 'fill':
+            case 'outline':
+              (el.text as any)[key] = value
+              break
+            default:
+              (el.style as any)[key] = value
+              break
+          }
+
+          el.text.content.forEach((p) => {
+            delete (p as any)[key]
+            p.fragments.forEach((f) => {
+              delete (f as any)[key]
+            })
+          })
+
+          el.text = el.text.toJSON()
+        }
+
+        el.requestDraw()
+        textToFit(el)
+        break
+      }
+    }
   }
 
   function getTextFill(): NormalizedFill | undefined {
-    if (!element.value) {
+    const el = element.value
+
+    if (!el) {
       return undefined
     }
 
     let fill
-    if (hasSelectionRange.value) {
+    if (hasTextSelectionRange.value) {
       fill = getTextStyle('fill')
       if (!fill) {
-        const color = getTextStyle('color')
-        fill = { color }
+        fill = { color: getTextStyle('color') }
       }
     }
+
     fill = fill
-      ?? element.value.text.fill
-      ?? { color: element.value.style.color }
+      ?? el.text.fill
+      ?? { color: el.style.color }
+
     return fill
   }
 
   function setTextFill(value: NormalizedFill | undefined): void {
-    if (!element.value) {
-      return
+    const el = element.value
+
+    if (!el) {
+      return undefined
     }
 
-    if (hasSelectionRange.value && value?.color) {
+    if (hasTextSelectionRange.value && value?.color) {
       setTextStyle('fill', value)
     }
     else {
-      element.value.text.fill = value
+      el.text.fill = value
       if (value?.color) {
-        element.value.style.color = value.color
+        el.style.color = value.color
       }
-      element.value.text.content.forEach((p) => {
+      el.text.content.forEach((p) => {
         delete p.fill
         delete p.color
         p.fragments.forEach((f) => {
@@ -364,16 +415,24 @@ export default defineMixin((editor) => {
           delete f.color
         })
       })
+      el.text = {
+        ...el.text.toJSON(),
+        fill: value,
+      }
+      el.requestDraw()
     }
   }
 
   Object.assign(editor, {
+    hasTextSelectionRange,
+    isTextAllSelected,
     textFontSizeToFit,
     textToFit,
     setTextStyle,
     getTextStyle,
     getTextFill,
     setTextFill,
+    setTextContentByEachFragment,
   })
 
   return () => {
