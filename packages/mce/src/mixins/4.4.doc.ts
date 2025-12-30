@@ -31,7 +31,8 @@ declare global {
 
     interface Events {
       setDoc: [doc: Doc]
-      loadDoc: [doc: Doc, source: any]
+      docLoading: [source: any]
+      docLoaded: [source: any, doc: Doc | Error]
       clearDoc: []
       updateDoc: [update: Uint8Array, origin: any]
     }
@@ -127,9 +128,16 @@ export default defineMixin((editor, options) => {
   }
 
   const loadDoc: Mce.Editor['loadDoc'] = async (source) => {
-    const _doc = await setDoc(await load(source))
-    emit('loadDoc', _doc, source)
-    return _doc
+    emit('docLoading', source)
+    try {
+      const _doc = await setDoc(await load(source))
+      emit('docLoaded', source, _doc)
+      return _doc
+    }
+    catch (err: any) {
+      emit('docLoaded', source, err)
+      throw err
+    }
   }
 
   Object.assign(editor, {
