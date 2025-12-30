@@ -267,7 +267,7 @@ export class Doc extends Model {
 
   protected _proxyChildren(node: Node, childrenIds: Y.Array<string>): void {
     node.on('addChild', (child, newIndex) => {
-      if (this._transacting === false) {
+      if (this._transacting === false || child.internalMode !== 'default') {
         return
       }
       this.transact(() => {
@@ -277,7 +277,7 @@ export class Doc extends Model {
       })
     })
     node.on('removeChild', (child, oldIndex) => {
-      if (this._transacting === false) {
+      if (this._transacting === false || child.internalMode !== 'default') {
         return
       }
       this.transact(() => {
@@ -298,7 +298,7 @@ export class Doc extends Model {
     const observeFn = (event: YArrayEvent<any>, transaction: Transaction): void => {
       const skip = this._isSelfTransaction(transaction)
 
-      this._debug(`yChildren ${node.id} changes`, event.changes.delta)
+      this._debug(`yChildren ${node.id} changes skip:${skip}`, event.changes.delta)
 
       let retain = 0
       event.changes.delta.forEach((action) => {
@@ -366,7 +366,11 @@ export class Doc extends Model {
     childrenIds.observe(observeFn)
   }
 
-  protected _proxyNode(node: Node, yNode?: YNode, yChildrenIds?: Y.Array<string>): YNode {
+  protected _proxyNode(node: Node, yNode?: YNode, yChildrenIds?: Y.Array<string>): void {
+    if (node.internalMode !== 'default') {
+      return
+    }
+
     const id = node.id
 
     if (!yNode) {
@@ -447,8 +451,6 @@ export class Doc extends Model {
 
       this._proxyChildren(node, yChildrenIds)
     }
-
-    return yNode
   }
 
   protected _initYNode(yNode: YNode): Node {
