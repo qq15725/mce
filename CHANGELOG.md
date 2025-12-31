@@ -1,3 +1,18 @@
+## [0.15.13](https://github.com/qq15725/mce/compare/v0.15.12...v0.15.13) (2025-12-31)
+
+
+### Bug Fixes
+
+* cropRect ([f92557a](https://github.com/qq15725/mce/commit/f92557a9888bf615337597b0951050359ae4ea6e))
+* rotate command ([2463db0](https://github.com/qq15725/mce/commit/2463db037076620885849ceb70e3269ddccb5d1f))
+
+
+### Features
+
+* lock ([3eab300](https://github.com/qq15725/mce/commit/3eab3005cb57be3b4199625cb55c656b4b45b375))
+
+
+
 ## [0.15.12](https://github.com/qq15725/mce/compare/v0.15.11...v0.15.12) (2025-12-30)
 
 
