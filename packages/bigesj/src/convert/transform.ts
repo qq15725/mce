@@ -8,16 +8,18 @@ export interface BigeTransform {
   zoom?: number
 }
 
-export function transformToCropRect(transform: BigeTransform, width: number, height: number) {
+export function transformToCropRect(transform: BigeTransform, elWidth: number, elHeight: number) {
   const {
     imageWidth,
     imageHeight,
-    originWidth: _originWidth = width,
-    originHeight: _originHeight = height,
+    originWidth: _originWidth = elWidth,
+    originHeight: _originHeight = elHeight,
     translateX,
     translateY,
     zoom = 1,
   } = transform
+  const width = imageWidth * zoom
+  const height = imageHeight * zoom
   const left = -(imageWidth * (zoom - 1) / 2) + translateX * zoom
   const top = -(imageHeight * (zoom - 1) / 2) + translateY * zoom
   const right = left + imageWidth * zoom
@@ -25,7 +27,7 @@ export function transformToCropRect(transform: BigeTransform, width: number, hei
   return {
     left: -left / width,
     top: -top / height,
-    right: -(width - right) / width,
-    bottom: -(height - bottom) / height,
+    right: -(elWidth - right) / width,
+    bottom: -(elHeight - bottom) / height,
   }
 }

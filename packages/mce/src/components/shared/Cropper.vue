@@ -29,7 +29,7 @@ const emit = defineEmits<{
 }>()
 
 /**
- * CropRect (value are based on CropRect !!!)
+ * CropRect (value are based on Source !!!)
  *
  * @example
  *
