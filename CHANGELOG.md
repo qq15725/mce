@@ -1,3 +1,12 @@
+## [0.15.14](https://github.com/qq15725/mce/compare/v0.15.13...v0.15.14) (2026-01-05)
+
+
+### Bug Fixes
+
+* text ([b6f557c](https://github.com/qq15725/mce/commit/b6f557c0bb6f8da3e12f96f86efbb74dfe561ccd))
+
+
+
 ## [0.15.13](https://github.com/qq15725/mce/compare/v0.15.12...v0.15.13) (2025-12-31)
 
 

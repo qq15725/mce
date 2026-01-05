@@ -30,9 +30,9 @@ export function useFonts() {
 
   const fontPromises = ref(new Map<string, Promise<FontLoadedResult>>())
 
-  async function loadBigeFonts(url: string): Promise<BigeFont[]> {
+  async function loadBigeFonts(url: string, init = false): Promise<BigeFont[]> {
     let result = bigeFonts.value
-    if (!result.length) {
+    if (!init || !result.length) {
       result = await fetch(url)
         .then(rep => rep.json())
         .then(res => res.data.datalist)

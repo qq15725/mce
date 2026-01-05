@@ -93,5 +93,5 @@ async function setupFonts(editor: Editor, api: Record<string, any>): Promise<voi
   on('setDoc', preload)
   renderEngine.value.on('nodeEnter', preloadNode)
 
-  await loadBigeFonts(api.fonts)
+  await loadBigeFonts(api.fonts, true)
 }
