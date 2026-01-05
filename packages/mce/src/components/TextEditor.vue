@@ -52,6 +52,7 @@ async function startTyping(e?: PointerEvent): Promise<boolean> {
     return false
   }
   if (!element.text.isValid()) {
+    element.style.textAlign = 'center'
     element.text.setContent(' ')
   }
   element.text.update()
@@ -61,15 +62,18 @@ async function startTyping(e?: PointerEvent): Promise<boolean> {
   await nextTick()
   if (editor.pointerDown(e)) {
     editor.selectAll()
-    // TODO updateSelectionByDom
-    ;(editor as any)._updateSelectionByDom()
     return true
   }
   return false
 }
 
-onBeforeMount(() => registerCommand({ command: 'startTyping', handle: startTyping }))
-onBeforeUnmount(() => unregisterCommand('startTyping'))
+onBeforeMount(() => {
+  registerCommand({ command: 'startTyping', handle: startTyping })
+})
+
+onBeforeUnmount(() => {
+  unregisterCommand('startTyping')
+})
 
 defineExpose({
   textEditor,

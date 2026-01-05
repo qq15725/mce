@@ -31,6 +31,7 @@ export default defineMixin((editor) => {
     config,
     elementSelection,
     textSelection,
+    fonts,
   } = editor
 
   const element = computed(() => elementSelection.value[0])
@@ -73,6 +74,7 @@ export default defineMixin((editor) => {
           .join('')
 
         const { boundingBox } = measureText({
+          fonts,
           style: {
             ...element.style.toJSON(),
             width: 'auto',
@@ -161,6 +163,7 @@ export default defineMixin((editor) => {
       }
 
       const { boundingBox } = measureText({
+        fonts,
         style,
         content: element.text.content,
       })
