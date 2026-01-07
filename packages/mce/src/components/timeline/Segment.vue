@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { TimelineNode } from 'modern-canvas'
+import { Animation, Element2D } from 'modern-canvas'
 import { computed } from 'vue'
 
 const props = withDefaults(defineProps<{
@@ -10,11 +11,48 @@ const props = withDefaults(defineProps<{
   msPerPx: 1,
 })
 
-const style = computed(() => {
-  const box: Record<string, any> = { left: 0, top: 0, width: 0, height: 0 }
+const blocks = computed<Record<string, any>[]>(() => {
+  const node = props.node
+  if (node instanceof Element2D) {
+    return node
+      .children
+      .filter(child => child instanceof Animation)
+      .map((anim) => {
+        const box: Record<string, any> = {
+          left: anim.delay / props.msPerPx,
+          top: 0,
+          width: anim.duration / props.msPerPx,
+          height: 0,
+        }
 
-  box.left = props.node.delay / props.msPerPx
-  box.width = props.node.duration / props.msPerPx
+        if (box.width) {
+          box.width = `${box.width}px`
+        }
+        else {
+          box.width = '100%'
+        }
+
+        return {
+          name: anim.name,
+          style: {
+            width: box.width,
+            transform: `matrix(1, 0, 0, 1, ${box.left}, ${box.top})`,
+          },
+        }
+      })
+  }
+  return []
+})
+
+const style = computed(() => {
+  const node = props.node
+
+  const box: Record<string, any> = {
+    left: node.delay / props.msPerPx,
+    top: 0,
+    width: node.duration / props.msPerPx,
+    height: 0,
+  }
 
   if (box.width) {
     box.width = `${box.width}px`
@@ -34,11 +72,20 @@ const style = computed(() => {
   <div
     class="mce-segment"
     :class="[
-      `mce-segment--${node.meta.inEditorIs}`,
+      `mce-segment--${(node.meta.inEditorIs ?? 'none').toLowerCase()}`,
       active && `mce-segment--active`,
     ]"
     :style="style"
   >
+    <div
+      v-for="(block, index) in blocks"
+      :key="index"
+      class="mce-segment__block"
+      :style="block.style"
+    >
+      {{ block.name }}
+    </div>
+
     <div v-if="active" class="mce-segment__edge mce-segment__edge--front" />
 
     <span class="mce-segment__node" style="overflow: hidden;">{{ props.node.name }}</span>
@@ -181,6 +228,17 @@ const style = computed(() => {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+
+    &__block {
+      position: absolute;
+      left: 0;
+      top: 0;
+      font-size: 12px;
+      padding: 0 8px;
+      text-wrap: nowrap;
+      overflow: visible;
+      border-bottom: 1px solid rgb(var(--mce-theme-surface));
     }
   }
 </style>

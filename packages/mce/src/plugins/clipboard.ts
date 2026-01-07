@@ -43,7 +43,6 @@ export default definePlugin((editor, options) => {
     canLoad,
     load,
     addElements,
-    root,
   } = editor
 
   const copiedData = ref<any>()
