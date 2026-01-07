@@ -94,10 +94,6 @@ export default defineMixin((editor) => {
     } = editor
 
     async function updateEndTime() {
-      console.log('updateEndTime')
-      await renderEngine.value.nextTick()
-      await renderEngine.value.nextTick()
-      await renderEngine.value.nextTick()
       await renderEngine.value.nextTick()
       timeline.value.endTime = root.value
         ? getTimeRange(root.value).endTime
