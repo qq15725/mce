@@ -1,3 +1,12 @@
+## [0.15.15](https://github.com/qq15725/mce/compare/v0.15.14...v0.15.15) (2026-01-07)
+
+
+### Bug Fixes
+
+* animation / video ([9503c13](https://github.com/qq15725/mce/commit/9503c13f65cdf7589ada6001dfd46a027e3ad71a))
+
+
+
 ## [0.15.14](https://github.com/qq15725/mce/compare/v0.15.13...v0.15.14) (2026-01-05)
 
 

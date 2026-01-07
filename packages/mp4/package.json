@@ -1,7 +1,7 @@
 {
   "name": "@mce/mp4",
   "type": "module",
-  "version": "0.15.14",
+  "version": "0.15.15",
   "description": "MP4 plugin for mce",
   "author": "wxm",
   "license": "MIT",
