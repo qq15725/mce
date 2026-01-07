@@ -1,3 +1,20 @@
+## [0.15.16](https://github.com/qq15725/mce/compare/v0.15.15...v0.15.16) (2026-01-07)
+
+
+### Bug Fixes
+
+* frame dblclick rename ([70b64d9](https://github.com/qq15725/mce/commit/70b64d9e7d38e2bf8cfbb073d9bfd7578518522b))
+* third party ([021a46a](https://github.com/qq15725/mce/commit/021a46a479e5eab3bd5bf37a443b53aad67965f3))
+
+
+### Features
+
+* duplicate - offset clone node ([3912364](https://github.com/qq15725/mce/commit/3912364ab5118bfefcfc6a7f663d34d4a51201e0))
+* lottie / video locale and icon ([1f27ed4](https://github.com/qq15725/mce/commit/1f27ed47cb40ddf8c6818cd426ab3101bf255e3a))
+* timeline ([6a9af86](https://github.com/qq15725/mce/commit/6a9af8662c4690fce5ae0df73f4eef50fe841843))
+
+
+
 ## [0.15.15](https://github.com/qq15725/mce/compare/v0.15.14...v0.15.15) (2026-01-07)
 
 
