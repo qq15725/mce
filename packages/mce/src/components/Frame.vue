@@ -21,8 +21,8 @@ const editing = ref(false)
 
 async function onDblclick() {
   editing.value = true
-  await nextTick()
   if (input.value) {
+    await nextTick()
     input.value.focus()
     input.value.select()
   }
@@ -55,7 +55,7 @@ async function onPointerdown(event: PointerEvent) {
     <div
       v-show="config.viewMode === 'edgeless'"
       class="mce-frame__name"
-      @dblclick="onDblclick"
+      @dblclick.prevent.stop="onDblclick"
       @pointerdown="onPointerdown"
       @pointerenter="!state && (hoverElement = frame)"
       @pointerleave="!state && (hoverElement = undefined)"
