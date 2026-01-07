@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Node } from 'modern-canvas'
 import type { PropType } from 'vue'
+import { Lottie2D, Video2D } from 'modern-canvas'
 import { computed, nextTick, ref } from 'vue'
 import { useEditor, useLayerItem } from '../composables'
 import { Icon } from './icon'
@@ -71,6 +72,12 @@ const thumbnailIcon = computed(() => {
   else if (node.children.filter(isElement).length) {
     return '$group'
   }
+  else if (node instanceof Lottie2D) {
+    return '$lottie'
+  }
+  else if (node instanceof Video2D) {
+    return '$video'
+  }
   else if (isElement(node)) {
     if (node.foreground.isValid() && node.foreground.image) {
       return '$image'
@@ -88,8 +95,14 @@ const thumbnailName = computed(() => {
     if (isFrame(node)) {
       return t('frame')
     }
-    else if (node.children.length) {
+    else if (node.children.filter(isElement).length) {
       value = t('group')
+    }
+    else if (node instanceof Lottie2D) {
+      value = t('lottie')
+    }
+    else if (node instanceof Video2D) {
+      value = t('video')
     }
     else if (isElement(node)) {
       if (node.foreground.isValid() && node.foreground.image) {

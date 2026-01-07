@@ -24,6 +24,8 @@ export default {
   'polygon': 'Polygon',
   'star': 'Star',
   'image': 'Image',
+  'video': 'Video',
+  'lottie': 'Lottie',
   'pen': 'Pen',
   'pencil': 'Pencil',
   'file': 'File',

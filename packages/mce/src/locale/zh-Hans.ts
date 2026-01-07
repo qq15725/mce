@@ -25,6 +25,8 @@ export default {
   'polygon': '多边形',
   'star': '星形',
   'image': '图片',
+  'video': '视频',
+  'lottie': 'Lottie',
   'pen': '钢笔',
   'pencil': '铅笔',
   'file': '文件',
