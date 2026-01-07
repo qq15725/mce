@@ -1,10 +1,9 @@
 import type { NormalizedElement } from 'modern-idoc'
 import type { BigeElement } from './types'
-import { idGenerator } from 'modern-idoc'
+import { idGenerator, isGradientFill, normalizeGradientFill } from 'modern-idoc'
 import { parseAnimations } from './animation'
 import { convertBackground } from './background'
 import { croppingToCropRect } from './cropping'
-import { convertImageElementToUrl } from './image'
 import { convertShapeElementToShape } from './shape'
 import { getStyle } from './style'
 import { convertSvgElementToUrl } from './svg'
@@ -88,13 +87,16 @@ export async function convertElement(
       meta.inCanvasIs = 'Element2D'
       meta.inPptIs = 'Picture'
       meta.lockAspectRatio = true
+
       element.foreground = {
-        image: await convertImageElementToUrl(el),
+        image: el.clipUrl || el.url,
         fillWithShape: true,
       }
+
       if (el.clipUrl) {
         meta.rawForegroundImage = el.url
       }
+
       if (el.cropping) {
         element.foreground.cropRect = croppingToCropRect(
           el.cropping,
@@ -129,15 +131,22 @@ export async function convertElement(
       else {
         style.height = Math.ceil(style.height + style.letterSpacing)
       }
+
       element.style = {
         ...style,
-        ...(await convertTextStyle(el)),
+        ...convertTextStyle(el),
       }
+
       element.text = {
-        content: await convertTextContent(el),
+        content: convertTextContent(el),
         effects: await convertTextEffects(el),
         // plugins: [deformation(el.deformation?.type?.endsWith("byWord") ? -1 : 999, () => el.deformation)],
       } as any
+
+      if (style.color && isGradientFill(style.color)) {
+        element.text!.fill = normalizeGradientFill(style.color)
+        style.color = '#000000'
+      }
       break
     }
     case 'com':
