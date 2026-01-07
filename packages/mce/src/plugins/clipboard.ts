@@ -43,6 +43,7 @@ export default definePlugin((editor, options) => {
     canLoad,
     load,
     addElements,
+    root,
   } = editor
 
   const copiedData = ref<any>()
@@ -240,7 +241,18 @@ export default definePlugin((editor, options) => {
     }
 
     addElements(
-      selection.value.map(v => v.toJSON()),
+      selection.value.map((v) => {
+        const el = v.toJSON()
+        if (el.style) {
+          if (el.style.left) {
+            el.style.left += 20
+          }
+          if (el.style.top) {
+            el.style.top += 20
+          }
+        }
+        return el
+      }),
       {
         parent: selection.value[0].parent,
         index: selection.value[0].getIndex(),
