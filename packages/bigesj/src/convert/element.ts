@@ -159,10 +159,6 @@ export async function convertElement(
         ),
       )
       break
-    case 'anim':
-      meta.inCanvasIs = 'Lottie2D'
-      ;(element as any).src = el.url
-      break
     case 'shape':
       meta.inCanvasIs = 'Element2D'
       meta.inPptIs = 'Shape'
@@ -172,6 +168,14 @@ export async function convertElement(
         color: el.stroke,
         width: el.strokeWidth,
       }
+      break
+    case 'anim':
+      meta.inCanvasIs = 'Lottie2D'
+      ;(element as any).src = el.url
+      break
+    case 'video':
+      meta.inCanvasIs = 'Video2D'
+      ;(element as any).src = el.src
       break
     case 'pic':
     case 'mosaic':
@@ -188,7 +192,6 @@ export async function convertElement(
     case 'flowchart':
     case 'backgroundBlock':
     case 'mask':
-    case 'video':
     case 'watermark':
     case 'collage':
     case 'imageWall':

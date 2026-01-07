@@ -1,6 +1,6 @@
 import type { Node } from 'modern-canvas'
-import type { ComputedRef, Ref, WritableComputedRef } from 'vue'
-import { assets, clamp, TimelineNode } from 'modern-canvas'
+import type { Ref, WritableComputedRef } from 'vue'
+import { assets, clamp, TimelineNode, Video2D } from 'modern-canvas'
 import { computed, ref } from 'vue'
 import { defineMixin } from '../mixin'
 
@@ -9,9 +9,9 @@ declare global {
     interface Editor {
       msPerPx: Ref<number>
       currentTime: WritableComputedRef<number>
-      startTime: ComputedRef<number>
-      endTime: ComputedRef<number>
-      getTimeRange: (node: Node | Node[]) => { startTime: number, endTime: number }
+      startTime: WritableComputedRef<number>
+      endTime: WritableComputedRef<number>
+      getTimeRange: (node?: Node | Node[]) => { startTime: number, endTime: number }
     }
   }
 }
@@ -32,10 +32,16 @@ export default defineMixin((editor) => {
       timeline.value.currentTime = clamp(val, startTime, endTime)
     },
   })
-  const startTime = computed(() => timeline.value.startTime)
-  const endTime = computed(() => timeline.value.endTime)
+  const startTime = computed({
+    get: () => timeline.value.startTime,
+    set: val => timeline.value.startTime = val,
+  })
+  const endTime = computed({
+    get: () => timeline.value.endTime,
+    set: val => timeline.value.endTime = val,
+  })
 
-  const getTimeRange: Mce.Editor['getTimeRange'] = (node) => {
+  const getTimeRange: Mce.Editor['getTimeRange'] = (node = root.value) => {
     const range = { startTime: 0, endTime: 0 }
 
     function handle(node: Node) {
@@ -56,6 +62,12 @@ export default defineMixin((editor) => {
         }
         if (node.outline.animatedTexture) {
           range.endTime = Math.max(range.endTime, node.globalStartTime + node.outline.animatedTexture.duration)
+        }
+      }
+
+      if (node instanceof Video2D) {
+        if (node.texture) {
+          range.endTime = Math.max(range.endTime, node.globalStartTime + node.videoDuration)
         }
       }
 
@@ -82,6 +94,10 @@ export default defineMixin((editor) => {
     } = editor
 
     async function updateEndTime() {
+      console.log('updateEndTime')
+      await renderEngine.value.nextTick()
+      await renderEngine.value.nextTick()
+      await renderEngine.value.nextTick()
       await renderEngine.value.nextTick()
       timeline.value.endTime = root.value
         ? getTimeRange(root.value).endTime

@@ -11,7 +11,7 @@ declare global {
     }
 
     interface Commands {
-      panel: <T extends keyof Panels>(panel: T, ...args: Panels[T]) => Promise<boolean>
+      panels: <T extends keyof Panels>(panel: T, ...args: Panels[T]) => Promise<boolean>
     }
   }
 }
