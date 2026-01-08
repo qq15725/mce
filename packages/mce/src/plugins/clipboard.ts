@@ -254,7 +254,7 @@ export default definePlugin((editor, options) => {
       }),
       {
         parent: selection.value[0].parent,
-        index: selection.value[0].getIndex(),
+        index: selection.value[0].getIndex() + 1,
         active: true,
         regenId: true,
       },
