@@ -1,6 +1,7 @@
 import type { Editor } from 'mce'
 import type { Node } from 'modern-canvas'
 import { definePlugin } from 'mce'
+import { assets } from 'modern-canvas'
 import { onBeforeUnmount } from 'vue'
 import { useFonts } from './composables'
 import { bidTidLoader, bigeLoader } from './loaders'
@@ -93,5 +94,7 @@ async function setupFonts(editor: Editor, api: Record<string, any>): Promise<voi
   on('setDoc', preload)
   renderEngine.value.on('nodeEnter', preloadNode)
 
-  await loadBigeFonts(api.fonts, true)
+  assets.awaitBy(async () => {
+    await loadBigeFonts(api.fonts, true)
+  })
 }

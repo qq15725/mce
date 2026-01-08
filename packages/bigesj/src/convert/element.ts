@@ -10,6 +10,8 @@ import { convertSvgElementToUrl } from './svg'
 import { convertTextContent, convertTextEffects, convertTextStyle } from './text'
 import { transformToCropRect } from './transform'
 
+const matrixRex = /matrix\(([^)]+)\)/
+
 const percentageToPx = (per: string) => (Number.parseFloat(per) || 0) / 100
 
 export async function convertElement(
@@ -37,6 +39,12 @@ export async function convertElement(
     meta,
     children: [],
     background: convertBackground(el),
+  }
+
+  if (typeof el.transform === 'string' && matrixRex.test(el.transform)) {
+    const flips = el.transform.match(matrixRex)![1].split(',')
+    style.scaleX = Number.parseInt(flips[0])
+    style.scaleY = Number.parseInt(flips[3])
   }
 
   if (oldStyle.borderRadius) {
@@ -142,6 +150,8 @@ export async function convertElement(
         effects: await convertTextEffects(el),
         // plugins: [deformation(el.deformation?.type?.endsWith("byWord") ? -1 : 999, () => el.deformation)],
       } as any
+
+      meta.textEffectsId = el.effectId
 
       if (style.color && isGradientFill(style.color)) {
         element.text!.fill = normalizeGradientFill(style.color)

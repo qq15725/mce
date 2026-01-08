@@ -7,6 +7,7 @@ export function getStyle(el: Record<string, any>, clone = false) {
     // common
     delete style.right
     delete style.bottom
+    delete style.transform
 
     // layout
     delete style.backgroundColor
