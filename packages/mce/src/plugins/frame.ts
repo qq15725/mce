@@ -19,6 +19,9 @@ export default definePlugin((editor) => {
         handle: (start) => {
           const el = addElement({
             name: t('frame'),
+            style: {
+              overflow: 'hidden',
+            },
             meta: {
               inPptIs: 'GroupShape',
               inEditorIs: 'Frame',
