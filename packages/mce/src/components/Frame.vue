@@ -15,6 +15,7 @@ const {
   exec,
   renderEngine,
   drawboardDom,
+  isLock,
 } = useEditor()
 
 const editing = ref(false)
@@ -50,15 +51,15 @@ async function onPointerdown(event: PointerEvent) {
       config.frameOutline && 'mce-frame--outline',
       hoverElement?.equal(frame) && 'mce-frame--hover',
       selection.some(v => v.equal(frame)) && 'mce-frame--selected',
+      isLock(frame) && 'mce-frame--lock',
     ]"
   >
     <div
-      v-show="config.viewMode === 'edgeless'"
       class="mce-frame__name"
       @dblclick.prevent.stop="onDblclick"
       @pointerdown="onPointerdown"
-      @pointerenter="!state && (hoverElement = frame)"
-      @pointerleave="!state && (hoverElement = undefined)"
+      @pointerenter="!state && !isLock(frame) && (hoverElement = frame)"
+      @pointerleave="!state && !isLock(frame) && (hoverElement = undefined)"
     >
       <div>{{ frame.name }}</div>
       <input
@@ -78,6 +79,10 @@ async function onPointerdown(event: PointerEvent) {
 
   &--outline {
     outline: 1px solid #0000002b;
+  }
+
+  &--lock {
+    pointer-events: none;
   }
 
   &--hover,

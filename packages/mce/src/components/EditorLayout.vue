@@ -161,7 +161,12 @@ function onHover(event: PointerInputEvent) {
     }
   }
 
-  if (!(isElement(hovered) && !isLock(hovered) && !isTopLevelFrame(hovered))) {
+  if (!(
+    isElement(hovered)
+    && !isLock(hovered)
+    && !hovered.findAncestor(ancestor => isLock(ancestor))
+    && !isTopLevelFrame(hovered)
+  )) {
     hovered = undefined
     cursor = undefined
   }
@@ -194,6 +199,7 @@ function onPointerdown(
     return isElement(node)
       && !isLock(node)
       && (allowRootFrame || !isTopLevelFrame(node))
+      && !node.findAncestor(ancestor => isLock(ancestor))
   }
 
   const drawing = state.value === 'drawing'

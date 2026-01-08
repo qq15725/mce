@@ -302,6 +302,7 @@ export default defineMixin((editor) => {
           && node.isVisibleInTree()
           && getObb(node, 'drawboard').overlapsOnAxis(area)
           && !isLock(node)
+          && !node.findAncestor(ancestor => isLock(ancestor))
       }) ?? []
     selection.value = selected
     return selected

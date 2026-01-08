@@ -48,9 +48,11 @@ export function convertTextStyle(
 
 export async function convertTextEffects(el: BigeElement): Promise<Partial<StyleObject>[] | undefined> {
   const effects = el.textFlower ?? el.textEffects ?? []
+
   if (!effects.length) {
     return undefined
   }
+
   return await Promise.all(
     [...effects].reverse().map(async (effect) => {
       const result: Partial<StyleObject> = {}
