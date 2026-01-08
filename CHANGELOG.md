@@ -1,3 +1,13 @@
+## [0.15.18](https://github.com/qq15725/mce/compare/v0.15.17...v0.15.18) (2026-01-08)
+
+
+### Bug Fixes
+
+* duplicate ([cfd6508](https://github.com/qq15725/mce/commit/cfd65085c9822c12fbbd4787460a4358db85101e))
+* text outline ([e1bf7d2](https://github.com/qq15725/mce/commit/e1bf7d2eff3e1aee159a32637f76c4a5318ebfc6))
+
+
+
 ## [0.15.17](https://github.com/qq15725/mce/compare/v0.15.16...v0.15.17) (2026-01-08)
 
 
