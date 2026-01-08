@@ -1,12 +1,12 @@
 import type { Element2D } from 'modern-canvas'
 import type { NormalizedFill, NormalizedFragment, NormalizedParagraph, NormalizedTextContent } from 'modern-idoc'
-import type { IndexCharacter } from 'modern-text/web-components'
 import type { Ref } from 'vue'
+import type { IndexCharacter } from '../web-components'
 import { isEqualObject, normalizeCRLF } from 'modern-idoc'
 import { measureText } from 'modern-text'
-import { TextEditor } from 'modern-text/web-components'
 import { computed } from 'vue'
 import { defineMixin } from '../mixin'
+import { TextEditor } from '../web-components'
 
 declare global {
   namespace Mce {
