@@ -1,3 +1,15 @@
+## [0.15.17](https://github.com/qq15725/mce/compare/v0.15.16...v0.15.17) (2026-01-08)
+
+
+### Bug Fixes
+
+* frame default style ([a661475](https://github.com/qq15725/mce/commit/a661475e0a6094b8319f7db3912ddae6123ac4fc))
+* lock ([d490985](https://github.com/qq15725/mce/commit/d4909858a82957ef8b8b7ac3275fa0b7a3898a3a))
+* TextEditor ([1783d57](https://github.com/qq15725/mce/commit/1783d57ec5651fbd62dadf0157160e6181da5014))
+* third party ([fde11e5](https://github.com/qq15725/mce/commit/fde11e5acedef3b8e89fb2c4925bc4abe79127cc))
+
+
+
 ## [0.15.16](https://github.com/qq15725/mce/compare/v0.15.15...v0.15.16) (2026-01-07)
 
 
