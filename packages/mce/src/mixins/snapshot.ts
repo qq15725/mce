@@ -60,16 +60,17 @@ export default defineMixin((editor) => {
     })
   }
 
-  async function captureFrameScreenshot(pageIndex: number): Promise<void> {
-    const frame = frames.value[pageIndex] as Element2D
+  async function captureFrameScreenshot(index: number): Promise<void> {
+    const frame = frames.value[index] as Element2D
     if (frame) {
       const canvas = await captureElementScreenshot(frame)
-      frameThumbs.value[pageIndex] = {
+      frameThumbs.value[index] = {
+        instanceId: frame.instanceId,
         width: canvas.width,
         height: canvas.height,
         url: canvas.toDataURL(),
       }
-      log('captureFrameScreenshot', pageIndex)
+      log('captureFrameScreenshot', index)
     }
   }
 
@@ -113,6 +114,7 @@ export default defineMixin((editor) => {
     const {
       on,
       config,
+      isFrame,
     } = editor
 
     on('setDoc', (doc) => {
@@ -120,10 +122,11 @@ export default defineMixin((editor) => {
         snapshot()
       }
 
-      function onAppendChild(node: Node): void {
-        if (config.value.frameScreenshot) {
-          const index = node.getIndex()
+      function onAddChild(node: Node, _newIndex: number): void {
+        if (config.value.frameScreenshot && isFrame(node)) {
+          const index = frames.value.findIndex(f => f.equal(node))
           frameThumbs.value.splice(index, 0, {
+            instanceId: -1,
             width: 0,
             height: 0,
             url: '',
@@ -132,7 +135,17 @@ export default defineMixin((editor) => {
         }
       }
 
-      doc.root.on('appendChild', onAppendChild)
+      function onRemoveChild(node: Node, _oldIndex: number): void {
+        if (config.value.frameScreenshot && isFrame(node)) {
+          frameThumbs.value.splice(
+            frameThumbs.value.findIndex(v => v.instanceId === node.instanceId),
+            1,
+          )
+        }
+      }
+
+      doc.root.on('addChild', onAddChild)
+      doc.root.on('removeChild', onRemoveChild)
     })
 
     on('setCurrentFrame', (_index: number, oldIndex: number) => {

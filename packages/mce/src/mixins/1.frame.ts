@@ -7,6 +7,7 @@ import { defineMixin } from '../mixin'
 declare global {
   namespace Mce {
     interface FrameThumb {
+      instanceId: number
       width: number
       height: number
       url: string
