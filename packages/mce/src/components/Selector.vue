@@ -2,7 +2,7 @@
 import type { Element2D, Obb2D } from 'modern-canvas'
 import type { TransformableValue } from './shared/Transformable.vue'
 import { Aabb2D } from 'modern-canvas'
-import { computed, onBeforeMount, onBeforeUnmount, useTemplateRef } from 'vue'
+import { computed, onBeforeMount, onBeforeUnmount, ref, useTemplateRef } from 'vue'
 import { useEditor } from '../composables/editor'
 import { boundingBoxToStyle } from '../utils/box'
 import Transformable from './shared/Transformable.vue'
@@ -37,9 +37,11 @@ const {
   snapThreshold,
   getSnapPoints,
   handleElementInsideFrame,
+  getGlobalPointer,
 } = useEditor()
 
 const transformable = useTemplateRef('transformableTpl')
+const startContext = ref<Record<string, Record<string, any>>>({})
 
 onBeforeMount(() => {
   registerCommand({ command: 'startTransform', handle: e => Boolean(transformable.value?.start(e)) })
@@ -208,7 +210,13 @@ const transform = computed({
       })
 
       // move to frame
-      handleElementInsideFrame(element)
+      handleElementInsideFrame(
+        element,
+        {
+          ...startContext.value[element.instanceId],
+          pointer: getGlobalPointer(),
+        } as any,
+      )
     })
   },
 })
@@ -243,6 +251,30 @@ const adjustableBorderRadius = computed(() => {
     && !isLock(element)
     && element.foreground.isValid()
 })
+
+function onStart() {
+  const ctx: Record<string, Record<string, any>> = {}
+  elementSelection.value.forEach((el) => {
+    ctx[el.instanceId] = {
+      parent: el.getParent(),
+      index: el.getIndex(),
+    }
+  })
+  startContext.value = ctx
+}
+
+function onMove() {
+  if (!state.value) {
+    state.value = 'transforming'
+  }
+}
+
+function onEnd() {
+  if (state.value === 'transforming') {
+    state.value = undefined
+  }
+  startContext.value = {}
+}
 
 function tipFormat() {
   const obb = elementSelection.value.length === 1
@@ -298,8 +330,9 @@ defineExpose({
     class="mce-selector__transform"
     :border-style="elementSelection.length > 1 ? 'dashed' : 'solid'"
     :tip-format="tipFormat"
-    @move="() => !state && (state = 'transforming')"
-    @end="() => state === 'transforming' && (state = undefined)"
+    @start="onStart"
+    @move="onMove"
+    @end="onEnd"
   >
     <template v-if="$slots.transformable" #svg="slotProps">
       <slot name="transformable" v-bind="slotProps" />

@@ -5,7 +5,7 @@ declare global {
   namespace Mce {
     interface Editor {
       setCurrentFrame: (index?: number) => void
-      handleElementInsideFrame: (element: Element2D) => void
+      handleElementInsideFrame: (element: Element2D, context?: Record<string, any>) => void
     }
 
     interface Events {
@@ -38,7 +38,8 @@ export default defineMixin((editor) => {
     emit('setCurrentFrame', index, oldIndex)
   }
 
-  function handleElementInsideFrame(element: Element2D): void {
+  function handleElementInsideFrame(element: Element2D, context?: Record<string, any>): void {
+    const pointer = context?.pointer as any
     const frame1 = element.findAncestor(node => isTopLevelFrame(node))
     const aabb1 = element.getGlobalAabb()
     const area1 = aabb1.getArea()
@@ -49,10 +50,17 @@ export default defineMixin((editor) => {
         continue
       }
       const aabb2 = frame2.getGlobalAabb()
-      if (aabb1 && aabb2) {
-        if (aabb1.getIntersectionRect(aabb2).getArea() > area1 * 0.5) {
+      if (aabb2) {
+        if (
+          (pointer && aabb2.containsPoint(pointer))
+          || (aabb1 && aabb1.getIntersectionRect(aabb2).getArea() > area1 * 0.5)
+        ) {
           if (!frame2.equal(frame1)) {
-            frame2.appendChild(element)
+            let index = frame2.children.length
+            if (frame2.equal(context?.parent)) {
+              index = context!.index
+            }
+            frame2.moveChild(element, index)
             element.style.left = aabb1.x - aabb2.x
             element.style.top = aabb1.y - aabb2.y
           }
@@ -65,7 +73,7 @@ export default defineMixin((editor) => {
       flag
       && frame1
     ) {
-      root.value.moveChild(element, 0)
+      root.value.moveChild(element, root.value.children.length)
       element.style.left = aabb1.x
       element.style.top = aabb1.y
     }
