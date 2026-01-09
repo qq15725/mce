@@ -34,7 +34,12 @@ export default defineMixin((editor) => {
   registerConfig('frameScreenshot', false)
 
   async function snapshot(): Promise<void> {
-    frameThumbs.value.length = frames.value.length
+    frameThumbs.value = frames.value.map(() => ({
+      instanceId: -1,
+      width: 0,
+      height: 0,
+      url: '',
+    }))
     for (let i = 0; i < frames.value.length; i++) {
       await captureFrameScreenshot(i)
     }
