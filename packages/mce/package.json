@@ -73,7 +73,7 @@
     "lodash-es": "^4.17.22",
     "modern-canvas": "^0.14.35",
     "modern-font": "^0.4.4",
-    "modern-idoc": "^0.10.8",
+    "modern-idoc": "^0.10.9",
     "modern-text": "^1.10.15",
     "yjs": "^13.6.29"
   },
