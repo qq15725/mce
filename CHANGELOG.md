@@ -1,3 +1,17 @@
+## [0.15.20](https://github.com/qq15725/mce/compare/v0.15.19...v0.15.20) (2026-01-09)
+
+
+### Bug Fixes
+
+* handleElementInsideFrame ([081d8eb](https://github.com/qq15725/mce/commit/081d8ebba21362c8149c75b1ccead3d266bd1ddb))
+
+
+### Features
+
+* config zoomToFit ([6f6c955](https://github.com/qq15725/mce/commit/6f6c9557147138dd4ee276abd1ff664c842538b5))
+
+
+
 ## [0.15.19](https://github.com/qq15725/mce/compare/v0.15.18...v0.15.19) (2026-01-09)
 
 
