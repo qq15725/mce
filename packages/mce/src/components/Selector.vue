@@ -185,11 +185,11 @@ const transform = computed({
           newStyle.height / element.style.height,
           isFrame(element)
             ? undefined
-            : !shape.isValid()
-                ? handle.split('-').length > 2
-                  ? { deep: true, textFontSizeToFit: true }
-                  : { deep: true, textToFit: true }
-                : undefined,
+            : shape.isValid()
+              ? { deep: true }
+              : handle.split('-').length > 2
+                ? { deep: true, textFontSizeToFit: true }
+                : { deep: true, textToFit: true },
         )
         newStyle.width = element.style.width
         newStyle.height = element.style.height

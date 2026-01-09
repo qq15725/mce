@@ -48,6 +48,7 @@ export default defineMixin((editor) => {
     textToFit,
     log,
     root,
+    isElement,
     isFrame,
     isLock,
     getObb,
@@ -276,13 +277,15 @@ export default defineMixin((editor) => {
 
     handle(element)
 
-    function deepHandle(element: Element2D): void {
-      element.children?.forEach((child) => {
-        deepHandle(child as any)
+    if (options.deep) {
+      element.findOne((node) => {
+        if (isElement(node)) {
+          handle(node)
+        }
+        return false
       })
     }
 
-    options.deep && deepHandle(element)
     options.textToFit && textToFit(element)
     options.textFontSizeToFit && textFontSizeToFit(element, scaleX)
   }
