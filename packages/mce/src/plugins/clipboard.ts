@@ -16,7 +16,7 @@ declare global {
       duplicate: [event: KeyboardEvent]
     }
 
-    type CopySource = string | Blob | Record<string, any>[]
+    type CopySource = string | Blob | Blob[] | Record<string, any>[]
     type PasteSource = DataTransfer | ClipboardItem[]
 
     interface Commands {
@@ -65,6 +65,20 @@ export default definePlugin((editor, options) => {
           new ClipboardItem({
             [source.type]: source,
           }),
+        ])
+      }
+    }
+    else if (Array.isArray(source) && source.some(v => v instanceof Blob)) {
+      if (useClipboard) {
+        const items: Record<string, any> = {}
+        source
+          .forEach((blob) => {
+            if (blob instanceof Blob) {
+              items[blob.type] = blob
+            }
+          })
+        await navigator!.clipboard.write([
+          new ClipboardItem(items),
         ])
       }
     }
@@ -147,11 +161,13 @@ export default definePlugin((editor, options) => {
     const elements: Element[] = []
     for (const item of items) {
       const types = [...item.types]
-      const index = types.indexOf('text/html')
-      if (index > -1) {
-        types.splice(index, 1)
-        types.unshift('text/html')
-      }
+      ;['image/svg+xml', 'text/html'].forEach((type) => {
+        const index = types.indexOf(type)
+        if (index > -1) {
+          types.splice(index, 1)
+          types.unshift(type)
+        }
+      })
       for (const type of types) {
         const blob = await item.getType(type)
         if (await canLoad(blob)) {

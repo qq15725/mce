@@ -64,8 +64,11 @@ export function plugin() {
       exporters: [
         {
           name: 'svg',
-          copyAs: true,
-          saveAs: (exported: any) => new Blob([exported], { type: 'image/svg+xml' }),
+          copyAs: svgString => [
+            new Blob([svgString], { type: 'text/plain' }),
+            new Blob([svgString], { type: 'image/svg+xml' }),
+          ],
+          saveAs: svgString => new Blob([svgString], { type: 'image/svg+xml' }),
           handle: async (options) => {
             const doc = await to('json', options)
             return await docToSvgString({ ...doc, fonts } as any)
