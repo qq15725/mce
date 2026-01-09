@@ -1,3 +1,20 @@
+## [0.15.19](https://github.com/qq15725/mce/compare/v0.15.18...v0.15.19) (2026-01-09)
+
+
+### Bug Fixes
+
+* copyAs svg ([2b39382](https://github.com/qq15725/mce/commit/2b39382db65734e4df419024cb90d1f15a7ff5a8))
+* fill ([02a2ca9](https://github.com/qq15725/mce/commit/02a2ca9cb613c4a797710362e823088186d6e71a))
+* frameThumbs ([6f70f2a](https://github.com/qq15725/mce/commit/6f70f2a66c6065e24aae5d91c996b003138718b3))
+* resizeElement ([ee3ecbc](https://github.com/qq15725/mce/commit/ee3ecbc40d7e9e3a926809e61a9c10d03bfe62b6))
+
+
+### Features
+
+* text edit ([8002fc7](https://github.com/qq15725/mce/commit/8002fc7631025328b477932e38e70e82b80ce231))
+
+
+
 ## [0.15.18](https://github.com/qq15725/mce/compare/v0.15.17...v0.15.18) (2026-01-08)
 
 
