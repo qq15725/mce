@@ -11,8 +11,12 @@ declare global {
         | Element2D[]
         | number
 
+    type ZoomToMode
+      = | 'contain'
+        | 'cover'
+
     interface ZoomToOptions {
-      mode?: 'contain' | 'cover'
+      mode?: ZoomToMode
       duration?: number
       behavior?: 'smooth' | 'instant'
     }

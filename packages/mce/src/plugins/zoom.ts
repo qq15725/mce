@@ -5,6 +5,10 @@ import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {
+    interface Config {
+      zoomToFit: ZoomToMode
+    }
+
     interface Commands {
       zoomIn: () => void
       zoomOut: () => void
@@ -31,12 +35,16 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
+    registerConfig,
     camera,
     drawboardAabb,
     zoomTo,
     elementSelection,
     exec,
+    config,
   } = editor
+
+  registerConfig('zoomToFit', 'contain')
 
   return {
     name: 'mce:zoom',
@@ -45,7 +53,7 @@ export default definePlugin((editor) => {
       { command: 'zoomOut', handle: () => camera.value.addZoom(-0.25) },
       { command: 'zoomTo100', handle: () => camera.value.setZoom(1) },
       { command: 'zoomToCover', handle: () => zoomTo('root', { mode: 'cover' }) },
-      { command: 'zoomToFit', handle: () => zoomTo('root', { mode: 'contain' }) },
+      { command: 'zoomToFit', handle: () => zoomTo('root', { mode: config.value.zoomToFit }) },
       { command: 'zoomToSelection', handle: options => zoomTo('selection', options) },
     ],
     hotkeys: [
