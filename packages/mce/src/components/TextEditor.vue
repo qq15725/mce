@@ -46,6 +46,10 @@ function onUpdate(): void {
   }
 }
 
+function onSubmit(): void {
+  state.value = undefined
+}
+
 async function startTyping(e?: PointerEvent): Promise<boolean> {
   const element = elementSelection.value[0]
   if (!element) {
@@ -103,6 +107,7 @@ defineExpose({
         data-pointerdown_to_drawboard
         @selected="onUpdateTextSelection"
         @update="onUpdate"
+        @submit="onSubmit"
       />
     </div>
   </div>

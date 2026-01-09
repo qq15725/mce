@@ -492,11 +492,17 @@ export class TextEditor extends HTMLElement implements PropertyAccessor {
 
   protected _onKeydown(e: KeyboardEvent): void {
     e.stopPropagation()
-    switch (e.key) {
-      case 'Escape':
-        this.selection = undefined
-        return this._textarea.blur()
+
+    if (
+      e.key === 'Escape'
+      || ((e.ctrlKey || e.metaKey) && e.key === 'Enter')
+    ) {
+      this.selection = undefined
+      this._textarea.blur()
+      this._emit('submit')
+      return
     }
+
     this._updateSelectionByDom()
     setTimeout(() => this._updateSelectionByDom(), 0)
     setTimeout(() => this._updateSelectionByDom(), 100)

@@ -12,6 +12,7 @@ export default {
   'goBackSelectedArea': '返回选中区域',
   'selectArea': '选择区域',
   'dragSelected': '拖拽选择的',
+  'startTyping': '编辑文字',
   'move': '移动',
   'hand': '抓手',
   'frame': '画板',

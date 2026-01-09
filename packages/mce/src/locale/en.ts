@@ -11,6 +11,7 @@ export default {
   'goBackSelectedArea': 'Go back selected area',
   'selectArea': 'Select area',
   'dragSelected': 'Drag selected',
+  'startTyping': 'Start typing',
   'move': 'Move',
   'hand': 'Hand',
   'frame': 'Frame',

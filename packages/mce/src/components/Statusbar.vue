@@ -9,13 +9,17 @@ const {
   getKbd,
   exporting,
   exportProgress,
+  selection,
+  isElement,
 } = useEditor()
 </script>
 
 <template>
   <div class="mce-statusbar">
     <div class="mce-statusbar__main">
-      <template v-if="state === 'typing'">
+      <template
+        v-if="state === 'typing'"
+      >
         <div class="mce-statusbar__item">
           <span class="mce-statusbar__kbd">{{ getKbd('Command') }}</span>
           <span class="mce-statusbar__kbd">{{ getKbd('Enter') }}</span>
@@ -27,7 +31,9 @@ const {
         </div>
       </template>
 
-      <template v-else-if="state === 'transforming'">
+      <template
+        v-else-if="state === 'transforming'"
+      >
         <div class="mce-statusbar__item">
           <Icon icon="$mouseRightClick" />
         </div>
@@ -47,12 +53,16 @@ const {
 
       <span v-else-if="state">{{ t(state) }}</span>
 
-      <template v-else>
+      <template
+        v-else
+      >
         <div class="mce-statusbar__item">
           <Icon icon="$mouseLeftClick" />
           <span>{{ t('selectObject') }}</span>
         </div>
+
         <span>&nbsp;+&nbsp;</span>
+
         <div class="mce-statusbar__item">
           <span class="mce-statusbar__kbd">{{ getKbd('Shift') }}</span>
           <span>{{ t('extend') }}</span>
@@ -64,7 +74,9 @@ const {
           <Icon icon="$mouseLeftClick" />
           <span>{{ t('selectArea') }}</span>
         </div>
+
         <span>&nbsp;+&nbsp;</span>
+
         <div class="mce-statusbar__item">
           <span class="mce-statusbar__kbd">{{ getKbd('Shift') }}</span>
           <span>{{ t('extend') }}</span>
@@ -76,6 +88,17 @@ const {
           <Icon icon="$mouseLeftClick" />
           <span>{{ t('dragSelected') }}</span>
         </div>
+
+        <template
+          v-if="selection.length === 1 && isElement(selection[0]) && selection[0].text.isValid()"
+        >
+          <div class="mce-statusbar__divider" />
+
+          <div class="mce-statusbar__item">
+            <span>{{ getKbd('Enter') }}</span>
+            <span>{{ t('startTyping') }}</span>
+          </div>
+        </template>
       </template>
     </div>
 
@@ -109,6 +132,8 @@ const {
     flex: 1;
     display: flex;
     align-items: center;
+    gap: 4px;
+    height: 100%;
   }
 
   &__item {
@@ -130,7 +155,7 @@ const {
   }
 
   &__kbd {
-    outline: 1px solid rgba(var(--mce-theme-on-surface), .4);
+    outline: 1px solid rgba(var(--mce-theme-on-surface), .1);
     border-radius: 4px;
     display: flex;
     align-items: center;

@@ -7,6 +7,7 @@ import _clipboard from './clipboard'
 import _copyAs from './copyAs'
 import _delete from './delete'
 import _drawingTool from './drawingTool'
+import _enter from './enter'
 import _flip from './flip'
 import _frame from './frame'
 import _gif from './gif'
@@ -53,6 +54,7 @@ export const plugins = [
   _copyAs,
   _delete,
   _drawingTool,
+  _enter,
   _flip,
   _frame,
   _gif,
