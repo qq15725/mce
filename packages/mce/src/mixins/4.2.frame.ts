@@ -4,12 +4,7 @@ import { defineMixin } from '../mixin'
 declare global {
   namespace Mce {
     interface Editor {
-      setCurrentFrame: (index?: number) => void
       handleElementInsideFrame: (element: Element2D, context?: Record<string, any>) => void
-    }
-
-    interface Events {
-      setCurrentFrame: [index: number, oldIndex: number]
     }
   }
 }
@@ -17,26 +12,9 @@ declare global {
 export default defineMixin((editor) => {
   const {
     root,
-    currentFrameIndex,
-    emit,
-    selection,
     frames,
-    config,
     isTopLevelFrame,
   } = editor
-
-  function setCurrentFrame(index = currentFrameIndex.value): void {
-    index = Math.max(0, Math.min(frames.value.length - 1, index))
-    const oldIndex = currentFrameIndex.value
-    currentFrameIndex.value = index
-    if (config.value.viewMode === 'edgeless') {
-      selection.value = [frames.value[index]]
-    }
-    else {
-      selection.value = []
-    }
-    emit('setCurrentFrame', index, oldIndex)
-  }
 
   function handleElementInsideFrame(element: Element2D, context?: Record<string, any>): void {
     const pointer = context?.pointer as any
@@ -52,35 +30,36 @@ export default defineMixin((editor) => {
       const aabb2 = frame2.getGlobalAabb()
       if (aabb2) {
         if (
-          (pointer && aabb2.containsPoint(pointer))
-          || (aabb1 && aabb1.getIntersectionRect(aabb2).getArea() > area1 * 0.5)
+          pointer
+            ? aabb2.containsPoint(pointer)
+            : (aabb1 && aabb1.getIntersectionRect(aabb2).getArea() > area1 * 0.5)
         ) {
           if (!frame2.equal(frame1)) {
             let index = frame2.children.length
             if (frame2.equal(context?.parent)) {
               index = context!.index
             }
-            frame2.moveChild(element, index)
             element.style.left = aabb1.x - aabb2.x
             element.style.top = aabb1.y - aabb2.y
+            frame2.moveChild(element, index)
           }
           flag = false
           break
         }
       }
     }
+
     if (
       flag
       && frame1
     ) {
-      root.value.moveChild(element, root.value.children.length)
       element.style.left = aabb1.x
       element.style.top = aabb1.y
+      root.value.moveChild(element, root.value.children.length)
     }
   }
 
   Object.assign(editor, {
-    setCurrentFrame,
     handleElementInsideFrame,
   })
 })

@@ -1,12 +1,8 @@
-import type { ComputedRef } from 'vue'
-import type { AxisAlignedBoundingBox } from '../types'
-import { computed, watch } from 'vue'
 import { defineMixin } from '../mixin'
 
 declare global {
   namespace Mce {
     interface Editor {
-      viewAabb: ComputedRef<AxisAlignedBoundingBox>
       bindRenderCanvas: (canvas: HTMLCanvasElement, setEventTarget?: HTMLElement) => () => void
     }
   }
@@ -15,16 +11,7 @@ declare global {
 export default defineMixin((editor) => {
   const {
     renderEngine,
-    rootAabb,
-    currentFrameAabb,
-    config,
   } = editor
-
-  const viewAabb = computed(() => {
-    return config.value.viewMode === 'frame'
-      ? currentFrameAabb.value
-      : rootAabb.value
-  })
 
   function bindRenderCanvas(canvas: HTMLCanvasElement, eventTarget?: HTMLElement) {
     function onRendered(): void {
@@ -60,41 +47,6 @@ export default defineMixin((editor) => {
   }
 
   Object.assign(editor, {
-    viewAabb,
     bindRenderCanvas,
   })
-
-  return () => {
-    const {
-      isElement,
-      root,
-      currentFrame,
-      on,
-      exec,
-    } = editor
-
-    function onViewMode() {
-      switch (config.value.viewMode) {
-        case 'frame':
-          root.value.children.forEach((child) => {
-            if (isElement(child)) {
-              child.visible = child.equal(currentFrame.value)
-            }
-          })
-          break
-        case 'edgeless':
-          root.value.children.forEach((child) => {
-            if (isElement(child)) {
-              child.visible = true
-            }
-          })
-          break
-      }
-      exec('zoomToFit')
-    }
-
-    watch(() => config.value.viewMode, onViewMode)
-    on('setCurrentFrame', onViewMode)
-    on('setDoc', onViewMode)
-  }
 })

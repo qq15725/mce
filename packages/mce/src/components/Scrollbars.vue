@@ -21,7 +21,7 @@ const props = withDefaults(
 
 const {
   camera,
-  viewAabb,
+  rootAabb,
 } = useEditor()
 </script>
 
@@ -30,12 +30,12 @@ const {
     v-bind="props"
     v-model="camera.position.y"
     vertical
-    :length="viewAabb.height * camera.zoom.y"
+    :length="rootAabb.height * camera.zoom.y"
   />
 
   <Scrollbar
     v-bind="props"
     v-model="camera.position.x"
-    :length="viewAabb.width * camera.zoom.x"
+    :length="rootAabb.width * camera.zoom.x"
   />
 </template>

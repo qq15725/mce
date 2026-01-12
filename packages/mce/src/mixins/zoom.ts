@@ -32,7 +32,7 @@ export default defineMixin((editor) => {
     camera,
     drawboardAabb,
     selectionAabb,
-    viewAabb,
+    rootAabb,
     getAabb,
     screenCenterOffset,
   } = editor
@@ -55,7 +55,7 @@ export default defineMixin((editor) => {
           break
         case 'root':
         default:
-          aabb = viewAabb.value
+          aabb = rootAabb.value
           break
       }
     }
