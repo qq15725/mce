@@ -45,7 +45,6 @@ npm i mce
       svg(),
     ],
     theme: 'system',
-    viewMode: 'edgeless',
     watermark: '/example.jpg',
     checkerboard: true,
     checkerboardStyle: 'grid',

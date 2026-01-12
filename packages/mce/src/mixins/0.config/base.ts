@@ -9,7 +9,6 @@ declare global {
     }
 
     type Theme = 'system' | 'light' | 'dark'
-    type ViewMode = 'frame' | 'edgeless'
     type TypographyStrategy = 'autoHeight' | 'autoWidth' | 'fixedWidthHeight' | 'autoFontSize'
     type HandleShape = 'rect' | 'circle'
     interface ScreenCenterOffset {
@@ -21,7 +20,6 @@ declare global {
 
     interface Config {
       theme: Theme
-      viewMode: ViewMode
       watermark?: string
       msaa: boolean
       checkerboard: boolean
@@ -46,7 +44,6 @@ export default defineMixin((editor, options) => {
   } = editor
 
   registerConfig('theme', 'system')
-  registerConfig('viewMode', 'edgeless')
   registerConfig('watermark', undefined)
   registerConfig('msaa', false)
   registerConfig('checkerboard', false)
