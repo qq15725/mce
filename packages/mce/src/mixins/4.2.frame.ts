@@ -1,10 +1,16 @@
-import type { Element2D } from 'modern-canvas'
+import type { Element2D, Vector2Like } from 'modern-canvas'
 import { defineMixin } from '../mixin'
 
 declare global {
   namespace Mce {
+    interface HandleDragOutReparentOptions {
+      pointer: Vector2Like
+      parent: Element2D
+      index: number
+    }
+
     interface Editor {
-      handleElementInsideFrame: (element: Element2D, context?: Record<string, any>) => void
+      handleDragOutReparent: (element: Element2D, context?: HandleDragOutReparentOptions) => void
     }
   }
 }
@@ -16,8 +22,11 @@ export default defineMixin((editor) => {
     isTopLevelFrame,
   } = editor
 
-  function handleElementInsideFrame(element: Element2D, context?: Record<string, any>): void {
-    const pointer = context?.pointer as any
+  function handleDragOutReparent(
+    element: Element2D,
+    options?: Mce.HandleDragOutReparentOptions,
+  ): void {
+    const pointer = options?.pointer as any
     const frame1 = element.findAncestor(node => isTopLevelFrame(node))
     const aabb1 = element.getGlobalAabb()
     const area1 = aabb1.getArea()
@@ -36,8 +45,8 @@ export default defineMixin((editor) => {
         ) {
           if (!frame2.equal(frame1)) {
             let index = frame2.children.length
-            if (frame2.equal(context?.parent)) {
-              index = context!.index
+            if (frame2.equal(options?.parent)) {
+              index = options!.index
             }
             element.style.left = aabb1.x - aabb2.x
             element.style.top = aabb1.y - aabb2.y
@@ -60,6 +69,6 @@ export default defineMixin((editor) => {
   }
 
   Object.assign(editor, {
-    handleElementInsideFrame,
+    handleDragOutReparent,
   })
 })

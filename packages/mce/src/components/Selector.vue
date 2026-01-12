@@ -36,7 +36,7 @@ const {
   config,
   snapThreshold,
   getSnapPoints,
-  handleElementInsideFrame,
+  handleDragOutReparent,
   getGlobalPointer,
 } = useEditor()
 
@@ -210,7 +210,7 @@ const transform = computed({
       })
 
       // move to frame
-      handleElementInsideFrame(
+      handleDragOutReparent(
         element,
         {
           ...startContext.value[element.instanceId],

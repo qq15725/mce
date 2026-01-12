@@ -59,7 +59,7 @@ export default defineMixin((editor) => {
     selection,
     camera,
     parseAnchor,
-    handleElementInsideFrame,
+    handleDragOutReparent,
   } = editor
 
   function addElement(
@@ -251,7 +251,7 @@ export default defineMixin((editor) => {
     }
 
     if (!isArray && !parent) {
-      handleElementInsideFrame(elements[0])
+      handleDragOutReparent(elements[0])
     }
 
     return isArray ? elements : elements[0]
