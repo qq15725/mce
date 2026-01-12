@@ -10,7 +10,7 @@ declare global {
     }
 
     interface Editor {
-      findFrame: (type: 'next' | 'previous') => Element2D | undefined
+      findFrame: (target: 'next' | 'previous') => Element2D | undefined
       handleDragOutReparent: (element: Element2D, context?: HandleDragOutReparentOptions) => void
     }
   }
@@ -26,7 +26,7 @@ export default defineMixin((editor) => {
     getAncestorFrame,
   } = editor
 
-  function findFrame(type: 'next' | 'previous'): Element2D | undefined {
+  function findFrame(target: 'next' | 'previous'): Element2D | undefined {
     let current: Element2D | undefined
     const node = selection.value[0]
     if (node) {
@@ -36,7 +36,7 @@ export default defineMixin((editor) => {
     }
     const last = frames.value.length - 1
     let index = frames.value.findIndex(node => node.equal(current))
-    switch (type) {
+    switch (target) {
       case 'next':
         index--
         if (index < 0) {

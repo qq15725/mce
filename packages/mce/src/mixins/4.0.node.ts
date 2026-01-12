@@ -12,6 +12,7 @@ declare global {
     }
 
     interface Editor {
+      findSibling: (target: 'previous' | 'next') => Node | undefined
       addNode: (value: Element, options?: AddNodeOptions) => Node
     }
   }
@@ -22,6 +23,31 @@ export default defineMixin((editor) => {
     doc,
     selection,
   } = editor
+
+  function findSibling(target: 'next' | 'previous'): Node | undefined {
+    const node = selection.value[0]
+    if (node) {
+      let value
+      switch (target) {
+        case 'previous':
+          value = node.nextSibling
+          if (!value && node.parent) {
+            value = node.parent.children[0]
+          }
+          break
+        case 'next':
+          value = node.previousSibling
+          if (!value && node.parent) {
+            value = node.parent.children[node.parent.children.length - 1]
+          }
+          break
+      }
+      if (value && !node.equal(value)) {
+        return value
+      }
+    }
+    return undefined
+  }
 
   function addNode(value: Element, options: Mce.AddNodeOptions = {}): Node {
     const {
@@ -45,6 +71,7 @@ export default defineMixin((editor) => {
   }
 
   Object.assign(editor, {
+    findSibling,
     addNode,
   })
 })

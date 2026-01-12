@@ -27,6 +27,7 @@ export default definePlugin((editor) => {
     selection,
     root,
     scrollTo,
+    findSibling,
   } = editor
 
   function selectAll(): void {
@@ -45,27 +46,10 @@ export default definePlugin((editor) => {
   }
 
   function selectSibling(type: 'previous' | 'next') {
-    const node = selection.value[0]
-    if (node) {
-      let value
-      switch (type) {
-        case 'previous':
-          value = node.nextSibling
-          if (!value && node.parent) {
-            value = node.parent.children[0]
-          }
-          break
-        case 'next':
-          value = node.previousSibling
-          if (!value && node.parent) {
-            value = node.parent.children[node.parent.children.length - 1]
-          }
-          break
-      }
-      if (value && !node.equal(value)) {
-        selection.value = [value]
-        scrollTo('selection')
-      }
+    const value = findSibling(type)
+    if (value) {
+      selection.value = [value]
+      scrollTo('selection')
     }
   }
 
