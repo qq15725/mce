@@ -14,6 +14,7 @@ declare global {
       startTyping: (e?: MouseEvent | PointerEvent) => Promise<boolean>
       startTransform: (e?: MouseEvent | PointerEvent) => boolean
       openContextMenu: (e?: MouseEvent | PointerEvent) => boolean
+      layerScrollIntoView: () => boolean
     }
 
     interface Events {

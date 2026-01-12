@@ -9,6 +9,7 @@ const {
   root,
   selection,
   state,
+  registerCommand,
 } = useEditor()
 
 const {
@@ -18,12 +19,11 @@ const {
   getIdByNode,
 } = createLayer()
 
-watch(selection, (selection) => {
-  if (state.value === 'selecting' || selecting.value) {
-    return
-  }
+registerCommand({ command: 'layerScrollIntoView', handle: layerScrollIntoView })
+
+function layerScrollIntoView() {
   let last: Node | undefined
-  selection.forEach((node) => {
+  selection.value.forEach((node) => {
     node.findAncestor((ancestor) => {
       const opened = openedItems.get(getIdByNode(ancestor) ?? '')
       if (opened) {
@@ -41,6 +41,13 @@ watch(selection, (selection) => {
       })
     })
   }
+}
+
+watch(selection, () => {
+  if (state.value === 'selecting' || selecting.value) {
+    return
+  }
+  layerScrollIntoView()
 })
 </script>
 

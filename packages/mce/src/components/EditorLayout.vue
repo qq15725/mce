@@ -452,8 +452,10 @@ function onPointermove(event: PointerInputEvent): void {
   onHover(event)
 }
 
-function onPointerover(): void {
-  drawboardPointer.value = undefined
+function onPointerover(event: PointerInputEvent): void {
+  if (event.srcElement !== drawboardDom.value) {
+    return
+  }
   hoverElement.value = undefined
 }
 

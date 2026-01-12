@@ -20,6 +20,7 @@ export default defineMixin((editor) => {
     root,
     frames,
     isTopLevelFrame,
+    exec,
   } = editor
 
   function handleDragOutReparent(
@@ -51,6 +52,7 @@ export default defineMixin((editor) => {
             element.style.left = aabb1.x - aabb2.x
             element.style.top = aabb1.y - aabb2.y
             frame2.moveChild(element, index)
+            exec('layerScrollIntoView')
           }
           flag = false
           break
@@ -65,6 +67,7 @@ export default defineMixin((editor) => {
       element.style.left = aabb1.x
       element.style.top = aabb1.y
       root.value.moveChild(element, root.value.children.length)
+      exec('layerScrollIntoView')
     }
   }
 
