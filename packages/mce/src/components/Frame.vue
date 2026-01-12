@@ -22,8 +22,8 @@ const editing = ref(false)
 
 async function onDblclick() {
   editing.value = true
+  await nextTick()
   if (input.value) {
-    await nextTick()
     input.value.focus()
     input.value.select()
   }
@@ -63,9 +63,10 @@ async function onPointerdown(event: PointerEvent) {
     >
       <div>{{ frame.name }}</div>
       <input
-        v-show="editing"
+        v-if="editing"
         ref="inputTpl"
         v-model="frame.name"
+        name="frame-name"
         @blur="editing = false"
       >
     </div>

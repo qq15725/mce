@@ -273,9 +273,10 @@ function onInputBlur() {
         @dblclick="onDblclickName"
       >
         <input
-          v-show="editing"
+          v-if="editing"
           ref="inputDom"
           v-model="editValue"
+          name="layer-name"
           type="text"
           class="mce-layer__input"
           spellcheck="false"
