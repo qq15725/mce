@@ -34,7 +34,7 @@ import _rotate from './rotate'
 import _ruler from './ruler'
 import _saveAs from './saveAs'
 import _scroll from './scroll'
-import _select from './select'
+import _selection from './selection'
 import _shape from './shape'
 import _smartGuides from './smartGuides'
 import _state from './state'
@@ -81,7 +81,7 @@ export const plugins = [
   _ruler,
   _saveAs,
   _scroll,
-  _select,
+  _selection,
   _shape,
   _smartGuides,
   _state,

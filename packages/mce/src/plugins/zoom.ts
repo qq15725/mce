@@ -41,9 +41,19 @@ export default definePlugin((editor) => {
     elementSelection,
     exec,
     config,
+    findFrame,
+    selection,
   } = editor
 
   registerConfig('zoomToFit', 'contain')
+
+  function zoomToFrame(type: 'next' | 'previous', options: Mce.ZoomToOptions) {
+    const value = findFrame(type)
+    if (value) {
+      selection.value = [value]
+      zoomTo(value, options)
+    }
+  }
 
   return {
     name: 'mce:zoom',
@@ -54,13 +64,17 @@ export default definePlugin((editor) => {
       { command: 'zoomToCover', handle: () => zoomTo('root', { mode: 'cover' }) },
       { command: 'zoomToFit', handle: () => zoomTo('root', { mode: config.value.zoomToFit }) },
       { command: 'zoomToSelection', handle: options => zoomTo('selection', options) },
+      { command: 'zoomToNextFrame', handle: options => zoomToFrame('next', options) },
+      { command: 'zoomToPreviousFrame', handle: options => zoomToFrame('previous', options) },
     ],
     hotkeys: [
       { command: 'zoomIn', key: 'CmdOrCtrl+=' },
       { command: 'zoomOut', key: 'CmdOrCtrl+-' },
-      { command: 'zoomTo100', key: 'CmdOrCtrl+º' },
-      { command: 'zoomToFit', key: 'Shift+¡' },
-      { command: 'zoomToSelection', key: 'Shift+™' },
+      { command: 'zoomTo100', key: 'CmdOrCtrl+0' },
+      { command: 'zoomToFit', key: 'Shift+!' },
+      { command: 'zoomToSelection', key: 'Shift+@' },
+      { command: 'zoomToNextFrame', key: 'n' },
+      { command: 'zoomToPreviousFrame', key: 'Shift+N' },
     ],
     events: {
       setDoc: () => exec('zoomToFit'),

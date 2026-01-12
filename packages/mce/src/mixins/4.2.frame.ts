@@ -10,6 +10,7 @@ declare global {
     }
 
     interface Editor {
+      findFrame: (type: 'next' | 'previous') => Element2D | undefined
       handleDragOutReparent: (element: Element2D, context?: HandleDragOutReparentOptions) => void
     }
   }
@@ -19,16 +20,45 @@ export default defineMixin((editor) => {
   const {
     root,
     frames,
-    isTopLevelFrame,
+    isTopFrame,
     exec,
+    selection,
+    getAncestorFrame,
   } = editor
+
+  function findFrame(type: 'next' | 'previous'): Element2D | undefined {
+    let current: Element2D | undefined
+    const node = selection.value[0]
+    if (node) {
+      current = isTopFrame(node)
+        ? node
+        : getAncestorFrame(node, true)
+    }
+    const last = frames.value.length - 1
+    let index = frames.value.findIndex(node => node.equal(current))
+    switch (type) {
+      case 'next':
+        index--
+        if (index < 0) {
+          index = last
+        }
+        break
+      case 'previous':
+        index++
+        if (index > last) {
+          index = 0
+        }
+        break
+    }
+    return frames.value[index]
+  }
 
   function handleDragOutReparent(
     element: Element2D,
     options?: Mce.HandleDragOutReparentOptions,
   ): void {
     const pointer = options?.pointer as any
-    const frame1 = element.findAncestor(node => isTopLevelFrame(node))
+    const frame1 = element.findAncestor(node => isTopFrame(node))
     const aabb1 = element.getGlobalAabb()
     const area1 = aabb1.getArea()
     let flag = true
@@ -72,6 +102,7 @@ export default defineMixin((editor) => {
   }
 
   Object.assign(editor, {
+    findFrame,
     handleDragOutReparent,
   })
 })

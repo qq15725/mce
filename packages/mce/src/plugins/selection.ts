@@ -7,16 +7,16 @@ declare global {
       selectAll: [event: KeyboardEvent]
       deselectAll: [event: KeyboardEvent]
       selectParent: [event: KeyboardEvent]
-      previousSelection: [event: KeyboardEvent]
-      nextSelection: [event: KeyboardEvent]
+      selectPreviousSibling: [event: KeyboardEvent]
+      selectNextSibling: [event: KeyboardEvent]
     }
 
     interface Commands {
       selectAll: () => void
       deselectAll: () => void
       selectParent: () => void
-      previousSelection: () => void
-      nextSelection: () => void
+      selectPreviousSibling: () => void
+      selectNextSibling: () => void
     }
   }
 }
@@ -26,6 +26,7 @@ export default definePlugin((editor) => {
     isElement,
     selection,
     root,
+    scrollTo,
   } = editor
 
   function selectAll(): void {
@@ -43,41 +44,46 @@ export default definePlugin((editor) => {
     }
   }
 
-  function previousSelection() {
+  function selectSibling(type: 'previous' | 'next') {
     const node = selection.value[0]
     if (node) {
-      const previousSibling = node.previousSibling
-      if (previousSibling && !node.equal(previousSibling)) {
-        selection.value = [previousSibling]
+      let value
+      switch (type) {
+        case 'previous':
+          value = node.nextSibling
+          if (!value && node.parent) {
+            value = node.parent.children[0]
+          }
+          break
+        case 'next':
+          value = node.previousSibling
+          if (!value && node.parent) {
+            value = node.parent.children[node.parent.children.length - 1]
+          }
+          break
       }
-    }
-  }
-
-  function nextSelection() {
-    const node = selection.value[0]
-    if (node) {
-      const nextSibling = node.nextSibling
-      if (nextSibling && node.equal(nextSibling)) {
-        selection.value = [nextSibling]
+      if (value && !node.equal(value)) {
+        selection.value = [value]
+        scrollTo('selection')
       }
     }
   }
 
   return {
-    name: 'mce:select',
+    name: 'mce:selection',
     commands: [
       { command: 'selectAll', handle: selectAll },
       { command: 'deselectAll', handle: deselectAll },
       { command: 'selectParent', handle: selectParent },
-      { command: 'previousSelection', handle: previousSelection },
-      { command: 'nextSelection', handle: nextSelection },
+      { command: 'selectPreviousSibling', handle: () => selectSibling('previous') },
+      { command: 'selectNextSibling', handle: () => selectSibling('next') },
     ],
     hotkeys: [
       { command: 'selectAll', key: 'CmdOrCtrl+a' },
       { command: 'deselectAll', key: 'Shift+CmdOrCtrl+a' },
       { command: 'selectParent', key: 'Alt+\\' },
-      { command: 'previousSelection', key: 'Alt+[' },
-      { command: 'nextSelection', key: 'Alt+]' },
+      { command: 'selectPreviousSibling', key: 'Shift+Tab' },
+      { command: 'selectNextSibling', key: 'Tab' },
     ],
     components: [
       { type: 'overlay', component: GoBackSelectedArea },

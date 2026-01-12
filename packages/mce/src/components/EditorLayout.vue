@@ -69,7 +69,7 @@ provide(IconsSymbol, createIcons())
 const {
   pluginsComponents,
   isElement,
-  isTopLevelFrame,
+  isTopFrame,
   config,
   drawboardDom,
   renderEngine,
@@ -165,7 +165,7 @@ function onHover(event: PointerInputEvent) {
     isElement(hovered)
     && !isLock(hovered)
     && !hovered.findAncestor(ancestor => isLock(ancestor))
-    && !isTopLevelFrame(hovered)
+    && !isTopFrame(hovered)
   )) {
     hovered = undefined
     cursor = undefined
@@ -198,7 +198,7 @@ function onPointerdown(
   function isIncluded(node: any): node is Element2D {
     return isElement(node)
       && !isLock(node)
-      && (allowRootFrame || !isTopLevelFrame(node))
+      && (allowRootFrame || !isTopFrame(node))
       && !node.findAncestor(ancestor => isLock(ancestor))
   }
 

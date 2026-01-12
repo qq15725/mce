@@ -8,6 +8,7 @@ declare global {
     type ZoomTarget
       = | 'root'
         | 'selection'
+        | Element2D
         | Element2D[]
         | number
 
@@ -45,7 +46,7 @@ export default defineMixin((editor) => {
     } = options
 
     let aabb: AxisAlignedBoundingBox
-    if (Array.isArray(target)) {
+    if (Array.isArray(target) || typeof target === 'object') {
       aabb = getAabb(target)
     }
     else {

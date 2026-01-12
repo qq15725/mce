@@ -1,6 +1,5 @@
 import type { Element2D, Node } from 'modern-canvas'
 import type { ComputedRef, Ref } from 'vue'
-import type { AxisAlignedBoundingBox } from '../types'
 import { computed, ref } from 'vue'
 import { defineMixin } from '../mixin'
 
@@ -16,8 +15,7 @@ declare global {
     interface Editor {
       frameThumbs: Ref<FrameThumb[]>
       frames: ComputedRef<Element2D[]>
-      currentFrameAabb: ComputedRef<AxisAlignedBoundingBox>
-      getAncestorFrame: (node?: Node) => Element2D | undefined
+      getAncestorFrame: (node?: Node, isTop?: boolean) => Element2D | undefined
     }
   }
 }
@@ -26,13 +24,15 @@ export default defineMixin((editor) => {
   const {
     root,
     isFrame,
+    isTopFrame,
   } = editor
 
   const frames = computed(() => root.value.children.filter(isFrame) ?? [])
   const frameThumbs = ref<Mce.FrameThumb[]>([])
 
-  function getAncestorFrame(node?: Node): Node | undefined {
-    return node?.findAncestor<Element2D>(node => isFrame(node))
+  function getAncestorFrame(node?: Node, isTop?: boolean): Element2D | undefined {
+    const when = isTop ? isTopFrame : isFrame
+    return node?.findAncestor<Element2D>(node => when(node))
   }
 
   Object.assign(editor, {

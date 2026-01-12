@@ -96,8 +96,8 @@ export default definePlugin((editor, options) => {
       { key: 'selectAll' },
       { key: 'deselectAll', disabled: !hasSelected.value },
       { key: 'selectParent', disabled: !hasSelected.value },
-      { key: 'previousSelection', disabled: !hasSelected.value },
-      { key: 'nextSelection', disabled: !hasSelected.value },
+      { key: 'selectPreviousSibling', disabled: !hasSelected.value },
+      { key: 'selectNextSibling', disabled: !hasSelected.value },
     ],
   }))
 
@@ -120,6 +120,8 @@ export default definePlugin((editor, options) => {
       { key: 'zoomTo100' },
       { key: 'zoomToFit' },
       { key: 'zoomToSelection', disabled: !hasSelected.value },
+      { key: 'zoomToNextFrame', disabled: !hasSelected.value },
+      { key: 'zoomToPreviousFrame', disabled: !hasSelected.value },
     ],
   }))
 
