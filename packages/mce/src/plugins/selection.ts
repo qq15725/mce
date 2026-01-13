@@ -28,7 +28,7 @@ export default definePlugin((editor) => {
     isElement,
     selection,
     root,
-    scrollTo,
+    zoomTo,
     findSibling,
   } = editor
 
@@ -58,7 +58,7 @@ export default definePlugin((editor) => {
     const value = findSibling(type)
     if (value) {
       selection.value = [value]
-      scrollTo('selection', {
+      zoomTo('selection', {
         intoView: true,
         behavior: 'smooth',
       })
