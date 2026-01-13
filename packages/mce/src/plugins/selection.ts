@@ -6,6 +6,7 @@ declare global {
     interface Hotkeys {
       selectAll: [event: KeyboardEvent]
       deselectAll: [event: KeyboardEvent]
+      selectChildren: [event: KeyboardEvent]
       selectParent: [event: KeyboardEvent]
       selectPreviousSibling: [event: KeyboardEvent]
       selectNextSibling: [event: KeyboardEvent]
@@ -14,6 +15,7 @@ declare global {
     interface Commands {
       selectAll: () => void
       deselectAll: () => void
+      selectChildren: () => void
       selectParent: () => void
       selectPreviousSibling: () => void
       selectNextSibling: () => void
