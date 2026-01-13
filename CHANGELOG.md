@@ -1,3 +1,25 @@
+## [0.15.21](https://github.com/qq15725/mce/compare/v0.15.20...v0.15.21) (2026-01-13)
+
+
+### Bug Fixes
+
+* addElement ([5926c43](https://github.com/qq15725/mce/commit/5926c4391300d29add905f4de303119a39e8717a))
+* handleDragOutReparent ([66716e4](https://github.com/qq15725/mce/commit/66716e4eded5010a6e29459d002ab2938715593e))
+* input control ([508c6aa](https://github.com/qq15725/mce/commit/508c6aa891abe42c0160e7d0ca4da14326eb9972))
+
+
+### Features
+
+* findSibling ([ac47425](https://github.com/qq15725/mce/commit/ac4742534e4f96e1b40e469d5c4c91e25804b435))
+* handleDragOutReparent ([ac88900](https://github.com/qq15725/mce/commit/ac889007aea497ea1bc24144a9397893e57b9425))
+* remove currentFrame ([433d923](https://github.com/qq15725/mce/commit/433d9234c2d30126ab06b8fabc3bcf33e74fd425))
+* remove viewMode ([686b135](https://github.com/qq15725/mce/commit/686b13561eb4fd65f26ceb44c49af3ec59a7a47d))
+* selectPreviousSibling / selectNextSibling / zoomToNextFrame / zoomToPreviousFrame ([b853f90](https://github.com/qq15725/mce/commit/b853f908b6c19d9c858648c60100e3f93a3dee9e))
+* viewportAabb / scrollTo intoView ([e5a18ea](https://github.com/qq15725/mce/commit/e5a18ea677259425651d033fd759193bdddf6cfa))
+* zoomTo intoView ([d248084](https://github.com/qq15725/mce/commit/d248084a98904465d8295ce4f3e499c3a9d5b81b))
+
+
+
 ## [0.15.20](https://github.com/qq15725/mce/compare/v0.15.19...v0.15.20) (2026-01-09)
 
 
