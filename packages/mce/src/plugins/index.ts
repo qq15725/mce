@@ -9,7 +9,6 @@ import _delete from './delete'
 import _drawingTool from './drawingTool'
 import _edit from './edit'
 import _enter from './enter'
-import _flip from './flip'
 import _frame from './frame'
 import _gif from './gif'
 import _group from './group'
@@ -41,6 +40,7 @@ import _statusbar from './statusbar'
 import _text from './text'
 import _timeline from './timeline'
 import _toolbelt from './toolbelt'
+import _transform from './transform'
 import _ui from './ui'
 import _url from './url'
 import _view from './view'
@@ -55,7 +55,6 @@ export const plugins = [
   _drawingTool,
   _edit,
   _enter,
-  _flip,
   _frame,
   _gif,
   _group,
@@ -87,6 +86,7 @@ export const plugins = [
   _text,
   _timeline,
   _toolbelt,
+  _transform,
   _ui,
   _url,
   _view,
