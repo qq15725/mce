@@ -58,6 +58,7 @@ export default {
   'delete': '删除',
   'selectAll': '选择全部',
   'deselectAll': '反选全部',
+  'selectChildren': '选择子元素',
   'selectParent': '选择父元素',
   'selectPreviousSibling': '选择前一个',
   'selectNextSibling': '选择后一个',

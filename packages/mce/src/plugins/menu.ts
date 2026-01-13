@@ -95,6 +95,7 @@ export default definePlugin((editor, options) => {
     children: [
       { key: 'selectAll' },
       { key: 'deselectAll', disabled: !hasSelected.value },
+      { key: 'selectChildren', disabled: !hasSelected.value },
       { key: 'selectParent', disabled: !hasSelected.value },
       { key: 'selectPreviousSibling', disabled: !hasSelected.value },
       { key: 'selectNextSibling', disabled: !hasSelected.value },

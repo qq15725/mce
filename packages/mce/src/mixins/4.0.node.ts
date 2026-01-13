@@ -22,29 +22,38 @@ export default defineMixin((editor) => {
   const {
     doc,
     selection,
+    root,
   } = editor
 
   function findSibling(target: 'next' | 'previous'): Node | undefined {
     const node = selection.value[0]
+    let value, parent
     if (node) {
-      let value
-      switch (target) {
-        case 'previous':
+      parent = node.parent
+    }
+    else {
+      parent = root.value
+    }
+    switch (target) {
+      case 'previous':
+        if (node) {
           value = node.nextSibling
-          if (!value && node.parent) {
-            value = node.parent.children[0]
-          }
-          break
-        case 'next':
+        }
+        if (!value && parent) {
+          value = parent.children[0]
+        }
+        break
+      case 'next':
+        if (node) {
           value = node.previousSibling
-          if (!value && node.parent) {
-            value = node.parent.children[node.parent.children.length - 1]
-          }
-          break
-      }
-      if (value && !node.equal(value)) {
-        return value
-      }
+        }
+        if (!value && parent) {
+          value = parent.children[parent.children.length - 1]
+        }
+        break
+    }
+    if (value && (!node || !node.equal(value))) {
+      return value
     }
     return undefined
   }

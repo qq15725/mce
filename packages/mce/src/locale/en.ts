@@ -57,6 +57,7 @@ export default {
   'delete': 'Delete',
   'selectAll': 'Select all',
   'deselectAll': 'Deselect all',
+  'selectChildren': 'Select children',
   'selectParent': 'Select parent',
   'selectPreviousSibling': 'Select previous sibling',
   'selectNextSibling': 'Select next sibling',

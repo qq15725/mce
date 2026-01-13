@@ -256,8 +256,8 @@ export default defineMixin((editor) => {
     return new Aabb2D({
       x: p1.x,
       y: p1.y,
-      width: p2.x,
-      height: p2.y,
+      width: p2.x - p1.x,
+      height: p2.y - p1.y,
     })
   })
   const rootAabb = computed(() => getAabb(root.value.children))
