@@ -1,5 +1,4 @@
-import type { Element2D } from 'modern-canvas'
-import type { AxisAlignedBoundingBox } from '../types'
+import type { Aabb2D, Element2D } from 'modern-canvas'
 import { clamp } from 'modern-canvas'
 import { defineMixin } from '../mixin'
 
@@ -17,6 +16,7 @@ declare global {
         | 'cover'
 
     interface ZoomToOptions {
+      intoView?: boolean
       mode?: ZoomToMode
       duration?: number
       behavior?: 'smooth' | 'instant'
@@ -36,16 +36,18 @@ export default defineMixin((editor) => {
     rootAabb,
     getAabb,
     screenCenterOffset,
+    viewportAabb,
   } = editor
 
   const zoomTo: Mce.Editor['zoomTo'] = async (target, options = {}) => {
     const {
+      intoView,
       mode = 'contain',
       duration = 500,
       behavior,
     } = options
 
-    let aabb: AxisAlignedBoundingBox
+    let aabb: Aabb2D
     if (Array.isArray(target) || typeof target === 'object') {
       aabb = getAabb(target)
     }
@@ -59,6 +61,10 @@ export default defineMixin((editor) => {
           aabb = rootAabb.value
           break
       }
+    }
+
+    if (intoView && viewportAabb.value.contains(aabb)) {
+      return
     }
 
     const offset = screenCenterOffset.value
