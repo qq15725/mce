@@ -79,9 +79,10 @@ export default defineMixin((editor) => {
             if (frame2.equal(options?.parent)) {
               index = options!.index
             }
+            frame2.moveChild(element, index)
             element.style.left = aabb1.x - aabb2.x
             element.style.top = aabb1.y - aabb2.y
-            frame2.moveChild(element, index)
+            element.updateGlobalTransform()
             exec('layerScrollIntoView')
           }
           flag = false
@@ -94,13 +95,14 @@ export default defineMixin((editor) => {
       flag
       && frame1
     ) {
-      element.style.left = aabb1.x
-      element.style.top = aabb1.y
       let index = root.value.children.length
       if (root.value.equal(options?.parent)) {
         index = options!.index
       }
       root.value.moveChild(element, index)
+      element.style.left = aabb1.x
+      element.style.top = aabb1.y
+      element.updateGlobalTransform()
       exec('layerScrollIntoView')
     }
   }
