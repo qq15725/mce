@@ -27,15 +27,16 @@ export async function convertDoc(
   let top = 0
   children = children
     .sort((a, b) => a.index - b.index)
-    .map((v, index) => {
+    .map((v) => {
       const element = v.element
       if (element.style) {
         element.style.top = top
         top += Number(element.style.height) + gap
       }
-      element.name = `画板 ${index + 1}`
+      element.name = `画板 ${v.index + 1}`
       return element
     })
+    .reverse()
 
   const minmax = children.reduce((child) => {
     const left = child.style?.left ?? 0

@@ -49,7 +49,9 @@ export default definePlugin((editor) => {
     const value = findSibling(type)
     if (value) {
       selection.value = [value]
-      scrollTo('selection')
+      scrollTo('selection', {
+        intoView: true,
+      })
     }
   }
 

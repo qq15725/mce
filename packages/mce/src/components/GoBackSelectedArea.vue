@@ -5,19 +5,12 @@ import { Icon } from './icon'
 
 const {
   selectionAabb,
-  drawboardAabb,
-  aabbToDrawboardAabb,
+  viewportAabb,
   t,
   exec,
 } = useEditor()
 
-const isActive = computed(() => {
-  return selectionAabb.value.width
-    && selectionAabb.value.height
-    && !drawboardAabb.value.overlapsOnAxis(
-      aabbToDrawboardAabb(selectionAabb.value),
-    )
-})
+const isActive = computed(() => !viewportAabb.value.overlap(selectionAabb.value))
 </script>
 
 <template>

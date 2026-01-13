@@ -138,7 +138,7 @@ function onHover(event: PointerInputEvent) {
   let hovered: Element2D | undefined
   if (
     elementSelection.value.length > 1
-    && selectionAabbInDrawboard.value.containsPoint({
+    && selectionAabbInDrawboard.value.contains({
       x: event.clientX,
       y: event.clientY,
     })
@@ -213,7 +213,7 @@ function onPointerdown(
   let isUp = false
   let selected: Element2D[] = []
   let ctxState: Mce.State | undefined
-  const inSelection = selectionAabbInDrawboard.value.containsPoint({
+  const inSelection = selectionAabbInDrawboard.value.contains({
     x: start.x - drawboardAabb.value.left,
     y: start.y - drawboardAabb.value.top,
   })

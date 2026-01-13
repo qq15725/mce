@@ -1,6 +1,8 @@
 import type { ComponentInternalInstance, ComponentPublicInstance, InjectionKey, VNodeChild } from 'vue'
 import { shallowRef } from 'vue'
 
+export function noop(..._args: any): void {}
+
 export function isClickInsideElement(event: MouseEvent, targetDiv: HTMLElement): boolean {
   const mouseX = event.clientX
   const mouseY = event.clientY

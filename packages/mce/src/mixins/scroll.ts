@@ -10,6 +10,7 @@ declare global {
         | Element2D[]
 
     interface ScrollToOptions {
+      intoView?: boolean
       duration?: number
       behavior?: 'smooth' | 'instant'
     }
@@ -26,11 +27,13 @@ export default defineMixin((editor) => {
     getAabb,
     selectionAabb,
     rootAabb,
+    viewportAabb,
     screenCenter,
   } = editor
 
   const scrollTo: Mce.Editor['scrollTo'] = async (target, options = {}) => {
     const {
+      intoView,
       behavior,
       duration = 500,
     } = options
@@ -59,6 +62,9 @@ export default defineMixin((editor) => {
             aabb = rootAabb.value
             break
         }
+      }
+      if (intoView && viewportAabb.value.contains(aabb)) {
+        return
       }
       position = { x: aabb.left + aabb.width / 2, y: aabb.top + aabb.height / 2 }
       offset.x += -_screenCenter.x

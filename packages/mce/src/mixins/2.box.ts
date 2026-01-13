@@ -3,8 +3,7 @@ import type { ComputedRef } from 'vue'
 import { Aabb2D, Obb2D, Transform2D } from 'modern-canvas'
 import { computed } from 'vue'
 import { defineMixin } from '../mixin'
-
-function noop(..._args: any): void {}
+import { noop } from '../utils'
 
 declare global {
   namespace Mce {
@@ -13,6 +12,7 @@ declare global {
       getObb: (node: Node | Node[] | undefined, inTarget?: 'drawboard' | 'frame' | 'parent') => Obb2D
       getAabb: (node: Node | Node[] | undefined, inTarget?: 'drawboard' | 'frame' | 'parent') => Aabb2D
       aabbToDrawboardAabb: (aabb: Aabb2D) => Aabb2D
+      viewportAabb: ComputedRef<Aabb2D>
       rootAabb: ComputedRef<Aabb2D>
       selectionAabb: ComputedRef<Aabb2D>
       selectionAabbInDrawboard: ComputedRef<Aabb2D>
@@ -29,6 +29,7 @@ export default defineMixin((editor) => {
     root,
     selection,
     getAncestorFrame,
+    drawboardAabb,
   } = editor
 
   function obbToFit(element: Element2D): void {
@@ -117,7 +118,7 @@ export default defineMixin((editor) => {
     else if (isElement(node)) {
       // for vue reactive
       const style = node.style
-      noop([style.left, style.top, style.width, style.height, style.rotate])
+      noop(style.left, style.top, style.width, style.height, style.rotate)
       obb = node.getGlobalObb()
     }
     else {
@@ -241,6 +242,24 @@ export default defineMixin((editor) => {
     return _aabb
   }
 
+  const viewportAabb = computed(() => {
+    // for vue reactive
+    noop(
+      camera.value.position.x,
+      camera.value.position.y,
+      camera.value.zoom.x,
+      camera.value.zoom.y,
+    )
+    const { width, height } = drawboardAabb.value
+    const p1 = camera.value.toGlobal({ x: 0, y: 0 })
+    const p2 = camera.value.toGlobal({ x: width, y: height })
+    return new Aabb2D({
+      x: p1.x,
+      y: p1.y,
+      width: p2.x,
+      height: p2.y,
+    })
+  })
   const rootAabb = computed(() => getAabb(root.value.children))
   const selectionAabb = computed(() => getAabb(selection.value))
   const selectionAabbInDrawboard = computed(() => getAabb(selection.value, 'drawboard'))
@@ -252,6 +271,7 @@ export default defineMixin((editor) => {
     getObb,
     getAabb,
     aabbToDrawboardAabb,
+    viewportAabb,
     rootAabb,
     selectionAabb,
     selectionAabbInDrawboard,

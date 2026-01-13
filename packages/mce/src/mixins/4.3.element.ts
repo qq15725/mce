@@ -303,7 +303,7 @@ export default defineMixin((editor) => {
       .filter((node) => {
         return 'isVisibleInTree' in node
           && node.isVisibleInTree()
-          && getObb(node, 'drawboard').overlapsOnAxis(area)
+          && getObb(node, 'drawboard').overlap(area)
           && !isLock(node)
           && !node.findAncestor(ancestor => isLock(ancestor))
       }) ?? []

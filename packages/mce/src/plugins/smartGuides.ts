@@ -131,8 +131,8 @@ export default definePlugin((editor) => {
   }
 
   function findLines(targets: BSTree<Line>, source: Line) {
-    const axis = ['vt', 'vb'].includes(source.type) ? 'vertical' : 'horizontal'
-    const flippedAxis = axis === 'vertical' ? 'horizontal' : 'vertical'
+    const axis = ['vt', 'vb'].includes(source.type) ? 'y' : 'x'
+    const flippedAxis = axis === 'y' ? 'x' : 'y'
     const isLeftTop = isLeftTopLine(source)
     let type = flipType(source.type)
     if (parentBox.value) {
@@ -161,13 +161,13 @@ export default definePlugin((editor) => {
       const isCanvas = isCanvasLine(target)
       if (type !== target.type && !isCanvas)
         return
-      if (!toBoundingBox(source).overlapsOnAxis(toBoundingBox(target), flippedAxis))
+      if (!toBoundingBox(source).overlap(toBoundingBox(target), flippedAxis))
         return
       if (
         !isCanvas
         && prev
         && prev.box!.id !== target.box!.id
-        && toBoundingBox(prev).overlapsOnAxis(toBoundingBox(target), axis)
+        && toBoundingBox(prev).overlap(toBoundingBox(target), axis)
       ) {
         return
       }

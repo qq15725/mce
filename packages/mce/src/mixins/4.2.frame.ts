@@ -71,7 +71,7 @@ export default defineMixin((editor) => {
       if (aabb2) {
         if (
           pointer
-            ? aabb2.containsPoint(pointer)
+            ? aabb2.contains(pointer)
             : (aabb1 && aabb1.getIntersectionRect(aabb2).getArea() > area1 * 0.5)
         ) {
           if (!frame2.equal(frame1)) {
@@ -96,7 +96,11 @@ export default defineMixin((editor) => {
     ) {
       element.style.left = aabb1.x
       element.style.top = aabb1.y
-      root.value.moveChild(element, root.value.children.length)
+      let index = root.value.children.length
+      if (root.value.equal(options?.parent)) {
+        index = options!.index
+      }
+      root.value.moveChild(element, index)
       exec('layerScrollIntoView')
     }
   }
