@@ -127,6 +127,8 @@ const {
   background-color: rgba(var(--mce-theme-surface), 1);
   color: rgba(var(--mce-theme-on-surface), 1);
   font-weight: bold;
+  white-space: nowrap;
+  overflow-x: auto;
 
   &__main {
     flex: 1;
@@ -150,7 +152,7 @@ const {
   &__divider {
     width: 0;
     height: 60%;
-    border-right: 1px solid rgba(var(--mce-theme-on-surface), .2);
+    border-right: 1px solid rgba(var(--mce-theme-on-surface), .1);
     margin: 0 8px;
   }
 

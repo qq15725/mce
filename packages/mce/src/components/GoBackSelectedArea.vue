@@ -41,5 +41,6 @@ const isActive = computed(() => !viewportAabb.value.overlap(selectionAabb.value)
     border-radius: 8px;
     font-size: 0.875rem;
     cursor: pointer;
+    white-space: nowrap;
   }
 </style>
