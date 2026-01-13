@@ -226,17 +226,16 @@ export default defineMixin((editor) => {
       }
       else if (globalPosition) {
         elements.forEach((el) => {
-          el.style.left = Math.round(
+          el.style.left += Math.round(
             parentAabb
               ? parentAabb.left - globalPosition.x
               : globalPosition.x,
           )
-          el.style.top = Math.round(
+          el.style.top += Math.round(
             parentAabb
               ? parentAabb.top - globalPosition.y
               : globalPosition.y,
           )
-          globalPosition.x += el.style.width + frameGap
         })
       }
 

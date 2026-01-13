@@ -73,6 +73,7 @@ export function plugin() {
               child.style.overflow = 'hidden'
               ;(child.meta as any).inEditorIs = 'Frame'
             })
+            doc.children.reverse()
 
             doc.name = (source as any).name
             ;(doc.meta as any).inEditorIs = 'Doc'
