@@ -88,7 +88,7 @@ export function plugin() {
           saveAs: true,
           handle: async (options) => {
             const doc = await to('json', options)
-
+            doc.children?.reverse()
             return new Blob([
               (
                 await docToPptx({
