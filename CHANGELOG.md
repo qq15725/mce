@@ -1,3 +1,20 @@
+## [0.15.22](https://github.com/qq15725/mce/compare/v0.15.21...v0.15.22) (2026-01-14)
+
+
+### Bug Fixes
+
+* selectSibling ([9c67615](https://github.com/qq15725/mce/commit/9c67615ccd993637e4ea8e01e97cfd43809318a2))
+
+
+### Features
+
+* optimize handleDragOutReparent ([1734ee9](https://github.com/qq15725/mce/commit/1734ee9b71f11012d2d76316b85e3f7aedce82e2))
+* optimize statusbar style ([63686ae](https://github.com/qq15725/mce/commit/63686aeddef719364a87a6a48f1f263d65db3e5d))
+* selectChildren ([6c93ea5](https://github.com/qq15725/mce/commit/6c93ea57c67cb649a12397f9cbeda0201dd94e19))
+* selectChildren ([3f803d0](https://github.com/qq15725/mce/commit/3f803d0b9ab79c53460aa85570b3b91e3b71f724))
+
+
+
 ## [0.15.21](https://github.com/qq15725/mce/compare/v0.15.20...v0.15.21) (2026-01-13)
 
 
