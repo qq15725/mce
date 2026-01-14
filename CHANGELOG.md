@@ -1,3 +1,14 @@
+## [0.15.23](https://github.com/qq15725/mce/compare/v0.15.22...v0.15.23) (2026-01-14)
+
+
+### Bug Fixes
+
+* goBackSelectedArea ([64d8c23](https://github.com/qq15725/mce/commit/64d8c2385201a8d313a7a2bb51870d0b47a8886d))
+* pdf page / pptx slide sort ([26c58ec](https://github.com/qq15725/mce/commit/26c58ecc8812f10dceaf3f55d96f05b1bd0562d8))
+* third party ([f6fafe8](https://github.com/qq15725/mce/commit/f6fafe8454b48d671da1dba12255f63eb40caeae))
+
+
+
 ## [0.15.22](https://github.com/qq15725/mce/compare/v0.15.21...v0.15.22) (2026-01-14)
 
 
