@@ -32,7 +32,11 @@ export function bidTidLoader(editor: Editor, api: Record<string, any>): Mce.Load
           let doc: NormalizedDocument
           if (version > 1) {
             doc = content
-            doc.meta!.raw = raw
+            if (!doc.meta) {
+              doc.meta = {}
+            }
+            doc.meta.version = version
+            doc.meta.raw = raw
           }
           else {
             if (included !== undefined) {
@@ -45,7 +49,9 @@ export function bidTidLoader(editor: Editor, api: Record<string, any>): Mce.Load
         }),
       )
       const doc = { ...docs[0], id: text, children: [] as any[] }
-      doc.meta ??= {}
+      if (!doc.meta) {
+        doc.meta = {}
+      }
       doc.meta.maxTime = maxTime
       doc.meta.inEditorIs = 'Doc'
       let left = 0
@@ -53,8 +59,10 @@ export function bidTidLoader(editor: Editor, api: Record<string, any>): Mce.Load
         let width = 0
         _doc.children?.forEach((element) => {
           if (element.style) {
-            element.style.left = left
-            width = Math.max(width, Number(element.style.width))
+            if (Number(_doc.meta?.version ?? 0) <= 1) {
+              element.style.left = left
+              width = Math.max(width, Number(element.style.width))
+            }
             doc.children.push(element)
           }
         })
