@@ -10,7 +10,11 @@ const {
   exec,
 } = useEditor()
 
-const isActive = computed(() => !viewportAabb.value.overlap(selectionAabb.value))
+const isActive = computed(() => {
+  return selectionAabb.value.width
+    && selectionAabb.value.height
+    && !viewportAabb.value.overlap(selectionAabb.value)
+})
 </script>
 
 <template>
