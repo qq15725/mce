@@ -165,7 +165,7 @@ function onHover(event: PointerInputEvent) {
     isElement(hovered)
     && !isLock(hovered)
     && !hovered.findAncestor(ancestor => isLock(ancestor))
-    && !isTopFrame(hovered)
+    && (!hovered.children.some(node => isElement(node)) || !isTopFrame(hovered))
   )) {
     hovered = undefined
     cursor = undefined
@@ -198,7 +198,7 @@ function onPointerdown(
   function isIncluded(node: any): node is Element2D {
     return isElement(node)
       && !isLock(node)
-      && (allowTopFrame || !isTopFrame(node))
+      && (allowTopFrame || (!node.children.some(node => isElement(node)) || !isTopFrame(node)))
       && !node.findAncestor(ancestor => isLock(ancestor))
   }
 
