@@ -1,3 +1,22 @@
+## [0.15.25](https://github.com/qq15725/mce/compare/v0.15.24...v0.15.25) (2026-01-15)
+
+
+### Bug Fixes
+
+* handleDragOutReparent ([d647b28](https://github.com/qq15725/mce/commit/d647b28bf9a646349bac5426d0f1f8c9f2aa73c2))
+* hotkey ([fd70acb](https://github.com/qq15725/mce/commit/fd70acb326b527e09a1ae5f68e586524536d96b1))
+* onPointerdown ([847351b](https://github.com/qq15725/mce/commit/847351ba45b592745f575625124c44a60ac6f9c2))
+
+
+### Features
+
+* add selectionTransformStart / selectionTransforming / selectionTransformEnd events ([a87d6df](https://github.com/qq15725/mce/commit/a87d6df3c62faaa6594625dc0e21e023d5e3e168))
+* rename command startPointerdown to pointerDown ([2e1d51d](https://github.com/qq15725/mce/commit/2e1d51d42fb158cf178839fe7720feb0d1fa5294))
+* topFrame ([c97087b](https://github.com/qq15725/mce/commit/c97087b8a529807b371fcf41e147293eeb1a1200))
+* zoomTo add width / height mode, remove zoomToCover command ([34dfc56](https://github.com/qq15725/mce/commit/34dfc56552b33dff24ce222c072b082dafbff7e3))
+
+
+
 ## [0.15.24](https://github.com/qq15725/mce/compare/v0.15.23...v0.15.24) (2026-01-15)
 
 

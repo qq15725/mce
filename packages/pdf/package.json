@@ -1,7 +1,7 @@
 {
   "name": "@mce/pdf",
   "type": "module",
-  "version": "0.15.24",
+  "version": "0.15.25",
   "description": "PDF plugin for mce",
   "author": "wxm",
   "license": "MIT",
