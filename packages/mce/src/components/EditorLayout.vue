@@ -213,10 +213,11 @@ function onPointerdown(
   let isUp = false
   let selected: Element2D[] = []
   let ctxState: Mce.State | undefined
-  const inSelection = allowTopFrame || selectionAabbInDrawboard.value.contains({
-    x: start.x - drawboardAabb.value.left,
-    y: start.y - drawboardAabb.value.top,
-  })
+  const inSelection = (allowTopFrame && elementSelection.value.some(node => node.equal(element)))
+    || selectionAabbInDrawboard.value.contains({
+      x: start.x - drawboardAabb.value.left,
+      y: start.y - drawboardAabb.value.top,
+    })
 
   if (downEvent.button === 2) {
     if (!inSelection) {
