@@ -134,7 +134,7 @@ export default defineMixin((editor) => {
 
     on('selectionTransforming', ({ handle, startEvent, elements }) => {
       // move to frame
-      if (handle === 'move' && !(startEvent as any)?.__FORM__) {
+      if (handle === 'move' && !(startEvent as any)?.__FROM__) {
         elements.forEach((element) => {
           handleDragOutReparent(
             element,

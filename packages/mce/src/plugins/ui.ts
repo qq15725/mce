@@ -3,12 +3,12 @@ import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {
-    interface StartPointerdownOptions {
+    interface PointerDownOptions {
       allowTopFrame?: boolean
     }
 
     interface Commands {
-      startPointerdown: (e: PointerInputEvent, options?: StartPointerdownOptions) => void
+      pointerDown: (e: PointerInputEvent, options?: PointerDownOptions) => void
       startTyping: (e?: MouseEvent | PointerEvent) => Promise<boolean>
       startTransform: (e?: MouseEvent | PointerEvent) => boolean
       openContextMenu: (e?: MouseEvent | PointerEvent) => boolean

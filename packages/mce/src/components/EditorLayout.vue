@@ -177,7 +177,7 @@ function onHover(event: PointerInputEvent) {
 
 function onPointerdown(
   downEvent: PointerInputEvent,
-  options: Mce.StartPointerdownOptions = {},
+  options: Mce.PointerDownOptions = {},
 ): void {
   if (
     (
@@ -213,7 +213,7 @@ function onPointerdown(
   let isUp = false
   let selected: Element2D[] = []
   let ctxState: Mce.State | undefined
-  const inSelection = selectionAabbInDrawboard.value.contains({
+  const inSelection = allowTopFrame || selectionAabbInDrawboard.value.contains({
     x: start.x - drawboardAabb.value.left,
     y: start.y - drawboardAabb.value.top,
   })
@@ -429,7 +429,7 @@ function onPointerdown(
   document.addEventListener('pointerup', onUp)
 }
 
-editor.registerCommand({ command: 'startPointerdown', handle: onPointerdown })
+editor.registerCommand({ command: 'pointerDown', handle: onPointerdown })
 
 function onPointermove(event: PointerInputEvent): void {
   if (event.srcElement !== drawboardDom.value) {
