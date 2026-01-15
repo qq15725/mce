@@ -1,4 +1,4 @@
-import type { Element2D, Vector2Like } from 'modern-canvas'
+import type { Element2D, Node, Vector2Like } from 'modern-canvas'
 import { ref } from 'vue'
 import { defineMixin } from '../mixin'
 
@@ -135,15 +135,26 @@ export default defineMixin((editor) => {
     on('selectionTransforming', ({ handle, startEvent, elements }) => {
       // move to frame
       if (handle === 'move' && !(startEvent as any)?.__FROM__) {
-        elements.forEach((element) => {
-          handleDragOutReparent(
-            element,
-            {
-              ...startContext.value[element.instanceId],
-              pointer: getGlobalPointer(),
-            } as any,
-          )
+        const idSet = new Set<number>()
+        elements.forEach((el) => {
+          if (isTopFrame(el)) {
+            idSet.add(el.instanceId)
+          }
+          else {
+            idSet.add((el as Node).findAncestor(isTopFrame)?.instanceId ?? 0)
+          }
         })
+        if (idSet.size === 1) {
+          elements.forEach((element) => {
+            handleDragOutReparent(
+              element,
+              {
+                ...startContext.value[element.instanceId],
+                pointer: getGlobalPointer(),
+              } as any,
+            )
+          })
+        }
       }
     })
 
