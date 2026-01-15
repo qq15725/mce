@@ -42,9 +42,16 @@ const {
 
 const transformable = useTemplateRef('transformableTpl')
 const startContext = ref<Record<string, Record<string, any>>>({})
+const currentEvent = ref<MouseEvent | PointerEvent>()
 
 onBeforeMount(() => {
-  registerCommand({ command: 'startTransform', handle: e => Boolean(transformable.value?.start(e)) })
+  registerCommand({
+    command: 'startTransform',
+    handle: (event) => {
+      currentEvent.value = event
+      Boolean(transformable.value?.start(event))
+    },
+  })
 })
 
 onBeforeUnmount(() => {
@@ -209,14 +216,16 @@ const transform = computed({
         return false
       })
 
-      // move to frame
-      handleDragOutReparent(
-        element,
-        {
-          ...startContext.value[element.instanceId],
-          pointer: getGlobalPointer(),
-        } as any,
-      )
+      if (handle === 'move' && !(currentEvent.value as any)?.__FORM__) {
+        // move to frame
+        handleDragOutReparent(
+          element,
+          {
+            ...startContext.value[element.instanceId],
+            pointer: getGlobalPointer(),
+          } as any,
+        )
+      }
     })
   },
 })

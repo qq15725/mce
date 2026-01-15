@@ -6,7 +6,7 @@ import { definePlugin } from '../plugin'
 declare global {
   namespace Mce {
     interface StartPointerdownOptions {
-      allowRootFrame?: boolean
+      allowTopFrame?: boolean
     }
 
     interface Commands {

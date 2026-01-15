@@ -192,13 +192,13 @@ function onPointerdown(
   }
 
   const {
-    allowRootFrame = false,
+    allowTopFrame = false,
   } = options
 
   function isIncluded(node: any): node is Element2D {
     return isElement(node)
       && !isLock(node)
-      && (allowRootFrame || !isTopFrame(node))
+      && (allowTopFrame || !isTopFrame(node))
       && !node.findAncestor(ancestor => isLock(ancestor))
   }
 

@@ -35,8 +35,9 @@ async function onPointerdown(event: PointerEvent) {
     const cloend = (renderEngine.value.input as any)._clonePointerEvent(event)
     cloend.srcElement = drawboardDom.value
     cloend.target = frame.value
+    cloend.__FORM__ = event.target
     exec('startPointerdown', cloend, {
-      allowRootFrame: true,
+      allowTopFrame: true,
     })
   }
 }
