@@ -1,8 +1,13 @@
+import type { PptxMeta } from 'modern-openxml'
 import { definePlugin } from 'mce'
 import { docToPptx, pptxToDoc } from 'modern-openxml'
 
 declare global {
   namespace Mce {
+    interface ExportOptions {
+      pptx?: Partial<PptxMeta>
+    }
+
     interface Exporters {
       pptx: Promise<Blob>
     }
@@ -87,16 +92,22 @@ export function plugin() {
           name: 'pptx',
           saveAs: true,
           handle: async (options) => {
-            const doc = await to('json', options)
+            const { pptx: pptxOptions, ...jsonOptions } = options
+
+            const doc = await to('json', jsonOptions)
+
             doc.children?.reverse()
-            return new Blob([
-              (
-                await docToPptx({
-                  ...doc as any,
-                  fonts,
-                })
-              ) as any,
-            ], {
+
+            const pptx = await docToPptx({
+              ...doc as any,
+              fonts,
+              meta: {
+                ...doc.meta,
+                ...pptxOptions,
+              },
+            }) as any
+
+            return new Blob([pptx], {
               type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
             })
           },

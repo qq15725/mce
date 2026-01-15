@@ -1,8 +1,13 @@
+import type { PdfOptionMeta } from 'modern-pdf'
 import { definePlugin } from 'mce'
 import { Pdf } from 'modern-pdf'
 
 declare global {
   namespace Mce {
+    interface ExportOptions {
+      pdf?: PdfOptionMeta
+    }
+
     interface Exporters {
       pdf: Promise<Blob>
     }
@@ -23,12 +28,22 @@ export function plugin() {
           name: 'pdf',
           saveAs: true,
           handle: async (options) => {
-            const doc = await to('json', options)
+            const { pdf: pdfOptions, ...jsonOptions } = options
+
+            const doc = await to('json', jsonOptions)
+
             doc.children?.reverse()
-            return await new Pdf({
+
+            const pdf = new Pdf({
               ...doc,
               fonts,
-            } as any).toBlob()
+              meta: {
+                ...doc.meta,
+                ...pdfOptions,
+              },
+            } as any)
+
+            return await pdf.toBlob()
           },
         },
       ],
