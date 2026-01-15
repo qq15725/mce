@@ -1,3 +1,13 @@
+## [0.15.24](https://github.com/qq15725/mce/compare/v0.15.23...v0.15.24) (2026-01-15)
+
+
+### Bug Fixes
+
+* export options ([a106a3b](https://github.com/qq15725/mce/commit/a106a3bfd8fdd818ef065a7d9e30de65c8a20e03))
+* handleDragOutReparent ([0f2ea0d](https://github.com/qq15725/mce/commit/0f2ea0d658cc6507c0e0fc5db8bd248767aeff58))
+
+
+
 ## [0.15.23](https://github.com/qq15725/mce/compare/v0.15.22...v0.15.23) (2026-01-14)
 
 
