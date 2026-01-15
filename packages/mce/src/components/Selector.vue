@@ -19,6 +19,7 @@ const props = withDefaults(defineProps<{
 })
 
 const {
+  emit,
   isElement,
   state,
   resizeElement,
@@ -36,19 +37,16 @@ const {
   config,
   snapThreshold,
   getSnapPoints,
-  handleDragOutReparent,
-  getGlobalPointer,
 } = useEditor()
 
 const transformable = useTemplateRef('transformableTpl')
-const startContext = ref<Record<string, Record<string, any>>>({})
-const currentEvent = ref<MouseEvent | PointerEvent>()
+const startEvent = ref<MouseEvent | PointerEvent>()
 
 onBeforeMount(() => {
   registerCommand({
     command: 'startTransform',
     handle: (event) => {
-      currentEvent.value = event
+      startEvent.value = event
       Boolean(transformable.value?.start(event))
     },
   })
@@ -139,6 +137,14 @@ function snap(currentPos: number, type: 'x' | 'y'): number {
   return currentPos
 }
 
+function createSelectionTransformContext(): Mce.SelectionTransformContext {
+  return {
+    startEvent: startEvent.value!,
+    handle: (transformable.value?.activeHandle ?? 'move') as Mce.TransformableHandle,
+    elements: elementSelection.value,
+  }
+}
+
 const transform = computed({
   get: () => _transform.value,
   set: (val: TransformableValue) => {
@@ -168,7 +174,9 @@ const transform = computed({
       borderRadius: transform.borderRadius - (oldTransform.borderRadius ?? 0) / zoom.y,
     }
 
-    elementSelection.value.forEach((element) => {
+    const elements = elementSelection.value
+
+    elements.forEach((element) => {
       const style = element.style
       const newStyle = {
         left: style.left + offsetStyle.left,
@@ -215,18 +223,9 @@ const transform = computed({
         }
         return false
       })
-
-      if (handle === 'move' && !(currentEvent.value as any)?.__FORM__) {
-        // move to frame
-        handleDragOutReparent(
-          element,
-          {
-            ...startContext.value[element.instanceId],
-            pointer: getGlobalPointer(),
-          } as any,
-        )
-      }
     })
+
+    emit('selectionTransforming', createSelectionTransformContext())
   },
 })
 
@@ -262,14 +261,7 @@ const adjustableBorderRadius = computed(() => {
 })
 
 function onStart() {
-  const ctx: Record<string, Record<string, any>> = {}
-  elementSelection.value.forEach((el) => {
-    ctx[el.instanceId] = {
-      parent: el.getParent(),
-      index: el.getIndex(),
-    }
-  })
-  startContext.value = ctx
+  emit('selectionTransformStart', createSelectionTransformContext())
 }
 
 function onMove() {
@@ -282,7 +274,7 @@ function onEnd() {
   if (state.value === 'transforming') {
     state.value = undefined
   }
-  startContext.value = {}
+  emit('selectionTransformEnd', createSelectionTransformContext())
 }
 
 function tipFormat() {

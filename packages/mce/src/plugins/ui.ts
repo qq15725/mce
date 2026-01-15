@@ -1,6 +1,4 @@
-import type { PointerInputEvent } from 'modern-canvas'
-import type { AxisAlignedBoundingBox } from '../types'
-import { watch } from 'vue'
+import type { Element2D, PointerInputEvent } from 'modern-canvas'
 import { definePlugin } from '../plugin'
 
 declare global {
@@ -17,27 +15,41 @@ declare global {
       layerScrollIntoView: () => boolean
     }
 
+    type TransformableHandle
+      = | 'move'
+        | 'resize-top'
+        | 'resize-right'
+        | 'resize-bottom'
+        | 'resize-left'
+        | 'resize-top-left'
+        | 'resize-top-right'
+        | 'resize-bottom-left'
+        | 'resize-bottom-right'
+        | 'rotate-top-left'
+        | 'rotate-top-right'
+        | 'rotate-bottom-left'
+        | 'rotate-bottom-right'
+        | 'border-radius-top-left'
+        | 'border-radius-top-right'
+        | 'border-radius-bottom-left'
+        | 'border-radius-bottom-right'
+
+    interface SelectionTransformContext {
+      startEvent: MouseEvent | PointerEvent
+      handle: TransformableHandle
+      elements: Element2D[]
+    }
+
     interface Events {
-      setTransform: [value: { aabb: AxisAlignedBoundingBox }]
+      selectionTransformStart: [context: SelectionTransformContext]
+      selectionTransforming: [context: SelectionTransformContext]
+      selectionTransformEnd: [context: SelectionTransformContext]
     }
   }
 }
 
-export default definePlugin((editor) => {
-  const {
-    selectionAabbInDrawboard,
-    emit,
-  } = editor
-
+export default definePlugin(() => {
   return {
     name: 'mce:ui',
-    setup: () => {
-      // TODO lazy watch
-      watch(
-        selectionAabbInDrawboard,
-        aabb => emit('setTransform', { aabb }),
-        { deep: true },
-      )
-    },
   }
 })

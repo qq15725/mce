@@ -1,4 +1,5 @@
 import type { Element2D, Vector2Like } from 'modern-canvas'
+import { ref } from 'vue'
 import { defineMixin } from '../mixin'
 
 declare global {
@@ -111,4 +112,43 @@ export default defineMixin((editor) => {
     findFrame,
     handleDragOutReparent,
   })
+
+  return () => {
+    const {
+      on,
+      getGlobalPointer,
+    } = editor
+
+    const startContext = ref<Record<string, Record<string, any>>>({})
+
+    on('selectionTransformStart', ({ elements }) => {
+      const ctx: Record<string, Record<string, any>> = {}
+      elements.forEach((el) => {
+        ctx[el.instanceId] = {
+          parent: el.getParent(),
+          index: el.getIndex(),
+        }
+      })
+      startContext.value = ctx
+    })
+
+    on('selectionTransforming', ({ handle, startEvent, elements }) => {
+      // move to frame
+      if (handle === 'move' && !(startEvent as any)?.__FORM__) {
+        elements.forEach((element) => {
+          handleDragOutReparent(
+            element,
+            {
+              ...startContext.value[element.instanceId],
+              pointer: getGlobalPointer(),
+            } as any,
+          )
+        })
+      }
+    })
+
+    on('selectionTransformEnd', () => {
+      startContext.value = {}
+    })
+  }
 })
