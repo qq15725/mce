@@ -153,8 +153,8 @@ export default definePlugin((editor) => {
       },
     ],
     hotkeys: [
-      { command: 'setActiveDrawingTool:pen', key: 'p' },
-      { command: 'setActiveDrawingTool:pencil', key: 'Shift+p' },
+      { command: 'setActiveDrawingTool:pen', key: 'P' },
+      { command: 'setActiveDrawingTool:pencil', key: 'Shift+P' },
     ],
   }
 })

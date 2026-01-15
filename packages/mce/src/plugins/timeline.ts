@@ -32,7 +32,7 @@ export default definePlugin((editor) => {
       },
     ],
     hotkeys: [
-      { command: 'panels:timeline', key: 'Alt+™' },
+      { command: 'panels:timeline', key: 'Alt+2' },
     ],
   }
 })

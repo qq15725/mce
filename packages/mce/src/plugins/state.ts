@@ -19,8 +19,8 @@ export default definePlugin((editor) => {
       { command: 'setState', handle: val => state.value = val },
     ],
     hotkeys: [
-      { command: 'setState:move', key: 'v' },
-      { command: 'setState:hand', key: 'h' },
+      { command: 'setState:move', key: 'V' },
+      { command: 'setState:hand', key: 'H' },
     ],
   }
 })

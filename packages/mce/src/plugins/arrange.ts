@@ -154,12 +154,12 @@ export default definePlugin((editor) => {
       { command: 'sendBackward', key: 'CmdOrCtrl+[' },
       { command: 'bringToFront', key: ']' },
       { command: 'sendToBack', key: '[' },
-      { command: 'alignLeft', key: 'Alt+a' },
-      { command: 'alignRight', key: 'Alt+d' },
-      { command: 'alignTop', key: 'Alt+w' },
-      { command: 'alignBottom', key: 'Alt+s' },
-      { command: 'alignHorizontalCenter', key: 'Alt+h' },
-      { command: 'alignVerticalCenter', key: 'Alt+v' },
+      { command: 'alignLeft', key: 'Alt+A' },
+      { command: 'alignRight', key: 'Alt+D' },
+      { command: 'alignTop', key: 'Alt+W' },
+      { command: 'alignBottom', key: 'Alt+S' },
+      { command: 'alignHorizontalCenter', key: 'Alt+H' },
+      { command: 'alignVerticalCenter', key: 'Alt+V' },
     ],
   }
 })

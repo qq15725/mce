@@ -33,8 +33,8 @@ export default definePlugin((editor) => {
       { command: 'flipVertical', handle: flipVertical },
     ],
     hotkeys: [
-      { command: 'flipHorizontal', key: 'Shift+h' },
-      { command: 'flipVertical', key: 'Shift+v' },
+      { command: 'flipHorizontal', key: 'Shift+H' },
+      { command: 'flipVertical', key: 'Shift+V' },
     ],
   }
 })

@@ -27,7 +27,7 @@ export default definePlugin((editor) => {
       { command: 'panels', handle: panel => (config.value as any)[panel] = !(config.value as any)[panel] },
     ],
     hotkeys: [
-      { command: 'panels:layers', key: 'Alt+¡' },
+      { command: 'panels:layers', key: 'Alt+1' },
     ],
   }
 })

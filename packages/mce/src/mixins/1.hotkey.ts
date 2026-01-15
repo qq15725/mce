@@ -46,6 +46,183 @@ declare global {
   }
 }
 
+const isff: boolean
+  = typeof navigator !== 'undefined'
+    ? navigator.userAgent.toLowerCase().indexOf('firefox') > 0
+    : false
+
+// Special Keys
+const _keyMap: Record<string, number> = {
+  'backspace': 8,
+  '⌫': 8,
+  'tab': 9,
+  'clear': 12,
+  'enter': 13,
+  '↩': 13,
+  'return': 13,
+  'esc': 27,
+  'escape': 27,
+  'space': 32,
+  'left': 37,
+  'up': 38,
+  'right': 39,
+  'down': 40,
+  /// https://w3c.github.io/uievents/#events-keyboard-key-location
+  'arrowup': 38,
+  'arrowdown': 40,
+  'arrowleft': 37,
+  'arrowright': 39,
+  'del': 46,
+  'delete': 46,
+  'ins': 45,
+  'insert': 45,
+  'home': 36,
+  'end': 35,
+  'pageup': 33,
+  'pagedown': 34,
+  'capslock': 20,
+  'num_0': 96,
+  'num_1': 97,
+  'num_2': 98,
+  'num_3': 99,
+  'num_4': 100,
+  'num_5': 101,
+  'num_6': 102,
+  'num_7': 103,
+  'num_8': 104,
+  'num_9': 105,
+  'num_multiply': 106,
+  'num_add': 107,
+  'num_enter': 108,
+  'num_subtract': 109,
+  'num_decimal': 110,
+  'num_divide': 111,
+  '⇪': 20,
+  ',': 188,
+  '.': 190,
+  '/': 191,
+  '`': 192,
+  '-': isff ? 173 : 189,
+  '=': isff ? 61 : 187,
+  ';': isff ? 59 : 186,
+  '\'': 222,
+  '{': 219,
+  '}': 221,
+  '[': 219,
+  ']': 221,
+  '\\': 220,
+}
+
+// Modifier Keys
+const _modifier: Record<string, number> = {
+  // shiftKey
+  '⇧': 16,
+  'shift': 16,
+  // altKey
+  '⌥': 18,
+  'alt': 18,
+  'option': 18,
+  // ctrlKey
+  '⌃': 17,
+  'ctrl': 17,
+  'control': 17,
+  // metaKey
+  '⌘': 91,
+  'cmd': 91,
+  'meta': 91,
+  'command': 91,
+}
+
+const kbdMap = {
+  ArrowUp: '↑',
+  ArrowDown: '↓',
+  ArrowLeft: '←',
+  ArrowRight: '→',
+  Slash: '/',
+  Semicolon: ';',
+  BracketLeft: '[',
+  BracketRight: ']',
+  Backslash: '\\',
+  Quote: '\'',
+  Comma: ',',
+  Minus: '-',
+  Equal: '=',
+  Backspace: '⌫',
+  Enter: '⏎',
+  Escape: 'Esc',
+  Dead: 'N',
+}
+
+function getCharCode(x: string): number {
+  let code = _keyMap[x.toLowerCase()]
+    || _modifier[x.toLowerCase()]
+    || x.toUpperCase().charCodeAt(0)
+
+  // In Gecko (Firefox), the command key code is 224; unify it with WebKit (Chrome)
+  // In WebKit, left and right command keys have different codes
+  if (code === 93 || code === 224) {
+    code = 91
+  }
+
+  /**
+   * Collect bound keys
+   * If an Input Method Editor is processing key input and the event is keydown, return 229.
+   * https://stackoverflow.com/questions/25043934/is-it-ok-to-ignore-keydown-events-with-keycode-229
+   * http://lists.w3.org/Archives/Public/www-dom/2010JulSep/att-0182/keyCode-spec.html
+   */
+  if (code === 229) {
+    return 0
+  }
+
+  return code
+}
+
+function parseKey(key: string) {
+  return key
+    .split('+')
+    .map((v) => {
+      switch (v) {
+        case 'Meta':
+        case 'Control':
+        case 'CommandOrControl':
+          return 'CmdOrCtrl'
+        case 'Alt':
+        case 'Shift':
+        case 'CmdOrCtrl':
+          return v
+        default:
+          return String.fromCharCode(getCharCode(v))
+      }
+    })
+    .filter(Boolean)
+    .map(v => (v as string).toLowerCase())
+    .sort()
+    .join('+')
+}
+
+function parseKeyboardEvent(event: KeyboardEvent) {
+  if (event.key.toLowerCase() === 'capslock') {
+    return
+  }
+
+  const { code } = event
+  let key = event.keyCode || event.which || event.charCode
+  if (code && /^Key[A-Z]$/.test(code)) {
+    key = code.charCodeAt(3)
+  }
+
+  return [
+    (event.metaKey || event.ctrlKey) && 'CmdOrCtrl',
+    event.altKey && 'Alt',
+    event.shiftKey && 'Shift',
+    !['Meta', 'Control', 'Alt', 'Shift'].includes(event.key) && String.fromCharCode(key),
+  ]
+    .filter(Boolean)
+    .map(v => (v as string).toLowerCase())
+    .sort()
+    .join('+')
+}
+
 export default defineMixin((editor) => {
   const {
     registerConfig,
@@ -80,31 +257,6 @@ export default defineMixin((editor) => {
 
   function unregisterHotkey(command: string): void {
     hotkeysData.value = hotkeysData.value.filter(v => v.command !== command)
-  }
-
-  const kbdMap = {
-    'ArrowUp': '↑',
-    'ArrowDown': '↓',
-    'ArrowLeft': '←',
-    'ArrowRight': '→',
-    'Slash': '/',
-    'Semicolon': ';',
-    'BracketLeft': '[',
-    'BracketRight': ']',
-    'Backslash': '\\',
-    'Quote': '\'',
-    'Comma': ',',
-    'Minus': '-',
-    'Equal': '=',
-    'Backspace': '⌫',
-    'Enter': '⏎',
-    'Escape': 'Esc',
-
-    '=': '+',
-    'º': '0',
-    '¡': '1',
-    '™': '2',
-    'Dead': 'N',
   }
 
   function getKbd(command: string): string {
@@ -161,42 +313,19 @@ export default defineMixin((editor) => {
           return
         }
 
-        const eKey = [
-          (e.metaKey || e.ctrlKey) && 'CmdOrCtrl',
-          e.altKey && 'Alt',
-          e.shiftKey && 'Shift',
-          !['Meta', 'Control', 'Alt', 'Shift'].includes(e.key) && e.key,
-        ]
-          .filter(Boolean)
-          .map(v => (v as string).toLowerCase())
-          .sort()
-          .join('+')
+        const eKey = parseKeyboardEvent(e)
 
         hotkeysData.value.forEach((hotkeyData) => {
           const command = hotkeyData.command
           const hotkey = hotkeys.get(command)
           const keys = Array.isArray(hotkeyData.key) ? hotkeyData.key : [hotkeyData.key]
           keys.forEach((key) => {
-            const tKey = key
-              .split('+')
-              .map((v) => {
-                switch (v) {
-                  case 'Meta':
-                  case 'Control':
-                  case 'CommandOrControl':
-                    return 'CmdOrCtrl'
-                  default:
-                    return v
-                }
-              })
-              .filter(Boolean)
-              .map(v => (v as string).toLowerCase())
-              .sort()
-              .join('+')
+            const tKey = parseKey(key)
 
             if (eKey === tKey && (!hotkey?.when || hotkey.when(e))) {
               if (hotkey?.preventDefault !== false) {
                 e.preventDefault()
+                e.stopPropagation()
               }
               if (hotkey?.handle) {
                 hotkey.handle(e)

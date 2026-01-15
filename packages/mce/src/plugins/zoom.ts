@@ -67,9 +67,9 @@ export default definePlugin((editor) => {
       { command: 'zoomIn', key: 'CmdOrCtrl+=' },
       { command: 'zoomOut', key: 'CmdOrCtrl+-' },
       { command: 'zoomTo100', key: 'CmdOrCtrl+0' },
-      { command: 'zoomToFit', key: 'Shift+!' },
-      { command: 'zoomToSelection', key: 'Shift+@' },
-      { command: 'zoomToNextFrame', key: 'n' },
+      { command: 'zoomToFit', key: 'Shift+1' },
+      { command: 'zoomToSelection', key: 'Shift+2' },
+      { command: 'zoomToNextFrame', key: 'N' },
       { command: 'zoomToPreviousFrame', key: 'Shift+N' },
     ],
     events: {

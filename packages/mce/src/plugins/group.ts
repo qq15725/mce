@@ -95,8 +95,8 @@ export default definePlugin((editor) => {
       { command: 'ungroup', handle: ungroup },
     ],
     hotkeys: [
-      { command: 'groupSelection', key: 'CmdOrCtrl+g' },
-      { command: 'frameSelection', key: 'Alt+CmdOrCtrl+g' },
+      { command: 'groupSelection', key: 'CmdOrCtrl+G' },
+      { command: 'frameSelection', key: 'Alt+CmdOrCtrl+G' },
       { command: 'ungroup', key: 'CmdOrCtrl+Backspace' },
     ],
   }

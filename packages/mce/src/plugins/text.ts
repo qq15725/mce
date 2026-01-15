@@ -87,7 +87,7 @@ export default definePlugin((editor) => {
       },
     ],
     hotkeys: [
-      { command: 'setActiveDrawingTool:text', key: 't' },
+      { command: 'setActiveDrawingTool:text', key: 'T' },
     ],
   }
 })

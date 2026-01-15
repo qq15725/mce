@@ -117,8 +117,8 @@ export default definePlugin((editor) => {
       { name: 'image', handle: position => exec('import', { position }) },
     ],
     hotkeys: [
-      { command: 'copyAs:png', key: 'Shift+CmdOrCtrl+c' },
-      { command: 'setActiveDrawingTool:image', key: 'Shift+CmdOrCtrl+k' },
+      { command: 'copyAs:png', key: 'Shift+CmdOrCtrl+C' },
+      { command: 'setActiveDrawingTool:image', key: 'Shift+CmdOrCtrl+K' },
     ],
   }
 })

@@ -95,20 +95,36 @@ export function findChildrenWithProvide(
   return []
 }
 
+export function isInputElement(target: HTMLElement): boolean {
+  const { tagName } = target
+
+  const isInput = tagName === 'INPUT'
+    && !['checkbox', 'radio', 'range', 'button', 'file', 'reset', 'submit', 'color'].includes((target as HTMLInputElement).type)
+
+  if (
+    target.isContentEditable
+    || ((isInput || tagName === 'TEXTAREA' || tagName === 'SELECT')
+      && !(target as HTMLInputElement | HTMLTextAreaElement).readOnly)
+  ) {
+    return true
+  }
+
+  return false
+}
+
 export function isInputEvent(event?: Event): boolean {
   if (!event)
     return false
 
   let path: EventTarget[] = (event as any).path
+
   if (!path && event.composedPath)
     path = event.composedPath()
 
   if (!path)
-    return false
+    return isInputElement((event.target || event.srcElement) as HTMLElement)
 
-  return path?.some(
-    (el: any) => ['INPUT', 'TEXTAREA', 'SELECT'].includes(el?.tagName) || el?.contentEditable === 'true',
-  )
+  return path?.some((el: any) => isInputElement(el))
 }
 
 export function toKebabCase(str = '') {

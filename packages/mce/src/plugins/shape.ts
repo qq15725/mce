@@ -213,10 +213,10 @@ export default definePlugin((editor) => {
       },
     ],
     hotkeys: [
-      { command: 'setActiveDrawingTool:rectangle', key: 'r' },
-      { command: 'setActiveDrawingTool:line', key: 'l' },
-      { command: 'setActiveDrawingTool:arrow', key: 'Shift+l' },
-      { command: 'setActiveDrawingTool:ellipse', key: 'o' },
+      { command: 'setActiveDrawingTool:rectangle', key: 'R' },
+      { command: 'setActiveDrawingTool:line', key: 'L' },
+      { command: 'setActiveDrawingTool:arrow', key: 'Shift+L' },
+      { command: 'setActiveDrawingTool:ellipse', key: 'O' },
     ],
   }
 })

@@ -52,7 +52,7 @@ export default definePlugin((editor) => {
       },
     ],
     hotkeys: [
-      { command: 'setActiveDrawingTool:frame', key: 'f' },
+      { command: 'setActiveDrawingTool:frame', key: 'F' },
     ],
   }
 })

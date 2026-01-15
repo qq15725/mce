@@ -76,8 +76,8 @@ export default definePlugin((editor) => {
       { command: 'selectNextSibling', handle: () => selectSibling('next') },
     ],
     hotkeys: [
-      { command: 'selectAll', key: 'CmdOrCtrl+a' },
-      { command: 'deselectAll', key: 'Shift+CmdOrCtrl+a' },
+      { command: 'selectAll', key: 'CmdOrCtrl+A' },
+      { command: 'deselectAll', key: 'Shift+CmdOrCtrl+A' },
       { command: 'selectChildren', key: 'Enter' },
       { command: 'selectParent', key: '\\' },
       { command: 'selectPreviousSibling', key: 'Shift+Tab' },

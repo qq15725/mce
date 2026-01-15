@@ -51,7 +51,7 @@ export default definePlugin((editor) => {
       { command: 'import', handle: _import },
     ],
     hotkeys: [
-      { command: 'import', key: 'CmdOrCtrl+i' },
+      { command: 'import', key: 'CmdOrCtrl+I' },
     ],
     setup: () => {
       const {
