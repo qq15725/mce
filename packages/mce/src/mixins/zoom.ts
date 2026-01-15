@@ -14,6 +14,8 @@ declare global {
     type ZoomToMode
       = | 'contain'
         | 'cover'
+        | 'width'
+        | 'height'
 
     interface ZoomToOptions {
       intoView?: boolean
@@ -71,10 +73,7 @@ export default defineMixin((editor) => {
     const { width, height } = drawboardAabb.value
     const tw = width - (offset.left + offset.right)
     const th = height - (offset.top + offset.bottom)
-    const sx = aabb.left
-    const sy = aabb.top
-    const sw = aabb.width
-    const sh = aabb.height
+    const [sx, sy, sw, sh] = aabb.toArray()
 
     if (!sw || !sh)
       return
@@ -88,11 +87,22 @@ export default defineMixin((editor) => {
     if (typeof target === 'number') {
       targetZoom = target
     }
-    else if (mode === 'cover') {
-      targetZoom = Math.max(zw, zh)
-    }
     else {
-      targetZoom = Math.min(zw, zh)
+      switch (mode) {
+        case 'width':
+          targetZoom = zw
+          break
+        case 'height':
+          targetZoom = zh
+          break
+        case 'cover':
+          targetZoom = Math.max(zw, zh)
+          break
+        case 'contain':
+        default:
+          targetZoom = Math.min(zw, zh)
+          break
+      }
     }
 
     const oldZoom = Math.min(_camera.zoom.x, _camera.zoom.y)

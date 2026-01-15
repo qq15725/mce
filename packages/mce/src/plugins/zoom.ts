@@ -13,7 +13,6 @@ declare global {
       zoomOut: () => void
       zoomTo100: () => void
       zoomToFit: () => void
-      zoomToCover: () => void
       zoomToSelection: (options?: ZoomToOptions) => void
     }
 
@@ -22,7 +21,6 @@ declare global {
       zoomOut: [event: KeyboardEvent]
       zoomTo100: [event: KeyboardEvent]
       zoomToFit: [event: KeyboardEvent]
-      zoomToCover: [event: KeyboardEvent]
       zoomToSelection: [event: KeyboardEvent]
     }
 
@@ -38,7 +36,6 @@ export default definePlugin((editor) => {
     camera,
     drawboardAabb,
     zoomTo,
-    elementSelection,
     exec,
     config,
     findFrame,
@@ -61,7 +58,6 @@ export default definePlugin((editor) => {
       { command: 'zoomIn', handle: () => camera.value.addZoom(0.25) },
       { command: 'zoomOut', handle: () => camera.value.addZoom(-0.25) },
       { command: 'zoomTo100', handle: () => camera.value.setZoom(1) },
-      { command: 'zoomToCover', handle: () => zoomTo('root', { mode: 'cover' }) },
       { command: 'zoomToFit', handle: () => zoomTo('root', { mode: config.value.zoomToFit }) },
       { command: 'zoomToSelection', handle: options => zoomTo('selection', options) },
       { command: 'zoomToNextFrame', handle: options => zoomToFrame('next', options) },
@@ -78,14 +74,6 @@ export default definePlugin((editor) => {
     ],
     events: {
       setDoc: () => exec('zoomToFit'),
-      setCurrentFrame: () => {
-        if (elementSelection.value.length) {
-          exec('zoomToSelection')
-        }
-        else {
-          exec('zoomToFit')
-        }
-      },
     },
     setup: () => {
       const {

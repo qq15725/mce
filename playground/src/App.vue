@@ -32,6 +32,7 @@ const editor = new Editor({
   statusbar: true,
   frameOutline: false,
   frameGap: 48,
+  zoomToFit: 'width',
   typographyStrategy: 'autoHeight',
   handleShape: 'rect',
   screenCenterOffset: { left: 100, top: 100, right: 100, bottom: 100 },
