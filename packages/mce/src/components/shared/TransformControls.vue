@@ -621,7 +621,7 @@ function Diagonal() {
     || handle === 'resize-bottom-left'
   ) {
     return h('line', {
-      class: 'mce-transformable__diagonal',
+      class: 'mce-transform-controls__diagonal',
       x1: '100%',
       y1: '0',
       x2: '0',
@@ -635,7 +635,7 @@ function Diagonal() {
     || handle === 'resize-bottom-right'
   ) {
     return h('line', {
-      class: 'mce-transformable__diagonal',
+      class: 'mce-transform-controls__diagonal',
       x1: '0',
       y1: '0',
       x2: '100%',
@@ -649,16 +649,16 @@ function Diagonal() {
 <template>
   <Component
     :is="tag"
-    class="mce-transformable"
+    class="mce-transform-controls"
     :class="[
-      transforming && 'mce-transformable--transforming',
-      props.hideUi && 'mce-transformable--hide-ui',
-      resizeStrategy && `mce-transformable--${resizeStrategy}`,
-      activeHandle && `mce-transformable--${activeHandle}`,
-      activeHandle === 'move' && 'mce-transformable--moving',
-      activeHandle?.startsWith('resize') && 'mce-transformable--resizing',
-      activeHandle?.startsWith('rotate') && 'mce-transformable--rotateing',
-      props.borderStyle && `mce-transformable--${props.borderStyle}`,
+      transforming && 'mce-transform-controls--transforming',
+      props.hideUi && 'mce-transform-controls--hide-ui',
+      resizeStrategy && `mce-transform-controls--${resizeStrategy}`,
+      activeHandle && `mce-transform-controls--${activeHandle}`,
+      activeHandle === 'move' && 'mce-transform-controls--moving',
+      activeHandle?.startsWith('resize') && 'mce-transform-controls--resizing',
+      activeHandle?.startsWith('rotate') && 'mce-transform-controls--rotateing',
+      props.borderStyle && `mce-transform-controls--${props.borderStyle}`,
     ]"
     :style="style"
   >
@@ -670,11 +670,11 @@ function Diagonal() {
       :start="start"
     />
 
-    <svg class="mce-transformable__svg">
-      <rect width="100%" height="100%" fill="none" class="mce-transformable__rect" />
+    <svg class="mce-transform-controls__svg">
+      <rect width="100%" height="100%" fill="none" class="mce-transform-controls__rect" />
 
       <rect
-        class="mce-transformable__rect"
+        class="mce-transform-controls__rect"
         width="100%"
         height="100%"
         fill="none"
@@ -699,7 +699,7 @@ function Diagonal() {
               :width="handle.width"
               :height="handle.height"
               :aria-label="handle.type"
-              class="mce-transformable__handle"
+              class="mce-transform-controls__handle"
             />
 
             <circle
@@ -708,7 +708,7 @@ function Diagonal() {
               :cy="handle.y + handle.width / 2"
               :r="handle.width / 2"
               :aria-label="handle.type"
-              class="mce-transformable__handle"
+              class="mce-transform-controls__handle"
             />
           </template>
         </template>
@@ -726,7 +726,7 @@ function Diagonal() {
             :width="handle.width"
             :height="handle.height"
             :aria-label="handle.type"
-            class="mce-transformable__handle-rect"
+            class="mce-transform-controls__handle-rect"
             :cursor="transforming ? 'auto' : getCursor(handle.type)"
             @pointerdown="(event: PointerEvent) => start(event, index)"
           />
@@ -735,7 +735,7 @@ function Diagonal() {
 
       <g
         pointer-events="all"
-        class="mce-transformable__svg-slot"
+        class="mce-transform-controls__svg-slot"
       >
         <slot
           name="svg"
@@ -744,14 +744,14 @@ function Diagonal() {
       </g>
     </svg>
 
-    <div v-if="tip" class="mce-transformable__tip">
+    <div v-if="tip" class="mce-transform-controls__tip">
       {{ tip }}
     </div>
   </Component>
 </template>
 
 <style lang="scss">
-.mce-transformable {
+.mce-transform-controls {
   $root: &;
 
   left: 0;
