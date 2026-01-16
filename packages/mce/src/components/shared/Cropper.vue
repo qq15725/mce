@@ -4,7 +4,7 @@ import { vResizeObserver } from '@vueuse/components'
 import { useImage } from '@vueuse/core'
 import { cloneDeep } from 'lodash-es'
 import { computed, onBeforeMount, onBeforeUnmount, ref, useTemplateRef, watch } from 'vue'
-import Transformable from './Transformable.vue'
+import TransformControls from './TransformControls.vue'
 
 /**
  * TODO 撤回无法重渲
@@ -203,14 +203,14 @@ function applySourceTransformToStyle() {
       <canvas ref="canvasRef" />
     </div>
 
-    <Transformable
+    <TransformControls
       v-slot="{ props: slotProps }"
       v-model="sourceTransform"
       class="mce-cropper__transformable"
       :rotatable="false"
     >
       <div class="mce-cropper__transformable_rect" v-bind="slotProps" />
-    </Transformable>
+    </TransformControls>
 
     <slot
       :scale="scale"

@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import type { Element2D, Obb2D } from 'modern-canvas'
-import type { TransformableValue } from './shared/Transformable.vue'
+import type { TransformableValue } from './shared/TransformControls.vue'
 import { Aabb2D } from 'modern-canvas'
 import { computed, onBeforeMount, onBeforeUnmount, ref, useTemplateRef } from 'vue'
 import { useEditor } from '../composables/editor'
 import { boundingBoxToStyle } from '../utils/box'
-import Transformable from './shared/Transformable.vue'
+import TransformControls from './shared/TransformControls.vue'
 
 defineOptions({
   inheritAttrs: false,
@@ -318,7 +318,7 @@ defineExpose({
     }"
   />
 
-  <Transformable
+  <TransformControls
     v-if="transform.width && transform.height"
     ref="transformableTpl"
     v-model="transform"
@@ -338,7 +338,7 @@ defineExpose({
     <template v-if="$slots.transformable" #svg="slotProps">
       <slot name="transformable" v-bind="slotProps" />
     </template>
-  </Transformable>
+  </TransformControls>
 
   <template
     v-if="transform.width && transform.height && $slots.default"

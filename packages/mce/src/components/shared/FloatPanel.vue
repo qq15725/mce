@@ -3,7 +3,7 @@ import type { OrientedBoundingBox } from '../../types'
 import { ref } from 'vue'
 import { Icon } from '../icon'
 import Btn from './Btn.vue'
-import Transformable from './Transformable.vue'
+import TransformControls from './TransformControls.vue'
 
 const props = defineProps<{
   title?: string
@@ -26,7 +26,7 @@ const defaultSlotProps = {
 </script>
 
 <template>
-  <Transformable
+  <TransformControls
     v-slot="{ props: slotProps }"
     v-model="transform"
     class="mce-float-panel"
@@ -51,7 +51,7 @@ const defaultSlotProps = {
         <slot v-bind="defaultSlotProps" />
       </div>
     </div>
-  </Transformable>
+  </TransformControls>
 </template>
 
 <style lang="scss">

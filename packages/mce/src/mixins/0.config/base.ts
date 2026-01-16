@@ -10,12 +10,16 @@ declare global {
 
     type Theme = 'system' | 'light' | 'dark'
     type TypographyStrategy = 'autoHeight' | 'autoWidth' | 'fixedWidthHeight' | 'autoFontSize'
-    type HandleShape = 'rect' | 'circle'
+
     interface ScreenCenterOffset {
       left?: number
       top?: number
       right?: number
       bottom?: number
+    }
+
+    interface TransformControlsConfig {
+      handleShape?: 'rect' | 'circle'
     }
 
     interface Config {
@@ -30,7 +34,7 @@ declare global {
       frameOutline: boolean
       frameGap: number
       typographyStrategy: TypographyStrategy
-      handleShape: HandleShape
+      transformControls: TransformControlsConfig
       localDb: boolean
       screenCenterOffset: ScreenCenterOffset
     }
@@ -54,7 +58,7 @@ export default defineMixin((editor, options) => {
   registerConfig('frameOutline', false)
   registerConfig('frameGap', 48)
   registerConfig('typographyStrategy', 'autoHeight')
-  registerConfig('handleShape', 'rect')
+  registerConfig('transformControls', {})
   registerConfig('screenCenterOffset', { left: 0, top: 0, bottom: 0, right: 0 })
   registerConfig('localDb', false)
 
