@@ -535,6 +535,9 @@ const slotProps = {
           :target="state === 'typing'
             ? textEditor?.textEditor
             : selector?.transformable?.$el"
+          :middlewares="slots['floatbar-bottom']
+            ? ['offset', 'shift']
+            : ['offset', 'flip', 'shift']"
         >
           <slot name="floatbar" v-bind="slotProps" />
           <slot name="floatbar-top" v-bind="slotProps" />
