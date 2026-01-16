@@ -49,6 +49,7 @@ const virtualElement = {
 const target = computed(() => {
   if (
     typeof props.target === 'object'
+    && !('getBoundingClientRect' in props.target)
     && !(props.target instanceof Element)
     && 'x' in props.target
     && 'y' in props.target
@@ -74,8 +75,18 @@ const { floatingStyles, update } = useFloating(target, contentEl, {
 
 const style = computed(() => {
   return {
-    ...floatingStyles.value,
     zIndex: 1500 + overlayItem.index.value,
+  }
+})
+
+const contentStyle = computed(() => {
+  console.log({
+    ...floatingStyles.value,
+    ...props.contentStyle,
+  })
+  return {
+    ...floatingStyles.value,
+    ...props.contentStyle,
   }
 })
 
@@ -134,18 +145,29 @@ defineExpose({
   >
     <div
       v-if="isActive"
-      ref="contentElTpl"
       class="mce-overlay"
       :style="style"
       v-bind="$attrs"
     >
-      <slot name="default" />
+      <div
+        ref="contentElTpl"
+        :style="contentStyle"
+        class="mce-overlay-content"
+        :class="props.contentClass"
+      >
+        <slot name="default" />
+      </div>
     </div>
   </Teleport>
 </template>
 
 <style lang="scss">
 .mce-overlay {
+  position: absolute;
+  display: flex;
+  inset: 0;
+  pointer-events: none;
+
   & > * {
     pointer-events: auto;
   }

@@ -602,7 +602,7 @@ const slotProps = {
 
     <div
       ref="overlayContainerTpl"
-      class="mce-editor__overlay-container"
+      class="mce-overlay-container"
     />
   </Layout>
 </template>
@@ -661,15 +661,6 @@ const slotProps = {
     box-sizing: border-box;
   }
 
-  &__overlay-container {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-  }
-
   &__drawboard {
     position: relative;
     width: 100%;
@@ -689,5 +680,14 @@ const slotProps = {
     height: 100%;
     display: block;
   }
+}
+
+.mce-overlay-container {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
 </style>

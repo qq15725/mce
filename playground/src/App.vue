@@ -64,7 +64,11 @@ else if (url) {
     <EditorLayout :editor="editor">
       <template #selector />
       <template #transformer />
-      <template #floatbar-top />
+      <template #floatbar-top>
+        <div style="background: red;">
+          FLOATBAR-TOP
+        </div>
+      </template>
       <template #floatbar-bottom />
       <template #drawboard />
 

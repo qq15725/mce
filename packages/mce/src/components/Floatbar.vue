@@ -6,7 +6,7 @@ import Overlay from './shared/Overlay.vue'
 
 const props = defineProps({
   ...makeMceOverlayProps({
-    middlewares: ['offset', 'shift'] as any[],
+    middlewares: ['offset', 'flip', 'shift'] as any[],
     offset: 8,
   }),
 })
@@ -65,7 +65,7 @@ defineExpose({
 <template>
   <Overlay
     ref="overlayTpl"
-    :style="style"
+    :content-style="style"
     class="mce-floatbar"
     :location="props.location"
     :middlewares="props.middlewares"
@@ -82,6 +82,8 @@ defineExpose({
 
 <style lang="scss">
   .mce-floatbar {
-    overflow: visible;
+    .mce-overlay-content {
+      overflow: visible;
+    }
   }
 </style>

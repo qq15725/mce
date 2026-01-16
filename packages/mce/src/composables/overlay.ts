@@ -1,5 +1,5 @@
 import type { AlignedPlacement, ReferenceElement, Side } from '@floating-ui/vue'
-import type { ComputedRef, InjectionKey, PropType } from 'vue'
+import type { ComputedRef, CSSProperties, InjectionKey, PropType } from 'vue'
 import { computed, getCurrentInstance, inject, onScopeDispose, provide, ref } from 'vue'
 import { propsFactory } from '../utils/propsFactory'
 
@@ -31,6 +31,8 @@ export const makeMceOverlayProps = propsFactory({
     type: [String, Boolean, Object] as PropType<string | boolean | Element | null | undefined>,
     default: undefined,
   },
+  contentClass: Object as PropType<any>,
+  contentStyle: Object as PropType<CSSProperties>,
 }, 'makeMceOverlayProps')
 
 let globalOverlayRoot: MceOverlayProvide | undefined

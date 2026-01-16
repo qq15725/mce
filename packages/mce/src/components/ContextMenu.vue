@@ -22,6 +22,24 @@ const position = defineModel<{ x: number, y: number }>('position', {
   default: () => ({ x: 0, y: 0 }),
 })
 const menuRef = useTemplateRef('menuTplRef')
+const target = {
+  getBoundingClientRect() {
+    const box = menuRef.value?.contentEl?.getBoundingClientRect()
+    const { x, y } = position.value
+    const width = 0
+    const height = box?.height ?? 0
+    return {
+      x,
+      y,
+      left: x,
+      top: y,
+      bottom: x + height,
+      right: y + width,
+      width,
+      height,
+    }
+  },
+}
 
 onBeforeMount(() => {
   registerCommand({ command: 'openContextMenu', handle: onContextmenu })
@@ -77,14 +95,15 @@ defineExpose({
   <Menu
     ref="menuTplRef"
     v-model="isActive"
-    :offset="10"
     class="mce-context-menu"
-    :target="position"
-    location="bottom-start"
+    :offset="10"
+    :target="target"
+    location="right-start"
     :items="contextMenu"
     :style="{
-      maxHeight: `${drawboardAabb.height * .8}px`,
+      '--max-height': `${drawboardAabb.height * .8}px`,
     }"
+    :middlewares="['offset', 'shift']"
     @click:item="onClickItem"
   >
     <template #title="{ item }">
@@ -101,6 +120,14 @@ defineExpose({
 
 <style lang="scss">
 .mce-context-menu {
-  //
+  pointer-events: auto;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+
+  .mce-overlay-content {
+    max-height: var(--max-height);
+  }
 }
 </style>

@@ -119,6 +119,8 @@ function onMouseleave() {
 
 defineExpose({
   isActive,
+  activatorEl: computed(() => overlay.value?.activatorEl),
+  contentEl: computed(() => overlay.value?.contentEl),
   updateLocation,
 })
 </script>

@@ -14,7 +14,7 @@ const props = defineProps({
 const isActive = defineModel<boolean>()
 const overlay = useTemplateRef('overlayTpl')
 
-const classes = computed(() => {
+const contentClass = computed(() => {
   const [side, align = 'center'] = props.location.split('-')
   return [
     `mce-tooltip--side-${side}`,
@@ -36,7 +36,7 @@ defineExpose({
     ref="overlayTpl"
     v-model="isActive"
     class="mce-tooltip"
-    :class="classes"
+    :content-class="contentClass"
     :location="props.location"
     :offset="props.offset"
     :target="props.target"
@@ -76,19 +76,22 @@ defineExpose({
 <style lang="scss">
 .mce-tooltip {
   $root: &;
-  background: rgb(var(--mce-theme-surface-variant));
-  color: rgb(var(--mce-theme-on-surface-variant));
-  border-radius: 4px;
-  font-size: 0.75rem;
-  line-height: 1;
-  display: inline-block;
-  padding: 8px;
-  text-transform: initial;
-  width: auto;
-  opacity: 1;
-  transition-property: opacity, transform;
-  overflow-wrap: break-word;
-  box-shadow: var(--mce-shadow);
+
+  .mce-overlay-content {
+    background: rgb(var(--mce-theme-surface-variant));
+    color: rgb(var(--mce-theme-on-surface-variant));
+    border-radius: 4px;
+    font-size: 0.75rem;
+    line-height: 1;
+    display: inline-block;
+    padding: 8px;
+    text-transform: initial;
+    width: auto;
+    opacity: 1;
+    transition-property: opacity, transform;
+    overflow-wrap: break-word;
+    box-shadow: var(--mce-shadow);
+  }
 
   &__content {
     display: flex;
