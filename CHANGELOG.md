@@ -1,3 +1,22 @@
+## [0.15.26](https://github.com/qq15725/mce/compare/v0.15.25...v0.15.26) (2026-01-17)
+
+
+### Bug Fixes
+
+* floatbar ([63c6ed8](https://github.com/qq15725/mce/commit/63c6ed88b0a3a03a61b52f8dfe674ba9151f5aee))
+* layers ([b0b5768](https://github.com/qq15725/mce/commit/b0b5768dda2b7920f398ae78e888c2c5c350a720))
+
+
+### Features
+
+* float bar / layers / transform controls update ([6b52975](https://github.com/qq15725/mce/commit/6b5297505be563f149de2a551d7dba7953b53ac3))
+* overlay ([ecad8e6](https://github.com/qq15725/mce/commit/ecad8e60464c66d22c4df2186d8daaa2c35ae838))
+* rename Transformable to TransformControls ([81d5e47](https://github.com/qq15725/mce/commit/81d5e4704083911ea8b86a8169fe60c47d38a4e4))
+* rename Transformable to TransformControls ([6997ad3](https://github.com/qq15725/mce/commit/6997ad388804b9d51a890f4649310d8b3ae471b0))
+* transform controls update ([42ec751](https://github.com/qq15725/mce/commit/42ec7518d63d2ce8a7436ba766efcfac02d72e55))
+
+
+
 ## [0.15.25](https://github.com/qq15725/mce/compare/v0.15.24...v0.15.25) (2026-01-15)
 
 
