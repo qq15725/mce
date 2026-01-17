@@ -5,7 +5,8 @@ import { defineMixin } from '../mixin'
 declare global {
   namespace Mce {
     interface Editor {
-      screenCenterOffset: ComputedRef<Required<ScreenCenterOffset>>
+      screenControlsOffset: ComputedRef<Required<ScreenOffset>>
+      screenCenterOffset: ComputedRef<Required<ScreenOffset>>
       screenCenter: ComputedRef<{ x: number, y: number }>
     }
   }
@@ -17,7 +18,26 @@ export default defineMixin((editor) => {
     drawboardAabb,
   } = editor
 
+  const screenControlsOffset = computed(() => {
+    const offset = {
+      left: 0,
+      top: 0,
+      bottom: 0,
+      right: 0,
+    }
+    if (config.value.ruler) {
+      offset.left += 16
+      offset.top += 16
+    }
+    if (config.value.scrollbar) {
+      offset.right += 8
+      offset.bottom += 8
+    }
+    return offset
+  })
+
   const screenCenterOffset = computed(() => {
+    const _screenControlsOffset = screenControlsOffset.value
     const offset = {
       left: 0,
       top: 0,
@@ -25,14 +45,10 @@ export default defineMixin((editor) => {
       right: 0,
       ...config.value.screenCenterOffset,
     }
-    if (config.value.scrollbar) {
-      offset.right += 8
-      offset.bottom += 8
-    }
-    if (config.value.ruler) {
-      offset.left += 16
-      offset.top += 16
-    }
+    offset.left += _screenControlsOffset.left
+    offset.top += _screenControlsOffset.top
+    offset.right += _screenControlsOffset.right
+    offset.bottom += _screenControlsOffset.bottom
     return offset
   })
 
@@ -47,6 +63,7 @@ export default defineMixin((editor) => {
   })
 
   Object.assign(editor, {
+    screenControlsOffset,
     screenCenterOffset,
     screenCenter,
   })

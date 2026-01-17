@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import bigesj from '@mce/bigesj'
+import bigesj, { editorConfig } from '@mce/bigesj'
 import gaoding from '@mce/gaoding'
 import mp4 from '@mce/mp4'
 import openxml from '@mce/openxml'
@@ -10,7 +10,7 @@ import gifWorkerUrl from 'modern-gif/worker?url'
 import 'mce/styles'
 
 const editor = new Editor({
-  // madeWith: true,
+  ...editorConfig,
   plugins: [
     bigesj({ font: true }),
     gaoding(),
@@ -19,29 +19,9 @@ const editor = new Editor({
     pdf(),
     svg(),
   ],
-  theme: 'system',
   watermark: '/example.jpg',
-  checkerboard: true,
-  checkerboardStyle: 'grid',
-  pixelGrid: true,
-  camera: true,
-  ruler: true,
-  scrollbar: true,
-  toolbelt: true,
-  timeline: false,
-  statusbar: true,
-  frameOutline: false,
-  frameGap: 48,
-  zoomToFit: 'width',
-  typographyStrategy: 'autoHeight',
-  handleShape: 'rect',
   screenCenterOffset: { left: 100, top: 100, right: 100, bottom: 100 },
-  defaultFont: { family: 'SourceHanSansCN-Normal', src: '/SourceHanSansCN-Normal.woff' },
-  localDb: false,
   gifWorkerUrl,
-  locale: {
-    locale: 'zhHans',
-  },
 })
 
 window.editor = editor
@@ -64,12 +44,11 @@ else if (url) {
     <EditorLayout :editor="editor">
       <template #selector />
       <template #transformer />
-      <template #floatbar-top>
+      <template #floatbar>
         <div style="background: red;">
           FLOATBAR-TOP
         </div>
       </template>
-      <template #floatbar-bottom />
       <template #drawboard />
 
       <EditorLayoutItem

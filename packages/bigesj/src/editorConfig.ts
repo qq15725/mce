@@ -1,0 +1,20 @@
+export const editorConfig: Partial<Mce.Config> = {
+  checkerboard: true,
+  checkerboardStyle: 'grid',
+  pixelGrid: true,
+  camera: true,
+  ruler: true,
+  scrollbar: true,
+  statusbar: true,
+  frameGap: 48,
+  frameOutline: true,
+  zoomToFit: 'width',
+  typographyStrategy: 'autoHeight',
+  locale: { locale: 'zhHans' },
+  defaultFont: { family: 'SourceHanSansCN-Normal', src: 'https://bige.cdn.bcebos.com/files/202006/cBNrzOsE_rAQB.woff' },
+  transformControls: {
+    handleShape: 'circle',
+    handleStrategy: 'point',
+    rotator: true,
+  },
+}

@@ -5,17 +5,38 @@ import { aliases, svg } from '../iconsets/mdi-svg'
 
 export interface IconAliases {
   [name: string]: IconValue
+
+  close: IconValue
   play: IconValue
   pause: IconValue
   gps: IconValue
   arrowRight: IconValue
+  arrowDown: IconValue
   mouseLeftClick: IconValue
   mouseRightClick: IconValue
   check: IconValue
+  collapse: IconValue
   frame: IconValue
   group: IconValue
   shape: IconValue
   text: IconValue
+  image: IconValue
+  lottie: IconValue
+  video: IconValue
+  lock: IconValue
+  unlock: IconValue
+  visible: IconValue
+  unvisible: IconValue
+  move: IconValue
+  hand: IconValue
+  pen: IconValue
+  pencil: IconValue
+  rectangle: IconValue
+  line: IconValue
+  arrow: IconValue
+  ellipse: IconValue
+  polygon: IconValue
+  star: IconValue
 }
 
 export interface IconSet {

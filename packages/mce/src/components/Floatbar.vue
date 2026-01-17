@@ -6,7 +6,6 @@ import Overlay from './shared/Overlay.vue'
 
 const props = defineProps({
   ...makeMceOverlayProps({
-    middlewares: ['offset', 'flip', 'shift'] as any[],
     offset: 8,
   }),
 })
@@ -27,7 +26,7 @@ const style = computed(() => {
     || location?.startsWith('bottom')
   ) {
     return {
-      width: `${aabb.width}px`,
+      minWidth: `${aabb.width}px`,
     }
   }
   else if (
@@ -35,7 +34,7 @@ const style = computed(() => {
     || location?.startsWith('right')
   ) {
     return {
-      height: `${aabb.height}px`,
+      minHeight: `${aabb.height}px`,
     }
   }
   return {}

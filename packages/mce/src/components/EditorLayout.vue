@@ -2,7 +2,7 @@
 import type { Cursor, Element2D, PointerInputEvent } from 'modern-canvas'
 import type { OrientedBoundingBox } from '../types'
 import { useResizeObserver } from '@vueuse/core'
-import { Aabb2D, Vector2 } from 'modern-canvas'
+import { Aabb2D } from 'modern-canvas'
 import {
   computed,
   nextTick,
@@ -118,9 +118,9 @@ useResizeObserver(canvas, (entries) => {
 })
 
 onBeforeMount(() => {
-  renderEngine.value.on('pointerdown', onPointerdown)
-  renderEngine.value.on('pointermove', onPointermove)
-  renderEngine.value.on('pointerover', onPointerover)
+  renderEngine.value.on('pointerdown', onEnginePointerDown)
+  renderEngine.value.on('pointermove', onEnginePointerMove)
+  renderEngine.value.on('pointerover', onEnginePointerOver)
 })
 
 onMounted(() => {
@@ -128,9 +128,9 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  renderEngine.value.off('pointerdown', onPointerdown)
-  renderEngine.value.off('pointermove', onPointermove)
-  renderEngine.value.off('pointerover', onPointerover)
+  renderEngine.value.off('pointerdown', onEnginePointerDown)
+  renderEngine.value.off('pointermove', onEnginePointerMove)
+  renderEngine.value.off('pointerover', onEnginePointerOver)
 })
 
 function onHover(event: PointerInputEvent) {
@@ -175,7 +175,7 @@ function onHover(event: PointerInputEvent) {
   setCursor(cursor)
 }
 
-function onPointerdown(
+function onEnginePointerDown(
   downEvent: PointerInputEvent,
   options: Mce.PointerDownOptions = {},
 ): void {
@@ -326,7 +326,7 @@ function onPointerdown(
       )
   }
 
-  function onEngineMove(moveEvent: PointerInputEvent) {
+  function _onEnginePointerMove(moveEvent: PointerInputEvent) {
     if (drawing || hand) {
       //
     }
@@ -353,7 +353,7 @@ function onPointerdown(
     }
   }
 
-  function onMove(moveEvent: PointerEvent) {
+  function _onPointerMove(moveEvent: PointerEvent) {
     current = { x: moveEvent.clientX, y: moveEvent.clientY }
     if (drawing) {
       drawingTool?.move?.(
@@ -379,7 +379,7 @@ function onPointerdown(
     prev = { ...current }
   }
 
-  async function onUp(upEvent: PointerEvent) {
+  async function _onPointerUp(upEvent: PointerEvent) {
     current = { x: upEvent.clientX, y: upEvent.clientY }
     if (drawing) {
       drawingTool?.end?.(
@@ -419,28 +419,23 @@ function onPointerdown(
       }
     }
 
-    renderEngine.value.off('pointermove', onEngineMove)
-    document.removeEventListener('pointermove', onMove)
-    document.removeEventListener('pointerup', onUp)
+    renderEngine.value.off('pointermove', _onEnginePointerMove)
+    document.removeEventListener('pointermove', _onPointerMove)
+    document.removeEventListener('pointerup', _onPointerUp)
     isUp = true
   }
 
-  renderEngine.value.on('pointermove', onEngineMove)
-  document.addEventListener('pointermove', onMove)
-  document.addEventListener('pointerup', onUp)
+  renderEngine.value.on('pointermove', _onEnginePointerMove)
+  document.addEventListener('pointermove', _onPointerMove)
+  document.addEventListener('pointerup', _onPointerUp)
 }
 
-editor.registerCommand({ command: 'pointerDown', handle: onPointerdown })
+editor.registerCommand({ command: 'pointerDown', handle: onEnginePointerDown })
 
-function onPointermove(event: PointerInputEvent): void {
+function onEnginePointerMove(event: PointerInputEvent): void {
   if (event.srcElement !== drawboardDom.value) {
     return
   }
-
-  drawboardPointer.value = new Vector2(
-    event.clientX - drawboardAabb.value.left,
-    event.clientY - drawboardAabb.value.top,
-  )
 
   if (
     camera.value.grabbing
@@ -453,7 +448,7 @@ function onPointermove(event: PointerInputEvent): void {
   onHover(event)
 }
 
-function onPointerover(event: PointerInputEvent): void {
+function onEnginePointerOver(event: PointerInputEvent): void {
   if (event.srcElement !== drawboardDom.value) {
     return
   }
@@ -512,6 +507,44 @@ const slotProps = {
           class="mce-editor__canvas"
         />
 
+        <Floatbar
+          v-if="slots.floatbar"
+          location="top-start"
+          :target="state === 'typing'
+            ? textEditor?.textEditor
+            : selector?.transformable?.$el"
+          :middlewares="['offset', 'shift']"
+        >
+          <slot name="floatbar" v-bind="slotProps" />
+        </Floatbar>
+
+        <Floatbar
+          v-if="slots['floatbar-top']"
+          location="top-start"
+          :target="state === 'typing'
+            ? textEditor?.textEditor
+            : selector?.transformable?.$el"
+          :middlewares="['offset', 'shift']"
+        >
+          <slot name="floatbar-top" v-bind="slotProps" />
+        </Floatbar>
+
+        <Floatbar
+          v-if="slots['floatbar-bottom']"
+          location="bottom-start"
+          :target="selector?.transformable?.$el"
+          :middlewares="['offset', 'shift']"
+        >
+          <slot name="floatbar-bottom" v-bind="slotProps" />
+        </Floatbar>
+
+        <template
+          v-for="(p, key) in pluginsComponents.overlay"
+          :key="key"
+        >
+          <Component :is="p.component" />
+        </template>
+
         <TextEditor ref="textEditorTpl" />
 
         <Selector
@@ -528,35 +561,6 @@ const slotProps = {
             <slot name="selector" :box="box" v-bind="slotProps" />
           </template>
         </Selector>
-
-        <Floatbar
-          v-if="slots.floatbar || slots['floatbar-top']"
-          location="top-start"
-          :target="state === 'typing'
-            ? textEditor?.textEditor
-            : selector?.transformable?.$el"
-          :middlewares="slots['floatbar-bottom']
-            ? ['offset', 'shift']
-            : ['offset', 'flip', 'shift']"
-        >
-          <slot name="floatbar" v-bind="slotProps" />
-          <slot name="floatbar-top" v-bind="slotProps" />
-        </Floatbar>
-
-        <Floatbar
-          v-if="slots['floatbar-bottom']"
-          location="bottom-start"
-          :target="selector?.transformable?.$el"
-        >
-          <slot name="floatbar-bottom" v-bind="slotProps" />
-        </Floatbar>
-
-        <template
-          v-for="(p, key) in pluginsComponents.overlay"
-          :key="key"
-        >
-          <Component :is="p.component" />
-        </template>
 
         <slot name="drawboard" v-bind="slotProps" />
       </div>

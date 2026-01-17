@@ -13,22 +13,22 @@ interface Point {
 
 type Handle
   = | 'move'
-    | 'resize-top'
-    | 'resize-right'
-    | 'resize-bottom'
-    | 'resize-left'
-    | 'resize-top-left'
-    | 'resize-top-right'
-    | 'resize-bottom-left'
-    | 'resize-bottom-right'
-    | 'rotate-top-left'
-    | 'rotate-top-right'
-    | 'rotate-bottom-left'
-    | 'rotate-bottom-right'
-    | 'border-radius-top-left'
-    | 'border-radius-top-right'
-    | 'border-radius-bottom-left'
-    | 'border-radius-bottom-right'
+    | 'resize-t'
+    | 'resize-r'
+    | 'resize-b'
+    | 'resize-l'
+    | 'resize-tl'
+    | 'resize-tr'
+    | 'resize-bl'
+    | 'resize-br'
+    | 'rotate-tl'
+    | 'rotate-tr'
+    | 'rotate-bl'
+    | 'rotate-br'
+    | 'round-tl'
+    | 'round-tr'
+    | 'round-bl'
+    | 'round-br'
 
 interface HandleObject {
   type: Handle
@@ -44,8 +44,9 @@ const props = withDefaults(defineProps<{
   modelValue?: Partial<TransformableValue>
   movable?: boolean
   rotatable?: boolean
+  rotator?: boolean
   resizable?: boolean
-  adjustableBorderRadius?: boolean
+  roundable?: boolean
   threshold?: number
   resizeStrategy?: 'lockAspectRatio' | 'lockAspectRatioDiagonal'
   handleStrategy?: 'point'
@@ -60,30 +61,29 @@ const props = withDefaults(defineProps<{
   movable: true,
   rotatable: true,
   resizable: true,
-  adjustableBorderRadius: false,
   threshold: 0,
   handleShape: 'rect',
   handles: () => [
     'move',
     // resize
-    'resize-left',
-    'resize-top',
-    'resize-right',
-    'resize-bottom',
-    'resize-top-left',
-    'resize-top-right',
-    'resize-bottom-right',
-    'resize-bottom-left',
-    // border-radius
-    'border-radius-top-left',
-    'border-radius-top-right',
-    'border-radius-bottom-left',
-    'border-radius-bottom-right',
+    'resize-l',
+    'resize-t',
+    'resize-r',
+    'resize-b',
+    'resize-tl',
+    'resize-tr',
+    'resize-br',
+    'resize-bl',
+    // round
+    'round-tl',
+    'round-tr',
+    'round-bl',
+    'round-br',
     // rotate
-    'rotate-top-left',
-    'rotate-top-right',
-    'rotate-bottom-left',
-    'rotate-bottom-right',
+    'rotate-tl',
+    'rotate-tr',
+    'rotate-bl',
+    'rotate-br',
   ] as Handle[],
 })
 
@@ -95,18 +95,18 @@ const emit = defineEmits<{
 }>()
 
 const cursors: Record<string, any> = {
-  'rotate-top-left': (angle: number) => createCursor('rotate', 360 + angle),
-  'rotate-top-right': (angle: number) => createCursor('rotate', 90 + angle),
-  'rotate-bottom-left': (angle: number) => createCursor('rotate', 270 + angle),
-  'rotate-bottom-right': (angle: number) => createCursor('rotate', 180 + angle),
-  'resize-left': (angle: number) => createCursor('resizeXy', 180 + angle),
-  'resize-top': (angle: number) => createCursor('resizeXy', 90 + angle),
-  'resize-right': (angle: number) => createCursor('resizeXy', 180 + angle),
-  'resize-bottom': (angle: number) => createCursor('resizeXy', 90 + angle),
-  'resize-top-left': (angle: number) => createCursor('resizeBevel', 90 + angle),
-  'resize-top-right': (angle: number) => createCursor('resizeBevel', 180 + angle),
-  'resize-bottom-right': (angle: number) => createCursor('resizeBevel', 90 + angle),
-  'resize-bottom-left': (angle: number) => createCursor('resizeBevel', 180 + angle),
+  'rotate-tl': (angle: number) => createCursor('rotate', 360 + angle),
+  'rotate-tr': (angle: number) => createCursor('rotate', 90 + angle),
+  'rotate-bl': (angle: number) => createCursor('rotate', 270 + angle),
+  'rotate-br': (angle: number) => createCursor('rotate', 180 + angle),
+  'resize-l': (angle: number) => createCursor('resizeXy', 180 + angle),
+  'resize-t': (angle: number) => createCursor('resizeXy', 90 + angle),
+  'resize-r': (angle: number) => createCursor('resizeXy', 180 + angle),
+  'resize-b': (angle: number) => createCursor('resizeXy', 90 + angle),
+  'resize-tl': (angle: number) => createCursor('resizeBevel', 90 + angle),
+  'resize-tr': (angle: number) => createCursor('resizeBevel', 180 + angle),
+  'resize-br': (angle: number) => createCursor('resizeBevel', 90 + angle),
+  'resize-bl': (angle: number) => createCursor('resizeBevel', 180 + angle),
 }
 
 const modelValue = useModel(props, 'modelValue')
@@ -124,25 +124,25 @@ const model = computed({
 const transforming = ref(false)
 const activeHandle = ref<Handle>()
 const computedHandles = computed<HandleObject[]>(() => {
-  const size = 8
+  const shape = props.handleShape
+  const size = shape === 'rect' ? 8 : 10
   const { width = 0, height = 0, borderRadius } = model.value
   const center = { x: width / 2, y: height / 2 }
-  const shape = props.handleShape
   const lines = [
-    { type: 'top', points: [[0, 0], [1, 0]] },
-    { type: 'right', points: [[1, 0], [1, 1]] },
-    { type: 'bottom', points: [[0, 1], [1, 1]] },
-    { type: 'left', points: [[0, 0], [0, 1]] },
+    { type: 't', points: [[0, 0], [1, 0]] },
+    { type: 'r', points: [[1, 0], [1, 1]] },
+    { type: 'b', points: [[0, 1], [1, 1]] },
+    { type: 'l', points: [[0, 0], [0, 1]] },
   ]
   const points = [
-    { type: 'top', point: [0.5, 0] },
-    { type: 'right', point: [1, 0.5] },
-    { type: 'bottom', point: [0.5, 1] },
-    { type: 'left', point: [0, 0.5] },
-    { type: 'top-left', point: [0, 0] },
-    { type: 'top-right', point: [1, 0] },
-    { type: 'bottom-left', point: [0, 1] },
-    { type: 'bottom-right', point: [1, 1] },
+    { type: 't', point: [0.5, 0], width: 1.4, height: 0.6 },
+    { type: 'r', point: [1, 0.5], width: 0.6, height: 1.4 },
+    { type: 'b', point: [0.5, 1], width: 1.4, height: 0.6 },
+    { type: 'l', point: [0, 0.5], width: 0.6, height: 1.4 },
+    { type: 'tl', point: [0, 0] },
+    { type: 'tr', point: [1, 0] },
+    { type: 'bl', point: [0, 1] },
+    { type: 'br', point: [1, 1] },
   ]
 
   const lineHandles = lines.map((item) => {
@@ -159,18 +159,23 @@ const computedHandles = computed<HandleObject[]>(() => {
       height: (maxY - minY) + size,
     }
   })
+
   const pointHandles = points.map((item) => {
+    const _w = size * (item.width ?? 1)
+    const _h = size * (item.height ?? 1)
     return {
       type: item.type,
       shape,
-      x: item.point[0] * width - size / 2,
-      y: item.point[1] * height - size / 2,
-      width: size,
-      height: size,
+      x: item.point[0] * width - _w / 2,
+      y: item.point[1] * height - _h / 2,
+      width: _w,
+      height: _h,
     }
   })
+
   const diagonalPointHandles = pointHandles
-    .filter(item => item.type.split('-').length === 2)
+    .filter(item => item.type.length === 2)
+
   const rotateHandles = diagonalPointHandles
     .map((item) => {
       const sign = {
@@ -186,7 +191,7 @@ const computedHandles = computed<HandleObject[]>(() => {
       }
     })
   const minSize = Math.min(width, height)
-  const borderRadiusHandles = props.adjustableBorderRadius
+  const roundedHandles = props.roundable
     ? diagonalPointHandles
         .map((item) => {
           const sign = {
@@ -199,7 +204,7 @@ const computedHandles = computed<HandleObject[]>(() => {
           return {
             ...item,
             shape: 'circle',
-            type: `border-radius-${item.type}`,
+            type: `round-${item.type}`,
             x: item.x + sign.x * width / 2 * ws,
             y: item.y + sign.y * height / 2 * hs,
           }
@@ -213,8 +218,8 @@ const computedHandles = computed<HandleObject[]>(() => {
       ...lineHandles.map(item => ({ ...item, type: 'move' })),
       // resize
       ...pointHandles.map(item => ({ ...item, type: `resize-${item.type}` })),
-      // border-radius
-      ...borderRadiusHandles,
+      // round
+      ...roundedHandles,
       // rotate
       ...rotateHandles,
     ]
@@ -224,8 +229,8 @@ const computedHandles = computed<HandleObject[]>(() => {
       // resize
       ...lineHandles.map(item => ({ ...item, type: `resize-${item.type}` })),
       ...diagonalPointHandles.map(item => ({ ...item, type: `resize-${item.type}` })),
-      // border-radius
-      ...borderRadiusHandles,
+      // round
+      ...roundedHandles,
       // rotate
       ...rotateHandles,
     ]
@@ -288,12 +293,15 @@ function start(event?: MouseEvent, index?: number): boolean {
     : computedHandles.value[index]
 
   activeHandle.value = handle.type
+  const handleArr = handle.type.split('-')
+  const last = handleArr.length > 1 ? (handleArr.pop() || '') : ''
+  const key = handleArr.join('-')
 
-  const isMove = handle.type === 'move'
-  const isRotate = handle.type.startsWith('rotate')
-  const isBorderRadius = handle.type.startsWith('border-radius')
-  const isHorizontal = handle.type === 'resize-left' || handle.type === 'resize-right'
-  const isHorizontalVertical = handle.type.split('-').length === 2
+  const isMove = key === 'move'
+  const isRotate = key === 'rotate'
+  const isRound = key === 'round'
+  const isHorizontal = last === 'l' || last === 'r'
+  const isHorizontalVertical = last.length === 1
 
   const centerPoint = {
     x: left + width / 2,
@@ -340,7 +348,7 @@ function start(event?: MouseEvent, index?: number): boolean {
     startTransform()
   }
 
-  function onMove(event: MouseEvent): void {
+  function _onPointerMove(event: MouseEvent): void {
     const updated = {} as TransformableValue
 
     if (!startClientPoint) {
@@ -384,7 +392,7 @@ function start(event?: MouseEvent, index?: number): boolean {
         updated.rotate = ((rotate + endAngle - startAngle) + 360) % 360
       }
     }
-    else if (isBorderRadius) {
+    else if (isRound) {
       const offset = rotatePoint(rotatedOffset, { x: 0, y: 0 }, -rotate)
       const dx = -sign.x * offset.x
       const dy = -sign.y * offset.y
@@ -494,16 +502,16 @@ function start(event?: MouseEvent, index?: number): boolean {
     emit('move', newValue, oldValue)
   }
 
-  function onEnd(): void {
-    window.removeEventListener('pointermove', onMove)
-    window.removeEventListener('pointerup', onEnd, true)
+  function _onPointerUp(): void {
+    window.removeEventListener('pointermove', _onPointerMove)
+    window.removeEventListener('pointerup', _onPointerUp, true)
     transforming.value = false
     activeHandle.value = undefined
     emit('end', model.value)
   }
 
-  window.addEventListener('pointermove', onMove)
-  window.addEventListener('pointerup', onEnd, true)
+  window.addEventListener('pointermove', _onPointerMove)
+  window.addEventListener('pointerup', _onPointerUp, true)
 
   return true
 }
@@ -615,10 +623,10 @@ function Diagonal() {
   }
 
   if (
-    handle === 'resize-top'
-    || handle === 'resize-right'
-    || handle === 'resize-top-right'
-    || handle === 'resize-bottom-left'
+    handle === 'resize-t'
+    || handle === 'resize-r'
+    || handle === 'resize-tr'
+    || handle === 'resize-bl'
   ) {
     return h('line', {
       class: 'mce-transform-controls__diagonal',
@@ -629,10 +637,10 @@ function Diagonal() {
     })
   }
   else if (
-    handle === 'resize-left'
-    || handle === 'resize-bottom'
-    || handle === 'resize-top-left'
-    || handle === 'resize-bottom-right'
+    handle === 'resize-l'
+    || handle === 'resize-b'
+    || handle === 'resize-tl'
+    || handle === 'resize-br'
   ) {
     return h('line', {
       class: 'mce-transform-controls__diagonal',
@@ -703,11 +711,23 @@ function Diagonal() {
             />
 
             <circle
-              v-else
+              v-else-if="handle.width === handle.height"
               :cx="handle.x + handle.width / 2"
               :cy="handle.y + handle.width / 2"
               :r="handle.width / 2"
               :aria-label="handle.type"
+              class="mce-transform-controls__handle"
+            />
+
+            <rect
+              v-else
+              :x="handle.x"
+              :y="handle.y"
+              :width="handle.width"
+              :height="handle.height"
+              :aria-label="handle.type"
+              :rx="handle.width / 3"
+              :ry="handle.height / 3"
               class="mce-transform-controls__handle"
             />
           </template>
@@ -743,6 +763,12 @@ function Diagonal() {
         />
       </g>
     </svg>
+
+    <div
+      v-if="rotator"
+      class="mce-transform-controls__rotator"
+      @pointerdown="start($event)"
+    />
 
     <div v-if="tip" class="mce-transform-controls__tip">
       {{ tip }}
@@ -790,19 +816,31 @@ function Diagonal() {
     fill: transparent;
     stroke: transparent;
 
-    &[aria-label="border-radius-top-left"],
-    &[aria-label="border-radius-top-right"],
-    &[aria-label="border-radius-bottom-left"],
-    &[aria-label="border-radius-bottom-right"] {
+    &[aria-label="round-tl"],
+    &[aria-label="round-tr"],
+    &[aria-label="round-bl"],
+    &[aria-label="round-br"] {
       // TODO
     }
+  }
+
+  &__rotator {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translate(-50%, calc(100% + 8px));
+    display: block;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='22' height='22' viewBox='0 0 22 22' fill='rgba(0, 0, 0, 0)' xmlns='http://www.w3.org/2000/svg'%3E %3Ccircle cx='11' cy='11' r='10' fill='white'/%3E %3Ccircle cx='11' cy='11' r='10.5' stroke='black' stroke-opacity='0.2'/%3E %3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M9.66667 5.14868C6.99468 5.75499 5 8.14455 5 11C5 13.8555 6.99468 16.245 9.66667 16.8513V15.8203C7.55254 15.2368 6 13.2997 6 11C6 8.70032 7.55254 6.76325 9.66667 6.17975V5.14868ZM12.3333 15.8203C14.4475 15.2368 16 13.2997 16 11C16 8.70032 14.4475 6.76325 12.3333 6.17975V5.14868C15.0053 5.75499 17 8.14455 17 11C17 13.8555 15.0053 16.245 12.3333 16.8513V15.8203Z' fill='black'/%3E %3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M9.16667 5.5H6.33333V4.5H10.1667V8.33333H9.16667V5.5Z' fill='black'/%3E %3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M12.8333 16.5H15.6667V17.5H11.8333L11.8333 13.6667L12.8333 13.6667L12.8333 16.5Z' fill='black'/%3E %3C/svg%3E");
+    width: 22px;
+    height: 22px;
+    background-size: 100% 100%;
   }
 
   &__tip {
     position: absolute;
     bottom: 0;
     left: 50%;
-    transform: translate(-50%, calc(100% + 8px));
+    transform: translate(-50%, calc(100% + 8px + 22px + 8px));
     background-color: rgb(var(--mce-theme-primary));
     color: rgb(var(--mce-theme-on-primary));
     font-size: 0.75rem;

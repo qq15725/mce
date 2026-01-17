@@ -50,13 +50,14 @@ const {
   dropping,
   onMousedown,
   id,
+  openedItems,
 } = useLayerItem({
   opened,
   node: computed(() => props.node),
   dom: computed(() => dom.value),
 })
 
-const isActive = computed(() => selection.value.some(v => v.equal(props.node)))
+const selected = computed(() => selection.value.some(v => v.equal(props.node)))
 const children = computed(() => props.node.children)
 const childrenLength = computed(() => children.value.length)
 const inputDom = ref<HTMLInputElement>()
@@ -232,7 +233,8 @@ function onInputBlur() {
     class="mce-layer"
     :class="[
       props.root && 'mce-layer--root',
-      (active || isActive) && 'mce-layer--active',
+      (active || selected) && 'mce-layer--active',
+      selected && 'mce-layer--selected',
       opened && 'mce-layer--open',
       isHoverElement && 'mce-layer--hover',
       dropping && 'mce-layer--dropping',
@@ -255,6 +257,7 @@ function onInputBlur() {
       <div class="mce-layer__prepend">
         <Icon
           v-if="childrenLength"
+          class="mce-layer__arrow"
           icon="$arrowRight"
           @click="onClickExpand"
           @mousedown.stop
@@ -300,7 +303,18 @@ function onInputBlur() {
         }"
       >
         <template v-if="props.root">
-          <!-- TODO -->
+          <Btn
+            v-if="Array.from(openedItems.values()).filter(v => v.value).length > 1"
+            icon
+            class="mce-layer__btn mce-layer__btn--show"
+            @mousedown.prevent.stop="openedItems.forEach((item, _id) => {
+              if (_id !== id) {
+                item.value = false
+              }
+            })"
+          >
+            <Icon icon="$collapse" />
+          </Btn>
         </template>
 
         <template v-else>
@@ -335,7 +349,7 @@ function onInputBlur() {
       v-for="i of childrenLength" :key="i"
       :node="children[childrenLength - i]"
       :indent="root ? props.indent : (props.indent + 1)"
-      :active="active || isActive"
+      :active="active || selected"
     />
   </template>
 </template>
@@ -354,26 +368,22 @@ function onInputBlur() {
     min-width: max-content;
     border-radius: 4px;
 
-    &__underlay {
+    &__underlay, &__overlay {
       position: absolute;
-      left: 0;
+      left: 12px;
       right: 0;
       top: 4px;
       bottom: 4px;
-      background-color: var(--underlay-color, transparent);
       pointer-events: none;
       border-radius: inherit;
     }
 
+    &__underlay {
+      background-color: var(--underlay-color, transparent);
+    }
+
     &__overlay {
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 4px;
-      bottom: 4px;
       background-color: var(--overlay-color, transparent);
-      pointer-events: none;
-      border-radius: inherit;
     }
 
     &--root {
@@ -388,36 +398,49 @@ function onInputBlur() {
       --overlay-color: rgba(var(--mce-theme-on-background), var(--mce-hover-opacity));
     }
 
-    &--active #{$root}__underlay {
-      top: 0;
-      bottom: 0;
-      border-radius: 0;
-    }
-
-    &--active:not(#{$root}--active + #{$root}--active) #{$root}__underlay {
-      border-top-left-radius: 4px;
-      border-top-right-radius: 4px;
-      top: 4px;
-    }
-
-    &--active:not(:has(+ #{$root}--active)) #{$root}__underlay {
-      border-bottom-left-radius: 4px;
-      border-bottom-right-radius: 4px;
-      bottom: 4px;
-    }
-
     &--active {
-      --underlay-color: rgba(var(--mce-theme-primary), calc(var(--mce-activated-opacity) * 3));
+      --underlay-color: rgba(var(--mce-theme-primary), calc(var(--mce-activated-opacity) * 2));
+
+      &:hover {
+        --overlay-color: rgba(var(--mce-theme-primary), calc(var(--mce-hover-opacity) * 2));
+      }
+
+      #{$root}__underlay {
+        top: 0;
+        bottom: 0;
+        border-radius: 0;
+      }
+
+      &:not(#{$root}--active + #{$root}--active) {
+        #{$root}__underlay {
+          border-top-left-radius: 4px;
+          border-top-right-radius: 4px;
+          top: 4px;
+        }
+      }
+
+      &:not(:has(+ #{$root}--active)) {
+        #{$root}__underlay {
+          border-bottom-left-radius: 4px;
+          border-bottom-right-radius: 4px;
+          bottom: 4px;
+        }
+      }
     }
 
-    &--active:hover {
-      --overlay-color: rgba(var(--mce-theme-primary), var(--mce-hover-opacity));
+    &--selected {
+      --underlay-color: rgba(var(--mce-theme-primary), calc(var(--mce-activated-opacity) * 3));
     }
 
     &--open {
       #{$root}__prepend .mce-icon {
         transform: rotate(90deg);
       }
+    }
+
+    &__arrow {
+      margin-left: 2px;
+      opacity: .6;
     }
 
     &__prepend {

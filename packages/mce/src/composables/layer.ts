@@ -25,6 +25,7 @@ export interface LayerItem {
 
 export interface LayerProvide {
   selecting: Ref<boolean>
+  openedItems: Map<string, Ref<boolean>>
   register: (
     vm: ComponentInternalInstance,
     item: LayerItem,
@@ -60,6 +61,7 @@ export function createLayer() {
 
   provide(MceLayerKey, {
     selecting,
+    openedItems,
     dragging,
     droppingItemId,
     register: (vm, item) => {

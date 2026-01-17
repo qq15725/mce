@@ -30,6 +30,7 @@ export default defineMixin((editor) => {
     selection,
     getAncestorFrame,
     drawboardAabb,
+    screenControlsOffset,
   } = editor
 
   function obbToFit(element: Element2D): void {
@@ -243,16 +244,19 @@ export default defineMixin((editor) => {
   }
 
   const viewportAabb = computed(() => {
+    const _camera = camera.value
+    const { position, zoom } = _camera
     // for vue reactive
     noop(
-      camera.value.position.x,
-      camera.value.position.y,
-      camera.value.zoom.x,
-      camera.value.zoom.y,
+      position.x,
+      position.y,
+      zoom.x,
+      zoom.y,
     )
+    const { left, top, right, bottom } = screenControlsOffset.value
     const { width, height } = drawboardAabb.value
-    const p1 = camera.value.toGlobal({ x: 0, y: 0 })
-    const p2 = camera.value.toGlobal({ x: width, y: height })
+    const p1 = _camera.toGlobal({ x: left, y: top })
+    const p2 = _camera.toGlobal({ x: width - (right + left), y: height - (bottom + top) })
     return new Aabb2D({
       x: p1.x,
       y: p1.y,

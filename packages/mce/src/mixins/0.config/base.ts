@@ -11,7 +11,7 @@ declare global {
     type Theme = 'system' | 'light' | 'dark'
     type TypographyStrategy = 'autoHeight' | 'autoWidth' | 'fixedWidthHeight' | 'autoFontSize'
 
-    interface ScreenCenterOffset {
+    interface ScreenOffset {
       left?: number
       top?: number
       right?: number
@@ -36,7 +36,7 @@ declare global {
       typographyStrategy: TypographyStrategy
       transformControls: TransformControlsConfig
       localDb: boolean
-      screenCenterOffset: ScreenCenterOffset
+      screenCenterOffset: ScreenOffset
     }
   }
 }

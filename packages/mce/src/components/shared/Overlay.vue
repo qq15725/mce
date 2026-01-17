@@ -69,7 +69,7 @@ const { floatingStyles, update } = useFloating(target, contentEl, {
   middleware: [
     middlewares.has('offset') && offset(() => props.offset ?? 0),
     middlewares.has('flip') && flip(),
-    middlewares.has('shift') && shift({ padding: 20 }),
+    middlewares.has('shift') && shift({ crossAxis: true, padding: 20 }),
   ].filter(Boolean) as any[],
 })
 
@@ -80,10 +80,6 @@ const style = computed(() => {
 })
 
 const contentStyle = computed(() => {
-  console.log({
-    ...floatingStyles.value,
-    ...props.contentStyle,
-  })
   return {
     ...floatingStyles.value,
     ...props.contentStyle,

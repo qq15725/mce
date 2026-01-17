@@ -1,5 +1,3 @@
-import { useResizeObserver } from '@vueuse/core'
-import { Aabb2D } from 'modern-canvas'
 import { definePlugin } from '../plugin'
 
 declare global {
@@ -23,10 +21,6 @@ declare global {
       zoomToFit: [event: KeyboardEvent]
       zoomToSelection: [event: KeyboardEvent]
     }
-
-    interface Editor {
-      //
-    }
   }
 }
 
@@ -34,7 +28,6 @@ export default definePlugin((editor) => {
   const {
     registerConfig,
     camera,
-    drawboardAabb,
     zoomTo,
     exec,
     config,
@@ -74,18 +67,6 @@ export default definePlugin((editor) => {
     ],
     events: {
       setDoc: () => exec('zoomToFit'),
-    },
-    setup: () => {
-      const {
-        drawboardDom,
-      } = editor
-
-      useResizeObserver(drawboardDom, (entries) => {
-        const { left: _left, top: _top, width, height } = entries[0].contentRect
-        const { left = _left, top = _top } = drawboardDom.value?.getBoundingClientRect() ?? {}
-        drawboardAabb.value = new Aabb2D(left, top, width, height)
-        exec('zoomToFit')
-      })
     },
   }
 })

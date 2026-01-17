@@ -8,7 +8,6 @@ import _copyAs from './copyAs'
 import _delete from './delete'
 import _drawingTool from './drawingTool'
 import _edit from './edit'
-import _enter from './enter'
 import _frame from './frame'
 import _gif from './gif'
 import _group from './group'
@@ -54,7 +53,6 @@ export const plugins = [
   _delete,
   _drawingTool,
   _edit,
-  _enter,
   _frame,
   _gif,
   _group,

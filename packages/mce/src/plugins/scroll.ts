@@ -34,5 +34,35 @@ export default definePlugin((editor) => {
         ignore: () => !config.value.scrollbar,
       },
     ],
+    // setup: () => {
+    //   const {
+    //     viewportAabb,
+    //     getGlobalPointer,
+    //     state,
+    //     camera,
+    //   } = editor
+    //
+    //   setInterval(() => {
+    //     if (state.value === 'transforming' || state.value === 'selecting') {
+    //       const _camera = camera.value
+    //       const { min, max } = viewportAabb.value
+    //       const { zoom } = _camera
+    //       const dist = 10 / zoom.x
+    //       const pointer = getGlobalPointer()
+    //       if (pointer.x - dist <= min.x) {
+    //         scrollTo({ x: min.x })
+    //       }
+    //       if (pointer.x + dist >= max.x) {
+    //         scrollTo({ x: max.x })
+    //       }
+    //       if (pointer.y - dist <= min.y) {
+    //         scrollTo({ y: min.y })
+    //       }
+    //       if (pointer.y + dist >= max.y) {
+    //         scrollTo({ y: max.y })
+    //       }
+    //     }
+    //   }, 100)
+    // },
   }
 })

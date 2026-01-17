@@ -174,10 +174,9 @@ const transform = computed({
       borderRadius: transform.borderRadius - (oldTransform.borderRadius ?? 0) / zoom.y,
     }
 
-    const elements = elementSelection.value
-
-    elements.forEach((element) => {
+    elementSelection.value.forEach((element) => {
       const style = element.style
+
       const newStyle = {
         left: style.left + offsetStyle.left,
         top: style.top + offsetStyle.top,
@@ -204,7 +203,7 @@ const transform = computed({
             ? undefined
             : shape.isValid()
               ? { deep: true }
-              : handle.split('-').length > 2
+              : handle.split('-')[1].length > 1
                 ? { deep: true, textFontSizeToFit: true }
                 : { deep: true, textToFit: true },
         )
@@ -253,7 +252,7 @@ const rotatable = computed(() => {
   })
 })
 
-const adjustableBorderRadius = computed(() => {
+const roundable = computed(() => {
   const element = elementSelection.value[0]!
   return elementSelection.value.length === 1
     && !isLock(element)
@@ -321,13 +320,13 @@ defineExpose({
   <TransformControls
     v-if="transform.width && transform.height"
     ref="transformableTpl"
+    v-bind="config.transformControls"
     v-model="transform"
     :movable="state !== 'typing' && movable"
     :resizable="state !== 'typing' && resizable"
     :rotatable="state !== 'typing' && rotatable"
-    :adjustable-border-radius="adjustableBorderRadius"
+    :roundable="state !== 'typing' && roundable"
     :resize-strategy="props.resizeStrategy"
-    :handle-shape="config.handleShape"
     class="mce-selector__transform"
     :border-style="elementSelection.length > 1 ? 'dashed' : 'solid'"
     :tip-format="tipFormat"

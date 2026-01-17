@@ -1,4 +1,6 @@
 import type { Element2D, PointerInputEvent } from 'modern-canvas'
+import { useResizeObserver } from '@vueuse/core'
+import { Aabb2D, Vector2 } from 'modern-canvas'
 import { definePlugin } from '../plugin'
 
 declare global {
@@ -17,22 +19,22 @@ declare global {
 
     type TransformableHandle
       = | 'move'
-        | 'resize-top'
-        | 'resize-right'
-        | 'resize-bottom'
-        | 'resize-left'
-        | 'resize-top-left'
-        | 'resize-top-right'
-        | 'resize-bottom-left'
-        | 'resize-bottom-right'
-        | 'rotate-top-left'
-        | 'rotate-top-right'
-        | 'rotate-bottom-left'
-        | 'rotate-bottom-right'
-        | 'border-radius-top-left'
-        | 'border-radius-top-right'
-        | 'border-radius-bottom-left'
-        | 'border-radius-bottom-right'
+        | 'resize-t'
+        | 'resize-r'
+        | 'resize-b'
+        | 'resize-l'
+        | 'resize-tl'
+        | 'resize-tr'
+        | 'resize-bl'
+        | 'resize-br'
+        | 'rotate-tl'
+        | 'rotate-tr'
+        | 'rotate-bl'
+        | 'rotate-br'
+        | 'round-tl'
+        | 'round-tr'
+        | 'round-bl'
+        | 'round-br'
 
     interface SelectionTransformContext {
       startEvent: MouseEvent | PointerEvent
@@ -41,6 +43,7 @@ declare global {
     }
 
     interface Events {
+      pointerMove: [event: PointerEvent]
       selectionTransformStart: [context: SelectionTransformContext]
       selectionTransforming: [context: SelectionTransformContext]
       selectionTransformEnd: [context: SelectionTransformContext]
@@ -48,8 +51,30 @@ declare global {
   }
 }
 
-export default definePlugin(() => {
+export default definePlugin((editor) => {
   return {
     name: 'mce:ui',
+    setup: () => {
+      const {
+        drawboardDom,
+        drawboardAabb,
+        drawboardPointer,
+        exec,
+      } = editor
+
+      useResizeObserver(drawboardDom, (entries) => {
+        const { left: _left, top: _top, width, height } = entries[0].contentRect
+        const { left = _left, top = _top } = drawboardDom.value?.getBoundingClientRect() ?? {}
+        drawboardAabb.value = new Aabb2D(left, top, width, height)
+        exec('zoomToFit')
+      })
+
+      document.addEventListener('mousemove', (event) => {
+        drawboardPointer.value = new Vector2(
+          event.clientX - drawboardAabb.value.left,
+          event.clientY - drawboardAabb.value.top,
+        )
+      })
+    },
   }
 })

@@ -73,7 +73,7 @@ watch(selection, () => {
     background-color: rgb(var(--mce-theme-surface));
 
     &__wrapper {
-      padding: 8px;
+      padding-right: 8px;
       width: max-content;
       min-width: 100%;
     }

@@ -6,6 +6,8 @@ declare global {
     type ScrollTarget
       = | 'root'
         | 'selection'
+        | { x: number }
+        | { y: number }
         | { x: number, y: number }
         | Element2D[]
 
@@ -29,6 +31,7 @@ export default defineMixin((editor) => {
     rootAabb,
     viewportAabb,
     screenCenter,
+    screenCenterOffset,
   } = editor
 
   const scrollTo: Mce.Editor['scrollTo'] = async (target, options = {}) => {
@@ -39,13 +42,20 @@ export default defineMixin((editor) => {
     } = options
 
     const _camera = camera.value
-
+    const { position: _position, zoom } = _camera
+    const oldPosition = { x: _position.x, y: _position.y }
     const _screenCenter = screenCenter.value
     const offset = { x: 0, y: 0 }
-    let position = { x: 0, y: 0 }
-    if (typeof target === 'object' && 'x' in target && 'y' in target) {
-      position.x = target.x
-      position.y = target.y
+    let targetPosition: { x?: number, y?: number } = {}
+    if (typeof target === 'object') {
+      if ('x' in target) {
+        targetPosition.x = target.x
+        offset.x = -screenCenterOffset.value.left
+      }
+      if ('y' in target) {
+        targetPosition.y = target.y
+        offset.y = -screenCenterOffset.value.top
+      }
     }
     else {
       let aabb
@@ -66,17 +76,25 @@ export default defineMixin((editor) => {
       if (intoView && viewportAabb.value.contains(aabb)) {
         return
       }
-      position = { x: aabb.left + aabb.width / 2, y: aabb.top + aabb.height / 2 }
+      targetPosition = { x: aabb.left + aabb.width / 2, y: aabb.top + aabb.height / 2 }
       offset.x += -_screenCenter.x
       offset.y = -_screenCenter.y
     }
 
-    position.x *= _camera.zoom.x
-    position.x += offset.x
-    position.y *= _camera.zoom.y
-    position.y += offset.y
+    if (targetPosition.x !== undefined) {
+      targetPosition.x *= zoom.x
+      targetPosition.x += offset.x
+    }
 
-    const oldPosition = { x: _camera.position.x, y: _camera.position.y }
+    if (targetPosition.y !== undefined) {
+      targetPosition.y *= zoom.y
+      targetPosition.y += offset.y
+    }
+
+    const position = {
+      ...oldPosition,
+      ...targetPosition,
+    }
 
     switch (behavior) {
       case 'smooth':
@@ -93,7 +111,7 @@ export default defineMixin((editor) => {
               ? 2 * progress * progress
               : -1 + (4 - 2 * progress) * progress // easeInOutQuad
 
-            _camera.position.set(
+            _position.set(
               oldPosition.x + positionDistance.x * ease,
               oldPosition.y + positionDistance.y * ease,
             )
@@ -110,7 +128,7 @@ export default defineMixin((editor) => {
         break
       case 'instant':
       default:
-        _camera.position.set(position.x, position.y)
+        _position.set(position.x, position.y)
         break
     }
   }
