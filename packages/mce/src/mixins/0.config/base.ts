@@ -20,6 +20,8 @@ declare global {
 
     interface TransformControlsConfig {
       handleShape?: 'rect' | 'circle'
+      handleStrategy?: 'point'
+      rotator?: boolean
     }
 
     interface Config {

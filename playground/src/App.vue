@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import bigesj, { editorConfig } from '@mce/bigesj'
+import bigesj, { editorOptions } from '@mce/bigesj'
 import gaoding from '@mce/gaoding'
 import mp4 from '@mce/mp4'
 import openxml from '@mce/openxml'
@@ -10,7 +10,7 @@ import gifWorkerUrl from 'modern-gif/worker?url'
 import 'mce/styles'
 
 const editor = new Editor({
-  ...editorConfig,
+  ...editorOptions,
   plugins: [
     bigesj({ font: true }),
     gaoding(),

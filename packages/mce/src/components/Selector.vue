@@ -37,6 +37,7 @@ const {
   config,
   snapThreshold,
   getSnapPoints,
+  hoverElement,
 } = useEditor()
 
 const transformable = useTemplateRef('transformableTpl')
@@ -253,10 +254,13 @@ const rotatable = computed(() => {
 })
 
 const roundable = computed(() => {
-  const element = elementSelection.value[0]!
-  return elementSelection.value.length === 1
-    && !isLock(element)
-    && element.foreground.isValid()
+  if (elementSelection.value.length === 1) {
+    const element = elementSelection.value[0]
+    return hoverElement.value?.equal(element)
+      && !isLock(element)
+      && element.foreground.isValid()
+  }
+  return false
 })
 
 function onStart() {

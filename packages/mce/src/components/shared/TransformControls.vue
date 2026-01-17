@@ -178,22 +178,38 @@ const computedHandles = computed<HandleObject[]>(() => {
 
   const rotateHandles = diagonalPointHandles
     .map((item) => {
-      const sign = {
-        x: center.x - item.x > 0 ? 1 : -1,
-        y: center.y - item.y > 0 ? 1 : -1,
+      const _w = item.width * 1.5
+      const _h = item.height * 1.5
+      let x = item.x
+      let y = item.y
+      if (center.x > item.x) {
+        x -= _w
+      }
+      else {
+        x += item.width
+      }
+      if (center.y > item.y) {
+        y -= _h
+      }
+      else {
+        y += item.height
       }
       return {
         ...item,
         shape: undefined,
         type: `rotate-${item.type}`,
-        x: item.x - sign.x * size,
-        y: item.y - sign.y * size,
+        x,
+        y,
+        width: _w,
+        height: _h,
       }
     })
   const minSize = Math.min(width, height)
   const roundedHandles = props.roundable
     ? diagonalPointHandles
         .map((item) => {
+          const _w = item.width * 0.8
+          const _h = item.height * 0.8
           const sign = {
             x: center.x - item.x > 0 ? 1 : -1,
             y: center.y - item.y > 0 ? 1 : -1,
@@ -207,6 +223,8 @@ const computedHandles = computed<HandleObject[]>(() => {
             type: `round-${item.type}`,
             x: item.x + sign.x * width / 2 * ws,
             y: item.y + sign.y * height / 2 * hs,
+            width: _w,
+            height: _h,
           }
         })
     : []
@@ -692,7 +710,7 @@ function Diagonal() {
 
       <Diagonal />
 
-      <g>
+      <g pointer-events="none">
         <template
           v-for="(handle, index) in computedHandles"
           :key="index"
@@ -726,12 +744,22 @@ function Diagonal() {
               :width="handle.width"
               :height="handle.height"
               :aria-label="handle.type"
-              :rx="handle.width / 3"
-              :ry="handle.height / 3"
+              :rx="handle.width / 4"
+              :ry="handle.height / 4"
               class="mce-transform-controls__handle"
             />
           </template>
         </template>
+
+        <g
+          v-if="rotator"
+          :transform="`matrix(1, 0, 0, 1, -32, ${model.height}) rotate(270 16 16)`"
+          class="mce-transform-controls__rotator"
+        >
+          <path
+            d="M22.4789 9.45728L25.9935 12.9942L22.4789 16.5283V14.1032C18.126 14.1502 14.6071 17.6737 14.5675 22.0283H17.05L13.513 25.543L9.97889 22.0283H12.5674C12.6071 16.5691 17.0214 12.1503 22.4789 12.1031L22.4789 9.45728Z"
+          />
+        </g>
       </g>
 
       <g pointer-events="all">
@@ -763,12 +791,6 @@ function Diagonal() {
         />
       </g>
     </svg>
-
-    <div
-      v-if="rotator"
-      class="mce-transform-controls__rotator"
-      @pointerdown="start($event)"
-    />
 
     <div v-if="tip" class="mce-transform-controls__tip">
       {{ tip }}
@@ -808,7 +830,6 @@ function Diagonal() {
   &__handle {
     fill: white;
     stroke-width: 1px;
-    pointer-events: none;
   }
 
   &__handle-rect {
@@ -825,22 +846,16 @@ function Diagonal() {
   }
 
   &__rotator {
-    position: absolute;
-    left: 50%;
-    bottom: 0;
-    transform: translate(-50%, calc(100% + 8px));
-    display: block;
-    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='22' height='22' viewBox='0 0 22 22' fill='rgba(0, 0, 0, 0)' xmlns='http://www.w3.org/2000/svg'%3E %3Ccircle cx='11' cy='11' r='10' fill='white'/%3E %3Ccircle cx='11' cy='11' r='10.5' stroke='black' stroke-opacity='0.2'/%3E %3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M9.66667 5.14868C6.99468 5.75499 5 8.14455 5 11C5 13.8555 6.99468 16.245 9.66667 16.8513V15.8203C7.55254 15.2368 6 13.2997 6 11C6 8.70032 7.55254 6.76325 9.66667 6.17975V5.14868ZM12.3333 15.8203C14.4475 15.2368 16 13.2997 16 11C16 8.70032 14.4475 6.76325 12.3333 6.17975V5.14868C15.0053 5.75499 17 8.14455 17 11C17 13.8555 15.0053 16.245 12.3333 16.8513V15.8203Z' fill='black'/%3E %3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M9.16667 5.5H6.33333V4.5H10.1667V8.33333H9.16667V5.5Z' fill='black'/%3E %3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M12.8333 16.5H15.6667V17.5H11.8333L11.8333 13.6667L12.8333 13.6667L12.8333 16.5Z' fill='black'/%3E %3C/svg%3E");
-    width: 22px;
-    height: 22px;
-    background-size: 100% 100%;
+    fill: white;
+    stroke-width: 0.5px;
+    stroke: currentColor;
   }
 
   &__tip {
     position: absolute;
     bottom: 0;
     left: 50%;
-    transform: translate(-50%, calc(100% + 8px + 22px + 8px));
+    transform: translate(-50%, calc(100% + 8px));
     background-color: rgb(var(--mce-theme-primary));
     color: rgb(var(--mce-theme-on-primary));
     font-size: 0.75rem;

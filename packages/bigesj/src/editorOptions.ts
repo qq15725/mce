@@ -1,4 +1,4 @@
-export const editorConfig: Partial<Mce.Config> = {
+export const editorOptions: Partial<Mce.Options> = {
   checkerboard: true,
   checkerboardStyle: 'grid',
   pixelGrid: true,
