@@ -71,9 +71,9 @@ watch(selection, () => {
     min-width: auto;
     overflow: auto;
     background-color: rgb(var(--mce-theme-surface));
+    padding-right: 8px;
 
     &__wrapper {
-      padding-right: 8px;
       width: max-content;
       min-width: 100%;
     }
