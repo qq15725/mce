@@ -1,3 +1,25 @@
+## [0.15.27](https://github.com/qq15725/mce/compare/v0.15.26...v0.15.27) (2026-01-19)
+
+
+### Bug Fixes
+
+* handleDragOutReparent ([c46f812](https://github.com/qq15725/mce/commit/c46f8123bb626d05e52bb5bbdb76c5f49358ded3))
+* overlay order ([4b104ec](https://github.com/qq15725/mce/commit/4b104ecff253b4ff2f4d0ccf5be6127107a55f70))
+* z sort ([76b8670](https://github.com/qq15725/mce/commit/76b8670ad648f15418260ae4e0206f4be8f6bab3))
+
+
+### Features
+
+* exportSlice ([b66c732](https://github.com/qq15725/mce/commit/b66c732761293f272fcb13f2a2d76e7120af5214))
+* exportSlice ([954497d](https://github.com/qq15725/mce/commit/954497dc798c2eef57501b58000d244622b27573))
+* http ([fc847aa](https://github.com/qq15725/mce/commit/fc847aa5f7f48a44cc2bcae29801353162ba633b))
+* http ([da38d17](https://github.com/qq15725/mce/commit/da38d17bfdb78c42018de278b3f1fb9c5f9c09f1))
+* inEditorIs ([c23e3e6](https://github.com/qq15725/mce/commit/c23e3e6a2abc137b496871d598915fee7fee7e36))
+* slice ([7ad280c](https://github.com/qq15725/mce/commit/7ad280c3b178389b74b7b45b1c8ae4a48e245378))
+* up deps ([4b87b5b](https://github.com/qq15725/mce/commit/4b87b5b5f5889df11907733789ce9cc7d2bd0273))
+
+
+
 ## [0.15.26](https://github.com/qq15725/mce/compare/v0.15.25...v0.15.26) (2026-01-17)
 
 
