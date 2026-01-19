@@ -507,6 +507,23 @@ const slotProps = {
           class="mce-editor__canvas"
         />
 
+        <TextEditor ref="textEditorTpl" />
+
+        <Selector
+          ref="selectorTpl"
+          :selected-area="selectedArea as any"
+          :resize-strategy="resizeStrategy"
+        >
+          <template #transformable="{ box }">
+            <slot name="transformer" :box="box" v-bind="slotProps" />
+          </template>
+
+          <template #default="{ box }">
+            <ForegroundCropper />
+            <slot name="selector" :box="box" v-bind="slotProps" />
+          </template>
+        </Selector>
+
         <Floatbar
           v-if="slots.floatbar"
           location="top-start"
@@ -544,23 +561,6 @@ const slotProps = {
         >
           <Component :is="p.component" />
         </template>
-
-        <TextEditor ref="textEditorTpl" />
-
-        <Selector
-          ref="selectorTpl"
-          :selected-area="selectedArea as any"
-          :resize-strategy="resizeStrategy"
-        >
-          <template #transformable="{ box }">
-            <slot name="transformer" :box="box" v-bind="slotProps" />
-          </template>
-
-          <template #default="{ box }">
-            <ForegroundCropper />
-            <slot name="selector" :box="box" v-bind="slotProps" />
-          </template>
-        </Selector>
 
         <slot name="drawboard" v-bind="slotProps" />
       </div>

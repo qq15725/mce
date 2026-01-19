@@ -22,6 +22,7 @@ const editor = new Editor({
   watermark: '/example.jpg',
   screenCenterOffset: { left: 100, top: 100, right: 100, bottom: 100 },
   gifWorkerUrl,
+  toolbelt: true,
 })
 
 window.editor = editor
