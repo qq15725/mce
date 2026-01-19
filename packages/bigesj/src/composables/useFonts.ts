@@ -35,7 +35,8 @@ export function useFonts() {
     let result = bigeFonts.value
     if (!init || !result.length) {
       result = await http.request({ url, responseType: 'json' })
-        .then(res => res.data.datalist)
+        .then(res => res.code === 200 ? res.data : res)
+        .then(res => res.datalist)
       bigeFonts.value = result
     }
     return result
