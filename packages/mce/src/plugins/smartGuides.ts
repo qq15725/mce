@@ -234,46 +234,55 @@ export default definePlugin((editor) => {
       hl: [],
       hr: [],
     }
-    const linePairs: LinePair[] = [];
 
-    [
+    const linePairs: LinePair[] = []
+
+    const alignmentItems = [
       { sources: [box.vt, box.vm, box.vb], targets: vLines },
       { sources: [box.hl, box.hm, box.hr], targets: hLines },
-    ].forEach(({ targets, sources }) => {
+    ]
+    alignmentItems.forEach(({ targets, sources }) => {
+      const _linePairs: LinePair[] = []
       for (const source of sources) {
         const target = targets.searchClosest(source, (a, b, c) => {
           return !c || Math.abs(a.pos - b.pos) < Math.abs(a.pos - c.pos)
         })
-        if (!target)
+        if (!target) {
           continue
+        }
         const distance = Math.abs(target.pos - source.pos)
-        if (distance >= snapThreshold.value)
+        if (distance >= snapThreshold.value) {
           continue
-        linePairs.push({ source, target, type: 'alignment', distance })
+        }
+        _linePairs.push({ source, target, type: 'alignment', distance })
       }
-    });
+      _linePairs.sort((a, b) => a.distance - b.distance)
+      if (_linePairs.length) {
+        linePairs.push(_linePairs[0])
+      }
+    })
 
-    (
-      [
-        { sources: [box.vt, box.vb], targets: vLines },
-        { sources: [box.hl, box.hr], targets: hLines },
-      ] as const
-    ).forEach(({ sources, targets }) => {
+    console.log([...linePairs])
+
+    const areaLineItems = [
+      { sources: [box.vt, box.vb], targets: vLines },
+      { sources: [box.hl, box.hr], targets: hLines },
+    ]
+
+    areaLineItems.forEach(({ sources, targets }) => {
       for (const source of sources) {
         areaLine[source.type as keyof typeof areaLine] = findLines(targets, source)
       }
     })
-
     areaLine.vt = areaLine.vt.sort((a, b) => b.pos - a.pos)
-    areaLine.hl = areaLine.hl.sort((a, b) => b.pos - a.pos);
+    areaLine.hl = areaLine.hl.sort((a, b) => b.pos - a.pos)
 
     // TODO 两边区域相等时，同方向区域相等也应该可以显示
-    (
-      [
-        { targets: [areaLine.vt, areaLine.vb], sources: [box.vt, box.vb] },
-        { targets: [areaLine.hl, areaLine.hr], sources: [box.hl, box.hr] },
-      ] as const
-    ).forEach(({ sources, targets }) => {
+    const areaItems = [
+      { targets: [areaLine.vt, areaLine.vb], sources: [box.vt, box.vb] },
+      { targets: [areaLine.hl, areaLine.hr], sources: [box.hl, box.hr] },
+    ]
+    areaItems.forEach(({ sources, targets }) => {
       const targetA = targets[0][0]
       const sourceA = sources[0]
       const targetB = targets[1][0]
