@@ -262,8 +262,6 @@ export default definePlugin((editor) => {
       }
     })
 
-    console.log([...linePairs])
-
     const areaLineItems = [
       { sources: [box.vt, box.vb], targets: vLines },
       { sources: [box.hl, box.hr], targets: hLines },
