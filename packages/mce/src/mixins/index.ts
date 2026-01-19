@@ -23,6 +23,7 @@ import _4_2_frame from './4.2.frame'
 import _4_3_element from './4.3.element'
 import _4_4_doc from './4.4.doc'
 import _drawingTool from './drawingTool'
+import _http from './http'
 import _scroll from './scroll'
 import _snapshot from './snapshot'
 import _zoom from './zoom'
@@ -49,6 +50,7 @@ export const mixins = [
   _4_3_element,
   _4_4_doc,
   _drawingTool,
+  _http,
   _scroll,
   _snapshot,
   _zoom,

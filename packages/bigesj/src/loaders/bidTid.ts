@@ -3,7 +3,10 @@ import type { NormalizedDocument } from 'modern-idoc'
 import { convertDoc } from '../convert'
 
 export function bidTidLoader(editor: Editor, api: Record<string, any>): Mce.Loader {
-  const { config } = editor
+  const {
+    config,
+    http,
+  } = editor
 
   return {
     name: 'bigesj:bidTid',
@@ -11,10 +14,10 @@ export function bidTidLoader(editor: Editor, api: Record<string, any>): Mce.Load
     load: async (source: { bid: string, tid: string }) => {
       const text = source.bid ?? source.tid ?? ''
       const load = async (id: string): Promise<Record<string, any>> => {
-        return await fetch(
-          (source.bid ? api.bid : api.tid).replace('%d', id),
-        )
-          .then(rep => rep.json())
+        return await http.request({
+          url: (source.bid ? api.bid : api.tid).replace('%d', id),
+          responseType: 'json',
+        })
           .then(res => res.data)
       }
       let maxTime = 0

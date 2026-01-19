@@ -25,6 +25,7 @@ function levenshteinDistance(a: string, b: string): number {
 
 export function useFonts() {
   const {
+    http,
     loadFont: baseLoadFont,
   } = useEditor()
 
@@ -33,8 +34,7 @@ export function useFonts() {
   async function loadBigeFonts(url: string, init = false): Promise<BigeFont[]> {
     let result = bigeFonts.value
     if (!init || !result.length) {
-      result = await fetch(url)
-        .then(rep => rep.json())
+      result = await http.request({ url, responseType: 'json' })
         .then(res => res.data.datalist)
       bigeFonts.value = result
     }
