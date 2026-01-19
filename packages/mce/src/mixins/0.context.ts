@@ -28,6 +28,8 @@ declare global {
 
     type IndexCharacter = _IndexCharacter
 
+    type EditorNodeType = 'Doc' | 'Frame' | 'Slice' | 'Element'
+
     interface Editor {
       fonts: Fonts
       renderEngine: Ref<Engine>
@@ -53,6 +55,7 @@ declare global {
       parseAnchor: (anchor: Anchor, isRtl?: boolean) => ParsedAnchor
       isNode: (value: any) => value is Node
       isRoot: (value: any) => value is Node
+      inEditorIs: (value: Node, inEditorIs?: EditorNodeType) => boolean
       isElement: (value: any) => value is Element2D
       isFrame: (value: any) => value is Element2D
       isTopFrame: (value: any) => value is Element2D
@@ -148,8 +151,12 @@ export default defineMixin((editor) => {
     return value instanceof Element2D
   }
 
+  function inEditorIs(value: Node, inEditorIs: Mce.EditorNodeType): boolean {
+    return value.meta.inEditorIs === inEditorIs
+  }
+
   function isFrame(value: any): value is Element2D {
-    return isElement(value) && value.meta.inEditorIs === 'Frame'
+    return isElement(value) && inEditorIs(value, 'Frame')
   }
 
   function isTopFrame(value: any): value is Element2D {
@@ -200,6 +207,7 @@ export default defineMixin((editor) => {
     isNode,
     isRoot,
     isElement,
+    inEditorIs,
     isFrame,
     isTopFrame,
     isVisible,
