@@ -86,9 +86,13 @@ const items = computed(() => {
       ],
     },
     {
-      key: 'frame',
-      active: activeDrawingTool.value?.name === 'frame',
+      key: activeDrawingTool.value?.name === 'slice' ? 'slice' : 'frame',
+      active: ['frame', 'slice'].includes(activeDrawingTool.value?.name),
       handle: () => setActiveDrawingTool('frame'),
+      children: [
+        { key: 'frame', handle: () => setActiveDrawingTool('frame') },
+        { key: 'slice', handle: () => setActiveDrawingTool('slice') },
+      ],
     },
     {
       ...(shapeItems.value.find(v => v.checked) ?? shapeItems.value[activeShape.value]),

@@ -33,6 +33,7 @@ import _saveAs from './saveAs'
 import _scroll from './scroll'
 import _selection from './selection'
 import _shape from './shape'
+import _slice from './slice'
 import _smartGuides from './smartGuides'
 import _state from './state'
 import _statusbar from './statusbar'
@@ -78,6 +79,7 @@ export const plugins = [
   _scroll,
   _selection,
   _shape,
+  _slice,
   _smartGuides,
   _state,
   _statusbar,
