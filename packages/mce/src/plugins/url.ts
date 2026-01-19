@@ -3,6 +3,7 @@ import { definePlugin } from '../plugin'
 export default definePlugin((editor) => {
   const {
     load,
+    http,
   } = editor
 
   return {
@@ -14,7 +15,7 @@ export default definePlugin((editor) => {
           return typeof source === 'string'
         },
         load: async (url: string) => {
-          const blob = await fetch(url).then(rep => rep.blob())
+          const blob = (await http.request({ url, responseType: 'blob' })) as Blob
           const file = new File([blob], url, { type: blob.type })
           try {
             return await load(file)
