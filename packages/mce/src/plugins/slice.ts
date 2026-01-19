@@ -22,14 +22,14 @@ export default definePlugin((editor) => {
       return
     }
 
-    const aabb = el.getAabb()
+    const aabb = el.getGlobalAabb()
 
     const doc = to('json', {
       ...options,
       selected: (el.parent?.children.filter(node => !node.equal(el)) ?? []) as any[],
     })
 
-    doc.children.push({
+    doc.children.unshift({
       position: {
         x: aabb.left,
         y: aabb.top,
