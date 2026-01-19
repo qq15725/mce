@@ -1,3 +1,5 @@
+import type { Element2D } from 'modern-canvas'
+import { DrawboardEffect, render } from 'modern-canvas'
 import Frames from '../components/Frames.vue'
 import { definePlugin } from '../plugin'
 
@@ -6,7 +8,55 @@ export default definePlugin((editor) => {
     setActiveDrawingTool,
     addElement,
     t,
+    elementSelection,
+    inEditorIs,
+    to,
+    fonts,
+    drawboardEffect,
   } = editor
+
+  async function exportSlice(options: Mce.ExportOptions) {
+    const el = elementSelection.value[0] as Element2D
+
+    if (!el || !inEditorIs(el, 'Slice')) {
+      return
+    }
+
+    const aabb = el.getAabb()
+
+    const doc = to('json', {
+      ...options,
+      selected: (el.parent?.children.filter(node => !node.equal(el)) ?? []) as any[],
+    })
+
+    doc.children.push({
+      position: {
+        x: aabb.left,
+        y: aabb.top,
+      },
+      meta: {
+        inCanvasIs: 'Camera2D',
+      },
+    } as any)
+
+    return await render({
+      data: doc,
+      fonts,
+      width: aabb.width,
+      height: aabb.height,
+      onBefore: (engine) => {
+        engine.root.append(
+          new DrawboardEffect({
+            ...drawboardEffect.value.getProperties(),
+            internalMode: 'back',
+            effectMode: 'before',
+            checkerboard: false,
+            pixelGrid: false,
+          }),
+        )
+      },
+    })
+  }
 
   return {
     name: 'mce:slice',
@@ -53,6 +103,9 @@ export default definePlugin((editor) => {
     ],
     hotkeys: [
       { command: 'setActiveDrawingTool:slice', key: 'S' },
+    ],
+    commands: [
+      { command: 'exportSlice', handle: exportSlice },
     ],
   }
 })
