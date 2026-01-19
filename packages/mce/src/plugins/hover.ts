@@ -5,7 +5,7 @@ export default definePlugin(() => {
   return {
     name: 'mce:hover',
     components: [
-      { type: 'overlay', component: Hover },
+      { type: 'overlay', component: Hover, order: 'before' },
     ],
   }
 })

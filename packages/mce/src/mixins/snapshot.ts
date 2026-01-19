@@ -85,7 +85,7 @@ export default defineMixin((editor) => {
     const {
       on,
       config,
-      isFrame,
+      inEditorIs,
     } = editor
 
     on('setDoc', (doc) => {
@@ -94,7 +94,7 @@ export default defineMixin((editor) => {
       }
 
       function onAddChild(node: Node, _newIndex: number): void {
-        if (config.value.frameScreenshot && isFrame(node)) {
+        if (config.value.frameScreenshot && inEditorIs(node, 'Frame')) {
           const index = frames.value.findIndex(f => f.equal(node))
           frameThumbs.value.splice(index, 0, {
             instanceId: -1,
@@ -107,7 +107,7 @@ export default defineMixin((editor) => {
       }
 
       function onRemoveChild(node: Node, _oldIndex: number): void {
-        if (config.value.frameScreenshot && isFrame(node)) {
+        if (config.value.frameScreenshot && inEditorIs(node, 'Frame')) {
           frameThumbs.value.splice(
             frameThumbs.value.findIndex(v => v.instanceId === node.instanceId),
             1,

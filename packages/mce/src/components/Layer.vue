@@ -27,7 +27,7 @@ const props = defineProps({
 
 const {
   isElement,
-  isFrame,
+  inEditorIs,
   isVisible,
   setVisible,
   isLock,
@@ -67,7 +67,7 @@ const editing = ref(false)
 const editValue = ref<string>()
 const thumbnailIcon = computed(() => {
   const node = props.node
-  if (isFrame(node)) {
+  if (inEditorIs(node, 'Frame')) {
     return '$frame'
   }
   else if (node.children.filter(isElement).length) {
@@ -93,7 +93,7 @@ const thumbnailName = computed(() => {
   const node = props.node
   let value = node.name
   if (!value) {
-    if (isFrame(node)) {
+    if (inEditorIs(node, 'Frame')) {
       return t('frame')
     }
     else if (node.children.filter(isElement).length) {

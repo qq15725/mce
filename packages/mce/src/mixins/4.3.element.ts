@@ -50,6 +50,7 @@ export default defineMixin((editor) => {
     root,
     isElement,
     isFrame,
+    inEditorIs,
     isLock,
     getObb,
     config,
@@ -294,7 +295,7 @@ export default defineMixin((editor) => {
     const selected = root.value
       ?.children
       .flatMap((node) => {
-        if (isFrame(node) && node.parent?.equal(root.value)) {
+        if (inEditorIs(node, 'Frame') && node.parent?.equal(root.value)) {
           return node.children as unknown as Element2D[]
         }
         return [node] as Element2D[]

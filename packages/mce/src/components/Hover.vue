@@ -14,7 +14,7 @@ const hoverElementObb = computed(() => getObb(hoverElement.value, 'drawboard'))
 
 <template>
   <div
-    v-if="hoverElement && !hoverElement.equal(selection[0])"
+    v-if="hoverElement && !selection.some(node => node.equal(hoverElement))"
     class="mce-hover"
     :data-name="hoverElement.name"
     :style="{

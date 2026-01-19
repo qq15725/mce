@@ -32,7 +32,7 @@ const {
   getObb,
   registerCommand,
   unregisterCommand,
-  isFrame,
+  inEditorIs,
   isLock,
   config,
   snapThreshold,
@@ -200,7 +200,7 @@ const transform = computed({
           element,
           newStyle.width / element.style.width,
           newStyle.height / element.style.height,
-          isFrame(element)
+          inEditorIs(element, 'Frame')
             ? undefined
             : shape.isValid()
               ? { deep: true }
@@ -217,7 +217,7 @@ const transform = computed({
       element.findAncestor((ancestor) => {
         if (
           isElement(ancestor)
-          && !isFrame(ancestor)
+          && !inEditorIs(ancestor, 'Frame')
         ) {
           obbToFit(ancestor)
         }

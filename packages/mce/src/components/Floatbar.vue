@@ -13,7 +13,7 @@ const props = defineProps({
 const {
   elementSelection,
   selectionAabbInDrawboard,
-  isFrame,
+  inEditorIs,
 } = useEditor()
 
 const overlay = useTemplateRef('overlayTpl')
@@ -42,7 +42,7 @@ const style = computed(() => {
 
 const offset = computed(() => {
   if (
-    elementSelection.value.some(v => isFrame(v))
+    elementSelection.value.some(v => inEditorIs(v, 'Frame'))
     || props.location?.startsWith('bottom')
   ) {
     return 32

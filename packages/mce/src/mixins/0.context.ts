@@ -155,12 +155,12 @@ export default defineMixin((editor) => {
     return value.meta.inEditorIs === inEditorIs
   }
 
-  function isFrame(value: any): value is Element2D {
-    return isElement(value) && inEditorIs(value, 'Frame')
+  function isFrame(value: Node): boolean {
+    return inEditorIs(value, 'Frame')
   }
 
-  function isTopFrame(value: any): value is Element2D {
-    return isFrame(value) && Boolean((value as Element2D).parent?.equal(root.value as any))
+  function isTopFrame(value: Node): boolean {
+    return isFrame(value) && Boolean(value.parent?.equal(root.value as any))
   }
 
   function isVisible(node: Node): boolean {

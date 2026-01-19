@@ -59,28 +59,40 @@ export const defaultResizeStrategy: ResizeStrategy = (element) => {
 
 export const defaultActiveStrategy: ActiveStrategy = (context) => {
   const { element, editor } = context
+
   if (!element) {
     return undefined
   }
-  const { isRoot, isFrame, isElement, elementSelection } = editor
+
+  const {
+    isRoot,
+    inEditorIs,
+    isElement,
+    elementSelection,
+  } = editor
+
   const activeElement = elementSelection.value[0]
+
   const cb = (node: Node) => {
+    const parent = node.parent
     if (
       isElement(node) && (
         node.equal(activeElement)
-        || node.parent?.equal(activeElement)
-        || node.parent?.equal(activeElement?.parent)
-        || (isFrame(node.parent) && isRoot(node.parent.parent))
-        || isRoot(node.parent)
+        || parent?.equal(activeElement)
+        || parent?.equal(activeElement?.parent)
+        || (parent && inEditorIs(parent, 'Frame') && isRoot(parent.parent))
+        || isRoot(parent)
       )
     ) {
       return true
     }
     return false
   }
+
   if (cb(element)) {
     return element
   }
+
   return element.findAncestor<Element2D>(cb)
 }
 
@@ -98,27 +110,39 @@ export const defaultDoubleclickStrategy: DoubleclickStrategy = (context) => {
 
 export const defaultHoverStrategy: HoverStrategy = (context) => {
   const { element, editor } = context
+
   if (!element) {
     return undefined
   }
-  const { isRoot, isFrame, isElement, elementSelection } = editor
+
+  const {
+    isRoot,
+    inEditorIs,
+    isElement,
+    elementSelection,
+  } = editor
+
   const activeElement = elementSelection.value[0]
+
   const cb = (node: Node) => {
+    const parent = node.parent
     if (
       isElement(node) && (
         node.equal(activeElement)
-        || node.parent?.equal(activeElement)
-        || node.parent?.equal(activeElement?.parent)
-        || (isFrame(node.parent) && isRoot(node.parent.parent))
-        || isRoot(node.parent)
+        || parent?.equal(activeElement)
+        || parent?.equal(activeElement?.parent)
+        || (parent && inEditorIs(parent, 'Frame') && isRoot(parent.parent))
+        || isRoot(parent)
       )
     ) {
       return true
     }
     return false
   }
+
   if (cb(element)) {
     return element
   }
+
   return element.findAncestor<Element2D>(cb)
 }
