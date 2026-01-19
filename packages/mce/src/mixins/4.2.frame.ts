@@ -1,5 +1,4 @@
 import type { Element2D, Node, Vector2Like } from 'modern-canvas'
-import { ref } from 'vue'
 import { defineMixin } from '../mixin'
 
 declare global {
@@ -69,26 +68,24 @@ export default defineMixin((editor) => {
         continue
       }
       const aabb2 = frame2.getGlobalAabb()
-      if (aabb2) {
-        if (
-          pointer
-            ? aabb2.contains(pointer)
-            : (aabb1 && aabb1.getIntersectionRect(aabb2).getArea() > area1 * 0.5)
-        ) {
-          if (!frame2.equal(frame1)) {
-            let index = frame2.children.length
-            if (frame2.equal(options?.parent)) {
-              index = options!.index
-            }
-            frame2.moveChild(element, index)
-            element.style.left = aabb1.x - aabb2.x
-            element.style.top = aabb1.y - aabb2.y
-            element.updateGlobalTransform()
-            exec('layerScrollIntoView')
+      if (
+        pointer
+          ? aabb2.contains(pointer)
+          : (aabb1 && aabb1.getIntersectionRect(aabb2).getArea() > area1 * 0.5)
+      ) {
+        if (!frame2.equal(frame1)) {
+          let index = frame2.children.length
+          if (frame2.equal(options?.parent)) {
+            index = options!.index
           }
-          flag = false
-          break
+          frame2.moveChild(element, index)
+          element.style.left = aabb1.x - aabb2.x
+          element.style.top = aabb1.y - aabb2.y
+          element.updateGlobalTransform()
+          exec('layerScrollIntoView')
         }
+        flag = false
+        break
       }
     }
 
@@ -119,17 +116,20 @@ export default defineMixin((editor) => {
       getGlobalPointer,
     } = editor
 
-    const startContext = ref<Record<string, Record<string, any>>>({})
+    let startFrame: Element2D | undefined
+    let startContext = {} as Record<string, any>
 
     on('selectionTransformStart', ({ elements }) => {
-      const ctx: Record<string, Record<string, any>> = {}
+      const pointer = getGlobalPointer()
+      startFrame = frames.value.find(frame => frame.getGlobalAabb().contains(pointer))
+      const ctx: Record<string, any> = {}
       elements.forEach((el) => {
         ctx[el.instanceId] = {
           parent: el.getParent(),
           index: el.getIndex(),
         }
       })
-      startContext.value = ctx
+      startContext = ctx
     })
 
     on('selectionTransforming', ({ handle, startEvent, elements }) => {
@@ -137,11 +137,14 @@ export default defineMixin((editor) => {
       if (handle === 'move' && !(startEvent as any)?.__FROM__) {
         const idSet = new Set<number>()
         elements.forEach((el) => {
-          if (isTopFrame(el)) {
-            idSet.add(el.instanceId)
+          const frame = isTopFrame(el) ? el : (el as Node).findAncestor(isTopFrame)
+          if (frame) {
+            if (frame.equal(startFrame)) {
+              idSet.add(frame.instanceId)
+            }
           }
           else {
-            idSet.add((el as Node).findAncestor(isTopFrame)?.instanceId ?? 0)
+            idSet.add(0)
           }
         })
         if (idSet.size === 1) {
@@ -149,7 +152,7 @@ export default defineMixin((editor) => {
             handleDragOutReparent(
               element,
               {
-                ...startContext.value[element.instanceId],
+                ...startContext[element.instanceId],
                 pointer: getGlobalPointer(),
               } as any,
             )
@@ -159,7 +162,8 @@ export default defineMixin((editor) => {
     })
 
     on('selectionTransformEnd', () => {
-      startContext.value = {}
+      startContext = {}
+      startFrame = undefined
     })
   }
 })
