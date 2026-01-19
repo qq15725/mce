@@ -16,6 +16,7 @@ export interface PanelPluginComponent extends BasePluginComponent {
 
 export interface OverlayPluginComponent extends BasePluginComponent {
   type: 'overlay'
+  order?: 'before' | 'after'
 }
 
 export type PluginComponent

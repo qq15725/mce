@@ -8,12 +8,10 @@ defineOptions({
 
 const props = withDefaults(
   defineProps<{
-    infinite?: boolean
     offset?: number
     size?: number
   }>(),
   {
-    infinite: true,
     offset: 0,
     size: 8,
   },

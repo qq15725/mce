@@ -1,6 +1,5 @@
 import type { Element2D } from 'modern-canvas'
 import { DrawboardEffect, render } from 'modern-canvas'
-import Frames from '../components/Frames.vue'
 import { definePlugin } from '../plugin'
 
 export default definePlugin((editor) => {
@@ -60,9 +59,6 @@ export default definePlugin((editor) => {
 
   return {
     name: 'mce:slice',
-    components: [
-      { type: 'overlay', component: Frames },
-    ],
     drawingTools: [
       {
         name: 'slice',

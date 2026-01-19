@@ -507,7 +507,11 @@ const slotProps = {
           class="mce-editor__canvas"
         />
 
-        <TextEditor ref="textEditorTpl" />
+        <Component
+          :is="p.component"
+          v-for="(p, key) in pluginsComponents.overlay.filter(v => v.order === 'before')"
+          :key="key"
+        />
 
         <Selector
           ref="selectorTpl"
@@ -523,6 +527,8 @@ const slotProps = {
             <slot name="selector" :box="box" v-bind="slotProps" />
           </template>
         </Selector>
+
+        <TextEditor ref="textEditorTpl" />
 
         <Floatbar
           v-if="slots.floatbar"
@@ -555,12 +561,17 @@ const slotProps = {
           <slot name="floatbar-bottom" v-bind="slotProps" />
         </Floatbar>
 
-        <template
-          v-for="(p, key) in pluginsComponents.overlay"
+        <Component
+          :is="p.component"
+          v-for="(p, key) in pluginsComponents.overlay.filter(v => v.order !== 'before' && v.order !== 'after')"
           :key="key"
-        >
-          <Component :is="p.component" />
-        </template>
+        />
+
+        <Component
+          :is="p.component"
+          v-for="(p, key) in pluginsComponents.overlay.filter(v => v.order === 'after')"
+          :key="key"
+        />
 
         <slot name="drawboard" v-bind="slotProps" />
       </div>

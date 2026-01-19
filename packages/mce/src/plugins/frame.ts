@@ -10,9 +10,6 @@ export default definePlugin((editor) => {
 
   return {
     name: 'mce:frame',
-    components: [
-      { type: 'overlay', component: Frames },
-    ],
     drawingTools: [
       {
         name: 'frame',
@@ -53,6 +50,9 @@ export default definePlugin((editor) => {
     ],
     hotkeys: [
       { command: 'setActiveDrawingTool:frame', key: 'F' },
+    ],
+    components: [
+      { type: 'overlay', component: Frames, order: 'before' },
     ],
   }
 })
