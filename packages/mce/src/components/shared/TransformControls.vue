@@ -877,11 +877,10 @@ function Diagonal() {
   }
 
   &--moving {
-    #{$root}__handle {
-      visibility: hidden;
-    }
-
-    #{$root}__handle-rect {
+    #{$root}__handle,
+    #{$root}__handle-rect,
+    #{$root}__rotator,
+    #{$root}__tip {
       visibility: hidden;
     }
 
@@ -897,15 +896,11 @@ function Diagonal() {
   }
 
   &--hide-ui {
-    #{$root}__handle {
-      visibility: hidden;
-    }
-
-    #{$root}__handle-rect {
-      visibility: hidden;
-    }
-
-    #{$root}__rect {
+    #{$root}__handle,
+    #{$root}__handle-rect,
+    #{$root}__rect,
+    #{$root}__rotator,
+    #{$root}__tip {
       visibility: hidden;
     }
   }
