@@ -1,3 +1,12 @@
+## [0.15.28](https://github.com/qq15725/mce/compare/v0.15.27...v0.15.28) (2026-01-19)
+
+
+### Bug Fixes
+
+* third party ([5b22a40](https://github.com/qq15725/mce/commit/5b22a40be084d2e743d6087858ee9288d172e89b))
+
+
+
 ## [0.15.27](https://github.com/qq15725/mce/compare/v0.15.26...v0.15.27) (2026-01-19)
 
 
