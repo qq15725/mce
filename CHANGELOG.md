@@ -1,3 +1,24 @@
+## [0.15.29](https://github.com/qq15725/mce/compare/v0.15.28...v0.15.29) (2026-01-20)
+
+
+### Bug Fixes
+
+* overlay ([27f7218](https://github.com/qq15725/mce/commit/27f72185c81b31914f3d680ef61ffaec9a31484e))
+
+
+### Features
+
+* autoNest plugin ([f757a92](https://github.com/qq15725/mce/commit/f757a92ad76c3a0cdd86cbacaee56533e30f8de0))
+* merge to edit plugin ([61ee583](https://github.com/qq15725/mce/commit/61ee5834da73e5a56aca6ea4117b4dc5fa3089aa))
+* smart guides ([29259bd](https://github.com/qq15725/mce/commit/29259bd76bd23a7be5388f4fb7b1421a14fcb923))
+* smart guides ([e580b55](https://github.com/qq15725/mce/commit/e580b5552a4393dc0b1fc8972f94ba872a6d5d5e))
+* smartGuides ([3d7bf1c](https://github.com/qq15725/mce/commit/3d7bf1c973675c1950c67695954883a9e0e72a5d))
+* smartSelection ([e345109](https://github.com/qq15725/mce/commit/e34510987962dcc62ae27cbcc85753fedd4f00c4))
+* transform controls ([22e541e](https://github.com/qq15725/mce/commit/22e541ee063e34b49e4876a6effc85767a0815b8))
+* use inEditorIs whenever possible ([b16cee8](https://github.com/qq15725/mce/commit/b16cee80fd5f494b77551035138550f2ca4d1069))
+
+
+
 ## [0.15.28](https://github.com/qq15725/mce/compare/v0.15.27...v0.15.28) (2026-01-19)
 
 
