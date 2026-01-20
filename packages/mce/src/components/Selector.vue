@@ -237,31 +237,37 @@ const transform = computed({
 })
 
 const movable = computed(() => {
-  return elementSelection.value.every((element) => {
-    return !isLock(element)
-      && element.meta.movable !== false
-      && element.meta.transformable !== false
-  })
+  return state.value !== 'typing'
+    && elementSelection.value.every((element) => {
+      return !isLock(element)
+        && element.meta.movable !== false
+        && element.meta.transformable !== false
+    })
 })
 
 const resizable = computed(() => {
-  return elementSelection.value.every((element) => {
-    return !isLock(element)
-      && element.meta.resizable !== false
-      && element.meta.transformable !== false
-  })
+  return state.value !== 'typing'
+    && elementSelection.value.every((element) => {
+      return !isLock(element)
+        && element.meta.resizable !== false
+        && element.meta.transformable !== false
+    })
 })
 
 const rotatable = computed(() => {
-  return elementSelection.value.every((element) => {
-    return !isLock(element)
-      && element.meta.rotatable !== false
-      && element.meta.transformable !== false
-  })
+  return state.value !== 'typing'
+    && elementSelection.value.every((element) => {
+      return !isLock(element)
+        && element.meta.rotatable !== false
+        && element.meta.transformable !== false
+    })
 })
 
 const roundable = computed(() => {
-  if (elementSelection.value.length === 1) {
+  if (
+    state.value !== 'typing'
+    && elementSelection.value.length === 1
+  ) {
     const element = elementSelection.value[0]
     return hoverElement.value?.equal(element)
       && !isLock(element)
@@ -311,16 +317,8 @@ defineExpose({
   />
 
   <div
-    v-if="state === 'selecting'"
-    class="mce-selector__selected-area"
-    :style="{
-      borderColor: 'currentcolor',
-      ...props.selectedArea.toCssStyle(),
-    }"
-  />
-
-  <div
     v-for="(style, index) in selectionObbStyles"
+    v-if="state !== 'transforming'"
     :key="index"
     class="mce-selector__obb"
     :style="{
@@ -329,15 +327,24 @@ defineExpose({
     }"
   />
 
+  <div
+    v-if="state === 'selecting'"
+    class="mce-selector__selected-area"
+    :style="{
+      borderColor: 'currentcolor',
+      ...props.selectedArea.toCssStyle(),
+    }"
+  />
+
   <TransformControls
     v-if="transform.width && transform.height"
     ref="transformableTpl"
     v-bind="config.transformControls"
     v-model="transform"
-    :movable="state !== 'typing' && movable"
-    :resizable="state !== 'typing' && resizable"
-    :rotatable="state !== 'typing' && rotatable"
-    :roundable="state !== 'typing' && roundable"
+    :movable="movable"
+    :resizable="resizable"
+    :rotatable="rotatable"
+    :roundable="roundable"
     :resize-strategy="props.resizeStrategy"
     class="mce-selector__transform"
     :tip-format="tipFormat"
