@@ -55,10 +55,10 @@ declare global {
       parseAnchor: (anchor: Anchor, isRtl?: boolean) => ParsedAnchor
       isNode: (value: any) => value is Node
       isRoot: (value: any) => value is Node
-      inEditorIs: (value: Node, inEditorIs?: EditorNodeType) => boolean
+      inEditorIs: (node: Node, inEditorIs?: EditorNodeType) => boolean
       isElement: (value: any) => value is Element2D
-      isFrame: (value: any) => value is Element2D
-      isTopFrame: (value: any) => value is Element2D
+      isFrame: (node: Node) => boolean
+      isTopFrame: (node: Node) => boolean
       isVisible: (node: Node) => boolean
       setVisible: (node: Node, visible: boolean) => void
       isLock: (node: Node) => boolean

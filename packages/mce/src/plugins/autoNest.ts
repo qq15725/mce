@@ -1,4 +1,4 @@
-import type { Element2D, Node, Vector2Like } from 'modern-canvas'
+import type { Element2D, Vector2Like } from 'modern-canvas'
 import { definePlugin } from '../plugin'
 
 declare global {
@@ -27,7 +27,6 @@ export default definePlugin((editor) => {
     root,
   } = editor
 
-  let startFrame: Element2D | undefined
   let startContext = {} as Record<string, any>
 
   function nestIntoFrame(
@@ -88,24 +87,14 @@ export default definePlugin((editor) => {
       { command: 'nestIntoFrame', handle: nestIntoFrame },
     ],
     events: {
-      selectionTransformStart: ({ elements }) => {
-        const pointer = getGlobalPointer()
-        startFrame = frames.value.find(frame => frame.getGlobalAabb().contains(pointer))
-        const ctx: Record<string, any> = {}
-        elements.forEach((el) => {
-          ctx[el.instanceId] = {
-            parent: el.getParent(),
-            index: el.getIndex(),
-          }
-        })
-        startContext = ctx
-      },
-      selectionTransforming: ({ handle, startEvent, elements }) => {
-        // move to frame
+      selectionTransformStart: ({ handle, startEvent, elements }) => {
         if (handle === 'move' && !(startEvent as any)?.__FROM__) {
+          const pointer = getGlobalPointer()
+          const startFrame = frames.value.find(frame => frame.getGlobalAabb().contains(pointer))
+
           const idSet = new Set<number>()
           elements.forEach((el) => {
-            const frame = isTopFrame(el) ? el : (el as Node).findAncestor(isTopFrame)
+            const frame = isTopFrame(el) ? el : el.findAncestor(isTopFrame)
             if (frame) {
               if (frame.equal(startFrame)) {
                 idSet.add(frame.instanceId)
@@ -116,6 +105,20 @@ export default definePlugin((editor) => {
             }
           })
           if (idSet.size === 1) {
+            const ctx: Record<string, any> = {}
+            elements.forEach((el) => {
+              ctx[el.instanceId] = {
+                parent: el.getParent(),
+                index: el.getIndex(),
+              }
+            })
+            startContext = ctx
+          }
+        }
+      },
+      selectionTransforming: ({ handle, startEvent, elements }) => {
+        if (handle === 'move' && !(startEvent as any)?.__FROM__) {
+          if (Object.keys(startContext).length > 0) {
             elements.forEach((el) => {
               nestIntoFrame(
                 el,
@@ -130,7 +133,6 @@ export default definePlugin((editor) => {
       },
       selectionTransformEnd: () => {
         startContext = {}
-        startFrame = undefined
       },
     },
   }
