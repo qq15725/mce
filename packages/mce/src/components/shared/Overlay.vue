@@ -164,7 +164,7 @@ defineExpose({
   inset: 0;
   pointer-events: none;
 
-  & > * {
+  &-content > * {
     pointer-events: auto;
   }
 }
