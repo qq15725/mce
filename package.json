@@ -15,7 +15,7 @@
     "release": "bumpp package.json packages/*/package.json --commit \"release: v%s\" --push --all --tag"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^7.0.1",
+    "@antfu/eslint-config": "^7.1.0",
     "@types/node": "^25.0.9",
     "bumpp": "^10.4.0",
     "conventional-changelog-cli": "^5.0.0",
