@@ -24,6 +24,9 @@ export default definePlugin((editor) => {
     addElement,
     addElements,
     doc,
+    isElement,
+    inEditorIs,
+    obbToFit,
   } = editor
 
   function group(inEditorIs: 'Element' | 'Frame'): void {
@@ -99,5 +102,20 @@ export default definePlugin((editor) => {
       { command: 'frameSelection', key: 'Alt+CmdOrCtrl+G' },
       { command: 'ungroup', key: 'CmdOrCtrl+Backspace' },
     ],
+    events: {
+      selectionTransforming: ({ elements }) => {
+        elements.forEach((el) => {
+          el.findAncestor((ancestor) => {
+            if (
+              isElement(ancestor)
+              && !inEditorIs(ancestor, 'Frame')
+            ) {
+              obbToFit(ancestor)
+            }
+            return false
+          })
+        })
+      },
+    },
   }
 })

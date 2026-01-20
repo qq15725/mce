@@ -28,8 +28,8 @@ const {
   selectionObb,
   selectionObbInDrawboard,
   camera,
-  obbToFit,
   getObb,
+  getAabb,
   registerCommand,
   unregisterCommand,
   inEditorIs,
@@ -38,6 +38,7 @@ const {
   snapThreshold,
   getSnapPoints,
   hoverElement,
+  selectionAabb,
 } = useEditor()
 
 const transformable = useTemplateRef('transformableTpl')
@@ -133,7 +134,36 @@ function createSelectionTransformContext(): Mce.SelectionTransformContext {
   }
 }
 
-const rotate = ref(0)
+const startContext = {
+  rotate: 0,
+  offsetMap: {} as Record<number, { x: number, y: number }>,
+}
+
+function onStart() {
+  startContext.rotate = 0
+  const aabb = selectionAabb.value
+  elementSelection.value.forEach((el) => {
+    const elAabb = el.getGlobalAabb()
+    startContext.offsetMap[el.instanceId] = {
+      x: (elAabb.x - aabb.x) / aabb.width,
+      y: (elAabb.y - aabb.y) / aabb.height,
+    }
+  })
+  emit('selectionTransformStart', createSelectionTransformContext())
+}
+
+function onMove() {
+  if (!state.value) {
+    state.value = 'transforming'
+  }
+}
+
+function onEnd() {
+  if (state.value === 'transforming') {
+    state.value = undefined
+  }
+  emit('selectionTransformEnd', createSelectionTransformContext())
+}
 
 const _transform = computed(() => {
   const zoom = camera.value.zoom
@@ -177,13 +207,17 @@ const transform = computed({
       borderRadius: transform.borderRadius - (oldTransform.borderRadius ?? 0) / zoom.y,
     }
 
-    if (elementSelection.value.length > 1) {
-      offsetStyle.rotate = transform.rotate - rotate.value
-      rotate.value += offsetStyle.rotate
+    const els = elementSelection.value
+
+    if (els.length > 1) {
+      if (handle.startsWith('rotate')) {
+        offsetStyle.rotate = transform.rotate - startContext.rotate
+        startContext.rotate += offsetStyle.rotate
+      }
     }
 
-    elementSelection.value.forEach((element) => {
-      const style = element.style
+    els.forEach((el) => {
+      const style = el.style
 
       const newStyle = {
         left: style.left + offsetStyle.left,
@@ -199,15 +233,14 @@ const transform = computed({
       }
       else if (handle.startsWith('resize')) {
         const scale = newStyle.rotate ? 100 : 1
-        newStyle.width = Math.round(newStyle.width * scale) / scale
-        newStyle.height = Math.round(newStyle.height * scale) / scale
-        const shape = element.shape
-
+        const newWidth = Math.max(1, Math.round(newStyle.width * scale) / scale)
+        const newHeight = Math.max(1, Math.round(newStyle.height * scale) / scale)
+        const shape = el.shape
         resizeElement(
-          element,
-          newStyle.width / element.style.width,
-          newStyle.height / element.style.height,
-          inEditorIs(element, 'Frame')
+          el,
+          newWidth,
+          newHeight,
+          inEditorIs(el, 'Frame')
             ? undefined
             : shape.isValid()
               ? { deep: true }
@@ -215,22 +248,32 @@ const transform = computed({
                 ? { deep: true, textFontSizeToFit: true }
                 : { deep: true, textToFit: true },
         )
-        newStyle.width = element.style.width
-        newStyle.height = element.style.height
+        newStyle.width = el.style.width
+        newStyle.height = el.style.height
       }
 
       Object.assign(style, newStyle)
-      element.updateGlobalTransform()
-      element.findAncestor((ancestor) => {
-        if (
-          isElement(ancestor)
-          && !inEditorIs(ancestor, 'Frame')
-        ) {
-          obbToFit(ancestor)
-        }
-        return false
-      })
+
+      el.updateGlobalTransform()
     })
+
+    if (els.length > 1) {
+      if (handle.startsWith('resize')) {
+        const selectionAabb = getAabb(els)
+        els.forEach((el) => {
+          const pAabb = el.getParent<Element2D>()?.getGlobalAabb?.()
+          const { x, y } = startContext.offsetMap[el.instanceId]!
+          let left = selectionAabb.left + selectionAabb.width * x
+          let top = selectionAabb.top + selectionAabb.height * y
+          if (pAabb) {
+            left -= pAabb.left
+            top -= pAabb.top
+          }
+          el.style.left = left
+          el.style.top = top
+        })
+      }
+    }
 
     emit('selectionTransforming', createSelectionTransformContext())
   },
@@ -276,24 +319,6 @@ const roundable = computed(() => {
   return false
 })
 
-function onStart() {
-  rotate.value = 0
-  emit('selectionTransformStart', createSelectionTransformContext())
-}
-
-function onMove() {
-  if (!state.value) {
-    state.value = 'transforming'
-  }
-}
-
-function onEnd() {
-  if (state.value === 'transforming') {
-    state.value = undefined
-  }
-  emit('selectionTransformEnd', createSelectionTransformContext())
-}
-
 function tipFormat() {
   const obb = elementSelection.value.length === 1
     ? elementSelection.value[0].style
@@ -316,16 +341,19 @@ defineExpose({
     }"
   />
 
-  <div
-    v-for="(style, index) in selectionObbStyles"
+  <template
     v-if="state !== 'transforming'"
-    :key="index"
-    class="mce-selector__obb"
-    :style="{
-      borderColor: 'currentcolor',
-      ...style,
-    }"
-  />
+  >
+    <div
+      v-for="(style, index) in selectionObbStyles"
+      :key="index"
+      class="mce-selector__obb"
+      :style="{
+        borderColor: 'currentcolor',
+        ...style,
+      }"
+    />
+  </template>
 
   <div
     v-if="state === 'selecting'"

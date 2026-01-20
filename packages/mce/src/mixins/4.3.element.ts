@@ -31,8 +31,8 @@ declare global {
       addElements: (element: Element[], options?: AddElementOptions) => Element2D[]
       resizeElement: (
         element: Element2D,
-        width: number,
-        height: number,
+        newWidth: number,
+        newHeight: number,
         options?: ResizeElementOptions,
       ) => void
       selectArea: (areaInDrawboard: Aabb2D) => Element2D[]
@@ -122,8 +122,8 @@ export default defineMixin((editor) => {
             const newHeight = aspectRatio > 1 ? halfWidth / aspectRatio : halfHeight
             resizeElement(
               el,
-              newWidth / el.style.width,
-              newHeight / el.style.height,
+              newWidth,
+              newHeight,
               {
                 deep: true,
                 textFontSizeToFit: true,
@@ -257,36 +257,38 @@ export default defineMixin((editor) => {
   }
 
   function resizeElement(
-    element: Element2D,
-    scaleX: number,
-    scaleY: number,
+    el: Element2D,
+    newWidth: number,
+    newHeight: number,
     options: Mce.ResizeElementOptions = {},
   ): void {
-    scaleX = Math.abs(scaleX)
-    scaleY = Math.abs(scaleY)
+    const scaleX = Math.abs(newWidth / el.style.width)
+    const scaleY = Math.abs(newHeight / el.style.height)
 
-    function handle(element: Element2D) {
-      const style = element.style
-      style.left = style.left * scaleX
-      style.top = style.top * scaleY
-      style.width = style.width * scaleX
-      style.height = style.height * scaleY
-      element?.requestRender?.() // TODO
+    function handle(el: Element2D, isChild = false) {
+      const style = el.style
+      if (isChild) {
+        style.left *= scaleX
+        style.top *= scaleY
+      }
+      style.width *= scaleX
+      style.height *= scaleY
+      el?.requestRender?.() // TODO
     }
 
-    handle(element)
+    handle(el)
 
     if (options.deep) {
-      element.findOne((node) => {
+      el.findOne((node) => {
         if (isElement(node)) {
-          handle(node)
+          handle(node, true)
         }
         return false
       })
     }
 
-    options.textToFit && textToFit(element)
-    options.textFontSizeToFit && textFontSizeToFit(element, scaleX)
+    options.textToFit && textToFit(el)
+    options.textFontSizeToFit && textFontSizeToFit(el, scaleX)
   }
 
   function selectArea(areaInDrawboard: Aabb2D): Element2D[] {
