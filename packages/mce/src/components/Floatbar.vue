@@ -26,7 +26,8 @@ const style = computed(() => {
     || location?.startsWith('bottom')
   ) {
     return {
-      minWidth: `${aabb.width}px`,
+      '--height': 'auto',
+      '--width': `${aabb.width}px`,
     }
   }
   else if (
@@ -34,7 +35,8 @@ const style = computed(() => {
     || location?.startsWith('right')
   ) {
     return {
-      minHeight: `${aabb.height}px`,
+      '--height': `${aabb.height}px`,
+      '--width': 'auto',
     }
   }
   return {}
