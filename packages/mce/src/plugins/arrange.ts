@@ -1,4 +1,5 @@
-import type { Aabb2D, Node } from 'modern-canvas'
+import type { Element2D, Node } from 'modern-canvas'
+import { Aabb2D } from 'modern-canvas'
 import { definePlugin } from '../plugin'
 
 declare global {
@@ -68,15 +69,21 @@ export default definePlugin((editor) => {
 
   // TODO 不支持非中心 pivot
   function align(direction: Mce.AlignCommandDirection) {
-    let targetAabb: Aabb2D | undefined
-    if (elementSelection.value.length > 1) {
-      targetAabb = getAabb(elementSelection.value)
+    const len = elementSelection.value.length
+
+    if (!len) {
+      return
     }
-    else {
+
+    let targetAabb: Aabb2D | undefined
+    if (len === 1) {
       const parent = elementSelection.value[0]?.parent
       if (parent && isElement(parent)) {
         targetAabb = parent.getGlobalAabb()
       }
+    }
+    else {
+      targetAabb = getAabb(elementSelection.value)
     }
 
     if (!targetAabb) {
@@ -84,6 +91,7 @@ export default definePlugin((editor) => {
     }
 
     elementSelection.value.forEach((el) => {
+      const parentAabb = el.getParent<Element2D>()?.getGlobalAabb?.() ?? new Aabb2D()
       const hw = el.size.x / 2
       const hh = el.size.y / 2
       const cos = Math.cos(el.rotation)
@@ -93,22 +101,22 @@ export default definePlugin((editor) => {
 
       switch (direction) {
         case 'left':
-          el.style.left = targetAabb.left + dx - hw
+          el.style.left = targetAabb.left - parentAabb.left + dx - hw
           break
         case 'horizontal-center':
-          el.style.left = targetAabb.left + targetAabb.width / 2 - hw
+          el.style.left = targetAabb.left - parentAabb.left + targetAabb.width / 2 - hw
           break
         case 'right':
-          el.style.left = targetAabb.left + targetAabb.width - dx - hw
+          el.style.left = targetAabb.left - parentAabb.left + targetAabb.width - dx - hw
           break
         case 'top':
-          el.style.top = targetAabb.top + dy - hh
+          el.style.top = targetAabb.top - parentAabb.top + dy - hh
           break
         case 'vertical-center':
-          el.style.top = targetAabb.top + targetAabb.height / 2 - hh
+          el.style.top = targetAabb.top - parentAabb.top + targetAabb.height / 2 - hh
           break
         case 'bottom':
-          el.style.top = targetAabb.top + targetAabb.height - dy - hh
+          el.style.top = targetAabb.top - parentAabb.top + targetAabb.height - dy - hh
           break
       }
     })
