@@ -59,14 +59,12 @@ export default definePlugin((editor) => {
         drawboardDom,
         drawboardAabb,
         drawboardPointer,
-        exec,
       } = editor
 
       useResizeObserver(drawboardDom, (entries) => {
         const { left: _left, top: _top, width, height } = entries[0].contentRect
         const { left = _left, top = _top } = drawboardDom.value?.getBoundingClientRect() ?? {}
         drawboardAabb.value = new Aabb2D(left, top, width, height)
-        exec('zoomToFit')
       })
 
       document.addEventListener('mousemove', (event) => {
