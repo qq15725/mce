@@ -6,17 +6,19 @@ const { snapLines } = useEditor()
 
 <template>
   <div class="mce-smart-guides">
-    <div
-      v-for="(item, key) in snapLines"
-      :key="key"
-      :class="item.class.map((v: string) => `mce-smart-guides__${v}`)"
-      :style="{
-        left: `${item.style.left}px`,
-        top: `${item.style.top}px`,
-        width: `${item.style.width}px`,
-        height: `${item.style.height}px`,
-      }"
-    />
+    <template
+      v-for="(item, key) in snapLines" :key="key"
+    >
+      <div
+        :class="item.class.map((v: string) => `mce-smart-guides__${v}`)"
+        :style="{
+          left: `${item.style.left}px`,
+          top: `${item.style.top}px`,
+          width: `${item.style.width}px`,
+          height: `${item.style.height}px`,
+        }"
+      />
+    </template>
   </div>
 </template>
 

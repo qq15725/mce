@@ -1,7 +1,7 @@
 import type { Element2D, Node } from 'modern-canvas'
 import type { ComputedRef } from 'vue'
 import { Aabb2D } from 'modern-canvas'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import SmartGuides from '../components/SmartGuides.vue'
 import { definePlugin } from '../plugin'
 import { BSTree } from '../utils/BSTree'
@@ -96,6 +96,7 @@ export default definePlugin((editor) => {
   function createBox(node?: Node | BoundingBox | undefined): Box | undefined {
     if (!node)
       return undefined
+
     const box = {} as Box
     let top: number
     let left: number
@@ -222,108 +223,114 @@ export default definePlugin((editor) => {
     return areas
   }
 
-  const linePairs = computed(() => {
-    const { vLines, hLines } = store.value
+  const linePairs = ref<LinePair[]>([])
+
+  function updateSmartGuides() {
+    const _linePairs: LinePair[] = []
+
     const box = activeBox.value
-    if (!box) {
-      return []
-    }
-    const areaLine: Record<'vt' | 'vb' | 'hl' | 'hr', Line[]> = {
-      vt: [],
-      vb: [],
-      hl: [],
-      hr: [],
-    }
 
-    const linePairs: LinePair[] = []
+    if (box) {
+      const {
+        vLines,
+        hLines,
+      } = store.value
 
-    const alignmentItems = [
-      { sources: [box.vt, box.vm, box.vb], targets: vLines },
-      { sources: [box.hl, box.hm, box.hr], targets: hLines },
-    ]
-    alignmentItems.forEach(({ targets, sources }) => {
-      const _linePairs: LinePair[] = []
-      for (const source of sources) {
-        const target = targets.searchClosest(source, (a, b, c) => {
-          return !c || Math.abs(a.pos - b.pos) < Math.abs(a.pos - c.pos)
-        })
-        if (!target) {
-          continue
-        }
-        const distance = Math.abs(target.pos - source.pos)
-        if (distance >= snapThreshold.value) {
-          continue
-        }
-        _linePairs.push({ source, target, type: 'alignment', distance })
+      const areaLine: Record<'vt' | 'vb' | 'hl' | 'hr', Line[]> = {
+        vt: [],
+        vb: [],
+        hl: [],
+        hr: [],
       }
-      _linePairs.sort((a, b) => a.distance - b.distance)
-      if (_linePairs.length) {
-        linePairs.push(_linePairs[0])
-      }
-    })
 
-    const areaLineItems = [
-      { sources: [box.vt, box.vb], targets: vLines },
-      { sources: [box.hl, box.hr], targets: hLines },
-    ]
-
-    areaLineItems.forEach(({ sources, targets }) => {
-      for (const source of sources) {
-        areaLine[source.type as keyof typeof areaLine] = findLines(targets, source)
-      }
-    })
-    areaLine.vt = areaLine.vt.sort((a, b) => b.pos - a.pos)
-    areaLine.hl = areaLine.hl.sort((a, b) => b.pos - a.pos)
-
-    // TODO 两边区域相等时，同方向区域相等也应该可以显示
-    const areaItems = [
-      { targets: [areaLine.vt, areaLine.vb], sources: [box.vt, box.vb] },
-      { targets: [areaLine.hl, areaLine.hr], sources: [box.hl, box.hr] },
-    ]
-    areaItems.forEach(({ sources, targets }) => {
-      const targetA = targets[0][0]
-      const sourceA = sources[0]
-      const targetB = targets[1][0]
-      const sourceB = sources[1]
-
-      if (targetA && targetB && (!isCanvasLine(targetA) || !isCanvasLine(targetB))) {
-        const distanceA = Math.abs(sourceA.pos - targetA.pos)
-        const distanceB = Math.abs(sourceB.pos - targetB.pos)
-        if (Math.abs(distanceA - distanceB) < snapThreshold.value) {
-          const isLeftTop = isLeftTopLine(sourceA)
-          linePairs.push({
-            target: targetA,
-            source: sourceA,
-            type: 'area',
-            distance: distanceA,
-            _ctx: {
-              type: sourceA.type,
-              pos: isLeftTop
-                ? targetA.pos + (distanceA + distanceB) / 2
-                : targetA.pos - (distanceA + distanceB) / 2,
-            },
+      const alignmentItems = [
+        { sources: [box.vt, box.vm, box.vb], targets: vLines },
+        { sources: [box.hl, box.hm, box.hr], targets: hLines },
+      ]
+      alignmentItems.forEach(({ targets, sources }) => {
+        const items: LinePair[] = []
+        for (const source of sources) {
+          const target = targets.searchClosest(source, (a, b, c) => {
+            return !c || Math.abs(a.pos - b.pos) < Math.abs(a.pos - c.pos)
           })
-          linePairs.push({
-            target: targetB,
-            source: sourceB,
-            type: 'area',
-            distance: distanceB,
-          })
-          return
+          if (!target) {
+            continue
+          }
+          const distance = Math.abs(target.pos - source.pos)
+          if (distance >= snapThreshold.value) {
+            continue
+          }
+          items.push({ source, target, type: 'alignment', distance })
         }
-      }
-
-      for (const i in sources) {
-        const areas = findAreas(targets[i], sources[i])
-        if (areas.length) {
-          linePairs.push(...areas)
-          break
+        items.sort((a, b) => a.distance - b.distance)
+        if (items.length) {
+          _linePairs.push(items[0])
         }
-      }
-    })
+      })
 
-    return linePairs
-  })
+      const areaLineItems = [
+        { sources: [box.vt, box.vb], targets: vLines },
+        { sources: [box.hl, box.hr], targets: hLines },
+      ]
+
+      areaLineItems.forEach(({ sources, targets }) => {
+        for (const source of sources) {
+          areaLine[source.type as keyof typeof areaLine] = findLines(targets, source)
+        }
+      })
+      areaLine.vt = areaLine.vt.sort((a, b) => b.pos - a.pos)
+      areaLine.hl = areaLine.hl.sort((a, b) => b.pos - a.pos)
+
+      // TODO 两边区域相等时，同方向区域相等也应该可以显示
+      const areaItems = [
+        { targets: [areaLine.vt, areaLine.vb], sources: [box.vt, box.vb] },
+        { targets: [areaLine.hl, areaLine.hr], sources: [box.hl, box.hr] },
+      ]
+      areaItems.forEach(({ sources, targets }) => {
+        const targetA = targets[0][0]
+        const sourceA = sources[0]
+        const targetB = targets[1][0]
+        const sourceB = sources[1]
+
+        if (targetA && targetB && (!isCanvasLine(targetA) || !isCanvasLine(targetB))) {
+          const distanceA = Math.abs(sourceA.pos - targetA.pos)
+          const distanceB = Math.abs(sourceB.pos - targetB.pos)
+          if (Math.abs(distanceA - distanceB) < snapThreshold.value) {
+            const isLeftTop = isLeftTopLine(sourceA)
+            _linePairs.push({
+              target: targetA,
+              source: sourceA,
+              type: 'area',
+              distance: distanceA,
+              _ctx: {
+                type: sourceA.type,
+                pos: isLeftTop
+                  ? targetA.pos + (distanceA + distanceB) / 2
+                  : targetA.pos - (distanceA + distanceB) / 2,
+              },
+            })
+            _linePairs.push({
+              target: targetB,
+              source: sourceB,
+              type: 'area',
+              distance: distanceB,
+            })
+            return
+          }
+        }
+
+        for (const i in sources) {
+          const areas = findAreas(targets[i], sources[i])
+          if (areas.length) {
+            _linePairs.push(...areas)
+            break
+          }
+        }
+      })
+    }
+
+    linePairs.value = _linePairs
+  }
 
   const snapLines = computed(() => {
     if (state.value !== 'transforming')
@@ -476,6 +483,9 @@ export default definePlugin((editor) => {
     components: [
       { type: 'overlay', component: SmartGuides },
     ],
+    events: {
+      selectionTransforming: updateSmartGuides,
+    },
   }
 })
 
