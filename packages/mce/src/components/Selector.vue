@@ -261,16 +261,10 @@ const transform = computed({
       if (handle.startsWith('resize')) {
         const selectionAabb = getAabb(els)
         els.forEach((el) => {
-          const pAabb = el.getParent<Element2D>()?.getGlobalAabb?.()
+          const parentAabb = el.getParent<Element2D>()?.getGlobalAabb?.() ?? new Aabb2D()
           const { x, y } = startContext.offsetMap[el.instanceId]!
-          let left = selectionAabb.left + selectionAabb.width * x
-          let top = selectionAabb.top + selectionAabb.height * y
-          if (pAabb) {
-            left -= pAabb.left
-            top -= pAabb.top
-          }
-          el.style.left = left
-          el.style.top = top
+          el.style.left = selectionAabb.left - parentAabb.left + selectionAabb.width * x
+          el.style.top = selectionAabb.top - parentAabb.left + selectionAabb.height * y
         })
       }
     }

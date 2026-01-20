@@ -31,17 +31,17 @@ export default definePlugin((editor) => {
   let startContext = {} as Record<string, any>
 
   function nestIntoFrame(
-    element: Element2D,
+    el: Element2D,
     options?: Mce.NestIntoFrameOptions,
   ): void {
     const pointer = options?.pointer as any
-    const frame1 = element.findAncestor(node => isTopFrame(node))
-    const aabb1 = element.getGlobalAabb()
+    const frame1 = el.findAncestor(node => isTopFrame(node))
+    const aabb1 = el.getGlobalAabb()
     const area1 = aabb1.getArea()
     let flag = true
     for (let i = 0, len = frames.value.length; i < len; i++) {
       const frame2 = frames.value[i]
-      if (frame2.equal(element)) {
+      if (frame2.equal(el)) {
         continue
       }
       const aabb2 = frame2.getGlobalAabb()
@@ -55,10 +55,10 @@ export default definePlugin((editor) => {
           if (frame2.equal(options?.parent)) {
             index = options!.index
           }
-          frame2.moveChild(element, index)
-          element.style.left = aabb1.x - aabb2.x
-          element.style.top = aabb1.y - aabb2.y
-          element.updateGlobalTransform()
+          frame2.moveChild(el, index)
+          el.style.left = aabb1.x - aabb2.x
+          el.style.top = aabb1.y - aabb2.y
+          el.updateGlobalTransform()
           exec('layerScrollIntoView')
         }
         flag = false
@@ -74,10 +74,10 @@ export default definePlugin((editor) => {
       if (root.value.equal(options?.parent)) {
         index = options!.index
       }
-      root.value.moveChild(element, index)
-      element.style.left = aabb1.x
-      element.style.top = aabb1.y
-      element.updateGlobalTransform()
+      root.value.moveChild(el, index)
+      el.style.left = aabb1.x
+      el.style.top = aabb1.y
+      el.updateGlobalTransform()
       exec('layerScrollIntoView')
     }
   }
@@ -116,11 +116,11 @@ export default definePlugin((editor) => {
             }
           })
           if (idSet.size === 1) {
-            elements.forEach((element) => {
+            elements.forEach((el) => {
               nestIntoFrame(
-                element,
+                el,
                 {
-                  ...startContext[element.instanceId],
+                  ...startContext[el.instanceId],
                   pointer: getGlobalPointer(),
                 } as any,
               )
