@@ -1,4 +1,4 @@
-import type { Element2D, Node } from 'modern-canvas'
+import type { Node } from 'modern-canvas'
 import type { ComputedRef } from 'vue'
 import { Aabb2D } from 'modern-canvas'
 import { computed, ref } from 'vue'
@@ -64,34 +64,13 @@ export default definePlugin((editor) => {
     getAabb,
     root,
     camera,
+    viewportAabb,
   } = editor
 
   const snapThreshold = computed(() => Math.max(1, 5 / camera.value.zoom.x))
   const excluded = computed(() => new Set(elementSelection.value.map(el => el.id)))
-  const activeBox = computed(() => createBox(selectionAabb.value))
   const parnet = computed(() => elementSelection.value[0]?.parent ?? root.value)
   const parentBox = computed(() => createBox(parnet.value))
-  const boxes = computed(() => {
-    return parnet.value
-      .children
-      .filter(node => !excluded.value.has(node.id))
-      .map(node => createBox(node as Element2D)!)
-      .filter(Boolean) as Box[]
-  })
-
-  const store = computed(() => {
-    return boxes.value.reduce(
-      (store, box) => {
-        [box.vt, box.vm, box.vb].forEach(val => store.vLines.add(val));
-        [box.hl, box.hm, box.hr].forEach(val => store.hLines.add(val))
-        return store
-      },
-      {
-        vLines: new BSTree<Line>((a, b) => a.pos - b.pos),
-        hLines: new BSTree<Line>((a, b) => a.pos - b.pos),
-      },
-    )
-  })
 
   function createBox(node?: Node | BoundingBox | undefined): Box | undefined {
     if (!node)
@@ -228,13 +207,30 @@ export default definePlugin((editor) => {
   function updateSmartGuides() {
     const _linePairs: LinePair[] = []
 
-    const box = activeBox.value
+    const box = createBox(selectionAabb.value)
 
     if (box) {
-      const {
-        vLines,
-        hLines,
-      } = store.value
+      const boxes = parnet.value
+        .children
+        .filter((node) => {
+          return !excluded.value.has(node.id)
+            && isElement(node)
+            && viewportAabb.value.overlap(node.getGlobalAabb())
+        })
+        .map(node => createBox(node)!)
+        .filter(Boolean) as Box[]
+
+      const { vLines, hLines } = boxes.reduce(
+        (store, box) => {
+          [box.vt, box.vm, box.vb].forEach(val => store.vLines.add(val));
+          [box.hl, box.hm, box.hr].forEach(val => store.hLines.add(val))
+          return store
+        },
+        {
+          vLines: new BSTree<Line>((a, b) => a.pos - b.pos),
+          hLines: new BSTree<Line>((a, b) => a.pos - b.pos),
+        },
+      )
 
       const areaLine: Record<'vt' | 'vb' | 'hl' | 'hr', Line[]> = {
         vt: [],
@@ -484,7 +480,18 @@ export default definePlugin((editor) => {
       { type: 'overlay', component: SmartGuides },
     ],
     events: {
-      selectionTransforming: updateSmartGuides,
+      selectionTransforming: ({ handle }) => {
+        if (
+          handle === 'move'
+          // TODO
+          // || handle.startsWith('resize')
+        ) {
+          updateSmartGuides()
+        }
+      },
+      selectionTransformEnd: () => {
+        linePairs.value = []
+      },
     },
   }
 })
