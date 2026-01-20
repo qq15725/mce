@@ -1,0 +1,137 @@
+import type { Element2D, Node, Vector2Like } from 'modern-canvas'
+import { definePlugin } from '../plugin'
+
+declare global {
+  namespace Mce {
+    interface NestIntoFrameOptions {
+      pointer: Vector2Like
+      parent: Element2D
+      index: number
+    }
+
+    interface Commands {
+      nestIntoFrame: (
+        element: Element2D,
+        options?: NestIntoFrameOptions,
+      ) => void
+    }
+  }
+}
+
+export default definePlugin((editor) => {
+  const {
+    getGlobalPointer,
+    frames,
+    isTopFrame,
+    exec,
+    root,
+  } = editor
+
+  let startFrame: Element2D | undefined
+  let startContext = {} as Record<string, any>
+
+  function nestIntoFrame(
+    element: Element2D,
+    options?: Mce.NestIntoFrameOptions,
+  ): void {
+    const pointer = options?.pointer as any
+    const frame1 = element.findAncestor(node => isTopFrame(node))
+    const aabb1 = element.getGlobalAabb()
+    const area1 = aabb1.getArea()
+    let flag = true
+    for (let i = 0, len = frames.value.length; i < len; i++) {
+      const frame2 = frames.value[i]
+      if (frame2.equal(element)) {
+        continue
+      }
+      const aabb2 = frame2.getGlobalAabb()
+      if (
+        pointer
+          ? aabb2.contains(pointer)
+          : (aabb1 && aabb1.getIntersectionRect(aabb2).getArea() > area1 * 0.5)
+      ) {
+        if (!frame2.equal(frame1)) {
+          let index = frame2.children.length
+          if (frame2.equal(options?.parent)) {
+            index = options!.index
+          }
+          frame2.moveChild(element, index)
+          element.style.left = aabb1.x - aabb2.x
+          element.style.top = aabb1.y - aabb2.y
+          element.updateGlobalTransform()
+          exec('layerScrollIntoView')
+        }
+        flag = false
+        break
+      }
+    }
+
+    if (
+      flag
+      && frame1
+    ) {
+      let index = root.value.children.length
+      if (root.value.equal(options?.parent)) {
+        index = options!.index
+      }
+      root.value.moveChild(element, index)
+      element.style.left = aabb1.x
+      element.style.top = aabb1.y
+      element.updateGlobalTransform()
+      exec('layerScrollIntoView')
+    }
+  }
+
+  return {
+    name: 'mce:autoNest',
+    commands: [
+      { command: 'nestIntoFrame', handle: nestIntoFrame },
+    ],
+    events: {
+      selectionTransformStart: ({ elements }) => {
+        const pointer = getGlobalPointer()
+        startFrame = frames.value.find(frame => frame.getGlobalAabb().contains(pointer))
+        const ctx: Record<string, any> = {}
+        elements.forEach((el) => {
+          ctx[el.instanceId] = {
+            parent: el.getParent(),
+            index: el.getIndex(),
+          }
+        })
+        startContext = ctx
+      },
+      selectionTransforming: ({ handle, startEvent, elements }) => {
+        // move to frame
+        if (handle === 'move' && !(startEvent as any)?.__FROM__) {
+          const idSet = new Set<number>()
+          elements.forEach((el) => {
+            const frame = isTopFrame(el) ? el : (el as Node).findAncestor(isTopFrame)
+            if (frame) {
+              if (frame.equal(startFrame)) {
+                idSet.add(frame.instanceId)
+              }
+            }
+            else {
+              idSet.add(0)
+            }
+          })
+          if (idSet.size === 1) {
+            elements.forEach((element) => {
+              nestIntoFrame(
+                element,
+                {
+                  ...startContext[element.instanceId],
+                  pointer: getGlobalPointer(),
+                } as any,
+              )
+            })
+          }
+        }
+      },
+      selectionTransformEnd: () => {
+        startContext = {}
+        startFrame = undefined
+      },
+    },
+  }
+})

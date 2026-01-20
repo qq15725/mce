@@ -49,7 +49,6 @@ export default defineMixin((editor) => {
     log,
     root,
     isElement,
-    isFrame,
     inEditorIs,
     isLock,
     getObb,
@@ -60,7 +59,7 @@ export default defineMixin((editor) => {
     selection,
     camera,
     parseAnchor,
-    handleDragOutReparent,
+    exec,
   } = editor
 
   function addElement(
@@ -251,7 +250,7 @@ export default defineMixin((editor) => {
     }
 
     if (!isArray && !parent) {
-      handleDragOutReparent(elements[0])
+      exec('nestIntoFrame', elements[0])
     }
 
     return isArray ? elements : elements[0]

@@ -1,27 +1,18 @@
-import type { Element2D, Node, Vector2Like } from 'modern-canvas'
+import type { Element2D } from 'modern-canvas'
 import { defineMixin } from '../mixin'
 
 declare global {
   namespace Mce {
-    interface HandleDragOutReparentOptions {
-      pointer: Vector2Like
-      parent: Element2D
-      index: number
-    }
-
     interface Editor {
       findFrame: (target: 'next' | 'previous') => Element2D | undefined
-      handleDragOutReparent: (element: Element2D, context?: HandleDragOutReparentOptions) => void
     }
   }
 }
 
 export default defineMixin((editor) => {
   const {
-    root,
     frames,
     isTopFrame,
-    exec,
     selection,
     getAncestorFrame,
   } = editor
@@ -53,117 +44,7 @@ export default defineMixin((editor) => {
     return frames.value[index]
   }
 
-  function handleDragOutReparent(
-    element: Element2D,
-    options?: Mce.HandleDragOutReparentOptions,
-  ): void {
-    const pointer = options?.pointer as any
-    const frame1 = element.findAncestor(node => isTopFrame(node))
-    const aabb1 = element.getGlobalAabb()
-    const area1 = aabb1.getArea()
-    let flag = true
-    for (let i = 0, len = frames.value.length; i < len; i++) {
-      const frame2 = frames.value[i]
-      if (frame2.equal(element)) {
-        continue
-      }
-      const aabb2 = frame2.getGlobalAabb()
-      if (
-        pointer
-          ? aabb2.contains(pointer)
-          : (aabb1 && aabb1.getIntersectionRect(aabb2).getArea() > area1 * 0.5)
-      ) {
-        if (!frame2.equal(frame1)) {
-          let index = frame2.children.length
-          if (frame2.equal(options?.parent)) {
-            index = options!.index
-          }
-          frame2.moveChild(element, index)
-          element.style.left = aabb1.x - aabb2.x
-          element.style.top = aabb1.y - aabb2.y
-          element.updateGlobalTransform()
-          exec('layerScrollIntoView')
-        }
-        flag = false
-        break
-      }
-    }
-
-    if (
-      flag
-      && frame1
-    ) {
-      let index = root.value.children.length
-      if (root.value.equal(options?.parent)) {
-        index = options!.index
-      }
-      root.value.moveChild(element, index)
-      element.style.left = aabb1.x
-      element.style.top = aabb1.y
-      element.updateGlobalTransform()
-      exec('layerScrollIntoView')
-    }
-  }
-
   Object.assign(editor, {
     findFrame,
-    handleDragOutReparent,
   })
-
-  return () => {
-    const {
-      on,
-      getGlobalPointer,
-    } = editor
-
-    let startFrame: Element2D | undefined
-    let startContext = {} as Record<string, any>
-
-    on('selectionTransformStart', ({ elements }) => {
-      const pointer = getGlobalPointer()
-      startFrame = frames.value.find(frame => frame.getGlobalAabb().contains(pointer))
-      const ctx: Record<string, any> = {}
-      elements.forEach((el) => {
-        ctx[el.instanceId] = {
-          parent: el.getParent(),
-          index: el.getIndex(),
-        }
-      })
-      startContext = ctx
-    })
-
-    on('selectionTransforming', ({ handle, startEvent, elements }) => {
-      // move to frame
-      if (handle === 'move' && !(startEvent as any)?.__FROM__) {
-        const idSet = new Set<number>()
-        elements.forEach((el) => {
-          const frame = isTopFrame(el) ? el : (el as Node).findAncestor(isTopFrame)
-          if (frame) {
-            if (frame.equal(startFrame)) {
-              idSet.add(frame.instanceId)
-            }
-          }
-          else {
-            idSet.add(0)
-          }
-        })
-        if (idSet.size === 1) {
-          elements.forEach((element) => {
-            handleDragOutReparent(
-              element,
-              {
-                ...startContext[element.instanceId],
-                pointer: getGlobalPointer(),
-              } as any,
-            )
-          })
-        }
-      }
-    })
-
-    on('selectionTransformEnd', () => {
-      startContext = {}
-      startFrame = undefined
-    })
-  }
 })
