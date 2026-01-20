@@ -1,3 +1,20 @@
+## [0.15.30](https://github.com/qq15725/mce/compare/v0.15.29...v0.15.30) (2026-01-20)
+
+
+### Bug Fixes
+
+* align ([323fccb](https://github.com/qq15725/mce/commit/323fccb76998faf7b7822a5beafa17a8195bee93))
+* floatbar ([54e9541](https://github.com/qq15725/mce/commit/54e9541aa6628f4490867ff385c5322584639195))
+* idoc ([27c4101](https://github.com/qq15725/mce/commit/27c4101c3dbe3fe414fec5d3166ccdc64aadd4ee))
+* rotate in multiple select ([cc3bbbc](https://github.com/qq15725/mce/commit/cc3bbbc4188e6cd9458f96475342ace2df4e98c3))
+* selector ([c42720a](https://github.com/qq15725/mce/commit/c42720abcaf8c03632137623197a47476fe86406))
+* selector ([939d026](https://github.com/qq15725/mce/commit/939d0260cfbfac3274d6faf38b3b7caed5ce6225))
+* shape ([88f2ef3](https://github.com/qq15725/mce/commit/88f2ef37f1fb1bc46428b1a0752f3a9112a2b4f3))
+* smartGuides ([52a9091](https://github.com/qq15725/mce/commit/52a90915914cd36098c670c6431e32f8caa1c4b1))
+* zoomToFit ([395303b](https://github.com/qq15725/mce/commit/395303bd3644c124f26ab4cb4fd169606169fc86))
+
+
+
 ## [0.15.29](https://github.com/qq15725/mce/compare/v0.15.28...v0.15.29) (2026-01-20)
 
 
