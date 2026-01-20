@@ -103,6 +103,8 @@ export default definePlugin((editor) => {
         position: start,
         active: true,
       })
+      el.style.width = 1
+      el.style.height = 1
       return {
         move: (move) => {
           const minX = Math.min(move.x, start.x)
