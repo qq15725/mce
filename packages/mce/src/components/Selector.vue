@@ -88,19 +88,6 @@ const selectionObbStyles = computed(() => {
   })
 })
 
-const _transform = computed(() => {
-  const zoom = camera.value.zoom
-  const { left, top, width, height, rotationDegrees } = selectionObbInDrawboard.value
-  return {
-    left,
-    top,
-    width,
-    height,
-    rotate: rotationDegrees,
-    borderRadius: (elementSelection.value[0]?.style.borderRadius ?? 0) * zoom.x,
-  }
-})
-
 function snap(currentPos: number, type: 'x' | 'y'): number {
   const points = getSnapPoints()
   const zoom = camera.value.zoom
@@ -146,6 +133,21 @@ function createSelectionTransformContext(): Mce.SelectionTransformContext {
   }
 }
 
+const rotate = ref(0)
+
+const _transform = computed(() => {
+  const zoom = camera.value.zoom
+  const { left, top, width, height, rotationDegrees } = selectionObbInDrawboard.value
+  return {
+    left,
+    top,
+    width,
+    height,
+    rotate: rotationDegrees,
+    borderRadius: (elementSelection.value[0]?.style.borderRadius ?? 0) * zoom.x,
+  }
+})
+
 const transform = computed({
   get: () => _transform.value,
   set: (val: TransformableValue) => {
@@ -157,7 +159,7 @@ const transform = computed({
       top: val.top / zoom.y,
       width: Math.max(1, val.width / zoom.x),
       height: Math.max(1, val.height / zoom.y),
-      rotate: val.rotate ?? 0,
+      rotate: (val.rotate ?? 0),
       borderRadius: (val.borderRadius ?? 0) / zoom.y,
     }
 
@@ -175,6 +177,11 @@ const transform = computed({
       borderRadius: transform.borderRadius - (oldTransform.borderRadius ?? 0) / zoom.y,
     }
 
+    if (elementSelection.value.length > 1) {
+      offsetStyle.rotate = transform.rotate - rotate.value
+      rotate.value += offsetStyle.rotate
+    }
+
     elementSelection.value.forEach((element) => {
       const style = element.style
 
@@ -183,7 +190,7 @@ const transform = computed({
         top: style.top + offsetStyle.top,
         width: style.width + offsetStyle.width,
         height: style.height + offsetStyle.height,
-        rotate: style.rotate + offsetStyle.rotate,
+        rotate: (style.rotate + offsetStyle.rotate + 360) % 360,
         borderRadius: Math.round(style.borderRadius + offsetStyle.borderRadius),
       }
 
@@ -264,6 +271,7 @@ const roundable = computed(() => {
 })
 
 function onStart() {
+  rotate.value = 0
   emit('selectionTransformStart', createSelectionTransformContext())
 }
 
@@ -295,7 +303,7 @@ defineExpose({
 <template>
   <div
     v-for="(style, index) in parentObbStyles" :key="index"
-    class="mce-selector__parent-element"
+    class="mce-selector__parent-obb"
     :style="{
       borderColor: 'currentColor',
       ...style,
@@ -314,7 +322,7 @@ defineExpose({
   <div
     v-for="(style, index) in selectionObbStyles"
     :key="index"
-    class="mce-selector__element"
+    class="mce-selector__obb"
     :style="{
       borderColor: 'currentcolor',
       ...style,
@@ -332,7 +340,6 @@ defineExpose({
     :roundable="state !== 'typing' && roundable"
     :resize-strategy="props.resizeStrategy"
     class="mce-selector__transform"
-    :border-style="elementSelection.length > 1 ? 'dashed' : 'solid'"
     :tip-format="tipFormat"
     @start="onStart"
     @move="onMove"
@@ -360,7 +367,7 @@ defineExpose({
     position: absolute;
   }
 
-  .mce-selector__parent-element {
+  .mce-selector__parent-obb {
     position: absolute;
     pointer-events: none;
     border-width: 1px;
@@ -382,7 +389,7 @@ defineExpose({
     color: rgba(var(--mce-theme-primary), 1);
   }
 
-  .mce-selector__element {
+  .mce-selector__obb {
     position: absolute;
     border-width: 1px;
     border-style: solid;

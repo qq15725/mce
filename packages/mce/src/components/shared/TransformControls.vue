@@ -407,7 +407,7 @@ function start(event?: MouseEvent, index?: number): boolean {
           rotatedCurrentPoint.x - centerPoint.x,
         ) / (Math.PI / 180)
 
-        updated.rotate = ((rotate + endAngle - startAngle) + 360) % 360
+        updated.rotate = rotate + endAngle - startAngle
       }
     }
     else if (isRound) {
