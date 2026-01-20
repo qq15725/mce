@@ -1,4 +1,4 @@
-import type { Node } from 'modern-canvas'
+import type { Aabb2D, Node } from 'modern-canvas'
 import { definePlugin } from '../plugin'
 
 declare global {
@@ -30,62 +30,10 @@ declare global {
 export default definePlugin((editor) => {
   const {
     isElement,
-    rootAabb,
     elementSelection,
     selection,
     getAabb,
   } = editor
-
-  function align(direction: Mce.AlignCommandDirection) {
-    elementSelection.value.forEach((el) => {
-      if (el.parent && isElement(el.parent)) {
-        const parentAabb = getAabb(el.parent)
-
-        switch (direction) {
-          case 'left':
-            el.style.left = 0
-            break
-          case 'horizontal-center':
-            el.style.left = (parentAabb.width - el.style.width) / 2
-            break
-          case 'right':
-            el.style.left = parentAabb.width - el.style.width
-            break
-          case 'top':
-            el.style.top = 0
-            break
-          case 'vertical-center':
-            el.style.top = (parentAabb.height - el.style.height) / 2
-            break
-          case 'bottom':
-            el.style.top = parentAabb.height - el.style.height
-            break
-        }
-      }
-      else {
-        switch (direction) {
-          case 'left':
-            el.style.left = rootAabb.value.left
-            break
-          case 'horizontal-center':
-            el.style.left = (rootAabb.value.left + rootAabb.value.width - el.style.width) / 2
-            break
-          case 'right':
-            el.style.left = (rootAabb.value.left + rootAabb.value.width) - el.style.width
-            break
-          case 'top':
-            el.style.top = rootAabb.value.top
-            break
-          case 'vertical-center':
-            el.style.top = (rootAabb.value.top + rootAabb.value.height - el.style.height) / 2
-            break
-          case 'bottom':
-            el.style.top = (rootAabb.value.top + rootAabb.value.height) - el.style.height
-            break
-        }
-      }
-    })
-  }
 
   function zOrder(
     target: Node | Node[],
@@ -115,6 +63,54 @@ export default definePlugin((editor) => {
           break
       }
       parent.moveChild(el, index)
+    })
+  }
+
+  // TODO 不支持非中心 pivot
+  function align(direction: Mce.AlignCommandDirection) {
+    let targetAabb: Aabb2D | undefined
+    if (elementSelection.value.length > 1) {
+      targetAabb = getAabb(elementSelection.value)
+    }
+    else {
+      const parent = elementSelection.value[0]?.parent
+      if (parent && isElement(parent)) {
+        targetAabb = parent.getGlobalAabb()
+      }
+    }
+
+    if (!targetAabb) {
+      return
+    }
+
+    elementSelection.value.forEach((el) => {
+      const hw = el.size.x / 2
+      const hh = el.size.y / 2
+      const cos = Math.cos(el.rotation)
+      const sin = Math.sin(el.rotation)
+      const dx = Math.abs(hw * cos) + Math.abs(hh * sin)
+      const dy = Math.abs(hw * sin) + Math.abs(hh * cos)
+
+      switch (direction) {
+        case 'left':
+          el.style.left = targetAabb.left + dx - hw
+          break
+        case 'horizontal-center':
+          el.style.left = targetAabb.left + targetAabb.width / 2 - hw
+          break
+        case 'right':
+          el.style.left = targetAabb.left + targetAabb.width - dx - hw
+          break
+        case 'top':
+          el.style.top = targetAabb.top + dy - hh
+          break
+        case 'vertical-center':
+          el.style.top = targetAabb.top + targetAabb.height / 2 - hh
+          break
+        case 'bottom':
+          el.style.top = targetAabb.top + targetAabb.height - dy - hh
+          break
+      }
     })
   }
 
