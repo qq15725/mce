@@ -12,6 +12,7 @@ declare global {
 export default defineMixin((editor) => {
   const {
     frames,
+    isElement,
     isTopFrame,
     selection,
     getAncestorFrame,
@@ -21,7 +22,7 @@ export default defineMixin((editor) => {
     let current: Element2D | undefined
     const node = selection.value[0]
     if (node) {
-      current = isTopFrame(node)
+      current = isElement(node) && isTopFrame(node)
         ? node
         : getAncestorFrame(node, true)
     }
