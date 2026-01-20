@@ -9,21 +9,25 @@ import { isInputEvent, SUPPORTS_CLIPBOARD } from '../utils'
 
 declare global {
   namespace Mce {
-    interface Hotkeys {
-      copy: [event: KeyboardEvent]
-      cut: [event: KeyboardEvent]
-      paste: [event: KeyboardEvent]
-      duplicate: [event: KeyboardEvent]
-    }
-
     type CopySource = string | Blob | Blob[] | Record<string, any>[]
     type PasteSource = DataTransfer | ClipboardItem[]
 
     interface Commands {
+      cancel: () => void
+      delete: () => void
       copy: (source?: CopySource) => Promise<void>
       cut: () => Promise<void>
       paste: (source?: PasteSource) => Promise<void>
       duplicate: () => void
+    }
+
+    interface Hotkeys {
+      cancel: [event: KeyboardEvent]
+      delete: [event: KeyboardEvent]
+      copy: [event: KeyboardEvent]
+      cut: [event: KeyboardEvent]
+      paste: [event: KeyboardEvent]
+      duplicate: [event: KeyboardEvent]
     }
 
     interface Editor {
@@ -38,16 +42,32 @@ declare global {
 
 export default definePlugin((editor, options) => {
   const {
+    state,
     selection,
     exec,
     canLoad,
     load,
     addElements,
+    hoverElement,
   } = editor
 
   const copiedData = ref<any>()
 
   const useClipboard = options.clipboard !== false && SUPPORTS_CLIPBOARD
+
+  const cancel: Mce.Commands['cancel'] = () => {
+    state.value = undefined
+  }
+
+  const _delete: Mce.Commands['delete'] = () => {
+    if (selection.value.length) {
+      selection.value.forEach((node) => {
+        node.remove()
+      })
+      selection.value = []
+    }
+    hoverElement.value = undefined
+  }
 
   const copy: Mce.Commands['copy'] = async (source) => {
     if (typeof source === 'string') {
@@ -284,12 +304,16 @@ export default definePlugin((editor, options) => {
   return {
     name: 'mce:edit',
     commands: [
+      { command: 'cancel', handle: cancel },
+      { command: 'delete', handle: _delete },
       { command: 'copy', handle: copy },
       { command: 'cut', handle: cut },
       { command: 'paste', handle: paste },
       { command: 'duplicate', handle: duplicate },
     ],
     hotkeys: [
+      { command: 'cancel', key: 'escape', editable: false },
+      { command: 'delete', key: ['Backspace', 'Delete'], when: () => Boolean(selection.value.length > 0) },
       { command: 'copy', key: 'CmdOrCtrl+C', editable: false },
       { command: 'cut', key: 'CmdOrCtrl+X', editable: false },
       { command: 'paste', key: 'CmdOrCtrl+V', editable: false, preventDefault: false },
