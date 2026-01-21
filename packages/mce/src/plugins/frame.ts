@@ -29,6 +29,8 @@ export default definePlugin((editor) => {
             active: true,
           })
           // TODO
+          el.style.width = 1
+          el.style.height = 1
           el.style.backgroundColor = '#ffffff'
           return {
             move: (move) => {
@@ -38,8 +40,8 @@ export default definePlugin((editor) => {
               const maxY = Math.max(move.y, start.y)
               el.style.left = minX
               el.style.top = minY
-              el.style.width = maxX - minX
-              el.style.height = maxY - minY
+              el.style.width = Math.max(1, maxX - minX)
+              el.style.height = Math.max(1, maxY - minY)
             },
             end: () => {
               setActiveDrawingTool(undefined)
