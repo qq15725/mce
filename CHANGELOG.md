@@ -1,3 +1,24 @@
+## [0.15.32](https://github.com/qq15725/mce/compare/v0.15.31...v0.15.32) (2026-01-21)
+
+
+### Bug Fixes
+
+* frame / slice ([eb7c5bd](https://github.com/qq15725/mce/commit/eb7c5bdbd146b64df007d5ed85a780fcc6f7e23e))
+
+
+### Features
+
+* distributeSpacing / tidyUp ([0f036c4](https://github.com/qq15725/mce/commit/0f036c46c9366e524a5a3b6e265b4aa5cba94aaa))
+* distributeSpacing command ([7f6cf93](https://github.com/qq15725/mce/commit/7f6cf930ea724f63aa4e5d6959ea6ee7c7687193))
+* flip command ([9933ce4](https://github.com/qq15725/mce/commit/9933ce41202ca5445a420583f83d4712c9b4d9f1))
+* lockOrUnlockSelection command ([3d3ce0a](https://github.com/qq15725/mce/commit/3d3ce0a59fd2d4b6379dec76cd9e187b3f8923bb))
+* select command ([b2bf1c7](https://github.com/qq15725/mce/commit/b2bf1c72098a4ded58c2e97581c94cbfbbd07dd1))
+* selectNone / rename ungroup to ungroupSelection ([de69bcf](https://github.com/qq15725/mce/commit/de69bcf80212d08621cba2e7c87988ec4dcfa1c2))
+* showOrHideSelection command ([7357d1e](https://github.com/qq15725/mce/commit/7357d1ef2e1933f31da9bf543e00a289956b8b07))
+* zOrder ([1c87e45](https://github.com/qq15725/mce/commit/1c87e45ecffcdd34b9bb12855b6bc5a3fd4ebdbe))
+
+
+
 ## [0.15.31](https://github.com/qq15725/mce/compare/v0.15.30...v0.15.31) (2026-01-21)
 
 

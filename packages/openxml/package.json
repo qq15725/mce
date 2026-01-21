@@ -1,7 +1,7 @@
 {
   "name": "@mce/openxml",
   "type": "module",
-  "version": "0.15.31",
+  "version": "0.15.32",
   "description": "Openxml plugin for mce",
   "author": "wxm",
   "license": "MIT",
