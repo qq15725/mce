@@ -18,6 +18,10 @@ declare global {
         | 'vertical-center'
         | 'bottom'
 
+    type DistributeSpacingDirection
+      = | 'horizontal'
+        | 'vertical'
+
     interface Commands {
       zOrder: (target: Node | Node[], type: ZOrderType) => void
       bringForward: (target?: Node) => void
@@ -31,6 +35,7 @@ declare global {
       alignBottom: () => void
       alignHorizontalCenter: () => void
       alignVerticalCenter: () => void
+      distributeSpacing: (direction: DistributeSpacingDirection) => void
       distributeHorizontalSpacing: () => void
       distributeVerticalSpacing: () => void
       tidyUp: () => void
@@ -164,7 +169,7 @@ export default definePlugin((editor) => {
     target && zOrder(target, 'sendToBack')
   }
 
-  function distributeSpacing(_direction: 'horizontal' | 'vertical'): void {
+  function distributeSpacing(_direction: Mce.DistributeSpacingDirection): void {
     // TODO
   }
 
@@ -187,6 +192,7 @@ export default definePlugin((editor) => {
       { command: 'alignBottom', handle: () => align('bottom') },
       { command: 'alignHorizontalCenter', handle: () => align('horizontal-center') },
       { command: 'alignVerticalCenter', handle: () => align('vertical-center') },
+      { command: 'distributeSpacing', handle: distributeSpacing },
       { command: 'distributeHorizontalSpacing', handle: () => distributeSpacing('horizontal') },
       { command: 'distributeVerticalSpacing', handle: () => distributeSpacing('vertical') },
       { command: 'tidyUp', handle: tidyUp },
