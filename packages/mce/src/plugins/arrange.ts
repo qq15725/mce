@@ -4,6 +4,12 @@ import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {
+    type ZOrderType
+      = | 'bringForward'
+        | 'sendBackward'
+        | 'bringToFront'
+        | 'sendToBack'
+
     type AlignDirection
       = | 'left'
         | 'horizontal-center'
@@ -13,6 +19,7 @@ declare global {
         | 'bottom'
 
     interface Commands {
+      zOrder: (target: Node | Node[], type: ZOrderType) => void
       bringForward: (target?: Node) => void
       sendBackward: (target?: Node) => void
       bringToFront: (target?: Node | Node[]) => void
@@ -51,7 +58,7 @@ export default definePlugin((editor) => {
 
   function zOrder(
     target: Node | Node[],
-    type: 'bringForward' | 'bringToFront' | 'sendBackward' | 'sendToBack',
+    type: Mce.ZOrderType,
   ) {
     const els = Array.isArray(target) ? target : [target]
 
@@ -154,6 +161,7 @@ export default definePlugin((editor) => {
   return {
     name: 'mce:arrange',
     commands: [
+      { command: 'zOrder', handle: zOrder },
       { command: 'bringForward', handle: bringForward },
       { command: 'sendBackward', handle: sendBackward },
       { command: 'bringToFront', handle: bringToFront },

@@ -1,3 +1,4 @@
+import type { Node } from 'modern-canvas'
 import GoBackSelectedArea from '../components/GoBackSelectedArea.vue'
 import { definePlugin } from '../plugin'
 
@@ -11,6 +12,7 @@ declare global {
         | 'parent'
         | 'previousSibling'
         | 'nextSibling'
+        | Node[]
 
     interface Commands {
       select: (target: SelectTarget) => void
@@ -103,6 +105,9 @@ export default definePlugin((editor) => {
         }
         break
       }
+      default:
+        selection.value = target
+        break
     }
   }
 
