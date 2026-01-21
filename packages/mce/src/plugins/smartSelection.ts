@@ -1,10 +1,11 @@
+import type { Element2D } from 'modern-canvas'
 import SmartSelection from '../components/SmartSelection.vue'
 import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {
-    interface Editor {
-      //
+    interface Commands {
+      setSmartSelectionCurrentElement: (element?: Element2D) => void
     }
   }
 }

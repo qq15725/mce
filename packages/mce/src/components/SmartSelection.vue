@@ -1,51 +1,63 @@
 <script setup lang="ts">
 import type { Element2D } from 'modern-canvas'
 import type { TransformableValue } from './shared/TransformControls.vue'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useEditor } from '../composables'
 import TransformControls from './shared/TransformControls.vue'
 
 const {
   elementSelection,
   getObb,
+  getAabb,
   state,
   camera,
   resizeElement,
   inEditorIs,
+  registerCommand,
 } = useEditor()
 
 const currentElement = ref<Element2D>()
+const info = ref({
+  active: false,
+  spacing: undefined as number | undefined,
+})
 
-const info = computed(() => {
+registerCommand({
+  command: 'setSmartSelectionCurrentElement',
+  handle: (el) => {
+    currentElement.value = el
+  },
+})
+
+function update() {
+  if (currentElement.value) {
+    return
+  }
+
   const els = elementSelection.value
   let active = false
   let spacing: number | undefined
 
-  const items = els.map((el) => {
-    return {
-      el,
-      aabb: el.getGlobalAabb(),
-    }
-  })
-
-  if (els.length > 1) {
+  if (state.value !== 'transforming' && els.length > 1) {
     let prev
 
+    const items = els.map(el => ({ el, aabb: getAabb(el) }))
+
     active = true
-    items.sort((a, b) => a.aabb.x - b.aabb.x)
-    for (let i = 0; i < items.length; i++) {
-      const cur = items[i]
+    const sorted = [...items].sort((a, b) => a.aabb.y - b.aabb.y)
+    for (let i = 0; i < sorted.length; i++) {
+      const cur = sorted[i]
       if (prev) {
-        if (!cur.aabb.overlap(prev.aabb, 'y')) {
+        if (!cur.aabb.overlap(prev.aabb, 'x')) {
           active = false
           break
         }
-        const _spacingX = cur.aabb.x - prev.aabb.x
-        if (spacing !== undefined && spacing !== _spacingX) {
+        const _spacing = cur.aabb.y - (prev.aabb.y + prev.aabb.height)
+        if (spacing !== undefined && Math.abs(spacing - _spacing) >= 1) {
           active = false
           break
         }
-        spacing = _spacingX
+        spacing = _spacing
       }
       prev = cur
     }
@@ -54,32 +66,40 @@ const info = computed(() => {
       active = true
       prev = undefined
       spacing = undefined
-      items.sort((a, b) => a.aabb.y - b.aabb.y)
-      for (let i = 0; i < items.length; i++) {
-        const cur = items[i]
+      const sorted = [...items].sort((a, b) => a.aabb.x - b.aabb.x)
+      for (let i = 0; i < sorted.length; i++) {
+        const cur = sorted[i]
         if (prev) {
-          if (!cur.aabb.overlap(prev.aabb, 'x')) {
+          if (!cur.aabb.overlap(prev.aabb, 'y')) {
             active = false
             break
           }
-          const _spacingX = cur.aabb.y - prev.aabb.y
-          if (spacing !== undefined && spacing !== _spacingX) {
+          const _spacing = cur.aabb.x - (prev.aabb.x + prev.aabb.width)
+          if (spacing !== undefined && Math.abs(spacing - _spacing) >= 1) {
             active = false
             break
           }
-          spacing = _spacingX
+          spacing = _spacing
         }
         prev = cur
       }
     }
   }
 
-  return {
+  info.value = {
     active,
     spacing,
-    items,
   }
-})
+}
+
+watch(() => elementSelection.value.map(el => getAabb(el)), update)
+
+watch(
+  state,
+  () => {
+    currentElement.value = undefined
+  },
+)
 
 const handles = computed(() => {
   return elementSelection.value.map((el) => {
@@ -112,7 +132,6 @@ const transform = computed({
       width: Math.max(1, val.width / zoom.x),
       height: Math.max(1, val.height / zoom.y),
     }
-
     const offsetStyle = {
       left: transform.left - oldTransform.left / zoom.x,
       top: transform.top - oldTransform.top / zoom.y,
@@ -155,13 +174,16 @@ const transform = computed({
 
 <template>
   <div
-    v-if="state !== 'transforming' && info.active"
+    v-if="info.active"
     class="mce-smart-selection"
   >
     <div
       v-for="(item, index) in handles"
       :key="index"
       class="mce-smart-handle"
+      :class="{
+        'mce-smart-handle--active': item.el.equal(currentElement),
+      }"
       :style="item.style"
     >
       <div
@@ -194,6 +216,11 @@ const transform = computed({
       display: flex;
       align-items: center;
       justify-content: center;
+
+      &--active > .mce-smart-handle__btn {
+        background: #FF24BD;
+      }
+
       &__btn {
         pointer-events: auto;
         width: 10px;
@@ -201,6 +228,7 @@ const transform = computed({
         border-radius: 100%;
         border: 1px solid #FF24BD;
         outline: 1px solid #FFFFFF;
+
         &:hover {
           background: #FF24BD;
         }
