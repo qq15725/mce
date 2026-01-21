@@ -9,7 +9,6 @@ import _drawingTool from './drawingTool'
 import _edit from './edit'
 import _frame from './frame'
 import _gif from './gif'
-import _group from './group'
 import _history from './history'
 import _hover from './hover'
 import _html from './html'
@@ -55,7 +54,6 @@ export const plugins = [
   _edit,
   _frame,
   _gif,
-  _group,
   _history,
   _hover,
   _html,

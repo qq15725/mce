@@ -3,6 +3,28 @@ import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {
+    type SelectTarget
+      = | 'none'
+        | 'all'
+        | 'invert'
+        | 'children'
+        | 'parent'
+        | 'previousSibling'
+        | 'nextSibling'
+
+    interface Commands {
+      select: (target: SelectTarget) => void
+      selectAll: () => void
+      deselectAll: () => void
+      selectChildren: () => void
+      selectParent: () => void
+      selectPreviousSibling: () => void
+      selectNextSibling: () => void
+      groupSelection: () => void
+      frameSelection: () => void
+      ungroup: () => void
+    }
+
     interface Hotkeys {
       selectAll: [event: KeyboardEvent]
       deselectAll: [event: KeyboardEvent]
@@ -10,15 +32,9 @@ declare global {
       selectParent: [event: KeyboardEvent]
       selectPreviousSibling: [event: KeyboardEvent]
       selectNextSibling: [event: KeyboardEvent]
-    }
-
-    interface Commands {
-      selectAll: () => void
-      deselectAll: () => void
-      selectChildren: () => void
-      selectParent: () => void
-      selectPreviousSibling: () => void
-      selectNextSibling: () => void
+      groupSelection: [event: KeyboardEvent]
+      frameSelection: [event: KeyboardEvent]
+      ungroup: [event: KeyboardEvent]
     }
   }
 }
@@ -27,53 +43,133 @@ export default definePlugin((editor) => {
   const {
     isElement,
     selection,
+    elementSelection,
+    getObb,
+    getAabb,
+    doc,
     root,
     zoomTo,
     findSibling,
+    inEditorIs,
+    addElement,
+    addElements,
+    obbToFit,
   } = editor
 
-  function selectAll(): void {
-    selection.value = [...root.value.children]
-  }
-
-  function deselectAll() {
-    selection.value = []
-  }
-
-  function selectChildren() {
-    const children = selection.value[0]?.children
-    if (children?.length) {
-      selection.value = [...children]
+  function select(target: Mce.SelectTarget) {
+    switch (target) {
+      case 'none':
+        selection.value = []
+        break
+      case 'all':
+        selection.value = [...root.value.children]
+        break
+      case 'invert':
+        selection.value = []
+        break
+      case 'children': {
+        const children = selection.value[0]?.children
+        if (children?.length) {
+          selection.value = [...children]
+        }
+        break
+      }
+      case 'parent': {
+        const parent = selection.value[0]?.parent
+        if (isElement(parent)) {
+          selection.value = [parent]
+        }
+        break
+      }
+      case 'previousSibling':
+      case 'nextSibling': {
+        const value = findSibling(target === 'previousSibling' ? 'previous' : 'next')
+        if (value) {
+          selection.value = [value]
+          zoomTo('selection', {
+            intoView: true,
+            behavior: 'smooth',
+          })
+        }
+        break
+      }
     }
   }
 
-  function selectParent() {
-    const parent = selection.value[0]?.parent
-    if (isElement(parent)) {
-      selection.value = [parent]
+  function group(inEditorIs: 'Element' | 'Frame'): void {
+    const elements = elementSelection.value
+    if (!elements.length) {
+      return
     }
-  }
-
-  function selectSibling(type: 'previous' | 'next') {
-    const value = findSibling(type)
-    if (value) {
-      selection.value = [value]
-      zoomTo('selection', {
-        intoView: true,
-        behavior: 'smooth',
+    const element = elements[0]
+    const parent = element.parent
+    const aabb = getAabb(elements, 'parent')
+    const children = elements.map((child) => {
+      const cloned = child.toJSON()
+      cloned.style.left = child.style.left - aabb.left
+      cloned.style.top = child.style.top - aabb.top
+      return cloned
+    })
+    doc.value.transact(() => {
+      addElement({
+        name: inEditorIs === 'Frame' ? 'Frame' : 'Group',
+        style: {
+          left: aabb.left,
+          top: aabb.top,
+          width: aabb.width,
+          height: aabb.height,
+        },
+        children,
+        meta: {
+          inPptIs: 'GroupShape',
+          inEditorIs,
+        },
+      }, {
+        parent,
+        index: parent ? element.getIndex() : undefined,
+        active: true,
+        regenId: true,
       })
-    }
+      elements.forEach(node => node.remove())
+    })
+  }
+
+  function ungroup() {
+    const element = elementSelection.value[0]
+    if (!element || !element.children.length)
+      return
+    const parent = getObb(element, 'parent')
+    const items = element.children.map((child) => {
+      const obb = getObb(child, 'parent')
+      const cloned = child.toJSON()
+      cloned.style.left = obb.left + parent.left
+      cloned.style.top = obb.top + parent.top
+      return cloned
+    })
+    doc.value.transact(() => {
+      addElements(items, {
+        parent: element.parent,
+        index: element.getIndex(),
+        active: true,
+        regenId: true,
+      })
+      element.remove()
+    })
   }
 
   return {
     name: 'mce:selection',
     commands: [
-      { command: 'selectAll', handle: selectAll },
-      { command: 'deselectAll', handle: deselectAll },
-      { command: 'selectChildren', handle: selectChildren },
-      { command: 'selectParent', handle: selectParent },
-      { command: 'selectPreviousSibling', handle: () => selectSibling('previous') },
-      { command: 'selectNextSibling', handle: () => selectSibling('next') },
+      { command: 'select', handle: select },
+      { command: 'selectAll', handle: () => select('all') },
+      { command: 'deselectAll', handle: () => select('invert') },
+      { command: 'selectChildren', handle: () => select('children') },
+      { command: 'selectParent', handle: () => select('parent') },
+      { command: 'selectPreviousSibling', handle: () => select('previousSibling') },
+      { command: 'selectNextSibling', handle: () => select('nextSibling') },
+      { command: 'groupSelection', handle: () => group('Element') },
+      { command: 'frameSelection', handle: () => group('Frame') },
+      { command: 'ungroup', handle: ungroup },
     ],
     hotkeys: [
       { command: 'selectAll', key: 'CmdOrCtrl+A' },
@@ -82,9 +178,27 @@ export default definePlugin((editor) => {
       { command: 'selectParent', key: '\\' },
       { command: 'selectPreviousSibling', key: 'Shift+Tab' },
       { command: 'selectNextSibling', key: 'Tab' },
+      { command: 'groupSelection', key: 'CmdOrCtrl+G' },
+      { command: 'frameSelection', key: 'Alt+CmdOrCtrl+G' },
+      { command: 'ungroup', key: 'CmdOrCtrl+Backspace' },
     ],
     components: [
       { type: 'overlay', component: GoBackSelectedArea },
     ],
+    events: {
+      selectionTransforming: ({ elements }) => {
+        elements.forEach((el) => {
+          el.findAncestor((ancestor) => {
+            if (
+              isElement(ancestor)
+              && !inEditorIs(ancestor, 'Frame')
+            ) {
+              obbToFit(ancestor)
+            }
+            return false
+          })
+        })
+      },
+    },
   }
 })

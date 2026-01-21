@@ -4,7 +4,7 @@ import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {
-    type AlignCommandDirection
+    type AlignDirection
       = | 'left'
         | 'horizontal-center'
         | 'right'
@@ -17,13 +17,26 @@ declare global {
       sendBackward: (target?: Node) => void
       bringToFront: (target?: Node | Node[]) => void
       sendToBack: (target?: Node | Node[]) => void
-      align: (direction: AlignCommandDirection) => void
+      align: (direction: AlignDirection) => void
       alignLeft: () => void
       alignRight: () => void
       alignTop: () => void
       alignBottom: () => void
       alignHorizontalCenter: () => void
       alignVerticalCenter: () => void
+    }
+
+    interface Hotkeys {
+      bringForward: [event: KeyboardEvent]
+      sendBackward: [event: KeyboardEvent]
+      bringToFront: [event: KeyboardEvent]
+      sendToBack: [event: KeyboardEvent]
+      alignLeft: [event: KeyboardEvent]
+      alignRight: [event: KeyboardEvent]
+      alignTop: [event: KeyboardEvent]
+      alignBottom: [event: KeyboardEvent]
+      alignHorizontalCenter: [event: KeyboardEvent]
+      alignVerticalCenter: [event: KeyboardEvent]
     }
   }
 }
@@ -68,7 +81,7 @@ export default definePlugin((editor) => {
   }
 
   // TODO 不支持非中心 pivot
-  function align(direction: Mce.AlignCommandDirection) {
+  function align(direction: Mce.AlignDirection) {
     const len = elementSelection.value.length
 
     if (!len) {
