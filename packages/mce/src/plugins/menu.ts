@@ -94,7 +94,8 @@ export default definePlugin((editor, options) => {
     key: 'select',
     children: [
       { key: 'selectAll' },
-      { key: 'deselectAll', disabled: !hasSelected.value },
+      { key: 'selectInverse', disabled: !hasSelected.value },
+      { key: 'selectNone', disabled: !hasSelected.value },
       { key: 'selectChildren', disabled: !hasSelected.value },
       { key: 'selectParent', disabled: !hasSelected.value },
       { key: 'selectPreviousSibling', disabled: !hasSelected.value },
@@ -202,7 +203,7 @@ export default definePlugin((editor, options) => {
   const objectMenu1 = computed(() => [
     { key: 'groupSelection', disabled: !hasSelected.value },
     { key: 'frameSelection', disabled: !hasSelected.value },
-    { key: 'ungroup', disabled: !(
+    { key: 'ungroupSelection', disabled: !(
       hasSelected.value
       && selection.value[0]?.children.length
     ) },

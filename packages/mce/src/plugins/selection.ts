@@ -6,7 +6,7 @@ declare global {
     type SelectTarget
       = | 'none'
         | 'all'
-        | 'invert'
+        | 'inverse'
         | 'children'
         | 'parent'
         | 'previousSibling'
@@ -15,26 +15,28 @@ declare global {
     interface Commands {
       select: (target: SelectTarget) => void
       selectAll: () => void
-      deselectAll: () => void
+      selectInverse: () => void
+      selectNone: () => void
       selectChildren: () => void
       selectParent: () => void
       selectPreviousSibling: () => void
       selectNextSibling: () => void
       groupSelection: () => void
+      ungroupSelection: () => void
       frameSelection: () => void
-      ungroup: () => void
     }
 
     interface Hotkeys {
       selectAll: [event: KeyboardEvent]
-      deselectAll: [event: KeyboardEvent]
+      selectInverse: [event: KeyboardEvent]
+      selectNone: [event: KeyboardEvent]
       selectChildren: [event: KeyboardEvent]
       selectParent: [event: KeyboardEvent]
       selectPreviousSibling: [event: KeyboardEvent]
       selectNextSibling: [event: KeyboardEvent]
       groupSelection: [event: KeyboardEvent]
+      ungroupSelection: [event: KeyboardEvent]
       frameSelection: [event: KeyboardEvent]
-      ungroup: [event: KeyboardEvent]
     }
   }
 }
@@ -64,7 +66,7 @@ export default definePlugin((editor) => {
       case 'all':
         selection.value = [...root.value.children]
         break
-      case 'invert':
+      case 'inverse':
         selection.value = []
         break
       case 'children': {
@@ -134,7 +136,7 @@ export default definePlugin((editor) => {
     })
   }
 
-  function ungroup() {
+  function ungroupSelection() {
     const element = elementSelection.value[0]
     if (!element || !element.children.length)
       return
@@ -162,25 +164,27 @@ export default definePlugin((editor) => {
     commands: [
       { command: 'select', handle: select },
       { command: 'selectAll', handle: () => select('all') },
-      { command: 'deselectAll', handle: () => select('invert') },
+      { command: 'selectInverse', handle: () => select('inverse') },
+      { command: 'selectNone', handle: () => select('none') },
       { command: 'selectChildren', handle: () => select('children') },
       { command: 'selectParent', handle: () => select('parent') },
       { command: 'selectPreviousSibling', handle: () => select('previousSibling') },
       { command: 'selectNextSibling', handle: () => select('nextSibling') },
       { command: 'groupSelection', handle: () => group('Element') },
+      { command: 'ungroupSelection', handle: ungroupSelection },
       { command: 'frameSelection', handle: () => group('Frame') },
-      { command: 'ungroup', handle: ungroup },
     ],
     hotkeys: [
       { command: 'selectAll', key: 'CmdOrCtrl+A' },
-      { command: 'deselectAll', key: 'Shift+CmdOrCtrl+A' },
+      { command: 'selectInverse', key: 'Shift+CmdOrCtrl+A' },
+      { command: 'selectNone', key: 'Esc' },
       { command: 'selectChildren', key: 'Enter' },
       { command: 'selectParent', key: '\\' },
       { command: 'selectPreviousSibling', key: 'Shift+Tab' },
       { command: 'selectNextSibling', key: 'Tab' },
       { command: 'groupSelection', key: 'CmdOrCtrl+G' },
+      { command: 'ungroupSelection', key: 'CmdOrCtrl+Backspace' },
       { command: 'frameSelection', key: 'Alt+CmdOrCtrl+G' },
-      { command: 'ungroup', key: 'CmdOrCtrl+Backspace' },
     ],
     components: [
       { type: 'overlay', component: GoBackSelectedArea },
