@@ -1,3 +1,13 @@
+## [0.15.33](https://github.com/qq15725/mce/compare/v0.15.32...v0.15.33) (2026-01-21)
+
+
+### Features
+
+* distributeSpacing / tidyUp ([723a4a1](https://github.com/qq15725/mce/commit/723a4a1c334af1a7c10b85b5489eac4c62d62d54))
+* SmartSelection ([64ff45b](https://github.com/qq15725/mce/commit/64ff45b05cfa0ad8eef68497838a265feb955f66))
+
+
+
 ## [0.15.32](https://github.com/qq15725/mce/compare/v0.15.31...v0.15.32) (2026-01-21)
 
 
