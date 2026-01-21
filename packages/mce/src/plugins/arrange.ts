@@ -31,6 +31,9 @@ declare global {
       alignBottom: () => void
       alignHorizontalCenter: () => void
       alignVerticalCenter: () => void
+      distributeHorizontalSpacing: () => void
+      distributeVerticalSpacing: () => void
+      tidyUp: () => void
     }
 
     interface Hotkeys {
@@ -44,6 +47,9 @@ declare global {
       alignBottom: [event: KeyboardEvent]
       alignHorizontalCenter: [event: KeyboardEvent]
       alignVerticalCenter: [event: KeyboardEvent]
+      distributeHorizontalSpacing: [event: KeyboardEvent]
+      distributeVerticalSpacing: [event: KeyboardEvent]
+      tidyUp: [event: KeyboardEvent]
     }
   }
 }
@@ -158,6 +164,14 @@ export default definePlugin((editor) => {
     target && zOrder(target, 'sendToBack')
   }
 
+  function distributeSpacing(_direction: 'horizontal' | 'vertical'): void {
+    // TODO
+  }
+
+  function tidyUp() {
+    // TODO
+  }
+
   return {
     name: 'mce:arrange',
     commands: [
@@ -173,6 +187,9 @@ export default definePlugin((editor) => {
       { command: 'alignBottom', handle: () => align('bottom') },
       { command: 'alignHorizontalCenter', handle: () => align('horizontal-center') },
       { command: 'alignVerticalCenter', handle: () => align('vertical-center') },
+      { command: 'distributeHorizontalSpacing', handle: () => distributeSpacing('horizontal') },
+      { command: 'distributeVerticalSpacing', handle: () => distributeSpacing('vertical') },
+      { command: 'tidyUp', handle: tidyUp },
     ],
     hotkeys: [
       { command: 'bringForward', key: 'CmdOrCtrl+]' },
@@ -185,6 +202,9 @@ export default definePlugin((editor) => {
       { command: 'alignBottom', key: 'Alt+S' },
       { command: 'alignHorizontalCenter', key: 'Alt+H' },
       { command: 'alignVerticalCenter', key: 'Alt+V' },
+      { command: 'distributeHorizontalSpacing', key: 'Ctrl+Alt+H' },
+      { command: 'distributeVerticalSpacing', key: 'Ctrl+Alt+V' },
+      { command: 'tidyUp', key: 'Ctrl+Alt+T' },
     ],
   }
 })
