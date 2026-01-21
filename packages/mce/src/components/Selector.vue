@@ -326,102 +326,112 @@ defineExpose({
 </script>
 
 <template>
-  <div
-    v-for="(style, index) in parentObbStyles" :key="index"
-    class="mce-selector__parent-obb"
-    :style="{
-      borderColor: 'currentColor',
-      ...style,
-    }"
-  />
-
-  <template
-    v-if="state !== 'transforming'"
-  >
+  <div class="mce-selector">
     <div
-      v-for="(style, index) in selectionObbStyles"
-      :key="index"
-      class="mce-selector__obb"
+      v-for="(style, index) in parentObbStyles" :key="index"
+      class="mce-selector__parent"
       :style="{
-        borderColor: 'currentcolor',
+        borderColor: 'currentColor',
         ...style,
       }"
     />
-  </template>
 
-  <div
-    v-if="state === 'selecting'"
-    class="mce-selector__selected-area"
-    :style="{
-      borderColor: 'currentcolor',
-      ...props.selectedArea.toCssStyle(),
-    }"
-  />
-
-  <TransformControls
-    v-if="transform.width && transform.height"
-    ref="transformableTpl"
-    v-bind="config.transformControls"
-    v-model="transform"
-    :movable="movable"
-    :resizable="resizable"
-    :rotatable="rotatable"
-    :roundable="roundable"
-    :resize-strategy="props.resizeStrategy"
-    class="mce-selector__transform"
-    :tip-format="tipFormat"
-    @start="onStart"
-    @move="onMove"
-    @end="onEnd"
-  >
-    <template v-if="$slots.transformable" #svg="slotProps">
-      <slot name="transformable" v-bind="slotProps" />
-    </template>
-  </TransformControls>
-
-  <template
-    v-if="transform.width && transform.height && $slots.default"
-  >
-    <div
-      class="mce-selector__slot"
-      :style="boundingBoxToStyle(transform)"
+    <template
+      v-if="state !== 'transforming'"
     >
-      <slot :box="transform" />
-    </div>
-  </template>
+      <div
+        v-for="(style, index) in selectionObbStyles"
+        :key="index"
+        class="mce-selector__node"
+        :style="{
+          borderColor: 'currentcolor',
+          ...style,
+        }"
+      />
+    </template>
+
+    <div
+      v-if="state === 'selecting'"
+      class="mce-selector__area"
+      :style="{
+        borderColor: 'currentcolor',
+        ...props.selectedArea.toCssStyle(),
+      }"
+    />
+
+    <TransformControls
+      v-if="transform.width && transform.height"
+      ref="transformableTpl"
+      v-bind="config.transformControls"
+      v-model="transform"
+      :movable="movable"
+      :resizable="resizable"
+      :rotatable="rotatable"
+      :roundable="roundable"
+      :resize-strategy="props.resizeStrategy"
+      class="mce-selector__transform"
+      :tip-format="tipFormat"
+      @start="onStart"
+      @move="onMove"
+      @end="onEnd"
+    >
+      <template v-if="$slots.transformable" #svg="slotProps">
+        <slot name="transformable" v-bind="slotProps" />
+      </template>
+    </TransformControls>
+
+    <template
+      v-if="transform.width && transform.height && $slots.default"
+    >
+      <div
+        class="mce-selector__slot"
+        :style="boundingBoxToStyle(transform)"
+      >
+        <slot :box="transform" />
+      </div>
+    </template>
+  </div>
 </template>
 
 <style lang="scss">
-  .mce-selector__slot {
+  .mce-selector {
     position: absolute;
-  }
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
 
-  .mce-selector__parent-obb {
-    position: absolute;
-    pointer-events: none;
-    border-width: 1px;
-    border-style: dashed;
-    color: rgba(var(--mce-theme-primary), 1);
-    opacity: .5;
-  }
+    &__slot {
+      position: absolute;
+    }
 
-  .mce-selector__selected-area {
-    position: absolute;
-    border-width: 1px;
-    border-style: solid;
-    color: rgba(var(--mce-theme-primary), 1);
-    background-color: rgba(var(--mce-theme-primary), .1);
-  }
+    &__parent {
+      position: absolute;
+      pointer-events: none;
+      border-width: 1px;
+      border-style: dashed;
+      color: rgba(var(--mce-theme-primary), 1);
+      opacity: .5;
+    }
 
-  .mce-selector__transform {
-    position: absolute;
-    color: rgba(var(--mce-theme-primary), 1);
-  }
+    &__area {
+      position: absolute;
+      border-width: 1px;
+      border-style: solid;
+      color: rgba(var(--mce-theme-primary), 1);
+      background-color: rgba(var(--mce-theme-primary), .1);
+    }
 
-  .mce-selector__obb {
-    position: absolute;
-    border-width: 1px;
-    border-style: solid;
-    color: rgba(var(--mce-theme-primary), 1);
+    &__transform {
+      position: absolute;
+      color: rgba(var(--mce-theme-primary), 1);
+    }
+
+    &__node {
+      position: absolute;
+      border-width: 1px;
+      border-style: solid;
+      color: rgba(var(--mce-theme-primary), 1);
+    }
   }
 </style>

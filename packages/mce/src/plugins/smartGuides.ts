@@ -1,7 +1,7 @@
 import type { Node } from 'modern-canvas'
 import type { ComputedRef } from 'vue'
 import { Aabb2D } from 'modern-canvas'
-import { computed, ref } from 'vue'
+import { computed, h, ref } from 'vue'
 import SmartGuides from '../components/SmartGuides.vue'
 import { definePlugin } from '../plugin'
 import { BSTree } from '../utils/BSTree'
@@ -10,7 +10,6 @@ declare global {
   namespace Mce {
     interface Editor {
       snapThreshold: ComputedRef<number>
-      snapLines: ComputedRef<Record<string, any>[]>
       getSnapPoints: (resizing?: boolean) => { x: number[], y: number[] }
     }
   }
@@ -470,15 +469,11 @@ export default definePlugin((editor) => {
 
   Object.assign(editor, {
     snapThreshold,
-    snapLines,
     getSnapPoints,
   })
 
   return {
     name: 'mce:smartGuides',
-    components: [
-      { type: 'overlay', component: SmartGuides },
-    ],
     events: {
       selectionTransforming: ({ handle }) => {
         if (
@@ -493,6 +488,12 @@ export default definePlugin((editor) => {
         linePairs.value = []
       },
     },
+    components: [
+      {
+        type: 'overlay',
+        component: () => h(SmartGuides, { snapLines: snapLines.value }),
+      },
+    ],
   }
 })
 

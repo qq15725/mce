@@ -24,16 +24,28 @@ const {
 </script>
 
 <template>
-  <Scrollbar
-    v-bind="props"
-    v-model="camera.position.y"
-    vertical
-    :length="rootAabb.height * camera.zoom.y"
-  />
+  <div class="mce-scrollbars">
+    <Scrollbar
+      v-bind="props"
+      v-model="camera.position.y"
+      vertical
+      :length="rootAabb.height * camera.zoom.y"
+    />
 
-  <Scrollbar
-    v-bind="props"
-    v-model="camera.position.x"
-    :length="rootAabb.width * camera.zoom.x"
-  />
+    <Scrollbar
+      v-bind="props"
+      v-model="camera.position.x"
+      :length="rootAabb.width * camera.zoom.x"
+    />
+  </div>
 </template>
+
+<style lang="scss">
+  .mce-scrollbars {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+  }
+</style>

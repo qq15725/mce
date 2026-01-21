@@ -110,4 +110,7 @@ export default {
   'alignTop': '贴顶部',
   'alignVerticalCenter': '垂直居中',
   'alignBottom': '贴底部',
+  'distributeHorizontalSpacing': '水平分布间距',
+  'distributeVerticalSpacing': '垂直分布间距',
+  'tidyUp': '整理',
 }

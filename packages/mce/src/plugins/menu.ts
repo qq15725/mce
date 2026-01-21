@@ -258,6 +258,9 @@ export default definePlugin((editor, options) => {
     key: 'layerPosition',
     children: [
       ...alignMenus.value,
+      { key: 'distributeHorizontalSpacing', disabled: !hasSelected.value },
+      { key: 'distributeVerticalSpacing', disabled: !hasSelected.value },
+      { key: 'tidyUp', disabled: !hasSelected.value },
     ],
   }))
 

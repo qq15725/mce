@@ -42,6 +42,7 @@ interface HandleObject {
 const props = withDefaults(defineProps<{
   tag?: string | any
   modelValue?: Partial<TransformableValue>
+  color?: string
   movable?: boolean
   rotatable?: boolean
   rotator?: boolean
@@ -696,7 +697,10 @@ function Diagonal() {
       :start="start"
     />
 
-    <svg class="mce-transform-controls__svg">
+    <svg
+      class="mce-transform-controls__svg"
+      :style="{ color }"
+    >
       <rect width="100%" height="100%" fill="none" class="mce-transform-controls__rect" />
 
       <rect
@@ -801,7 +805,6 @@ function Diagonal() {
 <style lang="scss">
 .mce-transform-controls {
   $root: &;
-
   left: 0;
   top: 0;
 
@@ -836,13 +839,6 @@ function Diagonal() {
     stroke-width: 1px;
     fill: transparent;
     stroke: transparent;
-
-    &[aria-label="round-tl"],
-    &[aria-label="round-tr"],
-    &[aria-label="round-bl"],
-    &[aria-label="round-br"] {
-      // TODO
-    }
   }
 
   &__rotator {

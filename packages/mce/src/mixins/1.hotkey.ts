@@ -184,11 +184,12 @@ function parseKey(key: string) {
       switch (v) {
         case 'Meta':
         case 'Control':
+        case 'Ctrl':
         case 'CommandOrControl':
+        case 'CmdOrCtrl':
           return 'CmdOrCtrl'
         case 'Alt':
         case 'Shift':
-        case 'CmdOrCtrl':
           return v
         default:
           return String.fromCharCode(getCharCode(v))

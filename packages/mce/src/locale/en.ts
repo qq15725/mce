@@ -4,6 +4,7 @@ export default {
   'constrainToAxis': 'Constrain to axis',
   'loading': 'Loading',
   'drawing': 'Drawing',
+  'exporting': 'Exporting',
   'selecting': 'Selecting',
   'selectObject': 'Select object',
   'commitChanges': 'Commit changes',
@@ -109,5 +110,7 @@ export default {
   'alignTop': 'Align top',
   'alignVerticalCenter': 'Align vertical center',
   'alignBottom': 'Align bottom',
-  'exporting': 'Exporting',
+  'distributeHorizontalSpacing': 'Distribute horizontal spacing',
+  'distributeVerticalSpacing': 'Distribute vertical spacing',
+  'tidyUp': 'Tidy up',
 }

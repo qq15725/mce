@@ -23,7 +23,7 @@ declare global {
         | 'vertical'
 
     interface Commands {
-      zOrder: (target: Node | Node[], type: ZOrderType) => void
+      zOrder: (type: ZOrderType, target?: Node | Node[]) => void
       bringForward: (target?: Node) => void
       sendBackward: (target?: Node) => void
       bringToFront: (target?: Node | Node[]) => void
@@ -68,8 +68,8 @@ export default definePlugin((editor) => {
   } = editor
 
   function zOrder(
-    target: Node | Node[],
     type: Mce.ZOrderType,
+    target: Node | Node[] = selection.value,
   ) {
     const els = Array.isArray(target) ? target : [target]
 
@@ -153,38 +153,84 @@ export default definePlugin((editor) => {
     })
   }
 
-  function bringToFront(target: Node | Node[] = selection.value): void {
-    target && zOrder(target, 'bringToFront')
-  }
+  function distributeSpacing(direction: Mce.DistributeSpacingDirection): void {
+    const els = elementSelection.value
 
-  function bringForward(target: Node | undefined = selection.value[0]): void {
-    target && zOrder(target, 'bringForward')
-  }
+    if (els.length < 2) {
+      return
+    }
 
-  function sendBackward(target: Node | undefined = selection.value[0]): void {
-    target && zOrder(target, 'sendBackward')
-  }
+    const items = els.map((el) => {
+      return {
+        el,
+        aabb: el.getGlobalAabb(),
+      }
+    })
+    const count = items.length
 
-  function sendToBack(target: Node | Node[] = selection.value): void {
-    target && zOrder(target, 'sendToBack')
-  }
-
-  function distributeSpacing(_direction: Mce.DistributeSpacingDirection): void {
-    // TODO
+    switch (direction) {
+      case 'vertical': {
+        const sorted = [...items].sort((a, b) => a.aabb.y - b.aabb.y)
+        const start = sorted[0]
+        const end = sorted[count - 1]
+        const startEdge = start.aabb.y
+        const endEdge = end.aabb.y + end.aabb.height
+        const totalSize = sorted.reduce((sum, node) => sum + node.aabb.height, 0)
+        const totalSpacing = (endEdge - startEdge) - totalSize
+        const gapSize = totalSpacing / (count - 1)
+        let current = start.aabb.y + start.aabb.height
+        for (let i = 1; i < count - 1; i++) {
+          const item = sorted[i]
+          current += gapSize
+          let top = current
+          const parentAabb = item.el.getParent<Element2D>()?.getGlobalAabb?.()
+          if (parentAabb) {
+            top = top - parentAabb.top
+          }
+          item.el.style.top = top
+          current += item.aabb.height
+        }
+        break
+      }
+      case 'horizontal': {
+        const sorted = [...items].sort((a, b) => a.aabb.x - b.aabb.x)
+        const start = sorted[0]
+        const end = sorted[count - 1]
+        const startEdge = start.aabb.x
+        const endEdge = end.aabb.x + end.aabb.width
+        const totalSize = sorted.reduce((sum, node) => sum + node.aabb.width, 0)
+        const totalSpacing = (endEdge - startEdge) - totalSize
+        const gapSize = totalSpacing / (count - 1)
+        let current = start.aabb.x + start.aabb.width
+        for (let i = 1; i < count - 1; i++) {
+          const item = sorted[i]
+          current += gapSize
+          let left = current
+          const parentAabb = item.el.getParent<Element2D>()?.getGlobalAabb?.()
+          if (parentAabb) {
+            left = left - parentAabb.left
+          }
+          item.el.style.left = left
+          current += item.aabb.width
+        }
+        break
+      }
+    }
   }
 
   function tidyUp() {
     // TODO
+    distributeSpacing('vertical')
   }
 
   return {
     name: 'mce:arrange',
     commands: [
       { command: 'zOrder', handle: zOrder },
-      { command: 'bringForward', handle: bringForward },
-      { command: 'sendBackward', handle: sendBackward },
-      { command: 'bringToFront', handle: bringToFront },
-      { command: 'sendToBack', handle: sendToBack },
+      { command: 'bringForward', handle: () => zOrder('bringForward') },
+      { command: 'sendBackward', handle: () => zOrder('sendBackward') },
+      { command: 'bringToFront', handle: () => zOrder('bringToFront') },
+      { command: 'sendToBack', handle: () => zOrder('sendToBack') },
       { command: 'align', handle: align },
       { command: 'alignLeft', handle: () => align('left') },
       { command: 'alignRight', handle: () => align('right') },

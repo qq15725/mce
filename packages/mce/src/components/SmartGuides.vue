@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useEditor } from '../composables/editor'
-
-const { snapLines } = useEditor()
+defineProps<{
+  snapLines?: Record<string, any>[]
+}>()
 </script>
 
 <template>
