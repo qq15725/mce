@@ -16,7 +16,6 @@ import _image from './image'
 import _import from './import'
 import _json from './json'
 import _layers from './layers'
-import _lock from './lock'
 import _madeWith from './madeWith'
 import _menu from './menu'
 import _move from './move'
@@ -60,7 +59,6 @@ export const plugins = [
   _import,
   _json,
   _layers,
-  _lock,
   _madeWith,
   _menu,
   _move,

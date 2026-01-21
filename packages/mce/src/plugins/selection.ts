@@ -25,6 +25,7 @@ declare global {
       ungroupSelection: () => void
       frameSelection: () => void
       showOrHideSelection: (target?: 'show' | 'hide') => void
+      lockOrUnlockSelection: (target?: 'lock' | 'unlock') => void
     }
 
     interface Hotkeys {
@@ -39,6 +40,7 @@ declare global {
       ungroupSelection: [event: KeyboardEvent]
       frameSelection: [event: KeyboardEvent]
       showOrHideSelection: [event: KeyboardEvent]
+      lockOrUnlockSelection: [event: KeyboardEvent]
     }
   }
 }
@@ -60,6 +62,8 @@ export default definePlugin((editor) => {
     obbToFit,
     setVisible,
     isVisible,
+    setLock,
+    isLock,
   } = editor
 
   function select(target: Mce.SelectTarget) {
@@ -179,6 +183,22 @@ export default definePlugin((editor) => {
     })
   }
 
+  function lockOrUnlockSelection(target?: 'lock' | 'unlock'): void {
+    selection.value.forEach((el) => {
+      switch (target) {
+        case 'lock':
+          setLock(el, true)
+          break
+        case 'unlock':
+          setLock(el, false)
+          break
+        default:
+          setLock(el, !isLock(el))
+          break
+      }
+    })
+  }
+
   return {
     name: 'mce:selection',
     commands: [
@@ -194,6 +214,7 @@ export default definePlugin((editor) => {
       { command: 'ungroupSelection', handle: ungroupSelection },
       { command: 'frameSelection', handle: () => groupSelection('Frame') },
       { command: 'showOrHideSelection', handle: showOrHideSelection },
+      { command: 'lockOrUnlockSelection', handle: lockOrUnlockSelection },
     ],
     hotkeys: [
       { command: 'selectAll', key: 'CmdOrCtrl+A' },
@@ -207,6 +228,7 @@ export default definePlugin((editor) => {
       { command: 'ungroupSelection', key: 'CmdOrCtrl+Backspace' },
       { command: 'frameSelection', key: 'Alt+CmdOrCtrl+G' },
       { command: 'showOrHideSelection', key: 'Shift+CmdOrCtrl+H' },
+      { command: 'lockOrUnlockSelection', key: 'Shift+CmdOrCtrl+L' },
     ],
     components: [
       { type: 'overlay', component: GoBackSelectedArea },
