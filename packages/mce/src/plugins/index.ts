@@ -43,7 +43,6 @@ import _transform from './transform'
 import _ui from './ui'
 import _url from './url'
 import _view from './view'
-import _visibility from './visibility'
 import _zoom from './zoom'
 
 export const plugins = [
@@ -88,6 +87,5 @@ export const plugins = [
   _ui,
   _url,
   _view,
-  _visibility,
   _zoom,
 ]

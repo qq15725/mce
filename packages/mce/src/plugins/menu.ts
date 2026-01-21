@@ -228,7 +228,7 @@ export default definePlugin((editor, options) => {
   }))
 
   const objectMenu2 = computed(() => [
-    { key: 'hide/show', disabled: !hasSelected.value },
+    { key: 'showOrHideSelection', disabled: !hasSelected.value },
     { key: 'lock/unlock', disabled: !hasSelected.value },
   ])
 

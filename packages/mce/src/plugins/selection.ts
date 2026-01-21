@@ -24,6 +24,7 @@ declare global {
       groupSelection: () => void
       ungroupSelection: () => void
       frameSelection: () => void
+      showOrHideSelection: (target?: 'show' | 'hide') => void
     }
 
     interface Hotkeys {
@@ -37,6 +38,7 @@ declare global {
       groupSelection: [event: KeyboardEvent]
       ungroupSelection: [event: KeyboardEvent]
       frameSelection: [event: KeyboardEvent]
+      showOrHideSelection: [event: KeyboardEvent]
     }
   }
 }
@@ -56,6 +58,8 @@ export default definePlugin((editor) => {
     addElement,
     addElements,
     obbToFit,
+    setVisible,
+    isVisible,
   } = editor
 
   function select(target: Mce.SelectTarget) {
@@ -98,7 +102,7 @@ export default definePlugin((editor) => {
     }
   }
 
-  function group(inEditorIs: 'Element' | 'Frame'): void {
+  function groupSelection(inEditorIs: 'Element' | 'Frame'): void {
     const elements = elementSelection.value
     if (!elements.length) {
       return
@@ -159,6 +163,22 @@ export default definePlugin((editor) => {
     })
   }
 
+  function showOrHideSelection(target?: 'show' | 'hide'): void {
+    elementSelection.value.forEach((el) => {
+      switch (target) {
+        case 'show':
+          setVisible(el, true)
+          break
+        case 'hide':
+          setVisible(el, false)
+          break
+        default:
+          setVisible(el, !isVisible(el))
+          break
+      }
+    })
+  }
+
   return {
     name: 'mce:selection',
     commands: [
@@ -170,9 +190,10 @@ export default definePlugin((editor) => {
       { command: 'selectParent', handle: () => select('parent') },
       { command: 'selectPreviousSibling', handle: () => select('previousSibling') },
       { command: 'selectNextSibling', handle: () => select('nextSibling') },
-      { command: 'groupSelection', handle: () => group('Element') },
+      { command: 'groupSelection', handle: () => groupSelection('Element') },
       { command: 'ungroupSelection', handle: ungroupSelection },
-      { command: 'frameSelection', handle: () => group('Frame') },
+      { command: 'frameSelection', handle: () => groupSelection('Frame') },
+      { command: 'showOrHideSelection', handle: showOrHideSelection },
     ],
     hotkeys: [
       { command: 'selectAll', key: 'CmdOrCtrl+A' },
@@ -185,6 +206,7 @@ export default definePlugin((editor) => {
       { command: 'groupSelection', key: 'CmdOrCtrl+G' },
       { command: 'ungroupSelection', key: 'CmdOrCtrl+Backspace' },
       { command: 'frameSelection', key: 'Alt+CmdOrCtrl+G' },
+      { command: 'showOrHideSelection', key: 'Shift+CmdOrCtrl+H' },
     ],
     components: [
       { type: 'overlay', component: GoBackSelectedArea },

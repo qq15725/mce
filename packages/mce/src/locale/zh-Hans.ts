@@ -96,7 +96,7 @@ export default {
   'flip': '翻转',
   'flipHorizontal': '水平翻转',
   'flipVertical': '垂直翻转',
-  'hide/show': '隐藏/显示',
+  'showOrHideSelection': '隐藏/显示',
   'lock/unlock': '锁/解锁',
   'layerOrder': '图层顺序',
   'bringToFront': '移到顶层',

@@ -95,7 +95,7 @@ export default {
   'flip': 'Flip',
   'flipHorizontal': 'Flip horizontal',
   'flipVertical': 'Flip vertical',
-  'hide/show': 'Hide/Show',
+  'showOrHideSelection': 'showOrHideSelection',
   'lock/unlock': 'Lock/Unlock',
   'layerOrder': 'Layer order',
   'bringToFront': 'Bring to front',
