@@ -1,3 +1,13 @@
+## [0.15.31](https://github.com/qq15725/mce/compare/v0.15.30...v0.15.31) (2026-01-21)
+
+
+### Bug Fixes
+
+* align ([0d8cedb](https://github.com/qq15725/mce/commit/0d8cedb94e4d966102368e3adf6f0778f96ba573))
+* autoNest ([8bcbfc5](https://github.com/qq15725/mce/commit/8bcbfc5a945de479c8e7f84c562c045616008653))
+
+
+
 ## [0.15.30](https://github.com/qq15725/mce/compare/v0.15.29...v0.15.30) (2026-01-20)
 
 
