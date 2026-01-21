@@ -2,8 +2,13 @@ import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {
+    type FlipTarget
+      = | 'horizontal'
+        | 'vertical'
+
     interface Commands {
       enter: () => void
+      flip: (target: Mce.FlipTarget) => void
       flipHorizontal: () => void
       flipVertical: () => void
     }
@@ -33,24 +38,28 @@ export default definePlugin((editor) => {
 
   const when = (): boolean => Boolean(elementSelection.value.length > 0)
 
-  function flipHorizontal() {
-    elementSelection.value.forEach((el) => {
-      el.style.scaleX = -el.style.scaleX
-    })
-  }
-
-  function flipVertical() {
-    elementSelection.value.forEach((el) => {
-      el.style.scaleY = -el.style.scaleY
-    })
+  function flip(target: Mce.FlipTarget) {
+    switch (target) {
+      case 'horizontal':
+        elementSelection.value.forEach((el) => {
+          el.style.scaleX = -el.style.scaleX
+        })
+        break
+      case 'vertical':
+        elementSelection.value.forEach((el) => {
+          el.style.scaleY = -el.style.scaleY
+        })
+        break
+    }
   }
 
   return {
     name: 'mce:transform',
     commands: [
       { command: 'enter', handle: _enter },
-      { command: 'flipHorizontal', handle: flipHorizontal },
-      { command: 'flipVertical', handle: flipVertical },
+      { command: 'flip', handle: flip },
+      { command: 'flipHorizontal', handle: () => flip('horizontal') },
+      { command: 'flipVertical', handle: () => flip('vertical') },
     ],
     hotkeys: [
       { command: 'enter', key: ['Enter'], when },
