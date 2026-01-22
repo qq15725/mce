@@ -3,7 +3,7 @@ import type { Element } from 'modern-idoc'
 import type { Ref } from 'vue'
 import { cloneDeep } from 'lodash-es'
 import { Element2D } from 'modern-canvas'
-import { onBeforeUnmount, ref } from 'vue'
+import { onMounted, onScopeDispose, ref } from 'vue'
 import { definePlugin } from '../plugin'
 import { isInputEvent, SUPPORTS_CLIPBOARD } from '../utils'
 
@@ -329,8 +329,9 @@ export default definePlugin((editor, options) => {
             await paste(e.clipboardData)
           }
         }
-        window.addEventListener('paste', onPaste)
-        onBeforeUnmount(() => window.removeEventListener('paste', onPaste))
+
+        onMounted(() => window.addEventListener('paste', onPaste))
+        onScopeDispose(() => window.removeEventListener('paste', onPaste))
       }
     },
   }

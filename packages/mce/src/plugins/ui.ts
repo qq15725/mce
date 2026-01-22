@@ -1,6 +1,7 @@
 import type { PointerInputEvent } from 'modern-canvas'
 import { useResizeObserver } from '@vueuse/core'
 import { Aabb2D, Vector2 } from 'modern-canvas'
+import { onMounted, onScopeDispose } from 'vue'
 import { definePlugin } from '../plugin'
 
 declare global {
@@ -42,12 +43,15 @@ export default definePlugin((editor) => {
         drawboardAabb.value = new Aabb2D(left, top, width, height)
       })
 
-      document.addEventListener('mousemove', (event) => {
+      function onMouseMove(event: MouseEvent) {
         drawboardPointer.value = new Vector2(
           event.clientX - drawboardAabb.value.left,
           event.clientY - drawboardAabb.value.top,
         )
-      })
+      }
+
+      onMounted(() => document.addEventListener('mousemove', onMouseMove))
+      onScopeDispose(() => document.removeEventListener('mousemove', onMouseMove))
     },
   }
 })

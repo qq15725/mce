@@ -1,6 +1,6 @@
 import type { Element2D } from 'modern-canvas'
 import { Vector2 } from 'modern-canvas'
-import { onBeforeUnmount, onMounted } from 'vue'
+import { onMounted, onScopeDispose } from 'vue'
 import { definePlugin } from '../plugin'
 
 declare global {
@@ -83,7 +83,7 @@ export default definePlugin((editor) => {
         drawboardDom.value?.addEventListener('dragover', onDragover)
         drawboardDom.value?.addEventListener('drop', onDrop)
       })
-      onBeforeUnmount(() => {
+      onScopeDispose(() => {
         drawboardDom.value?.removeEventListener('dragover', onDragover)
         drawboardDom.value?.removeEventListener('drop', onDrop)
       })
