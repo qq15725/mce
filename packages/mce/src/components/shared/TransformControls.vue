@@ -1,8 +1,12 @@
 <script setup lang="ts">
-import type { OrientedBoundingBox } from '../../types'
-import { computed, getCurrentInstance, h, nextTick, onMounted, ref, useModel } from 'vue'
+import { computed, getCurrentInstance, h, nextTick, onMounted, ref } from 'vue'
 
-export interface TransformableValue extends OrientedBoundingBox {
+export interface TransformValue {
+  left: number
+  top: number
+  width: number
+  height: number
+  rotate: number
   borderRadius: number
 }
 
@@ -41,7 +45,6 @@ interface HandleObject {
 
 const props = withDefaults(defineProps<{
   tag?: string | any
-  modelValue?: Partial<TransformableValue>
   color?: string
   movable?: boolean
   rotatable?: boolean
@@ -52,8 +55,10 @@ const props = withDefaults(defineProps<{
   resizeStrategy?: 'lockAspectRatio' | 'lockAspectRatioDiagonal'
   handleStrategy?: 'point'
   handleShape?: 'rect' | 'circle'
-  hideUi?: boolean
   handles?: Handle[]
+  scale?: [number, number]
+  offset?: [number, number]
+  hideUi?: boolean
   initialSize?: boolean
   borderStyle?: 'solid' | 'dashed'
   tipFormat?: (type: 'size') => string
@@ -86,14 +91,22 @@ const props = withDefaults(defineProps<{
     'rotate-bl',
     'rotate-br',
   ] as Handle[],
+  scale: () => [1, 1] as const,
+  offset: () => [0, 0] as const,
 })
 
 const emit = defineEmits<{
-  'update:modelValue': [TransformableValue]
-  'start': [TransformableValue]
-  'move': [TransformableValue, TransformableValue]
-  'end': [TransformableValue]
+  start: [TransformValue]
+  move: [TransformValue, TransformValue]
+  end: [TransformValue]
 }>()
+
+const _model = defineModel<
+  Partial<TransformValue>,
+  string,
+  TransformValue,
+  TransformValue
+>()
 
 const cursors: Record<string, any> = {
   'rotate-tl': (angle: number) => createCursor('rotate', 360 + angle),
@@ -110,17 +123,48 @@ const cursors: Record<string, any> = {
   'resize-bl': (angle: number) => createCursor('resizeBevel', 180 + angle),
 }
 
-const modelValue = useModel(props, 'modelValue')
 const model = computed({
   get: () => {
-    let { left = 0, top = 0, width = 0, height = 0, rotate = 0, borderRadius = 0 } = modelValue.value ?? {}
+    const scale = props.scale
+    const offset = props.offset
+
+    let {
+      left = 0,
+      top = 0,
+      width = 0,
+      height = 0,
+      rotate = 0,
+      borderRadius = 0,
+    } = _model.value ?? {}
+
     if (Number.isNaN(Number(width)))
       width = 0
+
     if (Number.isNaN(Number(height)))
       height = 0
-    return { left, top, width, height, rotate, borderRadius }
+
+    return {
+      left: left * scale[0] + offset[0],
+      top: top * scale[1] + offset[1],
+      width: width * scale[0],
+      height: height * scale[1],
+      rotate,
+      borderRadius,
+    }
   },
-  set: val => modelValue.value = val,
+  set: (val) => {
+    const scale = props.scale
+    const offset = props.offset
+
+    _model.value = {
+      left: (val.left - offset[0]) / scale[0],
+      top: (val.top - offset[1]) / scale[1],
+      width: val.width / scale[0],
+      height: val.height / scale[1],
+      rotate: val.rotate,
+      borderRadius: val.borderRadius,
+    }
+  },
 })
 const transforming = ref(false)
 const activeHandle = ref<Handle>()
@@ -368,7 +412,7 @@ function start(event?: MouseEvent, index?: number): boolean {
   }
 
   function _onPointerMove(event: MouseEvent): void {
-    const updated = {} as TransformableValue
+    const updated = {} as TransformValue
 
     if (!startClientPoint) {
       startClientPoint = { x: event.clientX, y: event.clientY }
@@ -500,11 +544,12 @@ function start(event?: MouseEvent, index?: number): boolean {
       updated.top = minY
     }
 
-    if (
-      ('width' in updated && updated.width <= 0)
-      || ('height' in updated && updated.height <= 0)
-    ) {
-      return
+    if ('width' in updated) {
+      updated.width = Math.max(1, updated.width)
+    }
+
+    if ('height' in updated) {
+      updated.height = Math.max(1, updated.height)
     }
 
     if (updated.borderRadius ?? borderRadius) {
@@ -690,7 +735,7 @@ function Diagonal() {
     :style="style"
   >
     <slot
-      :value="modelValue"
+      :value="model"
       :props="{
         onPointerdown: start,
       }"

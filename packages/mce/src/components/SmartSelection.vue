@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Element2D } from 'modern-canvas'
-import type { TransformableValue } from './shared/TransformControls.vue'
+import type { TransformValue } from './shared/TransformControls.vue'
 import { computed, ref, watch } from 'vue'
 import { useEditor } from '../composables'
 import TransformControls from './shared/TransformControls.vue'
@@ -104,29 +104,19 @@ const handles = computed(() => {
 })
 
 const _transform = computed(() => {
-  const { left, top, width, height, rotationDegrees: rotate } = getObb(
-    currentElement.value,
-    'drawboard',
-  )
-  return { left, top, width, height, rotate }
+  const { left, top, width, height } = getObb(currentElement.value)
+  return { left, top, width, height }
 })
 
 const transform = computed({
   get: () => _transform.value,
-  set: (val: TransformableValue) => {
-    const zoom = camera.value.zoom
+  set: (transform: TransformValue) => {
     const oldTransform = _transform.value
-    const transform = {
-      left: val.left / zoom.x,
-      top: val.top / zoom.y,
-      width: Math.max(1, val.width / zoom.x),
-      height: Math.max(1, val.height / zoom.y),
-    }
     const offsetStyle = {
-      left: transform.left - oldTransform.left / zoom.x,
-      top: transform.top - oldTransform.top / zoom.y,
-      width: transform.width - oldTransform.width / zoom.x,
-      height: transform.height - oldTransform.height / zoom.y,
+      left: transform.left - oldTransform.left,
+      top: transform.top - oldTransform.top,
+      width: transform.width - oldTransform.width,
+      height: transform.height - oldTransform.height,
     }
     const el = currentElement.value!
     const style = el.style
@@ -186,6 +176,8 @@ const transform = computed({
       :handles="['resize-l', 'resize-r', 'resize-t', 'resize-b']"
       class="mce-smart-selection__transform"
       color="#FF24BD"
+      :scale="[camera.zoom.x, camera.zoom.y]"
+      :offset="[-camera.position.x, -camera.position.y]"
     />
   </div>
 </template>
