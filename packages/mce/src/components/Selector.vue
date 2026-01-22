@@ -129,7 +129,7 @@ function snap(currentPos: number, type: 'x' | 'y'): number {
 function createSelectionTransformContext(): Mce.SelectionTransformContext {
   return {
     startEvent: startEvent.value!,
-    handle: (transformable.value?.activeHandle ?? 'move') as Mce.TransformableHandle,
+    handle: (transformable.value?.activeHandle ?? 'move') as Mce.TransformHandle,
     elements: elementSelection.value,
   }
 }

@@ -45,28 +45,17 @@ declare global {
       lockOrUnlockSelection: [event: KeyboardEvent]
     }
 
-    type TransformableHandle
+    type TransformHandleDirection = 't' | 'l' | 'r' | 'b'
+    type TransformHandleCorner = 'tl' | 'tr' | 'bl' | 'br'
+    type TransformHandle
       = | 'move'
-        | 'resize-t'
-        | 'resize-r'
-        | 'resize-b'
-        | 'resize-l'
-        | 'resize-tl'
-        | 'resize-tr'
-        | 'resize-bl'
-        | 'resize-br'
-        | 'rotate-tl'
-        | 'rotate-tr'
-        | 'rotate-bl'
-        | 'rotate-br'
-        | 'round-tl'
-        | 'round-tr'
-        | 'round-bl'
-        | 'round-br'
+        | `resize-${TransformHandleDirection | TransformHandleCorner}`
+        | `rotate-${TransformHandleCorner}`
+        | `round-${TransformHandleCorner}`
 
     interface SelectionTransformContext {
       startEvent: MouseEvent | PointerEvent
-      handle: TransformableHandle
+      handle: TransformHandle
       elements: Element2D[]
     }
 

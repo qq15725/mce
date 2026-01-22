@@ -104,14 +104,11 @@ const handles = computed(() => {
 })
 
 const _transform = computed(() => {
-  const { left, top, width, height, rotationDegrees } = getObb(currentElement.value, 'drawboard')
-  return {
-    left,
-    top,
-    width,
-    height,
-    rotate: rotationDegrees,
-  }
+  const { left, top, width, height, rotationDegrees: rotate } = getObb(
+    currentElement.value,
+    'drawboard',
+  )
+  return { left, top, width, height, rotate }
 })
 
 const transform = computed({
@@ -131,10 +128,8 @@ const transform = computed({
       width: transform.width - oldTransform.width / zoom.x,
       height: transform.height - oldTransform.height / zoom.y,
     }
-
     const el = currentElement.value!
     const style = el.style
-
     const newStyle = {
       left: style.left + offsetStyle.left,
       top: style.top + offsetStyle.top,
