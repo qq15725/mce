@@ -1,3 +1,26 @@
+## [0.15.34](https://github.com/qq15725/mce/compare/v0.15.33...v0.15.34) (2026-01-22)
+
+
+### Bug Fixes
+
+* scrollTo ([79964ec](https://github.com/qq15725/mce/commit/79964ec279e635cb6175f2c3a0df1f1fd24d530f))
+* setup dispose ([22b5052](https://github.com/qq15725/mce/commit/22b5052182b4ee96297acfcef1f775695295ddb5))
+* setup dispose ([8f41e84](https://github.com/qq15725/mce/commit/8f41e844109e14397ce670c256d37cf703f24185))
+* setup hot update ([6667fed](https://github.com/qq15725/mce/commit/6667fedd2647b2d36f2654cc94c151c4b3878020))
+
+
+### Features
+
+* obbToDrawboardObb ([30c46a5](https://github.com/qq15725/mce/commit/30c46a5a78240a610274559d32a5e863585d27c2))
+* rename component GoBackSelectedArea ScrollToSelection ([2d68344](https://github.com/qq15725/mce/commit/2d683448eae7a640d0c4452848b59ea4cd4565c8))
+* rename event selectionTransforming to selectionTransform ([4fd42e9](https://github.com/qq15725/mce/commit/4fd42e95f0420517832d1d06423668256aacd1e0))
+* smart selection ([023266c](https://github.com/qq15725/mce/commit/023266c1d60ec15f463195956a8389b2d88d2b78))
+* smartSelection ([5dad7c5](https://github.com/qq15725/mce/commit/5dad7c5be15b9444eb9074e10ba10b65951be86c))
+* TransformControls scale offset ([56895c1](https://github.com/qq15725/mce/commit/56895c1040fa527631dbe9d8d9a181d69eba77ec))
+* update zoom plugin ([28a81a2](https://github.com/qq15725/mce/commit/28a81a2a4a4340bd26d137480b24498f0b8c0945))
+
+
+
 ## [0.15.33](https://github.com/qq15725/mce/compare/v0.15.32...v0.15.33) (2026-01-21)
 
 
