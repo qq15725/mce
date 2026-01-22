@@ -1,27 +1,31 @@
 import type { Component } from 'vue'
 import type { Editor, Events, Options } from './editor'
 
-export interface BasePluginComponent {
+export interface PluginBaseComponent {
   ignore?: () => boolean
   component: Component
+  order?: 'before' | 'after' | number
 }
 
-export interface PanelPluginComponent extends BasePluginComponent {
-  name: string
+export interface PluginPanelComponent extends PluginBaseComponent {
   type: 'panel'
-  position: 'top' | 'right' | 'bottom' | 'left' | 'float'
+  name: string
+  position:
+    | 'float'
+    | 'top'
+    | 'right'
+    | 'bottom'
+    | 'left'
   size?: number
-  order?: number
 }
 
-export interface OverlayPluginComponent extends BasePluginComponent {
+export interface PluginOverlayComponent extends PluginBaseComponent {
   type: 'overlay'
-  order?: 'before' | 'after'
 }
 
 export type PluginComponent
-  = | OverlayPluginComponent
-    | PanelPluginComponent
+  = | PluginOverlayComponent
+    | PluginPanelComponent
 
 export interface PluginObject {
   name: string

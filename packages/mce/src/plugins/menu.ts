@@ -36,7 +36,7 @@ export default definePlugin((editor, options) => {
     textSelection,
     config,
     exporters,
-    pluginsComponents,
+    components,
     isElement,
   } = editor
 
@@ -129,8 +129,8 @@ export default definePlugin((editor, options) => {
 
   const panelsMenu = computed(() => ({
     key: 'panels',
-    children: pluginsComponents.value.panel.map((p) => {
-      return { key: `panels:${p.name}`, checked: (config.value as any)[p.name] }
+    children: components.value.panel.map((item) => {
+      return { key: `panels:${item.component.name}`, checked: (config.value as any)[item.component.name] }
     }),
   }))
 

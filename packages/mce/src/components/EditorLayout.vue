@@ -67,7 +67,7 @@ editor.setup()
 provide(IconsSymbol, createIcons())
 
 const {
-  pluginsComponents,
+  components,
   isElement,
   isTopFrame,
   config,
@@ -508,9 +508,9 @@ const slotProps = {
         />
 
         <Component
-          :is="p.component"
-          v-for="(p, key) in pluginsComponents.overlay.filter(v => v.order === 'before')"
-          :key="key"
+          :is="item.component.component"
+          v-for="(item, key) in components.overlay" :key="key"
+          :style="item.style"
         />
 
         <Selector
@@ -531,7 +531,7 @@ const slotProps = {
         <TextEditor ref="textEditorTpl" />
 
         <Floatbar
-          v-if="slots.floatbar"
+          v-if="slots['floatbar-top'] || slots.floatbar"
           location="top-start"
           :target="state === 'typing'
             ? textEditor?.textEditor
@@ -539,16 +539,6 @@ const slotProps = {
           :middlewares="['offset', 'shift']"
         >
           <slot name="floatbar" v-bind="slotProps" />
-        </Floatbar>
-
-        <Floatbar
-          v-if="slots['floatbar-top']"
-          location="top-start"
-          :target="state === 'typing'
-            ? textEditor?.textEditor
-            : selector?.transformable?.$el"
-          :middlewares="['offset', 'shift']"
-        >
           <slot name="floatbar-top" v-bind="slotProps" />
         </Floatbar>
 
@@ -561,18 +551,6 @@ const slotProps = {
           <slot name="floatbar-bottom" v-bind="slotProps" />
         </Floatbar>
 
-        <Component
-          :is="p.component"
-          v-for="(p, key) in pluginsComponents.overlay.filter(v => v.order !== 'before' && v.order !== 'after')"
-          :key="key"
-        />
-
-        <Component
-          :is="p.component"
-          v-for="(p, key) in pluginsComponents.overlay.filter(v => v.order === 'after')"
-          :key="key"
-        />
-
         <slot name="drawboard" v-bind="slotProps" />
       </div>
     </Main>
@@ -580,42 +558,46 @@ const slotProps = {
     <slot v-bind="slotProps" />
 
     <template
-      v-for="(p, key) in pluginsComponents.panel.filter(p => p.position !== 'float')"
+      v-for="(item, key) in components.panel"
       :key="key"
     >
-      <LayoutItem
-        v-if="(config as any)[p.name]"
-        v-model="(config as any)[p.name]"
-        :position="p.position as any"
-        :size="p.size || 200"
-        :order="p.order || 0"
+      <template
+        v-if="item.component.position === 'float'"
       >
-        <Component :is="p.component" />
-      </LayoutItem>
-    </template>
+        <FloatPanel
+          v-if="(config as any)[item.component.name]"
+          v-model="(config as any)[item.component.name]"
+          :title="t(item.component.name)"
+          :default-transform="{
+            width: item.component.size || 240,
+            height: drawboardAabb.height * .7,
+            left: drawboardAabb.left + (drawboardPointer?.x ?? drawboardContextMenuPointer?.x ?? (screenCenterOffset.left + 24)),
+            top: drawboardAabb.top + (drawboardPointer?.y ?? drawboardContextMenuPointer?.y ?? (screenCenterOffset.top + 24)),
+          }"
+          :style="item.style"
+        >
+          <template #default="{ isActive }">
+            <Component
+              :is="item.component.component"
+              v-model:is-active="isActive.value"
+            />
+          </template>
+        </FloatPanel>
+      </template>
 
-    <template
-      v-for="(p, key) in pluginsComponents.panel.filter(p => p.position === 'float')"
-      :key="key"
-    >
-      <FloatPanel
-        v-if="(config as any)[p.name]"
-        v-model="(config as any)[p.name]"
-        :title="t(p.name)"
-        :default-transform="{
-          width: 240,
-          height: drawboardAabb.height * .7,
-          left: drawboardAabb.left + (drawboardPointer?.x ?? drawboardContextMenuPointer?.x ?? (screenCenterOffset.left + 24)),
-          top: drawboardAabb.top + (drawboardPointer?.y ?? drawboardContextMenuPointer?.y ?? (screenCenterOffset.top + 24)),
-        }"
+      <template
+        v-else
       >
-        <template #default="{ isActive }">
-          <Component
-            :is="p.component"
-            v-model:is-active="isActive.value"
-          />
-        </template>
-      </FloatPanel>
+        <LayoutItem
+          v-if="(config as any)[item.component.name]"
+          v-model="(config as any)[item.component.name]"
+          :position="item.component.position as any"
+          :size="item.component.size || 200"
+          :order="item.component.order || 0"
+        >
+          <Component :is="item.component.component" />
+        </LayoutItem>
+      </template>
     </template>
 
     <div
