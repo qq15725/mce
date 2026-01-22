@@ -1,4 +1,4 @@
-import type { Element2D, PointerInputEvent } from 'modern-canvas'
+import type { PointerInputEvent } from 'modern-canvas'
 import { useResizeObserver } from '@vueuse/core'
 import { Aabb2D, Vector2 } from 'modern-canvas'
 import { definePlugin } from '../plugin'
@@ -17,35 +17,10 @@ declare global {
       layerScrollIntoView: () => boolean
     }
 
-    type TransformableHandle
-      = | 'move'
-        | 'resize-t'
-        | 'resize-r'
-        | 'resize-b'
-        | 'resize-l'
-        | 'resize-tl'
-        | 'resize-tr'
-        | 'resize-bl'
-        | 'resize-br'
-        | 'rotate-tl'
-        | 'rotate-tr'
-        | 'rotate-bl'
-        | 'rotate-br'
-        | 'round-tl'
-        | 'round-tr'
-        | 'round-bl'
-        | 'round-br'
-
-    interface SelectionTransformContext {
-      startEvent: MouseEvent | PointerEvent
-      handle: TransformableHandle
-      elements: Element2D[]
-    }
-
     interface Events {
       pointerMove: [event: PointerEvent]
       selectionTransformStart: [context: SelectionTransformContext]
-      selectionTransforming: [context: SelectionTransformContext]
+      selectionTransform: [context: SelectionTransformContext]
       selectionTransformEnd: [context: SelectionTransformContext]
     }
   }

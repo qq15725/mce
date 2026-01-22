@@ -475,7 +475,7 @@ export default definePlugin((editor) => {
   return {
     name: 'mce:smartGuides',
     events: {
-      selectionTransforming: ({ handle }) => {
+      selectionTransform: ({ handle }) => {
         if (
           handle === 'move'
           // TODO

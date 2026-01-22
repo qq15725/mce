@@ -269,7 +269,7 @@ const transform = computed({
       }
     }
 
-    emit('selectionTransforming', createSelectionTransformContext())
+    emit('selectionTransform', createSelectionTransformContext())
   },
 })
 

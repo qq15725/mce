@@ -55,9 +55,13 @@ export class Editor extends Observable<Events> {
 
   getPlugins = (type: PluginComponent['type']) => {
     return Array.from(this.plugins.values())
-      .flatMap(p => p.components?.filter((c) => {
-        return c.type === type && c.ignore?.() !== true
-      }) ?? [])
+      .flatMap((p) => {
+        return p.components
+          ?.filter((c) => {
+            return c.type === type && c.ignore?.() !== true
+          })
+          ?? []
+      })
   }
 
   log = (...args: any[]): void => {
@@ -85,7 +89,7 @@ export class Editor extends Observable<Events> {
 
     this._setups = []
 
-    this._useMixins(
+    this.mixin(
       presetMixins,
       options,
     )
@@ -96,13 +100,23 @@ export class Editor extends Observable<Events> {
     ], options)
   }
 
-  protected _useMixins(mixins: Mixin[], options: Options): void {
-    const use = (mixin: Mixin): void => {
+  mixin(mixin: Mixin | Mixin[], options: Options = {}): void {
+    if (Array.isArray(mixin)) {
+      mixin.forEach((item) => {
+        try {
+          this.mixin(item, options)
+        }
+        catch (err: any) {
+          console.error(`Failed to use mixin`, err)
+        }
+      })
+    }
+    else {
       const result = mixin(this, options)
       switch (typeof result) {
         case 'object':
           if (Array.isArray(result)) {
-            result.map(v => use(v))
+            result.map(v => this.mixin(v))
           }
           else {
             Object.assign(this, result)
@@ -116,12 +130,20 @@ export class Editor extends Observable<Events> {
           break
       }
     }
-
-    mixins.forEach(use)
   }
 
-  use(plugins: Plugin[], options: Options): void {
-    const use = (plugin: Plugin): void => {
+  use(plugin: Plugin | Plugin[], options: Options): void {
+    if (Array.isArray(plugin)) {
+      plugin.forEach((p) => {
+        try {
+          this.use(p, options)
+        }
+        catch (err: any) {
+          console.error(`Failed to use plugin`, err)
+        }
+      })
+    }
+    else {
       let result: PluginObject
       if (typeof plugin === 'function') {
         result = plugin(this, options)
@@ -153,15 +175,6 @@ export class Editor extends Observable<Events> {
         }
       }
     }
-
-    plugins.forEach((p) => {
-      try {
-        use(p)
-      }
-      catch (err: any) {
-        console.error(`Failed to use plugin`, err)
-      }
-    })
   }
 
   protected _setuped = false

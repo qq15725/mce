@@ -1,4 +1,4 @@
-import type { Node } from 'modern-canvas'
+import type { Element2D, Node } from 'modern-canvas'
 import GoBackSelectedArea from '../components/GoBackSelectedArea.vue'
 import { definePlugin } from '../plugin'
 
@@ -43,6 +43,37 @@ declare global {
       frameSelection: [event: KeyboardEvent]
       showOrHideSelection: [event: KeyboardEvent]
       lockOrUnlockSelection: [event: KeyboardEvent]
+    }
+
+    type TransformableHandle
+      = | 'move'
+        | 'resize-t'
+        | 'resize-r'
+        | 'resize-b'
+        | 'resize-l'
+        | 'resize-tl'
+        | 'resize-tr'
+        | 'resize-bl'
+        | 'resize-br'
+        | 'rotate-tl'
+        | 'rotate-tr'
+        | 'rotate-bl'
+        | 'rotate-br'
+        | 'round-tl'
+        | 'round-tr'
+        | 'round-bl'
+        | 'round-br'
+
+    interface SelectionTransformContext {
+      startEvent: MouseEvent | PointerEvent
+      handle: TransformableHandle
+      elements: Element2D[]
+    }
+
+    interface Events {
+      selectionTransformStart: [context: SelectionTransformContext]
+      selectionTransform: [context: SelectionTransformContext]
+      selectionTransformEnd: [context: SelectionTransformContext]
     }
   }
 }
@@ -239,7 +270,7 @@ export default definePlugin((editor) => {
       { type: 'overlay', component: GoBackSelectedArea },
     ],
     events: {
-      selectionTransforming: ({ elements }) => {
+      selectionTransform: ({ elements }) => {
         elements.forEach((el) => {
           el.findAncestor((ancestor) => {
             if (

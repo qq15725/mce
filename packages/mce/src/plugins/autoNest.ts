@@ -116,7 +116,7 @@ export default definePlugin((editor) => {
           }
         }
       },
-      selectionTransforming: ({ handle, startEvent, elements }) => {
+      selectionTransform: ({ handle, startEvent, elements }) => {
         if (handle === 'move' && !(startEvent as any)?.__FROM__) {
           if (Object.keys(startContext).length > 0) {
             elements.forEach((el) => {
