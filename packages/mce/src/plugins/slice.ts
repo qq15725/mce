@@ -99,11 +99,11 @@ export default definePlugin((editor) => {
         },
       },
     ],
-    hotkeys: [
-      { command: 'setActiveDrawingTool:slice', key: 'S' },
-    ],
     commands: [
       { command: 'exportSlice', handle: exportSlice },
+    ],
+    hotkeys: [
+      { command: 'setActiveDrawingTool:slice', key: 'S' },
     ],
   }
 })

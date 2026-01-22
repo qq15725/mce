@@ -1,5 +1,5 @@
 import type { Element2D, Node } from 'modern-canvas'
-import GoBackSelectedArea from '../components/GoBackSelectedArea.vue'
+import ScrollToSelection from '../components/ScrollToSelection.vue'
 import { definePlugin } from '../plugin'
 
 declare global {
@@ -266,9 +266,6 @@ export default definePlugin((editor) => {
       { command: 'showOrHideSelection', key: 'Shift+CmdOrCtrl+H' },
       { command: 'lockOrUnlockSelection', key: 'Shift+CmdOrCtrl+L' },
     ],
-    components: [
-      { type: 'overlay', component: GoBackSelectedArea },
-    ],
     events: {
       selectionTransform: ({ elements }) => {
         elements.forEach((el) => {
@@ -284,5 +281,8 @@ export default definePlugin((editor) => {
         })
       },
     },
+    components: [
+      { type: 'overlay', component: ScrollToSelection },
+    ],
   }
 })

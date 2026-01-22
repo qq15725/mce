@@ -20,16 +20,16 @@ const isActive = computed(() => {
 <template>
   <div
     v-if="isActive"
-    class="mce-back-selected-aera"
+    class="mce-scroll-to-selection"
     @click.prevent="exec('scrollToSelection', { behavior: 'smooth' })"
   >
     <Icon icon="$gps" />
-    <span>{{ t('goBackSelectedArea') }}</span>
+    <span>{{ t('scrollToSelection') }}</span>
   </div>
 </template>
 
 <style lang="scss">
-  .mce-back-selected-aera {
+  .mce-scroll-to-selection {
     pointer-events: auto !important;
     position: absolute;
     left: 50%;

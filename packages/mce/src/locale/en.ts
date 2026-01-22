@@ -9,7 +9,7 @@ export default {
   'selectObject': 'Select object',
   'commitChanges': 'Commit changes',
   'extend': 'Extend',
-  'goBackSelectedArea': 'Go back selected area',
+  'scrollToSelection': 'Scroll to selection',
   'selectArea': 'Select area',
   'dragSelected': 'Drag selected',
   'startTyping': 'Start typing',

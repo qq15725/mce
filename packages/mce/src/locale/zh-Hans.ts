@@ -9,7 +9,7 @@ export default {
   'selectObject': '选择对象',
   'commitChanges': '提交修改',
   'extend': '扩展',
-  'goBackSelectedArea': '返回选中区域',
+  'scrollToSelection': '返回选中区域',
   'selectArea': '选择区域',
   'dragSelected': '拖拽选择的',
   'startTyping': '编辑文字',

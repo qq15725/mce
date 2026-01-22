@@ -16,11 +16,11 @@ export default definePlugin((editor) => {
 
   return {
     name: 'mce:drawingTool',
-    components: [
-      { name: 'drawing', type: 'overlay', component: Drawing },
-    ],
     commands: [
       { command: 'setActiveDrawingTool', handle: val => setActiveDrawingTool(val) },
+    ],
+    components: [
+      { name: 'drawing', type: 'overlay', component: Drawing },
     ],
   }
 })
