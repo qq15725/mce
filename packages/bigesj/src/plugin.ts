@@ -2,7 +2,7 @@ import type { Editor } from 'mce'
 import type { Node } from 'modern-canvas'
 import { definePlugin } from 'mce'
 import { assets } from 'modern-canvas'
-import { onBeforeUnmount } from 'vue'
+import { onBeforeMount, onScopeDispose } from 'vue'
 import { useFonts } from './composables'
 import { bidTidLoader, bigeLoader } from './loaders'
 
@@ -86,13 +86,15 @@ async function setupFonts(editor: Editor, api: Record<string, any>): Promise<voi
     root.value && preloadNode(root.value)
   }
 
-  onBeforeUnmount(() => {
+  onBeforeMount(() => {
+    on('setDoc', preload)
+    renderEngine.value.on('nodeEnter', preloadNode)
+  })
+
+  onScopeDispose(() => {
     off('setDoc', preload)
     renderEngine.value.off('nodeEnter', preloadNode)
   })
-
-  on('setDoc', preload)
-  renderEngine.value.on('nodeEnter', preloadNode)
 
   assets.awaitBy(async () => {
     await loadBigeFonts(api.fonts, true)

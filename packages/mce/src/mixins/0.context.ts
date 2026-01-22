@@ -3,7 +3,7 @@ import type { IndexCharacter as _IndexCharacter } from 'modern-text/web-componen
 import type { ComputedRef, Ref } from 'vue'
 import { Aabb2D, Camera2D, DrawboardEffect, Element2D, Engine, Node, Timeline } from 'modern-canvas'
 import { Fonts } from 'modern-font'
-import { computed, markRaw, reactive, ref, watch } from 'vue'
+import { computed, markRaw, onBeforeMount, onScopeDispose, reactive, ref, watch } from 'vue'
 import { Doc } from '../crdt'
 import { defineMixin } from '../mixin'
 
@@ -84,7 +84,6 @@ export default defineMixin((editor) => {
   _renderEngine.root.append(camera.value as any)
   _renderEngine.root.append(drawboardEffect.value as any)
   const renderEngine = ref(_renderEngine)
-  renderEngine.value.start()
 
   const drawboardDom = ref<HTMLElement>()
   const drawboardAabb = ref(new Aabb2D())
@@ -219,6 +218,7 @@ export default defineMixin((editor) => {
   return () => {
     const {
       on,
+      off,
       root,
       state,
     } = editor
@@ -240,7 +240,9 @@ export default defineMixin((editor) => {
       nodeIndexMap.set(node.id, nodes.value.length - 1)
     }
 
-    on('setDoc', () => updateNodes())
+    function onSetDoc() {
+      updateNodes()
+    }
 
     watch(selection, (value) => {
       // debug
@@ -250,6 +252,16 @@ export default defineMixin((editor) => {
     watch(state, () => {
       textSelection.value = undefined
       hoverElement.value = undefined
+    })
+
+    onBeforeMount(() => {
+      on('setDoc', onSetDoc)
+      renderEngine.value.start()
+    })
+
+    onScopeDispose(() => {
+      off('setDoc', onSetDoc)
+      renderEngine.value.stop()
     })
   }
 })

@@ -1,6 +1,8 @@
 import type { Element2D, Node } from 'modern-canvas'
 import type { Element } from 'modern-idoc'
+import type { Doc } from '../crdt'
 import { render } from 'modern-canvas'
+import { onBeforeMount, onScopeDispose } from 'vue'
 import { defineMixin } from '../mixin'
 
 declare global {
@@ -84,11 +86,12 @@ export default defineMixin((editor) => {
   return () => {
     const {
       on,
+      off,
       config,
       inEditorIs,
     } = editor
 
-    on('setDoc', (doc) => {
+    function onSetDoc(doc: Doc) {
       if (config.value.frameScreenshot) {
         snapshot()
       }
@@ -117,6 +120,14 @@ export default defineMixin((editor) => {
 
       doc.root.on('addChild', onAddChild)
       doc.root.on('removeChild', onRemoveChild)
+    }
+
+    onBeforeMount(() => {
+      on('setDoc', onSetDoc)
+    })
+
+    onScopeDispose(() => {
+      off('setDoc', onSetDoc)
     })
   }
 })

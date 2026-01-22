@@ -1,7 +1,7 @@
 import type { Node } from 'modern-canvas'
 import type { Ref, WritableComputedRef } from 'vue'
 import { assets, clamp, TimelineNode, Video2D } from 'modern-canvas'
-import { computed, ref } from 'vue'
+import { computed, onBeforeMount, onScopeDispose, ref } from 'vue'
 import { defineMixin } from '../mixin'
 
 declare global {
@@ -91,6 +91,7 @@ export default defineMixin((editor) => {
   return () => {
     const {
       on,
+      off,
     } = editor
 
     async function updateEndTime() {
@@ -100,8 +101,14 @@ export default defineMixin((editor) => {
         : 0
     }
 
-    assets.on('loaded', updateEndTime)
+    onBeforeMount(() => {
+      on('setDoc', updateEndTime)
+      assets.on('loaded', updateEndTime)
+    })
 
-    on('setDoc', updateEndTime)
+    onScopeDispose(() => {
+      off('setDoc', updateEndTime)
+      assets.off('loaded', updateEndTime)
+    })
   }
 })
