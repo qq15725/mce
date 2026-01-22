@@ -1,3 +1,4 @@
+import type { EffectScope } from '@vue/reactivity'
 import type { RemovableRef } from '@vueuse/core'
 import type { ObservableEvents } from 'modern-idoc'
 import type { App, InjectionKey } from 'vue'
@@ -5,7 +6,7 @@ import type { Mixin } from './mixin'
 import type { OverlayPluginComponent, PanelPluginComponent, Plugin, PluginComponent, PluginObject } from './plugin'
 import { useLocalStorage } from '@vueuse/core'
 import { Observable } from 'modern-idoc'
-import { computed, ref } from 'vue'
+import { computed, effectScope, ref } from 'vue'
 import { mixins as presetMixins } from './mixins'
 import { plugins as presetPlugins } from './plugins'
 
@@ -177,12 +178,12 @@ export class Editor extends Observable<Events> {
     }
   }
 
-  protected _setuped = false
+  protected _effectScope?: EffectScope
 
   setup = async () => {
-    if (!this._setuped) {
-      this._setuped = true
-
+    this._effectScope?.stop()
+    const scope = effectScope()
+    scope.run(async () => {
       await Promise.all([
         ...this._setups.map(async (setup) => {
           try {
@@ -201,9 +202,9 @@ export class Editor extends Observable<Events> {
           }
         }),
       ])
-
       this.emit('ready')
-    }
+    })
+    this._effectScope = scope
   }
 
   install = (app: App): void => {

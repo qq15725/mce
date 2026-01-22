@@ -1,5 +1,6 @@
 import type { Aabb2D, Element2D } from 'modern-canvas'
 import { clamp } from 'modern-canvas'
+import { watch } from 'vue'
 import { definePlugin } from '../plugin'
 
 declare global {
@@ -93,15 +94,16 @@ export default definePlugin((editor) => {
       return
     }
 
+    const [sx, sy, sw, sh] = aabb.toArray()
+
+    if (!sw || !sh) {
+      return
+    }
+
     const offset = screenCenterOffset.value
     const { width, height } = drawboardAabb.value
     const tw = width - (offset.left + offset.right)
     const th = height - (offset.top + offset.bottom)
-    const [sx, sy, sw, sh] = aabb.toArray()
-
-    if (!sw || !sh)
-      return
-
     const zw = tw / sw
     const zh = th / sh
 
@@ -206,7 +208,7 @@ export default definePlugin((editor) => {
       { command: 'zoomIn', handle: () => camera.value.addZoom(0.25) },
       { command: 'zoomOut', handle: () => camera.value.addZoom(-0.25) },
       { command: 'zoomTo', handle: zoomTo },
-      { command: 'zoomTo100', handle: () => camera.value.setZoom(1) },
+      { command: 'zoomTo100', handle: () => zoomTo(1) },
       { command: 'zoomToFit', handle: () => zoomTo('root', { mode: config.value.zoomToFit }) },
       { command: 'zoomToSelection', handle: options => zoomTo('selection', options) },
       { command: 'zoomToNextFrame', handle: options => zoomToFrame('next', options) },
@@ -222,11 +224,14 @@ export default definePlugin((editor) => {
       { command: 'zoomToPreviousFrame', key: 'Shift+N' },
     ],
     events: {
-      setDoc: () => {
-        console.log('setDoc')
-
-        exec('zoomToFit')
-      },
+      setDoc: () => exec('zoomToFit'),
+    },
+    setup: () => {
+      watch(drawboardAabb, (_aabb, oldAabb) => {
+        if (!oldAabb.width || !oldAabb.height) {
+          exec('zoomToFit')
+        }
+      })
     },
   }
 })
