@@ -10,6 +10,7 @@ declare global {
     interface Editor {
       obbToFit: (element: Element2D) => void
       getObb: (node: Node | Node[] | undefined, inTarget?: 'drawboard' | 'frame' | 'parent') => Obb2D
+      obbToDrawboardObb: (aabb: Obb2D) => Obb2D
       getAabb: (node: Node | Node[] | undefined, inTarget?: 'drawboard' | 'frame' | 'parent') => Aabb2D
       aabbToDrawboardAabb: (aabb: Aabb2D) => Aabb2D
       viewportAabb: ComputedRef<Aabb2D>
@@ -17,7 +18,6 @@ declare global {
       selectionAabb: ComputedRef<Aabb2D>
       selectionAabbInDrawboard: ComputedRef<Aabb2D>
       selectionObb: ComputedRef<Obb2D>
-      selectionObbInDrawboard: ComputedRef<Obb2D>
     }
   }
 }
@@ -126,14 +126,7 @@ export default defineMixin((editor) => {
       obb = new Obb2D()
     }
     if (inTarget === 'drawboard') {
-      const zoom = camera.value.zoom
-      const position = camera.value.position
-      obb.left *= zoom.x
-      obb.top *= zoom.y
-      obb.width *= zoom.x
-      obb.height *= zoom.y
-      obb.left -= position.x
-      obb.top -= position.y
+      obb = obbToDrawboardObb(obb)
     }
     else if (inTarget === 'frame') {
       const first = Array.isArray(node) ? node[0] : node
@@ -243,6 +236,19 @@ export default defineMixin((editor) => {
     return _aabb
   }
 
+  function obbToDrawboardObb(obb: Obb2D): Obb2D {
+    const _obb = new Obb2D(obb)
+    const zoom = camera.value.zoom
+    const position = camera.value.position
+    _obb.left *= zoom.x
+    _obb.top *= zoom.y
+    _obb.width *= zoom.x
+    _obb.height *= zoom.y
+    _obb.left -= position.x
+    _obb.top -= position.y
+    return _obb
+  }
+
   const viewportAabb = computed(() => {
     const _camera = camera.value
     const { position, zoom } = _camera
@@ -266,13 +272,14 @@ export default defineMixin((editor) => {
   })
   const rootAabb = computed(() => getAabb(root.value.children))
   const selectionAabb = computed(() => getAabb(selection.value))
-  const selectionAabbInDrawboard = computed(() => getAabb(selection.value, 'drawboard'))
+  const selectionAabbInDrawboard = computed(() => aabbToDrawboardAabb(selectionAabb.value))
   const selectionObb = computed(() => getObb(selection.value))
-  const selectionObbInDrawboard = computed(() => getObb(selection.value, 'drawboard'))
+  const selectionObbInDrawboard = computed(() => obbToDrawboardObb(selectionObb.value))
 
   Object.assign(editor, {
     obbToFit,
     getObb,
+    obbToDrawboardObb,
     getAabb,
     aabbToDrawboardAabb,
     viewportAabb,
