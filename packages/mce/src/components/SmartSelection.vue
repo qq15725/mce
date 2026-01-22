@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Element2D } from 'modern-canvas'
+import type { Aabb2D, Element2D } from 'modern-canvas'
 import type { TransformValue } from './shared/TransformControls.vue'
 import { computed, ref, watch } from 'vue'
 import { useEditor } from '../composables'
@@ -20,6 +20,8 @@ const {
 const info = ref({
   active: false,
   spacing: undefined as number | undefined,
+  xItems: [] as { el: Element2D, aabb: Aabb2D }[],
+  yItems: [] as { el: Element2D, aabb: Aabb2D }[],
 })
 
 function update() {
@@ -30,6 +32,8 @@ function update() {
   const els = elementSelection.value
   let active = false
   let spacing: number | undefined
+  let xItems: { el: Element2D, aabb: Aabb2D }[] = []
+  let yItems: { el: Element2D, aabb: Aabb2D }[] = []
 
   if (state.value !== 'transforming' && els.length > 1) {
     let prev
@@ -55,7 +59,10 @@ function update() {
       prev = cur
     }
 
-    if (!active) {
+    if (active) {
+      yItems = sorted
+    }
+    else {
       active = true
       prev = undefined
       spacing = undefined
@@ -76,12 +83,17 @@ function update() {
         }
         prev = cur
       }
+      if (active) {
+        xItems = sorted
+      }
     }
   }
 
   info.value = {
     active,
     spacing,
+    xItems,
+    yItems,
   }
 }
 
@@ -103,21 +115,21 @@ const handles = computed(() => {
   })
 })
 
-const _transform = computed(() => {
-  const { left, top, width, height } = getObb(currentElement.value)
-  return { left, top, width, height }
-})
-
 const transform = computed({
-  get: () => _transform.value,
-  set: (transform: TransformValue) => {
-    const oldTransform = _transform.value
+  get: () => {
+    const { left, top, width, height, rotationDegrees: rotate } = getObb(currentElement.value)
+    return { left, top, width, height, rotate }
+  },
+  set: (val: TransformValue) => {
+    const oldTransform = transform.value
     const offsetStyle = {
-      left: transform.left - oldTransform.left,
-      top: transform.top - oldTransform.top,
-      width: transform.width - oldTransform.width,
-      height: transform.height - oldTransform.height,
+      left: val.left - oldTransform.left,
+      top: val.top - oldTransform.top,
+      width: val.width - oldTransform.width,
+      height: val.height - oldTransform.height,
+      rotate: val.rotate - oldTransform.rotate,
     }
+
     const el = currentElement.value!
     const style = el.style
     const newStyle = {
@@ -125,15 +137,14 @@ const transform = computed({
       top: style.top + offsetStyle.top,
       width: style.width + offsetStyle.width,
       height: style.height + offsetStyle.height,
+      rotate: (style.rotate + offsetStyle.rotate + 360) % 360,
     }
-
-    const newWidth = Math.max(1, newStyle.width)
-    const newHeight = Math.max(1, newStyle.height)
+    const oldAabb = el.getGlobalAabb()
     const shape = el.shape
     resizeElement(
       el,
-      newWidth,
-      newHeight,
+      newStyle.width,
+      newStyle.height,
       inEditorIs(el, 'Frame')
         ? undefined
         : shape.isValid()
@@ -142,10 +153,41 @@ const transform = computed({
     )
     newStyle.width = el.style.width
     newStyle.height = el.style.height
-
-    Object.assign(style, newStyle)
-
+    Object.assign(el.style, newStyle)
     el.updateGlobalTransform()
+    const aabb = el.getGlobalAabb()
+    const offset = {
+      left: aabb.left - oldAabb.left,
+      top: aabb.top - oldAabb.top,
+      right: aabb.right - oldAabb.right,
+      bottom: aabb.bottom - oldAabb.bottom,
+    }
+
+    let after = false
+    info.value.yItems.forEach((item) => {
+      if (item.el.equal(el)) {
+        after = true
+      }
+      else if (after) {
+        item.el.style.top += offset.bottom
+      }
+      else {
+        item.el.style.top += offset.top
+      }
+    })
+
+    after = false
+    info.value.xItems.forEach((item) => {
+      if (item.el.equal(el)) {
+        after = true
+      }
+      else if (after) {
+        item.el.style.left += offset.right
+      }
+      else {
+        item.el.style.left += offset.left
+      }
+    })
   },
 })
 </script>
