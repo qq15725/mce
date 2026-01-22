@@ -24,7 +24,6 @@ import _4_3_element from './4.3.element'
 import _4_4_doc from './4.4.doc'
 import _drawingTool from './drawingTool'
 import _http from './http'
-import _scroll from './scroll'
 import _snapshot from './snapshot'
 
 export const mixins = [
@@ -50,6 +49,5 @@ export const mixins = [
   _4_4_doc,
   _drawingTool,
   _http,
-  _scroll,
   _snapshot,
 ]
