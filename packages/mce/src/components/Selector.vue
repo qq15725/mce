@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Element2D, Obb2D } from 'modern-canvas'
-import type { TransformableValue } from './shared/TransformControls.vue'
+import type { TransformValue } from './shared/TransformControls.vue'
 import { Aabb2D } from 'modern-canvas'
 import { computed, onBeforeMount, onBeforeUnmount, ref, useTemplateRef } from 'vue'
 import { useEditor } from '../composables/editor'
@@ -26,7 +26,6 @@ const {
   selection,
   elementSelection,
   selectionObb,
-  selectionObbInDrawboard,
   camera,
   getObb,
   getAabb,
@@ -91,17 +90,8 @@ const selectionObbStyles = computed(() => {
 
 function snap(currentPos: number, type: 'x' | 'y'): number {
   const points = getSnapPoints()
-  const zoom = camera.value.zoom
-  const position = camera.value.position
   let closest: undefined | number
   let minDist = Infinity
-
-  if (type === 'x') {
-    currentPos += position.x / zoom.x
-  }
-  else {
-    currentPos += position.y / zoom.y
-  }
 
   for (const pt of points[type]) {
     const dist = pt - currentPos
@@ -112,15 +102,8 @@ function snap(currentPos: number, type: 'x' | 'y'): number {
     }
   }
 
-  if (minDist <= snapThreshold.value) {
+  if (minDist < snapThreshold.value) {
     currentPos = closest ?? currentPos
-  }
-
-  if (type === 'x') {
-    currentPos -= position.x / zoom.x
-  }
-  else {
-    currentPos -= position.y / zoom.y
   }
 
   return currentPos
@@ -166,32 +149,22 @@ function onEnd() {
 }
 
 const _transform = computed(() => {
-  const zoom = camera.value.zoom
-  const { left, top, width, height, rotationDegrees } = selectionObbInDrawboard.value
+  const { left, top, width, height, rotationDegrees } = selectionObb.value
   return {
     left,
     top,
     width,
     height,
     rotate: rotationDegrees,
-    borderRadius: (elementSelection.value[0]?.style.borderRadius ?? 0) * zoom.x,
+    borderRadius: elementSelection.value[0]?.style.borderRadius ?? 0,
   }
 })
 
 const transform = computed({
   get: () => _transform.value,
-  set: (val: TransformableValue) => {
-    const handle: string = transformable.value?.activeHandle ?? 'move'
-    const zoom = camera.value.zoom
+  set: (transform: TransformValue) => {
     const oldTransform = _transform.value
-    const transform = {
-      left: val.left / zoom.x,
-      top: val.top / zoom.y,
-      width: Math.max(1, val.width / zoom.x),
-      height: Math.max(1, val.height / zoom.y),
-      rotate: (val.rotate ?? 0),
-      borderRadius: (val.borderRadius ?? 0) / zoom.y,
-    }
+    const handle: string = transformable.value?.activeHandle ?? 'move'
 
     if (handle === 'move') {
       transform.left = snap(Math.round(transform.left), 'x')
@@ -199,12 +172,12 @@ const transform = computed({
     }
 
     const offsetStyle = {
-      left: transform.left - oldTransform.left / zoom.x,
-      top: transform.top - oldTransform.top / zoom.y,
-      width: transform.width - oldTransform.width / zoom.x,
-      height: transform.height - oldTransform.height / zoom.y,
-      rotate: transform.rotate - (oldTransform.rotate ?? 0),
-      borderRadius: transform.borderRadius - (oldTransform.borderRadius ?? 0) / zoom.y,
+      left: transform.left - oldTransform.left,
+      top: transform.top - oldTransform.top,
+      width: transform.width - oldTransform.width,
+      height: transform.height - oldTransform.height,
+      rotate: transform.rotate - oldTransform.rotate,
+      borderRadius: transform.borderRadius - oldTransform.borderRadius,
     }
 
     const els = elementSelection.value
@@ -371,6 +344,8 @@ defineExpose({
       :resize-strategy="props.resizeStrategy"
       class="mce-selector__transform"
       :tip-format="tipFormat"
+      :scale="[camera.zoom.x, camera.zoom.y]"
+      :offset="[-camera.position.x, -camera.position.y]"
       @start="onStart"
       @move="onMove"
       @end="onEnd"

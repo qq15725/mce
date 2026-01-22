@@ -206,10 +206,10 @@ function applySourceTransformToStyle() {
     <TransformControls
       v-slot="{ props: slotProps }"
       v-model="sourceTransform"
-      class="mce-cropper__transformable"
+      class="mce-cropper__transform"
       :rotatable="false"
     >
-      <div class="mce-cropper__transformable_rect" v-bind="slotProps" />
+      <div class="mce-cropper__transform_rect" v-bind="slotProps" />
     </TransformControls>
 
     <slot
@@ -243,13 +243,13 @@ function applySourceTransformToStyle() {
       }
     }
 
-    &__transformable {
+    &__transform {
       position: absolute;
       color: rgba(var(--mce-theme-primary), 1);
       opacity: .5;
     }
 
-    &__transformable_rect {
+    &__transform_rect {
       width: 100%;
       height: 100%;
     }
