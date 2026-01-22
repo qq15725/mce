@@ -87,7 +87,6 @@ export default definePlugin((editor) => {
     getAabb,
     doc,
     root,
-    zoomTo,
     findSibling,
     inEditorIs,
     addElement,
@@ -97,6 +96,7 @@ export default definePlugin((editor) => {
     isVisible,
     setLock,
     isLock,
+    exec,
   } = editor
 
   function select(target: Mce.SelectTarget) {
@@ -129,7 +129,7 @@ export default definePlugin((editor) => {
         const value = findSibling(target === 'previousSibling' ? 'previous' : 'next')
         if (value) {
           selection.value = [value]
-          zoomTo('selection', {
+          exec('zoomTo', 'selection', {
             intoView: true,
             behavior: 'smooth',
           })

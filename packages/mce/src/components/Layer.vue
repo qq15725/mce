@@ -35,7 +35,6 @@ const {
   selection,
   nodes,
   nodeIndexMap,
-  zoomTo,
   hoverElement,
   exec,
   t,
@@ -181,7 +180,7 @@ function onMousedownContent(e: MouseEvent) {
 function onDblclickThumbnail(e: MouseEvent) {
   e.stopPropagation()
   if (isElement(props.node)) {
-    zoomTo('selection', {
+    exec('zoomTo', 'selection', {
       behavior: 'smooth',
     })
   }

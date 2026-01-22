@@ -26,7 +26,6 @@ import _drawingTool from './drawingTool'
 import _http from './http'
 import _scroll from './scroll'
 import _snapshot from './snapshot'
-import _zoom from './zoom'
 
 export const mixins = [
   _0_command,
@@ -53,5 +52,4 @@ export const mixins = [
   _http,
   _scroll,
   _snapshot,
-  _zoom,
 ]
