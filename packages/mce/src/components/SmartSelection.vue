@@ -5,6 +5,8 @@ import { computed, ref, watch } from 'vue'
 import { useEditor } from '../composables'
 import TransformControls from './shared/TransformControls.vue'
 
+const currentElement = defineModel<Element2D>()
+
 const {
   elementSelection,
   getObb,
@@ -13,20 +15,11 @@ const {
   camera,
   resizeElement,
   inEditorIs,
-  registerCommand,
 } = useEditor()
 
-const currentElement = ref<Element2D>()
 const info = ref({
   active: false,
   spacing: undefined as number | undefined,
-})
-
-registerCommand({
-  command: 'setSmartSelectionCurrentElement',
-  handle: (el) => {
-    currentElement.value = el
-  },
 })
 
 function update() {
