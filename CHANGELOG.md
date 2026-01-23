@@ -1,3 +1,13 @@
+## [0.15.36](https://github.com/qq15725/mce/compare/v0.15.35...v0.15.36) (2026-01-23)
+
+
+### Bug Fixes
+
+* auto nest ([4b2312b](https://github.com/qq15725/mce/commit/4b2312b51dfc9e178829a094bfbe3dcd419c4272))
+* smart selection ([a821f4e](https://github.com/qq15725/mce/commit/a821f4e5947412af3c03d6469644b26a0417eafe))
+
+
+
 ## [0.15.35](https://github.com/qq15725/mce/compare/v0.15.34...v0.15.35) (2026-01-23)
 
 
