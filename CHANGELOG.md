@@ -1,3 +1,12 @@
+## [0.15.37](https://github.com/qq15725/mce/compare/v0.15.36...v0.15.37) (2026-01-23)
+
+
+### Bug Fixes
+
+* ForegroundCropper ([f3cb4a3](https://github.com/qq15725/mce/commit/f3cb4a37815de8e8d3e59386633ee7740d700517))
+
+
+
 ## [0.15.36](https://github.com/qq15725/mce/compare/v0.15.35...v0.15.36) (2026-01-23)
 
 
