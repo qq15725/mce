@@ -1,3 +1,21 @@
+## [0.15.35](https://github.com/qq15725/mce/compare/v0.15.34...v0.15.35) (2026-01-23)
+
+
+### Bug Fixes
+
+* components ([42a5ffb](https://github.com/qq15725/mce/commit/42a5ffb9966a11020499207450feb6871e5d1c3d))
+
+
+### Features
+
+* componentRefs ([b9913c1](https://github.com/qq15725/mce/commit/b9913c1664c8d9126b521cbc005e48e2c2f95190))
+* components ([a10d0dc](https://github.com/qq15725/mce/commit/a10d0dc728efb32aa383ee80126685ae909b99b4))
+* keymap ([6b45e94](https://github.com/qq15725/mce/commit/6b45e94d70708a24e8274ece060dafe67f7d6f9c))
+* selection ([5f883a7](https://github.com/qq15725/mce/commit/5f883a7acd4146ef8d3f7b84f92fc93618b5db25))
+* selection ([a7b6bec](https://github.com/qq15725/mce/commit/a7b6bec97d190d2df227718786f5a6b6ebbd40a5))
+
+
+
 ## [0.15.34](https://github.com/qq15725/mce/compare/v0.15.33...v0.15.34) (2026-01-22)
 
 
