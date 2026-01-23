@@ -7,8 +7,6 @@ import type {
   Plugin,
   PluginComponent,
   PluginObject,
-  PluginOverlayComponent,
-  PluginPanelComponent,
 } from './plugin'
 import { useLocalStorage } from '@vueuse/core'
 import { Observable } from 'modern-idoc'
@@ -35,11 +33,6 @@ export interface EditorComponent<T extends PluginComponent = PluginComponent> {
   style: Record<string, any>
 }
 
-export interface EditorComponents {
-  overlay: EditorComponent<PluginOverlayComponent>[]
-  panel: EditorComponent<PluginPanelComponent>[]
-}
-
 export class Editor extends Observable<Events> {
   static injectionKey: InjectionKey<Editor> = Symbol.for('EditorKey')
 
@@ -49,8 +42,8 @@ export class Editor extends Observable<Events> {
   plugins = new Map<string, PluginObject>()
   components = computed(() => {
     const groups = {
-      overlay: [] as PluginComponent[],
       panel: [] as PluginComponent[],
+      overlay: [] as PluginComponent[],
     }
 
     this.plugins.values().forEach((p) => {
@@ -62,31 +55,26 @@ export class Editor extends Observable<Events> {
       })
     })
 
-    const components = {} as EditorComponents
-    Object.keys(groups).forEach((type) => {
+    const components = [] as PluginComponent[]
+    const types = ['panel', 'overlay']
+    types.forEach((type) => {
       const items = groups[type as keyof typeof groups] as PluginComponent[]
-      let zIndex = 0
-      const _items = [] as EditorComponent[]
       items
         .filter(c => c.order === 'before')
         .forEach((component) => {
-          _items.push({ component, style: { zIndex } })
-          zIndex++
+          components.push(component)
         })
       items
         .filter(c => c.order !== 'before' && c.order !== 'after')
         .sort((a, b) => Number(a.order ?? 0) - Number(b.order ?? 0))
         .forEach((component) => {
-          _items.push({ component, style: { zIndex } })
-          zIndex++
+          components.push(component)
         })
       items
         .filter(c => c.order === 'after')
         .forEach((component) => {
-          _items.push({ component, style: { zIndex } })
-          zIndex++
+          components.push(component)
         })
-      components[type as keyof typeof components] = _items as any
     })
 
     return components

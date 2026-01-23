@@ -507,16 +507,11 @@ const slotProps = {
           class="mce-editor__canvas"
         />
 
-        <Component
-          :is="item.component.component"
-          v-for="(item, key) in components.overlay" :key="key"
-          :style="item.style"
-        />
-
         <Selector
           ref="selectorTpl"
           :selected-area="selectedArea as any"
           :resize-strategy="resizeStrategy"
+          style="z-index: 1;"
         >
           <template #transformable="{ box }">
             <slot name="transformer" :box="box" v-bind="slotProps" />
@@ -555,48 +550,53 @@ const slotProps = {
       </div>
     </Main>
 
-    <slot v-bind="slotProps" />
-
     <template
-      v-for="(item, key) in components.panel"
+      v-for="(item, key) in components"
       :key="key"
     >
-      <template
-        v-if="item.component.position === 'float'"
-      >
-        <FloatPanel
-          v-if="(config as any)[item.component.name]"
-          v-model="(config as any)[item.component.name]"
-          :title="t(item.component.name)"
-          :default-transform="{
-            width: item.component.size || 240,
-            height: drawboardAabb.height * .7,
-            left: drawboardAabb.left + (drawboardPointer?.x ?? drawboardContextMenuPointer?.x ?? (screenCenterOffset.left + 24)),
-            top: drawboardAabb.top + (drawboardPointer?.y ?? drawboardContextMenuPointer?.y ?? (screenCenterOffset.top + 24)),
-          }"
-          :style="item.style"
+      <template v-if="item.type === 'panel'">
+        <template
+          v-if="item.position === 'float'"
         >
-          <template #default="{ isActive }">
-            <Component
-              :is="item.component.component"
-              v-model:is-active="isActive.value"
-            />
-          </template>
-        </FloatPanel>
+          <FloatPanel
+            v-if="(config as any)[item.name]"
+            v-model="(config as any)[item.name]"
+            :title="t(item.name)"
+            :default-transform="{
+              width: item.size || 240,
+              height: drawboardAabb.height * .7,
+              left: drawboardAabb.left + (drawboardPointer?.x ?? drawboardContextMenuPointer?.x ?? (screenCenterOffset.left + 24)),
+              top: drawboardAabb.top + (drawboardPointer?.y ?? drawboardContextMenuPointer?.y ?? (screenCenterOffset.top + 24)),
+            }"
+          >
+            <template #default="{ isActive }">
+              <Component
+                :is="item.component"
+                v-model:is-active="isActive.value"
+              />
+            </template>
+          </FloatPanel>
+        </template>
+
+        <template v-else>
+          <LayoutItem
+            v-if="(config as any)[item.name]"
+            v-model="(config as any)[item.name]"
+            :position="item.position as any"
+            :size="item.size || 200"
+            :order="item.order || 0"
+          >
+            <Component :is="item.component" />
+          </LayoutItem>
+        </template>
       </template>
 
-      <template
-        v-else
-      >
-        <LayoutItem
-          v-if="(config as any)[item.component.name]"
-          v-model="(config as any)[item.component.name]"
-          :position="item.component.position as any"
-          :size="item.component.size || 200"
-          :order="item.component.order || 0"
-        >
-          <Component :is="item.component.component" />
-        </LayoutItem>
+      <template v-else-if="item.type === 'overlay'">
+        <Teleport v-if="drawboardDom" :to="drawboardDom">
+          <Component
+            :is="item.component"
+          />
+        </Teleport>
       </template>
     </template>
 
@@ -604,6 +604,8 @@ const slotProps = {
       ref="overlayContainerTpl"
       class="mce-overlay-container"
     />
+
+    <slot v-bind="slotProps" />
   </Layout>
 </template>
 
