@@ -5,6 +5,7 @@ import { Aabb2D } from 'modern-canvas'
 import { computed, onBeforeMount, onBeforeUnmount, ref, useTemplateRef } from 'vue'
 import { defaultResizeStrategy } from '../composables'
 import { useEditor } from '../composables/editor'
+import ForegroundCropper from './ForegroundCropper.vue'
 import TransformControls from './shared/TransformControls.vue'
 
 const {
@@ -349,19 +350,19 @@ defineExpose({
       @move="onMove"
       @end="onEnd"
     >
-      <template v-if="$slots.transform" #svg="slotProps">
-        <slot name="transform" v-bind="slotProps" />
+      <template v-if="$slots.transform" #svg>
+        <slot name="transform" />
       </template>
     </TransformControls>
 
-    <template
-      v-if="transform.width && transform.height && $slots.default"
-    >
+    <template v-if="transform.width && transform.height">
       <div
         class="mce-selection__slot"
         :style="selectionObbInDrawboard.toCssStyle()"
       >
-        <slot :transform="transform" />
+        <ForegroundCropper />
+
+        <slot />
       </div>
     </template>
   </div>
