@@ -36,7 +36,7 @@ export default definePlugin((editor, options) => {
     textSelection,
     config,
     exporters,
-    pluginsComponents,
+    components,
     isElement,
   } = editor
 
@@ -129,8 +129,8 @@ export default definePlugin((editor, options) => {
 
   const panelsMenu = computed(() => ({
     key: 'panels',
-    children: pluginsComponents.value.panel.map((p) => {
-      return { key: `panels:${p.name}`, checked: (config.value as any)[p.name] }
+    children: components.value.filter(c => c.type === 'panel').map((c) => {
+      return { key: `panels:${c.name}`, checked: (config.value as any)[c.name] }
     }),
   }))
 
@@ -328,7 +328,7 @@ export default definePlugin((editor, options) => {
   return {
     name: 'mce:menu',
     components: [
-      { type: 'overlay', component: ContextMenu },
+      { type: 'overlay', component: ContextMenu, order: 'after' },
     ],
   }
 })

@@ -2,10 +2,6 @@
 import { useEditor } from '../composables/editor'
 import Scrollbar from './shared/Scrollbar.vue'
 
-defineOptions({
-  inheritAttrs: false,
-})
-
 const props = withDefaults(
   defineProps<{
     offset?: number

@@ -2,10 +2,6 @@
 import { useEditor } from '../composables/editor'
 import Ruler from './shared/Ruler.vue'
 
-defineOptions({
-  inheritAttrs: false,
-})
-
 const {
   camera,
   selectionAabbInDrawboard,

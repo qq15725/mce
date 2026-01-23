@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import type { Cursor, Element2D, PointerInputEvent } from 'modern-canvas'
+import type { EditorComponent } from '../editor'
 import type { OrientedBoundingBox } from '../types'
 import { useResizeObserver } from '@vueuse/core'
 import { Aabb2D } from 'modern-canvas'
 import {
+
   computed,
   nextTick,
   onBeforeMount,
@@ -31,7 +33,6 @@ import FloatPanel from './shared/FloatPanel.vue'
 import Layout from './shared/Layout.vue'
 import LayoutItem from './shared/LayoutItem.vue'
 import Main from './shared/Main.vue'
-import TextEditor from './TextEditor.vue'
 
 const props = defineProps({
   ...makeMceStrategyProps({
@@ -67,7 +68,8 @@ editor.setup()
 provide(IconsSymbol, createIcons())
 
 const {
-  pluginsComponents,
+  components,
+  componentRefs,
   isElement,
   isTopFrame,
   config,
@@ -94,7 +96,6 @@ const {
 const overlayContainer = useTemplateRef('overlayContainerTpl')
 const canvas = useTemplateRef('canvasTpl')
 const selector = useTemplateRef('selectorTpl')
-const textEditor = useTemplateRef('textEditorTpl')
 const grabbing = ref(false)
 const selectedArea = ref(new Aabb2D())
 const resizeStrategy = computed(() => {
@@ -479,6 +480,13 @@ async function onDoubleclick(event: MouseEvent) {
   }
 }
 
+function setComponentRef(ref: any, component: EditorComponent) {
+  if (!componentRefs.value[component.plugin]) {
+    componentRefs.value[component.plugin] = []
+  }
+  componentRefs.value[component.plugin][component.indexInPlugin] = ref
+}
+
 const slotProps = {
   editor,
 }
@@ -507,16 +515,11 @@ const slotProps = {
           class="mce-editor__canvas"
         />
 
-        <Component
-          :is="p.component"
-          v-for="(p, key) in pluginsComponents.overlay.filter(v => v.order === 'before')"
-          :key="key"
-        />
-
         <Selector
           ref="selectorTpl"
           :selected-area="selectedArea as any"
           :resize-strategy="resizeStrategy"
+          style="z-index: 1;"
         >
           <template #transformable="{ box }">
             <slot name="transformer" :box="box" v-bind="slotProps" />
@@ -528,27 +531,15 @@ const slotProps = {
           </template>
         </Selector>
 
-        <TextEditor ref="textEditorTpl" />
-
         <Floatbar
-          v-if="slots.floatbar"
+          v-if="slots['floatbar-top'] || slots.floatbar"
           location="top-start"
           :target="state === 'typing'
-            ? textEditor?.textEditor
+            ? (componentRefs['mce:text']?.[0] as any)?.textEditor
             : selector?.transformable?.$el"
           :middlewares="['offset', 'shift']"
         >
           <slot name="floatbar" v-bind="slotProps" />
-        </Floatbar>
-
-        <Floatbar
-          v-if="slots['floatbar-top']"
-          location="top-start"
-          :target="state === 'typing'
-            ? textEditor?.textEditor
-            : selector?.transformable?.$el"
-          :middlewares="['offset', 'shift']"
-        >
           <slot name="floatbar-top" v-bind="slotProps" />
         </Floatbar>
 
@@ -561,67 +552,74 @@ const slotProps = {
           <slot name="floatbar-bottom" v-bind="slotProps" />
         </Floatbar>
 
-        <Component
-          :is="p.component"
-          v-for="(p, key) in pluginsComponents.overlay.filter(v => v.order !== 'before' && v.order !== 'after')"
-          :key="key"
-        />
-
-        <Component
-          :is="p.component"
-          v-for="(p, key) in pluginsComponents.overlay.filter(v => v.order === 'after')"
-          :key="key"
-        />
-
         <slot name="drawboard" v-bind="slotProps" />
       </div>
     </Main>
 
-    <slot v-bind="slotProps" />
-
     <template
-      v-for="(p, key) in pluginsComponents.panel.filter(p => p.position !== 'float')"
+      v-for="(item, key) in components"
       :key="key"
     >
-      <LayoutItem
-        v-if="(config as any)[p.name]"
-        v-model="(config as any)[p.name]"
-        :position="p.position as any"
-        :size="p.size || 200"
-        :order="p.order || 0"
-      >
-        <Component :is="p.component" />
-      </LayoutItem>
-    </template>
-
-    <template
-      v-for="(p, key) in pluginsComponents.panel.filter(p => p.position === 'float')"
-      :key="key"
-    >
-      <FloatPanel
-        v-if="(config as any)[p.name]"
-        v-model="(config as any)[p.name]"
-        :title="t(p.name)"
-        :default-transform="{
-          width: 240,
-          height: drawboardAabb.height * .7,
-          left: drawboardAabb.left + (drawboardPointer?.x ?? drawboardContextMenuPointer?.x ?? (screenCenterOffset.left + 24)),
-          top: drawboardAabb.top + (drawboardPointer?.y ?? drawboardContextMenuPointer?.y ?? (screenCenterOffset.top + 24)),
-        }"
-      >
-        <template #default="{ isActive }">
-          <Component
-            :is="p.component"
-            v-model:is-active="isActive.value"
-          />
+      <template v-if="item.type === 'panel'">
+        <template
+          v-if="item.position === 'float'"
+        >
+          <FloatPanel
+            v-if="(config as any)[item.name]"
+            v-model="(config as any)[item.name]"
+            :title="t(item.name)"
+            :default-transform="{
+              width: item.size || 240,
+              height: drawboardAabb.height * .7,
+              left: drawboardAabb.left + (drawboardPointer?.x ?? drawboardContextMenuPointer?.x ?? (screenCenterOffset.left + 24)),
+              top: drawboardAabb.top + (drawboardPointer?.y ?? drawboardContextMenuPointer?.y ?? (screenCenterOffset.top + 24)),
+            }"
+          >
+            <template #default="{ isActive }">
+              <Component
+                :is="item.component"
+                :ref="(v: any) => setComponentRef(v, item)"
+                v-model:is-active="isActive.value"
+              />
+            </template>
+          </FloatPanel>
         </template>
-      </FloatPanel>
+
+        <template v-else>
+          <LayoutItem
+            v-if="(config as any)[item.name]"
+            v-model="(config as any)[item.name]"
+            :position="item.position as any"
+            :size="item.size || 200"
+            :order="item.order || 0"
+          >
+            <Component
+              :is="item.component"
+              :ref="(v: any) => setComponentRef(v, item)"
+            />
+          </LayoutItem>
+        </template>
+      </template>
+
+      <template v-else-if="item.type === 'overlay'">
+        <Teleport
+          v-if="drawboardDom"
+          :to="drawboardDom"
+        >
+          <Component
+            :is="item.component"
+            :ref="(v: any) => setComponentRef(v, item)"
+          />
+        </Teleport>
+      </template>
     </template>
 
     <div
       ref="overlayContainerTpl"
       class="mce-overlay-container"
     />
+
+    <slot v-bind="slotProps" />
   </Layout>
 </template>
 

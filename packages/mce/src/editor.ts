@@ -1,9 +1,13 @@
 import type { EffectScope } from '@vue/reactivity'
 import type { RemovableRef } from '@vueuse/core'
 import type { ObservableEvents } from 'modern-idoc'
-import type { App, InjectionKey } from 'vue'
+import type { App, ComponentPublicInstance, InjectionKey } from 'vue'
 import type { Mixin } from './mixin'
-import type { OverlayPluginComponent, PanelPluginComponent, Plugin, PluginComponent, PluginObject } from './plugin'
+import type {
+  Plugin,
+  PluginComponent,
+  PluginObject,
+} from './plugin'
 import { useLocalStorage } from '@vueuse/core'
 import { Observable } from 'modern-idoc'
 import { computed, effectScope, ref } from 'vue'
@@ -24,6 +28,8 @@ export interface Events extends Mce.Events, ObservableEvents {
   //
 }
 
+export type EditorComponent = PluginComponent & { plugin: string, indexInPlugin: number }
+
 export class Editor extends Observable<Events> {
   static injectionKey: InjectionKey<Editor> = Symbol.for('EditorKey')
 
@@ -31,12 +37,52 @@ export class Editor extends Observable<Events> {
   declare config: RemovableRef<Mce.Config>
   onEmit?: <K extends keyof Events & string>(event: K, ...args: Events[K]) => void
   plugins = new Map<string, PluginObject>()
-  pluginsComponents = computed(() => {
-    return {
-      overlay: this.getPlugins('overlay') as OverlayPluginComponent[],
-      panel: this.getPlugins('panel') as PanelPluginComponent[],
-    }
+
+  protected _pluginComponentTypes = ['panel', 'overlay', 'dialog']
+
+  components = computed(() => {
+    const groups: Record<string, EditorComponent[]> = {}
+    this.plugins.values().forEach((p) => {
+      p.components?.forEach((c, index) => {
+        if (c.ignore?.() === true) {
+          return
+        }
+        if (!groups[c.type]) {
+          groups[c.type] = []
+        }
+        groups[c.type].push({
+          ...c,
+          plugin: p.name,
+          indexInPlugin: index,
+        })
+      })
+    })
+
+    const components = [] as EditorComponent[]
+    this._pluginComponentTypes.forEach((type) => {
+      const items = (groups[type] ?? []) as EditorComponent[]
+      items
+        .filter(c => c.order === 'before')
+        .forEach((c) => {
+          components.push(c)
+        })
+      items
+        .filter(c => c.order !== 'before' && c.order !== 'after')
+        .sort((a, b) => Number(a.order ?? 0) - Number(b.order ?? 0))
+        .forEach((c) => {
+          components.push(c)
+        })
+      items
+        .filter(c => c.order === 'after')
+        .forEach((c) => {
+          components.push(c)
+        })
+    })
+
+    return components
   })
+
+  componentRefs = ref<Record<string, (HTMLElement | ComponentPublicInstance | null)[]>>({})
 
   protected _setups: (() => void | Promise<void>)[] = []
 
@@ -52,17 +98,6 @@ export class Editor extends Observable<Events> {
     this.once = this.once.bind(this)
     this.off = this.off.bind(this)
     this.emit = this.emit.bind(this)
-  }
-
-  getPlugins = (type: PluginComponent['type']) => {
-    return Array.from(this.plugins.values())
-      .flatMap((p) => {
-        return p.components
-          ?.filter((c) => {
-            return c.type === type && c.ignore?.() !== true
-          })
-          ?? []
-      })
   }
 
   log = (...args: any[]): void => {

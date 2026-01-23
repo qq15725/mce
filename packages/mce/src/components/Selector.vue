@@ -7,10 +7,6 @@ import { useEditor } from '../composables/editor'
 import { boundingBoxToStyle } from '../utils/box'
 import TransformControls from './shared/TransformControls.vue'
 
-defineOptions({
-  inheritAttrs: false,
-})
-
 const props = withDefaults(defineProps<{
   resizeStrategy?: 'lockAspectRatio' | 'lockAspectRatioDiagonal'
   selectedArea?: Aabb2D
