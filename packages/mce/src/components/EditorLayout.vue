@@ -542,11 +542,22 @@ const slotProps = {
       </div>
     </Main>
 
+    <slot v-bind="slotProps" />
+
     <template
       v-for="(item, key) in components"
       :key="key"
     >
-      <template v-if="item.type === 'panel'">
+      <template v-if="item.type === 'overlay'">
+        <Teleport
+          v-if="drawboardDom"
+          :to="drawboardDom"
+        >
+          <RenderComponent :item="item" />
+        </Teleport>
+      </template>
+
+      <template v-else-if="item.type === 'panel'">
         <template
           v-if="item.position === 'float'"
         >
@@ -582,23 +593,12 @@ const slotProps = {
           </LayoutItem>
         </template>
       </template>
-
-      <template v-else-if="item.type === 'overlay'">
-        <Teleport
-          v-if="drawboardDom"
-          :to="drawboardDom"
-        >
-          <RenderComponent :item="item" />
-        </Teleport>
-      </template>
     </template>
 
     <div
       ref="overlayContainerTpl"
       class="mce-overlay-container"
     />
-
-    <slot v-bind="slotProps" />
   </Layout>
 </template>
 

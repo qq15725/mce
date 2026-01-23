@@ -19,6 +19,7 @@ declare global {
       selectionAabbInDrawboard: ComputedRef<Aabb2D>
       selectionObb: ComputedRef<Obb2D>
       selectionObbInDrawboard: ComputedRef<Aabb2D>
+      isPointerInSelection: ComputedRef<boolean>
     }
   }
 }
@@ -32,6 +33,7 @@ export default defineMixin((editor) => {
     getAncestorFrame,
     drawboardAabb,
     screenControlsOffset,
+    getGlobalPointer,
   } = editor
 
   function obbToFit(element: Element2D): void {
@@ -276,6 +278,7 @@ export default defineMixin((editor) => {
   const selectionAabbInDrawboard = computed(() => aabbToDrawboardAabb(selectionAabb.value))
   const selectionObb = computed(() => getObb(selection.value))
   const selectionObbInDrawboard = computed(() => obbToDrawboardObb(selectionObb.value))
+  const isPointerInSelection = computed(() => selectionAabb.value.contains(getGlobalPointer()))
 
   Object.assign(editor, {
     obbToFit,
@@ -289,5 +292,6 @@ export default defineMixin((editor) => {
     selectionAabbInDrawboard,
     selectionObb,
     selectionObbInDrawboard,
+    isPointerInSelection,
   })
 })

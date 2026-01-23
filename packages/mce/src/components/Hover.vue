@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { useEditor } from '../composables/editor'
 
 const {
@@ -8,6 +8,8 @@ const {
   getObb,
   camera,
 } = useEditor()
+
+watch(selection, () => hoverElement.value = undefined)
 
 const hoverElementObb = computed(() => getObb(hoverElement.value, 'drawboard'))
 </script>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import type { Aabb2D, Element2D } from 'modern-canvas'
+import type { Element2D } from 'modern-canvas'
 import type { TransformValue } from './shared/TransformControls.vue'
+import { Aabb2D } from 'modern-canvas'
 import { computed, ref, watch } from 'vue'
 import { useEditor } from '../composables'
 import TransformControls from './shared/TransformControls.vue'
@@ -8,6 +9,7 @@ import TransformControls from './shared/TransformControls.vue'
 const currentElement = defineModel<Element2D>()
 
 const {
+  isPointerInSelection,
   elementSelection,
   getObb,
   getAabb,
@@ -15,10 +17,12 @@ const {
   camera,
   resizeElement,
   inEditorIs,
+  getGlobalPointer,
 } = useEditor()
 
 const info = ref({
   active: false,
+  direction: undefined as 'vertical' | 'horizontal' | undefined,
   spacing: undefined as number | undefined,
   xItems: [] as { el: Element2D, aabb: Aabb2D }[],
   yItems: [] as { el: Element2D, aabb: Aabb2D }[],
@@ -31,6 +35,7 @@ function update() {
 
   const els = elementSelection.value
   let active = false
+  let direction: 'vertical' | 'horizontal' | undefined
   let spacing: number | undefined
   let xItems: { el: Element2D, aabb: Aabb2D }[] = []
   let yItems: { el: Element2D, aabb: Aabb2D }[] = []
@@ -61,6 +66,7 @@ function update() {
 
     if (active) {
       yItems = sorted
+      direction = 'vertical'
     }
     else {
       active = true
@@ -85,12 +91,14 @@ function update() {
       }
       if (active) {
         xItems = sorted
+        direction = 'horizontal'
       }
     }
   }
 
   info.value = {
     active,
+    direction,
     spacing,
     xItems,
     yItems,
@@ -98,13 +106,7 @@ function update() {
 }
 
 watch(() => elementSelection.value.map(el => getAabb(el)), update)
-
-watch(
-  state,
-  () => {
-    currentElement.value = undefined
-  },
-)
+watch(elementSelection, () => currentElement.value = undefined)
 
 const handles = computed(() => {
   return elementSelection.value.map((el) => {
@@ -190,6 +192,79 @@ const transform = computed({
     })
   },
 })
+
+function onMouseDown(item: any, downEvent: MouseEvent) {
+  const el = item.el as Element2D
+
+  currentElement.value = el
+  return
+
+  // TODO
+  const startPointer = { x: downEvent.clientX, y: downEvent.clientY }
+  const startAabb = el.getGlobalAabb()
+  const currentAabb = new Aabb2D(startAabb)
+  const startItems: { el: Element2D, aabb: Aabb2D }[] = []
+  elementSelection.value.forEach((el) => {
+    startItems.push({
+      el,
+      aabb: el.getGlobalAabb(),
+    })
+  })
+  let prev: Element2D | undefined
+
+  function onMouseMove(moveEvent: MouseEvent) {
+    const movePointer = { x: moveEvent.clientX, y: moveEvent.clientY }
+    const offset = { x: movePointer.x - startPointer.x, y: movePointer.y - startPointer.y }
+
+    if (
+      Math.abs(offset.x) >= 3
+      || Math.abs(offset.y) >= 3
+    ) {
+      state.value = 'transforming'
+      const { zoom } = camera.value
+      el.position.x = startAabb.x + offset.x / zoom.x
+      el.position.y = startAabb.y + offset.y / zoom.y
+
+      const pointer = getGlobalPointer()
+      switch (info.value.direction) {
+        case 'vertical':
+          startItems.forEach((item) => {
+            const targetEl = item.el
+            if (
+              !targetEl.equal(el)
+              && (!prev || !prev.equal(item.el))
+              && item.aabb.top < pointer.y
+              && item.aabb.bottom > pointer.y
+            ) {
+              // TODO
+              targetEl.position.y = currentAabb.y
+              targetEl.updateGlobalTransform()
+              const newAabb = targetEl.getGlobalAabb()
+              currentAabb.y = newAabb.bottom
+              item.aabb = newAabb
+              prev = item.el
+            }
+          })
+          break
+        case 'horizontal':
+          // TODO
+          break
+      }
+    }
+  }
+
+  function onMouseUp(_upEvent: MouseEvent) {
+    el.position.x = currentAabb.x
+    el.position.y = currentAabb.y
+    state.value = undefined
+
+    document.removeEventListener('mousemove', onMouseMove)
+    document.removeEventListener('mouseup', onMouseUp)
+  }
+
+  document.addEventListener('mousemove', onMouseMove)
+  document.addEventListener('mouseup', onMouseUp)
+}
 </script>
 
 <template>
@@ -205,10 +280,14 @@ const transform = computed({
         'mce-smart-handle--active': item.el.equal(currentElement),
       }"
       :style="item.style"
+      data-pointerdown_to_drawboard
     >
       <div
         class="mce-smart-handle__btn"
-        @click="currentElement = item.el"
+        :class="{
+          'mce-smart-handle__btn--active': state === 'transforming' || isPointerInSelection,
+        }"
+        @mousedown="onMouseDown(item, $event)"
       />
     </div>
 
@@ -238,15 +317,11 @@ const transform = computed({
       display: flex;
       align-items: center;
       justify-content: center;
-
-      &--active > .mce-smart-handle__btn {
-        background: #FF24BD;
-      }
+      pointer-events: auto;
 
       &__btn {
-        pointer-events: auto;
-        width: 10px;
-        height: 10px;
+        width: 1px;
+        height: 1px;
         border-radius: 100%;
         border: 1px solid #FF24BD;
         outline: 1px solid #FFFFFF;
@@ -254,6 +329,15 @@ const transform = computed({
         &:hover {
           background: #FF24BD;
         }
+
+        &--active {
+          width: 10px;
+          height: 10px;
+        }
+      }
+
+      &--active .mce-smart-handle__btn {
+        background: #FF24BD;
       }
     }
   }
