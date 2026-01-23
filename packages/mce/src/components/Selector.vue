@@ -360,7 +360,7 @@ defineExpose({
     >
       <div
         class="mce-selector__slot"
-        :style="boundingBoxToStyle(transform)"
+        :style="boundingBoxToStyle(transform, camera)"
       >
         <slot :box="transform" />
       </div>

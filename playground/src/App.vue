@@ -43,7 +43,11 @@ else if (url) {
 <template>
   <div style="width: 100vw; height: 100vh">
     <EditorLayout :editor="editor">
-      <template #selector />
+      <template #selector>
+        <div style="position: absolute; right: -12px; top: 0; transform: translateX(100%); background: red; writing-mode: vertical-rl;">
+          TOOLBAR-RIGHT
+        </div>
+      </template>
       <template #transformer />
       <template #floatbar>
         <div style="background: red;">
