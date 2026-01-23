@@ -61,7 +61,7 @@ const props = withDefaults(defineProps<{
   hideUi?: boolean
   initialSize?: boolean
   borderStyle?: 'solid' | 'dashed'
-  tipFormat?: (type: 'size') => string
+  tip?: string | ((type: 'size') => string)
 }>(), {
   tag: 'div',
   movable: true,
@@ -334,7 +334,7 @@ const style = computed(() => {
     transform: `matrix(${cos}, ${sin}, ${-sin}, ${cos}, ${left}, ${top})`,
   }
 })
-const tip = computed(() => props.tipFormat?.('size'))
+const tip = computed(() => typeof props.tip === 'string' ? props.tip : props.tip?.('size'))
 
 function start(event?: MouseEvent, index?: number): boolean {
   if (event && event.button !== undefined && event.button !== 0) {
@@ -834,10 +834,7 @@ function Diagonal() {
         pointer-events="all"
         class="mce-transform-controls__svg-slot"
       >
-        <slot
-          name="svg"
-          :box="model"
-        />
+        <slot name="svg" :box="model" />
       </g>
     </svg>
 

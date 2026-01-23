@@ -4,15 +4,11 @@ import type { TransformValue } from './shared/TransformControls.vue'
 import { Aabb2D } from 'modern-canvas'
 import { computed, onBeforeMount, onBeforeUnmount, ref, useTemplateRef } from 'vue'
 import { useEditor } from '../composables/editor'
-import { boundingBoxToStyle } from '../utils/box'
 import TransformControls from './shared/TransformControls.vue'
 
-const props = withDefaults(defineProps<{
+const props = defineProps<{
   resizeStrategy?: 'lockAspectRatio' | 'lockAspectRatioDiagonal'
-  selectedArea?: Aabb2D
-}>(), {
-  selectedArea: () => new Aabb2D(),
-})
+}>()
 
 const {
   emit,
@@ -20,8 +16,10 @@ const {
   state,
   resizeElement,
   selection,
+  selectionArea,
   elementSelection,
   selectionObb,
+  selectionObbInDrawboard,
   camera,
   getObb,
   getAabb,
@@ -36,7 +34,7 @@ const {
   selectionAabb,
 } = useEditor()
 
-const transformable = useTemplateRef('transformableTpl')
+const transformControls = useTemplateRef('transformControlsTpl')
 const startEvent = ref<MouseEvent | PointerEvent>()
 
 onBeforeMount(() => {
@@ -44,7 +42,7 @@ onBeforeMount(() => {
     command: 'startTransform',
     handle: (event) => {
       startEvent.value = event
-      Boolean(transformable.value?.start(event))
+      Boolean(transformControls.value?.start(event))
     },
   })
 })
@@ -105,10 +103,10 @@ function snap(currentPos: number, type: 'x' | 'y'): number {
   return currentPos
 }
 
-function createSelectionTransformContext(): Mce.SelectionTransformContext {
+function createTransformContext(): Mce.SelectionTransformContext {
   return {
     startEvent: startEvent.value!,
-    handle: (transformable.value?.activeHandle ?? 'move') as Mce.TransformHandle,
+    handle: (transformControls.value?.activeHandle ?? 'move') as Mce.TransformHandle,
     elements: elementSelection.value,
   }
 }
@@ -128,7 +126,7 @@ function onStart() {
       y: (elAabb.y - aabb.y) / aabb.height,
     }
   })
-  emit('selectionTransformStart', createSelectionTransformContext())
+  emit('selectionTransformStart', createTransformContext())
 }
 
 function onMove() {
@@ -141,46 +139,44 @@ function onEnd() {
   if (state.value === 'transforming') {
     state.value = undefined
   }
-  emit('selectionTransformEnd', createSelectionTransformContext())
+  emit('selectionTransformEnd', createTransformContext())
 }
 
-const _transform = computed(() => {
-  const { left, top, width, height, rotationDegrees } = selectionObb.value
-  return {
-    left,
-    top,
-    width,
-    height,
-    rotate: rotationDegrees,
-    borderRadius: elementSelection.value[0]?.style.borderRadius ?? 0,
-  }
-})
-
 const transform = computed({
-  get: () => _transform.value,
-  set: (transform: TransformValue) => {
-    const oldTransform = _transform.value
-    const handle: string = transformable.value?.activeHandle ?? 'move'
+  get: () => {
+    const { left, top, width, height, rotationDegrees } = selectionObb.value
+    return {
+      left,
+      top,
+      width,
+      height,
+      rotate: rotationDegrees,
+      borderRadius: elementSelection.value[0]?.style.borderRadius ?? 0,
+    }
+  },
+  set: (value: TransformValue) => {
+    const oldTransform = transform.value
+    const handle: string = transformControls.value?.activeHandle ?? 'move'
 
     if (handle === 'move') {
-      transform.left = snap(Math.round(transform.left), 'x')
-      transform.top = snap(Math.round(transform.top), 'y')
+      value.left = snap(Math.round(value.left), 'x')
+      value.top = snap(Math.round(value.top), 'y')
     }
 
     const offsetStyle = {
-      left: transform.left - oldTransform.left,
-      top: transform.top - oldTransform.top,
-      width: transform.width - oldTransform.width,
-      height: transform.height - oldTransform.height,
-      rotate: transform.rotate - oldTransform.rotate,
-      borderRadius: transform.borderRadius - oldTransform.borderRadius,
+      left: value.left - oldTransform.left,
+      top: value.top - oldTransform.top,
+      width: value.width - oldTransform.width,
+      height: value.height - oldTransform.height,
+      rotate: value.rotate - oldTransform.rotate,
+      borderRadius: value.borderRadius - oldTransform.borderRadius,
     }
 
     const els = elementSelection.value
 
     if (els.length > 1) {
       if (handle.startsWith('rotate')) {
-        offsetStyle.rotate = transform.rotate - startContext.rotate
+        offsetStyle.rotate = value.rotate - startContext.rotate
         startContext.rotate += offsetStyle.rotate
       }
     }
@@ -238,7 +234,7 @@ const transform = computed({
       }
     }
 
-    emit('selectionTransform', createSelectionTransformContext())
+    emit('selectionTransform', createTransformContext())
   },
 })
 
@@ -282,7 +278,7 @@ const roundable = computed(() => {
   return false
 })
 
-function tipFormat() {
+function tip() {
   const obb = elementSelection.value.length === 1
     ? elementSelection.value[0].style
     : selectionObb.value
@@ -290,15 +286,15 @@ function tipFormat() {
 }
 
 defineExpose({
-  transformable,
+  transformControls,
 })
 </script>
 
 <template>
-  <div class="mce-selector">
+  <div class="mce-selection">
     <div
       v-for="(style, index) in parentObbStyles" :key="index"
-      class="mce-selector__parent"
+      class="mce-selection__parent"
       :style="{
         borderColor: 'currentColor',
         ...style,
@@ -311,7 +307,7 @@ defineExpose({
       <div
         v-for="(style, index) in selectionObbStyles"
         :key="index"
-        class="mce-selector__node"
+        class="mce-selection__node"
         :style="{
           borderColor: 'currentcolor',
           ...style,
@@ -321,16 +317,16 @@ defineExpose({
 
     <div
       v-if="state === 'selecting'"
-      class="mce-selector__area"
+      class="mce-selection__area"
       :style="{
         borderColor: 'currentcolor',
-        ...props.selectedArea.toCssStyle(),
+        ...selectionArea.toCssStyle(),
       }"
     />
 
     <TransformControls
       v-if="transform.width && transform.height"
-      ref="transformableTpl"
+      ref="transformControlsTpl"
       v-bind="config.transformControls"
       v-model="transform"
       :movable="movable"
@@ -338,16 +334,16 @@ defineExpose({
       :rotatable="rotatable"
       :roundable="roundable"
       :resize-strategy="props.resizeStrategy"
-      class="mce-selector__transform"
-      :tip-format="tipFormat"
+      class="mce-selection__transform"
+      :tip="tip"
       :scale="[camera.zoom.x, camera.zoom.y]"
       :offset="[-camera.position.x, -camera.position.y]"
       @start="onStart"
       @move="onMove"
       @end="onEnd"
     >
-      <template v-if="$slots.transformable" #svg="slotProps">
-        <slot name="transformable" v-bind="slotProps" />
+      <template v-if="$slots.transform" #svg="slotProps">
+        <slot name="transform" v-bind="slotProps" />
       </template>
     </TransformControls>
 
@@ -355,17 +351,17 @@ defineExpose({
       v-if="transform.width && transform.height && $slots.default"
     >
       <div
-        class="mce-selector__slot"
-        :style="boundingBoxToStyle(transform)"
+        class="mce-selection__slot"
+        :style="selectionObbInDrawboard.toCssStyle()"
       >
-        <slot :box="transform" />
+        <slot :transform="transform" />
       </div>
     </template>
   </div>
 </template>
 
 <style lang="scss">
-  .mce-selector {
+  .mce-selection {
     position: absolute;
     left: 0;
     right: 0;

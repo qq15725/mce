@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import type { Cursor, Element2D, PointerInputEvent } from 'modern-canvas'
-import type { EditorComponent } from '../editor'
-import type { OrientedBoundingBox } from '../types'
+import type { EditorComponent, Slots } from '../editor'
 import { useResizeObserver } from '@vueuse/core'
-import { Aabb2D } from 'modern-canvas'
 import {
-
   computed,
+  h,
   nextTick,
   onBeforeMount,
   onBeforeUnmount,
@@ -27,8 +25,6 @@ import {
 } from '../composables/strategy'
 import { Editor } from '../editor'
 import Floatbar from './Floatbar.vue'
-import ForegroundCropper from './ForegroundCropper.vue'
-import Selector from './Selector.vue'
 import FloatPanel from './shared/FloatPanel.vue'
 import Layout from './shared/Layout.vue'
 import LayoutItem from './shared/LayoutItem.vue'
@@ -44,9 +40,7 @@ const props = defineProps({
   editor: Editor,
 })
 
-const slots = defineSlots<{
-  'selector'?: (props: { box: OrientedBoundingBox }) => void
-  'transformer'?: (props: { box: Partial<OrientedBoundingBox> }) => void
+const slots = defineSlots<Slots & {
   'floatbar'?: () => void
   'floatbar-top'?: () => void
   'floatbar-bottom'?: () => void
@@ -85,6 +79,7 @@ const {
   isLock,
   t,
   selectionAabbInDrawboard,
+  selectionArea,
   elementSelection,
   drawboardAabb,
   drawboardPointer,
@@ -95,9 +90,7 @@ const {
 
 const overlayContainer = useTemplateRef('overlayContainerTpl')
 const canvas = useTemplateRef('canvasTpl')
-const selector = useTemplateRef('selectorTpl')
 const grabbing = ref(false)
-const selectedArea = ref(new Aabb2D())
 const resizeStrategy = computed(() => {
   const first = elementSelection.value[0]
   if (first) {
@@ -279,11 +272,11 @@ function onEnginePointerDown(
     if (state.value !== 'selecting') {
       state.value = 'selecting'
     }
-    selectedArea.value.x = Math.min(start.x, current.x) - drawboardAabb.value.left
-    selectedArea.value.y = Math.min(start.y, current.y) - drawboardAabb.value.top
-    selectedArea.value.width = Math.abs(start.x - current.x)
-    selectedArea.value.height = Math.abs(start.y - current.y)
-    selected = selectArea(selectedArea.value as any)
+    selectionArea.value.x = Math.min(start.x, current.x) - drawboardAabb.value.left
+    selectionArea.value.y = Math.min(start.y, current.y) - drawboardAabb.value.top
+    selectionArea.value.width = Math.abs(start.x - current.x)
+    selectionArea.value.height = Math.abs(start.y - current.y)
+    selected = selectArea(selectionArea.value as any)
   }
 
   function onActivate() {
@@ -480,11 +473,30 @@ async function onDoubleclick(event: MouseEvent) {
   }
 }
 
-function setComponentRef(ref: any, component: EditorComponent) {
-  if (!componentRefs.value[component.plugin]) {
-    componentRefs.value[component.plugin] = []
+function setComponentRef(ref: any, item: EditorComponent) {
+  if (!componentRefs.value[item.plugin]) {
+    componentRefs.value[item.plugin] = []
   }
-  componentRefs.value[component.plugin][component.indexInPlugin] = ref
+  componentRefs.value[item.plugin][item.indexInPlugin] = ref
+}
+
+function RenderComponent(props: Record<string, any> & { item: EditorComponent }) {
+  const { item, ...resetProps } = props
+  const itemSlots: Record<string, any> = {}
+  if (item.slot) {
+    Object.keys(slots).forEach((key) => {
+      if (key === item.slot) {
+        itemSlots.default = (slots as any)[key]
+      }
+      else if (key.startsWith(`${item.slot}.`)) {
+        itemSlots[key.substring(`${item.slot}.`.length)] = (slots as any)[key]
+      }
+    })
+  }
+  return h(item.component, {
+    ...resetProps,
+    ref: (v: any) => setComponentRef(v, item),
+  }, itemSlots)
 }
 
 const slotProps = {
@@ -515,28 +527,12 @@ const slotProps = {
           class="mce-editor__canvas"
         />
 
-        <Selector
-          ref="selectorTpl"
-          :selected-area="selectedArea as any"
-          :resize-strategy="resizeStrategy"
-          style="z-index: 1;"
-        >
-          <template #transformable="{ box }">
-            <slot name="transformer" :box="box" v-bind="slotProps" />
-          </template>
-
-          <template #default="{ box }">
-            <ForegroundCropper />
-            <slot name="selector" :box="box" v-bind="slotProps" />
-          </template>
-        </Selector>
-
         <Floatbar
           v-if="slots['floatbar-top'] || slots.floatbar"
           location="top-start"
           :target="state === 'typing'
             ? (componentRefs['mce:text']?.[0] as any)?.textEditor
-            : selector?.transformable?.$el"
+            : (componentRefs['mce:selection']?.[0] as any)?.transformControls?.$el"
           :middlewares="['offset', 'shift']"
         >
           <slot name="floatbar" v-bind="slotProps" />
@@ -546,7 +542,7 @@ const slotProps = {
         <Floatbar
           v-if="slots['floatbar-bottom']"
           location="bottom-start"
-          :target="selector?.transformable?.$el"
+          :target="(componentRefs['mce:selection']?.[0] as any)?.transformControls?.$el"
           :middlewares="['offset', 'shift']"
         >
           <slot name="floatbar-bottom" v-bind="slotProps" />
@@ -576,10 +572,9 @@ const slotProps = {
             }"
           >
             <template #default="{ isActive }">
-              <Component
-                :is="item.component"
-                :ref="(v: any) => setComponentRef(v, item)"
+              <RenderComponent
                 v-model:is-active="isActive.value"
+                :item="item"
               />
             </template>
           </FloatPanel>
@@ -593,10 +588,7 @@ const slotProps = {
             :size="item.size || 200"
             :order="item.order || 0"
           >
-            <Component
-              :is="item.component"
-              :ref="(v: any) => setComponentRef(v, item)"
-            />
+            <RenderComponent :item="item" />
           </LayoutItem>
         </template>
       </template>
@@ -606,10 +598,7 @@ const slotProps = {
           v-if="drawboardDom"
           :to="drawboardDom"
         >
-          <Component
-            :is="item.component"
-            :ref="(v: any) => setComponentRef(v, item)"
-          />
+          <RenderComponent :item="item" />
         </Teleport>
       </template>
     </template>

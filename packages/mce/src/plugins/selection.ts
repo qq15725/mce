@@ -1,5 +1,6 @@
 import type { Element2D, Node } from 'modern-canvas'
 import ScrollToSelection from '../components/ScrollToSelection.vue'
+import Selection from '../components/Selection.vue'
 import { definePlugin } from '../plugin'
 
 declare global {
@@ -43,6 +44,11 @@ declare global {
       frameSelection: [event: KeyboardEvent]
       showOrHideSelection: [event: KeyboardEvent]
       lockOrUnlockSelection: [event: KeyboardEvent]
+    }
+
+    interface Slots {
+      'selection'?: () => void
+      'selection.transform'?: () => void
     }
 
     type TransformHandleDirection = 't' | 'l' | 'r' | 'b'
@@ -271,6 +277,7 @@ export default definePlugin((editor) => {
       },
     },
     components: [
+      { slot: 'selection', type: 'overlay', component: Selection },
       { type: 'overlay', component: ScrollToSelection },
     ],
   }

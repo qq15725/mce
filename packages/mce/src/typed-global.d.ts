@@ -19,6 +19,7 @@ declare global {
   namespace Mce {
     interface Editor {}
     interface Options {}
+    interface Slots {}
     interface Events {
       ready: []
     }

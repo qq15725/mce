@@ -100,8 +100,7 @@ npm i mce
 <template>
   <div style="width: 100vw; height: 100vh">
     <EditorLayout :editor="editor">
-      <template #selector="{ box }" />
-      <template #transformer="{ box }" />
+      <template #selection />
       <template #floatbar />
       <template #drawboard />
       <EditorLayoutItem position="top" :size="56" />

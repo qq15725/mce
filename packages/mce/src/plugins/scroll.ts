@@ -154,6 +154,7 @@ export default definePlugin((editor) => {
         type: 'overlay',
         component: Scrollbars,
         ignore: () => !config.value.scrollbar,
+        order: 'after',
       },
     ],
     // setup: () => {

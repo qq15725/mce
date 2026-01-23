@@ -47,6 +47,7 @@ declare global {
       nodes: Ref<Node[]>
       nodeIndexMap: Map<string, number>
       selection: Ref<Node[]>
+      selectionArea: Ref<Aabb2D>
       elementSelection: Ref<Element2D[]>
       textSelection: Ref<IndexCharacter[] | undefined>
       hoverElement: Ref<Element2D | undefined>
@@ -95,6 +96,7 @@ export default defineMixin((editor) => {
   const nodes = ref<Node[]>([])
   const nodeIndexMap = reactive(new Map<string, number>())
   const selection = ref<Element2D[]>([])
+  const selectionArea = ref(new Aabb2D())
   const elementSelection = computed({
     get: () => selection.value.filter(v => isElement(v)),
     set: val => selection.value = val,
@@ -192,6 +194,7 @@ export default defineMixin((editor) => {
     nodes,
     nodeIndexMap,
     selection,
+    selectionArea,
     elementSelection,
     textSelection,
     hoverElement,

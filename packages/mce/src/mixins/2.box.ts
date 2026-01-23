@@ -18,6 +18,7 @@ declare global {
       selectionAabb: ComputedRef<Aabb2D>
       selectionAabbInDrawboard: ComputedRef<Aabb2D>
       selectionObb: ComputedRef<Obb2D>
+      selectionObbInDrawboard: ComputedRef<Aabb2D>
     }
   }
 }

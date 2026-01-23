@@ -2,9 +2,10 @@ import type { Component } from 'vue'
 import type { Editor, Events, Options } from './editor'
 
 export interface PluginBaseComponent {
-  ignore?: () => boolean
   component: Component
+  ignore?: () => boolean
   order?: 'before' | number | 'after'
+  slot?: string
 }
 
 export interface PluginPanelComponent extends PluginBaseComponent {

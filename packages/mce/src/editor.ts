@@ -28,6 +28,10 @@ export interface Events extends Mce.Events, ObservableEvents {
   //
 }
 
+export interface Slots extends Mce.Slots {
+  //
+}
+
 export type EditorComponent = PluginComponent & { plugin: string, indexInPlugin: number }
 
 export class Editor extends Observable<Events> {

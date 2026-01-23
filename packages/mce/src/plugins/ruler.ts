@@ -24,6 +24,7 @@ export default definePlugin((editor) => {
         type: 'overlay',
         component: Rulers,
         ignore: () => !config.value.ruler,
+        order: 'after',
       },
     ],
   }
