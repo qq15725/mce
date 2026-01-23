@@ -32,7 +32,7 @@ import Main from './shared/Main.vue'
 
 const props = defineProps({
   ...makeMceStrategyProps({
-    resizeStrategy: defaultResizeStrategy,
+    resizeStrategy: defaultResizeStrategy, // TODO
     activeStrategy: defaultActiveStrategy,
     doubleclickStrategy: defaultDoubleclickStrategy,
     hoverStrategy: defaultHoverStrategy,
@@ -91,16 +91,6 @@ const {
 const overlayContainer = useTemplateRef('overlayContainerTpl')
 const canvas = useTemplateRef('canvasTpl')
 const grabbing = ref(false)
-const resizeStrategy = computed(() => {
-  const first = elementSelection.value[0]
-  if (first) {
-    if (first.text.isValid()) {
-      return 'lockAspectRatioDiagonal'
-    }
-    return props.resizeStrategy(first)
-  }
-  return undefined
-})
 
 provideOverlay({
   attach: computed(() => overlayContainer.value),

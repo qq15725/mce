@@ -3,12 +3,9 @@ import type { Element2D, Obb2D } from 'modern-canvas'
 import type { TransformValue } from './shared/TransformControls.vue'
 import { Aabb2D } from 'modern-canvas'
 import { computed, onBeforeMount, onBeforeUnmount, ref, useTemplateRef } from 'vue'
+import { defaultResizeStrategy } from '../composables'
 import { useEditor } from '../composables/editor'
 import TransformControls from './shared/TransformControls.vue'
-
-const props = defineProps<{
-  resizeStrategy?: 'lockAspectRatio' | 'lockAspectRatioDiagonal'
-}>()
 
 const {
   emit,
@@ -36,6 +33,16 @@ const {
 
 const transformControls = useTemplateRef('transformControlsTpl')
 const startEvent = ref<MouseEvent | PointerEvent>()
+const resizeStrategy = computed(() => {
+  const first = elementSelection.value[0]
+  if (first) {
+    if (first.text.isValid()) {
+      return 'lockAspectRatioDiagonal'
+    }
+    return defaultResizeStrategy(first)
+  }
+  return undefined
+})
 
 onBeforeMount(() => {
   registerCommand({
@@ -333,7 +340,7 @@ defineExpose({
       :resizable="resizable"
       :rotatable="rotatable"
       :roundable="roundable"
-      :resize-strategy="props.resizeStrategy"
+      :resize-strategy="resizeStrategy"
       class="mce-selection__transform"
       :tip="tip"
       :scale="[camera.zoom.x, camera.zoom.y]"
