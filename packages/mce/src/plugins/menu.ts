@@ -328,7 +328,7 @@ export default definePlugin((editor, options) => {
   return {
     name: 'mce:menu',
     components: [
-      { type: 'overlay', component: ContextMenu },
+      { type: 'overlay', component: ContextMenu, order: 'after' },
     ],
   }
 })

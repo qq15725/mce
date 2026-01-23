@@ -1,7 +1,7 @@
 import type { EffectScope } from '@vue/reactivity'
 import type { RemovableRef } from '@vueuse/core'
 import type { ObservableEvents } from 'modern-idoc'
-import type { App, InjectionKey } from 'vue'
+import type { App, ComponentPublicInstance, InjectionKey } from 'vue'
 import type { Mixin } from './mixin'
 import type {
   Plugin,
@@ -28,10 +28,7 @@ export interface Events extends Mce.Events, ObservableEvents {
   //
 }
 
-export interface EditorComponent<T extends PluginComponent = PluginComponent> {
-  component: T
-  style: Record<string, any>
-}
+export type EditorComponent = PluginComponent & { plugin: string, indexInPlugin: number }
 
 export class Editor extends Observable<Events> {
   static injectionKey: InjectionKey<Editor> = Symbol.for('EditorKey')
@@ -40,45 +37,52 @@ export class Editor extends Observable<Events> {
   declare config: RemovableRef<Mce.Config>
   onEmit?: <K extends keyof Events & string>(event: K, ...args: Events[K]) => void
   plugins = new Map<string, PluginObject>()
-  components = computed(() => {
-    const groups = {
-      panel: [] as PluginComponent[],
-      overlay: [] as PluginComponent[],
-    }
 
+  protected _pluginComponentTypes = ['panel', 'overlay', 'dialog']
+
+  components = computed(() => {
+    const groups: Record<string, EditorComponent[]> = {}
     this.plugins.values().forEach((p) => {
-      p.components?.forEach((c) => {
+      p.components?.forEach((c, index) => {
         if (c.ignore?.() === true) {
           return
         }
-        groups[c.type].push(c)
+        if (!groups[c.type]) {
+          groups[c.type] = []
+        }
+        groups[c.type].push({
+          ...c,
+          plugin: p.name,
+          indexInPlugin: index,
+        })
       })
     })
 
-    const components = [] as PluginComponent[]
-    const types = ['panel', 'overlay']
-    types.forEach((type) => {
-      const items = groups[type as keyof typeof groups] as PluginComponent[]
+    const components = [] as EditorComponent[]
+    this._pluginComponentTypes.forEach((type) => {
+      const items = (groups[type] ?? []) as EditorComponent[]
       items
         .filter(c => c.order === 'before')
-        .forEach((component) => {
-          components.push(component)
+        .forEach((c) => {
+          components.push(c)
         })
       items
         .filter(c => c.order !== 'before' && c.order !== 'after')
         .sort((a, b) => Number(a.order ?? 0) - Number(b.order ?? 0))
-        .forEach((component) => {
-          components.push(component)
+        .forEach((c) => {
+          components.push(c)
         })
       items
         .filter(c => c.order === 'after')
-        .forEach((component) => {
-          components.push(component)
+        .forEach((c) => {
+          components.push(c)
         })
     })
 
     return components
   })
+
+  componentRefs = ref<Record<string, (HTMLElement | ComponentPublicInstance | null)[]>>({})
 
   protected _setups: (() => void | Promise<void>)[] = []
 

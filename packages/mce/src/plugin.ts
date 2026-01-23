@@ -4,7 +4,7 @@ import type { Editor, Events, Options } from './editor'
 export interface PluginBaseComponent {
   ignore?: () => boolean
   component: Component
-  order?: 'before' | 'after' | number
+  order?: 'before' | number | 'after'
 }
 
 export interface PluginPanelComponent extends PluginBaseComponent {
@@ -12,11 +12,12 @@ export interface PluginPanelComponent extends PluginBaseComponent {
   name: string
   position:
     | 'float'
-    | 'top'
-    | 'right'
-    | 'bottom'
-    | 'left'
+    | 'top' | 'right' | 'bottom' | 'left'
   size?: number
+}
+
+export interface PluginDialogComponent extends PluginBaseComponent {
+  type: 'dialog'
 }
 
 export interface PluginOverlayComponent extends PluginBaseComponent {
@@ -25,6 +26,7 @@ export interface PluginOverlayComponent extends PluginBaseComponent {
 
 export type PluginComponent
   = | PluginOverlayComponent
+    | PluginDialogComponent
     | PluginPanelComponent
 
 export interface PluginObject {
@@ -40,7 +42,9 @@ export interface PluginObject {
   setup?: () => void | Promise<void>
 }
 
-export type Plugin = PluginObject | ((editor: Editor, options: Options) => PluginObject)
+export type Plugin
+  = | PluginObject
+    | ((editor: Editor, options: Options) => PluginObject)
 
 export function definePlugin(cb: Plugin): Plugin {
   return cb

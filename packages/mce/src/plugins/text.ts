@@ -1,4 +1,5 @@
 import type { Element2D } from 'modern-canvas'
+import TextEditor from '../components/TextEditor.vue'
 import { definePlugin } from '../plugin'
 import { createTextElement } from '../utils'
 
@@ -88,6 +89,9 @@ export default definePlugin((editor) => {
     ],
     hotkeys: [
       { command: 'setActiveDrawingTool:text', key: 'T' },
+    ],
+    components: [
+      { type: 'overlay', component: TextEditor },
     ],
   }
 })

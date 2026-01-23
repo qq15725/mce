@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import type { Cursor, Element2D, PointerInputEvent } from 'modern-canvas'
+import type { EditorComponent } from '../editor'
 import type { OrientedBoundingBox } from '../types'
 import { useResizeObserver } from '@vueuse/core'
 import { Aabb2D } from 'modern-canvas'
 import {
+
   computed,
   nextTick,
   onBeforeMount,
@@ -31,7 +33,6 @@ import FloatPanel from './shared/FloatPanel.vue'
 import Layout from './shared/Layout.vue'
 import LayoutItem from './shared/LayoutItem.vue'
 import Main from './shared/Main.vue'
-import TextEditor from './TextEditor.vue'
 
 const props = defineProps({
   ...makeMceStrategyProps({
@@ -68,6 +69,7 @@ provide(IconsSymbol, createIcons())
 
 const {
   components,
+  componentRefs,
   isElement,
   isTopFrame,
   config,
@@ -94,7 +96,6 @@ const {
 const overlayContainer = useTemplateRef('overlayContainerTpl')
 const canvas = useTemplateRef('canvasTpl')
 const selector = useTemplateRef('selectorTpl')
-const textEditor = useTemplateRef('textEditorTpl')
 const grabbing = ref(false)
 const selectedArea = ref(new Aabb2D())
 const resizeStrategy = computed(() => {
@@ -479,6 +480,13 @@ async function onDoubleclick(event: MouseEvent) {
   }
 }
 
+function setComponentRef(ref: any, component: EditorComponent) {
+  if (!componentRefs.value[component.plugin]) {
+    componentRefs.value[component.plugin] = []
+  }
+  componentRefs.value[component.plugin][component.indexInPlugin] = ref
+}
+
 const slotProps = {
   editor,
 }
@@ -523,13 +531,11 @@ const slotProps = {
           </template>
         </Selector>
 
-        <TextEditor ref="textEditorTpl" />
-
         <Floatbar
           v-if="slots['floatbar-top'] || slots.floatbar"
           location="top-start"
           :target="state === 'typing'
-            ? textEditor?.textEditor
+            ? (componentRefs['mce:text']?.[0] as any)?.textEditor
             : selector?.transformable?.$el"
           :middlewares="['offset', 'shift']"
         >
@@ -572,6 +578,7 @@ const slotProps = {
             <template #default="{ isActive }">
               <Component
                 :is="item.component"
+                :ref="(v: any) => setComponentRef(v, item)"
                 v-model:is-active="isActive.value"
               />
             </template>
@@ -586,15 +593,22 @@ const slotProps = {
             :size="item.size || 200"
             :order="item.order || 0"
           >
-            <Component :is="item.component" />
+            <Component
+              :is="item.component"
+              :ref="(v: any) => setComponentRef(v, item)"
+            />
           </LayoutItem>
         </template>
       </template>
 
       <template v-else-if="item.type === 'overlay'">
-        <Teleport v-if="drawboardDom" :to="drawboardDom">
+        <Teleport
+          v-if="drawboardDom"
+          :to="drawboardDom"
+        >
           <Component
             :is="item.component"
+            :ref="(v: any) => setComponentRef(v, item)"
           />
         </Teleport>
       </template>
