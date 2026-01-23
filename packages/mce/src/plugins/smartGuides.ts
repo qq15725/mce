@@ -67,7 +67,6 @@ export default definePlugin((editor) => {
   } = editor
 
   const snapThreshold = computed(() => Math.max(1, 5 / camera.value.zoom.x))
-  const excluded = computed(() => new Set(elementSelection.value.map(el => el.id)))
   const parnet = computed(() => elementSelection.value[0]?.parent ?? root.value)
   const parentBox = computed(() => createBox(parnet.value))
 
@@ -209,10 +208,11 @@ export default definePlugin((editor) => {
     const box = createBox(selectionAabb.value)
 
     if (box) {
+      const excluded = new Set(elementSelection.value.map(el => el.instanceId))
       const boxes = parnet.value
         .children
         .filter((node) => {
-          return !excluded.value.has(node.id)
+          return !excluded.has(node.instanceId)
             && isElement(node)
             && viewportAabb.value.overlap(node.getGlobalAabb())
         })

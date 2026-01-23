@@ -7,6 +7,7 @@ declare global {
       pointer: Vector2Like
       parent: Element2D
       index: number
+      excluded: Set<number>
     }
 
     interface Commands {
@@ -40,7 +41,7 @@ export default definePlugin((editor) => {
     let flag = true
     for (let i = 0, len = frames.value.length; i < len; i++) {
       const frame2 = frames.value[i]
-      if (frame2.equal(el)) {
+      if (options?.excluded.has(frame2.instanceId) || frame2.equal(el)) {
         continue
       }
       const aabb2 = frame2.getGlobalAabb()
@@ -119,12 +120,14 @@ export default definePlugin((editor) => {
       selectionTransform: ({ handle, startEvent, elements }) => {
         if (handle === 'move' && !(startEvent as any)?.__FROM__) {
           if (Object.keys(startContext).length > 0) {
+            const excluded = new Set(elements.map(el => el.instanceId))
             elements.forEach((el) => {
               nestIntoFrame(
                 el,
                 {
                   ...startContext[el.instanceId],
                   pointer: getGlobalPointer(),
+                  excluded,
                 } as any,
               )
             })
