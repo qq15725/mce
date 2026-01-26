@@ -1,3 +1,20 @@
+## [0.15.38](https://github.com/qq15725/mce/compare/v0.15.37...v0.15.38) (2026-01-26)
+
+
+### Bug Fixes
+
+* getTextStyle ([468a83b](https://github.com/qq15725/mce/commit/468a83baa5e249f5ee01c60ec554872d62d4907b))
+* hotkey ([2404540](https://github.com/qq15725/mce/commit/240454074bfd6bf78df957a635326418441dc3a1))
+* marqueeSelect ([e805a70](https://github.com/qq15725/mce/commit/e805a709fb724feb8ad7f50136d6adaa32d6dc1d))
+
+
+### Features
+
+* frame name overflow ([a05cae2](https://github.com/qq15725/mce/commit/a05cae2101b2dd3caad2bda22bcd11bcbf3dc65f))
+* rename to selectionMarquee and marqueeSelect ([9fe19f3](https://github.com/qq15725/mce/commit/9fe19f3e0c368a74f5bb175a852d7192b3ff9c10))
+
+
+
 ## [0.15.37](https://github.com/qq15725/mce/compare/v0.15.36...v0.15.37) (2026-01-23)
 
 
