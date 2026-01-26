@@ -1,4 +1,4 @@
-<h1 align="center">mce</h1>
+<h1 align="center">ModernCanvasEditor</h1>
 
 <p align="center">
   <a href="https://unpkg.com/mce">
@@ -18,7 +18,7 @@
   </a>
 </p>
 
-<p align="center">The headless canvas editor framework. only the ESM.</p>
+<p align="center">A headless infinite canvas editor framework built on WebGL rendering, supports exporting to image, video, and PPT. Only the ESM.</p>
 
 ## 📦 Install
 
