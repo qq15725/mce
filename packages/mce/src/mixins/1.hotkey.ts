@@ -205,7 +205,6 @@ function parseKey(key: string) {
       }
     })
     .filter(Boolean)
-    .map(v => (v as string).toLowerCase())
     .sort()
     .join('+')
 }
@@ -228,7 +227,6 @@ function parseKeyboardEvent(event: KeyboardEvent) {
     !['Meta', 'Control', 'Alt', 'Shift'].includes(event.key) && String.fromCharCode(key),
   ]
     .filter(Boolean)
-    .map(v => (v as string).toLowerCase())
     .sort()
     .join('+')
 }
@@ -333,6 +331,8 @@ export default defineMixin((editor) => {
             const tKey = parseKey(key)
 
             if (eKey === tKey && (!hotkey?.when || hotkey.when(e))) {
+              console.log(eKey, key)
+
               if (hotkey?.preventDefault !== false) {
                 e.preventDefault()
                 e.stopPropagation()
