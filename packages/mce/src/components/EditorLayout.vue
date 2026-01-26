@@ -74,12 +74,11 @@ const {
   hoverElement,
   state,
   setCursor,
-  selectArea,
   exec,
   isLock,
   t,
   selectionAabbInDrawboard,
-  selectionArea,
+  selectionMarquee,
   elementSelection,
   drawboardAabb,
   drawboardPointer,
@@ -262,11 +261,12 @@ function onEnginePointerDown(
     if (state.value !== 'selecting') {
       state.value = 'selecting'
     }
-    selectionArea.value.x = Math.min(start.x, current.x) - drawboardAabb.value.left
-    selectionArea.value.y = Math.min(start.y, current.y) - drawboardAabb.value.top
-    selectionArea.value.width = Math.abs(start.x - current.x)
-    selectionArea.value.height = Math.abs(start.y - current.y)
-    selected = selectArea(selectionArea.value as any)
+    selectionMarquee.value.x = Math.min(start.x, current.x) - drawboardAabb.value.left
+    selectionMarquee.value.y = Math.min(start.y, current.y) - drawboardAabb.value.top
+    selectionMarquee.value.width = Math.abs(start.x - current.x)
+    selectionMarquee.value.height = Math.abs(start.y - current.y)
+    exec('marqueeSelect')
+    selected = elementSelection.value
   }
 
   function onActivate() {

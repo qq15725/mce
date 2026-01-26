@@ -1,4 +1,5 @@
-import type { Element2D, Node } from 'modern-canvas'
+import type { Aabb2D, Element2D, Node } from 'modern-canvas'
+import { Obb2D } from 'modern-canvas'
 import ScrollToSelection from '../components/ScrollToSelection.vue'
 import Selection from '../components/Selection.vue'
 import { definePlugin } from '../plugin'
@@ -17,6 +18,7 @@ declare global {
 
     interface Commands {
       select: (target: SelectTarget) => void
+      marqueeSelect: (marquee?: Aabb2D) => void
       selectAll: () => void
       selectInverse: () => void
       selectNone: () => void
@@ -77,6 +79,7 @@ export default definePlugin((editor) => {
   const {
     isElement,
     selection,
+    selectionMarquee,
     elementSelection,
     getObb,
     getAabb,
@@ -135,6 +138,25 @@ export default definePlugin((editor) => {
         selection.value = target
         break
     }
+  }
+
+  function marqueeSelect(marquee = selectionMarquee.value): void {
+    const area = new Obb2D(marquee) // TODO
+    selection.value = root.value
+      ?.children
+      .flatMap((node) => {
+        if (inEditorIs(node, 'Frame') && node.parent?.equal(root.value)) {
+          return node.children as unknown as Element2D[]
+        }
+        return [node] as Element2D[]
+      })
+      .filter((node) => {
+        return 'isVisibleInTree' in node
+          && node.isVisibleInTree()
+          && getObb(node, 'drawboard').overlap(area)
+          && !isLock(node)
+          && !node.findAncestor(ancestor => isLock(ancestor))
+      }) ?? []
   }
 
   function groupSelection(inEditorIs: 'Element' | 'Frame'): void {
@@ -234,6 +256,7 @@ export default definePlugin((editor) => {
     name: 'mce:selection',
     commands: [
       { command: 'select', handle: select },
+      { command: 'marqueeSelect', handle: marqueeSelect },
       { command: 'selectAll', handle: () => select('all') },
       { command: 'selectInverse', handle: () => select('inverse') },
       { command: 'selectNone', handle: () => select('none') },

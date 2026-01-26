@@ -14,7 +14,7 @@ const {
   state,
   resizeElement,
   selection,
-  selectionArea,
+  selectionMarquee,
   elementSelection,
   selectionObb,
   selectionObbInDrawboard,
@@ -325,10 +325,10 @@ defineExpose({
 
     <div
       v-if="state === 'selecting'"
-      class="mce-selection__area"
+      class="mce-selection__marquee"
       :style="{
         borderColor: 'currentcolor',
-        ...selectionArea.toCssStyle(),
+        ...selectionMarquee.toCssStyle(),
       }"
     />
 
@@ -389,7 +389,7 @@ defineExpose({
       opacity: .5;
     }
 
-    &__area {
+    &__marquee {
       position: absolute;
       border-width: 1px;
       border-style: solid;

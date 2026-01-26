@@ -1,6 +1,5 @@
-import type { Aabb2D, Element2D, Node, Vector2Like } from 'modern-canvas'
+import type { Element2D, Node, Vector2Like } from 'modern-canvas'
 import type { Element } from 'modern-idoc'
-import { Obb2D } from 'modern-canvas'
 import { defineMixin } from '../mixin'
 
 declare global {
@@ -35,7 +34,6 @@ declare global {
         newHeight: number,
         options?: ResizeElementOptions,
       ) => void
-      selectArea: (areaInDrawboard: Aabb2D) => Element2D[]
     }
   }
 }
@@ -291,31 +289,9 @@ export default defineMixin((editor) => {
     options.textFontSizeToFit && textFontSizeToFit(el, scaleX)
   }
 
-  function selectArea(areaInDrawboard: Aabb2D): Element2D[] {
-    const area = new Obb2D(areaInDrawboard) // TODO
-    const selected = root.value
-      ?.children
-      .flatMap((node) => {
-        if (inEditorIs(node, 'Frame') && node.parent?.equal(root.value)) {
-          return node.children as unknown as Element2D[]
-        }
-        return [node] as Element2D[]
-      })
-      .filter((node) => {
-        return 'isVisibleInTree' in node
-          && node.isVisibleInTree()
-          && getObb(node, 'drawboard').overlap(area)
-          && !isLock(node)
-          && !node.findAncestor(ancestor => isLock(ancestor))
-      }) ?? []
-    selection.value = selected
-    return selected
-  }
-
   Object.assign(editor, {
     addElement,
     addElements: addElement,
     resizeElement,
-    selectArea,
   })
 })
