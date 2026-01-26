@@ -88,13 +88,6 @@ export class TextEditor extends HTMLElement implements PropertyAccessor {
   @property({ internal: true, fallback: false })
   declare protected _showCursor: boolean
 
-  protected _prevSelection: [number, number] | undefined
-  protected _composition = false
-
-  get composition(): boolean {
-    return this._composition
-  }
-
   protected static _defined = false
   static register(): void {
     if (!this._defined) {
@@ -564,26 +557,19 @@ export class TextEditor extends HTMLElement implements PropertyAccessor {
   }
 
   protected _updateSelectionByDom(): void {
-    if (this._composition) {
-      this.selection = this._prevSelection
-    }
-    else {
-      const { selectionStart, selectionEnd } = this._textarea
-      let count = 0
-      const _selection: [number, number] = [-1, -1]
-      this._chars.forEach((char, index) => {
-        if (count <= selectionStart) {
-          _selection[0] = index
-        }
-        if (count <= selectionEnd) {
-          _selection[1] = index
-        }
-        count += char.content.length
-      })
-      const oldSelection = this.selection
-      this.selection = _selection
-      this._prevSelection = oldSelection
-    }
+    const { selectionStart, selectionEnd } = this._textarea
+    let count = 0
+    const _selection: [number, number] = [-1, -1]
+    this._chars.forEach((char, index) => {
+      if (count <= selectionStart) {
+        _selection[0] = index
+      }
+      if (count <= selectionEnd) {
+        _selection[1] = index
+      }
+      count += char.content.length
+    })
+    this.selection = _selection
   }
 
   protected _updateDomSelection(): void {
@@ -623,8 +609,6 @@ export class TextEditor extends HTMLElement implements PropertyAccessor {
   }
 
   protected _bindEventListeners(): void {
-    this._textarea.addEventListener('compositionstart', () => this._composition = true)
-    this._textarea.addEventListener('compositionend', () => this._composition = false)
     this._textarea.addEventListener('keydown', this._onKeydown.bind(this))
     this._textarea.addEventListener('input', this._onInput.bind(this) as any)
     if (SUPPORTS_POINTER_EVENTS) {
@@ -633,11 +617,8 @@ export class TextEditor extends HTMLElement implements PropertyAccessor {
     else {
       this._textarea.addEventListener('mousedown', this.pointerDown.bind(this) as any)
     }
-
-    ;['keyup', 'mouseup', 'input', 'paste', 'cut'].forEach((key) => {
-      this._textarea.addEventListener(key, () => {
-        this._updateSelectionByDom()
-      })
+    ;['selectstart', 'selectionchange'].forEach((key) => {
+      this._textarea.addEventListener(key, () => this._updateSelectionByDom())
     })
   }
 
