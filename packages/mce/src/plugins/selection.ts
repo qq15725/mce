@@ -87,6 +87,7 @@ export default definePlugin((editor) => {
     root,
     findSibling,
     inEditorIs,
+    isTopFrame,
     addElement,
     addElements,
     obbToFit,
@@ -124,9 +125,9 @@ export default definePlugin((editor) => {
       }
       case 'previousSibling':
       case 'nextSibling': {
-        const value = findSibling(target === 'previousSibling' ? 'previous' : 'next')
-        if (value) {
-          selection.value = [value]
+        const sibling = findSibling(target === 'previousSibling' ? 'previous' : 'next')
+        if (sibling) {
+          selection.value = [sibling]
           exec('zoomTo', 'selection', {
             intoView: true,
             behavior: 'smooth',
@@ -145,7 +146,10 @@ export default definePlugin((editor) => {
     selection.value = root.value
       ?.children
       .flatMap((node) => {
-        if (inEditorIs(node, 'Frame') && node.parent?.equal(root.value)) {
+        if (
+          isTopFrame(node)
+          && !area.contains(getObb(node, 'drawboard'))
+        ) {
           return node.children as unknown as Element2D[]
         }
         return [node] as Element2D[]
