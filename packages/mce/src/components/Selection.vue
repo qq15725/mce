@@ -303,10 +303,7 @@ defineExpose({
     <div
       v-for="(style, index) in parentObbStyles" :key="index"
       class="mce-selection__parent"
-      :style="{
-        borderColor: 'currentColor',
-        ...style,
-      }"
+      :style="style"
     />
 
     <template
@@ -316,20 +313,14 @@ defineExpose({
         v-for="(style, index) in selectionObbStyles"
         :key="index"
         class="mce-selection__node"
-        :style="{
-          borderColor: 'currentcolor',
-          ...style,
-        }"
+        :style="style"
       />
     </template>
 
     <div
       v-if="state === 'selecting'"
       class="mce-selection__marquee"
-      :style="{
-        borderColor: 'currentcolor',
-        ...selectionMarquee.toCssStyle(),
-      }"
+      :style="selectionMarquee.toCssStyle()"
     />
 
     <TransformControls
@@ -387,6 +378,7 @@ defineExpose({
       border-style: dashed;
       color: rgba(var(--mce-theme-primary), 1);
       opacity: .5;
+      border-color: currentColor;
     }
 
     &__marquee {
@@ -395,6 +387,7 @@ defineExpose({
       border-style: solid;
       color: rgba(var(--mce-theme-primary), 1);
       background-color: rgba(var(--mce-theme-primary), .1);
+      border-color: currentcolor;
     }
 
     &__transform {
@@ -407,6 +400,7 @@ defineExpose({
       border-width: 1px;
       border-style: solid;
       color: rgba(var(--mce-theme-primary), 1);
+      border-color: currentcolor;
     }
   }
 </style>
