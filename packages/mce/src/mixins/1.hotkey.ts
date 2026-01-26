@@ -331,8 +331,6 @@ export default defineMixin((editor) => {
             const tKey = parseKey(key)
 
             if (eKey === tKey && (!hotkey?.when || hotkey.when(e))) {
-              console.log(eKey, key)
-
               if (hotkey?.preventDefault !== false) {
                 e.preventDefault()
                 e.stopPropagation()

@@ -7,7 +7,6 @@ export const editorOptions: Partial<Mce.Options> = {
   scrollbar: true,
   statusbar: true,
   frameGap: 48,
-  frameOutline: true,
   zoomToFit: 'width',
   typographyStrategy: 'autoHeight',
   locale: { locale: 'zhHans' },
