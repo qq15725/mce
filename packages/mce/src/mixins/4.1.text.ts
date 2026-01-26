@@ -34,8 +34,6 @@ export default defineMixin((editor) => {
     fonts,
   } = editor
 
-  const element = computed(() => elementSelection.value[0])
-
   const hasTextSelectionRange = computed(() => {
     return (textSelection.value?.length ?? 0) > 1
       && textSelection.value![0] !== textSelection.value![1]
@@ -189,7 +187,7 @@ export default defineMixin((editor) => {
 
   function handleTextSelection([start, end]: IndexCharacter[], cb: (arg: Record<string, any>) => boolean): void {
     let flag = true
-    element.value?.text?.content.forEach((p, pIndex, pItems) => {
+    elementSelection.value[0]?.text?.content.forEach((p, pIndex, pItems) => {
       if (!flag)
         return
       p.fragments.forEach((f, fIndex, fItems) => {
@@ -226,16 +224,25 @@ export default defineMixin((editor) => {
   }
 
   function getTextStyle(key: string): any {
-    const el = element.value
+    const el = elementSelection.value[0]
 
     if (!el) {
       return undefined
     }
 
-    let value = (el.style as any)[key]
-    const content = el.text.content
+    let value
 
-    if (hasTextSelectionRange.value) {
+    switch (key) {
+      case 'fill':
+      case 'outline':
+        value = (el.text as any)[key]
+        break
+      default:
+        value = (el.style as any)[key]
+        break
+    }
+
+    if (hasTextSelectionRange.value && !isTextAllSelected.value) {
       const selection = textSelection.value
       if (selection && selection[0] && selection[1]) {
         handleTextSelection(selection, ({ selected, fStyle }) => {
@@ -249,6 +256,7 @@ export default defineMixin((editor) => {
     }
     else {
       // TODO
+      const content = el.text.content
       switch (key) {
         case 'fontSize':
           return content?.reduce((prev, p) => {
@@ -271,7 +279,7 @@ export default defineMixin((editor) => {
   }
 
   function setTextContentByEachFragment(handler: (fragment: NormalizedFragment) => void): void {
-    const el = element.value
+    const el = elementSelection.value[0]
 
     if (!el) {
       return
@@ -324,7 +332,7 @@ export default defineMixin((editor) => {
   }
 
   function setTextStyle(key: string, value: any): void {
-    const el = element.value
+    const el = elementSelection.value[0]
 
     if (!el) {
       return
@@ -375,7 +383,7 @@ export default defineMixin((editor) => {
   }
 
   function getTextFill(): NormalizedFill | undefined {
-    const el = element.value
+    const el = elementSelection.value[0]
 
     if (!el) {
       return undefined
@@ -397,7 +405,7 @@ export default defineMixin((editor) => {
   }
 
   function setTextFill(value: NormalizedFill | undefined): void {
-    const el = element.value
+    const el = elementSelection.value[0]
 
     if (!el) {
       return undefined
