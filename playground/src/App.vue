@@ -54,7 +54,7 @@ else if (url) {
 
       <EditorLayoutItem
         position="left"
-        :size="240"
+        :size="200"
       >
         <EditorLayers />
       </EditorLayoutItem>

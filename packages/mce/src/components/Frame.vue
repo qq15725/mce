@@ -104,9 +104,9 @@ async function onPointerdown(event: PointerEvent) {
     transform-origin: left bottom;
     font-size: 0.75rem;
     line-height: 1.5;
-    white-space: nowrap;
     pointer-events: auto;
     user-select: none;
+    max-width: 100%;
 
     > div {
       position: relative;
@@ -114,6 +114,10 @@ async function onPointerdown(event: PointerEvent) {
       box-sizing: content-box;
       color: rgb(var(--mce-theme-on-surface));
       opacity: .5;
+      max-width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     > input {
