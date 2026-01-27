@@ -38,6 +38,7 @@ declare global {
         | 'cropping'
         | 'imageReplacing'
         | 'shapeReplacing'
+        | 'painting'
         | undefined
 
     interface DrawingContext {

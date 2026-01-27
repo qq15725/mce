@@ -33,6 +33,7 @@ export default definePlugin((editor, options) => {
     canUndo,
     canRedo,
     selection,
+    elementSelection,
     textSelection,
     config,
     exporters,
@@ -88,6 +89,7 @@ export default definePlugin((editor, options) => {
     { key: 'paste' },
     { key: 'duplicate', disabled: !hasSelected.value },
     { key: 'delete', disabled: !hasSelected.value },
+    { key: 'formatPaint', disabled: !elementSelection.value[0]?.text?.textContent },
   ].filter(Boolean))
 
   const selectMenu = computed(() => ({
