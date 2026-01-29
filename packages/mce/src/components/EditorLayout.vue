@@ -350,10 +350,10 @@ function onEnginePointerDown(
       )
     }
     else if (hand) {
-      camera.value.position.add(
-        Math.round(prev.x - current.x),
-        Math.round(prev.y - current.y),
-      )
+      camera.value.position.add({
+        x: Math.round(prev.x - current.x),
+        y: Math.round(prev.y - current.y),
+      })
     }
     else {
       if (!inSelection) {
