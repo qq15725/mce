@@ -2,6 +2,7 @@
 import type { Cursor, Element2D, PointerInputEvent } from 'modern-canvas'
 import type { EditorComponent, Slots } from '../editor'
 import { useResizeObserver } from '@vueuse/core'
+import { Aabb2D } from 'modern-canvas'
 import {
   computed,
   h,
@@ -258,7 +259,7 @@ function onEnginePointerDown(
 
   function onSelectArea(): void {
     selecting = true
-    if (state.value !== 'selecting') {
+    if (state.value !== 'painting' && state.value !== 'selecting') {
       state.value = 'selecting'
     }
     selectionMarquee.value.x = Math.min(start.x, current.x) - drawboardAabb.value.left
@@ -304,6 +305,7 @@ function onEnginePointerDown(
 
   function canStartDrag() {
     return !dragging
+      && state.value !== 'painting'
       && (
         Math.abs(current.x - start.x) >= 3
         || Math.abs(current.y - start.y) >= 3
@@ -377,10 +379,6 @@ function onEnginePointerDown(
       grabbing.value = false
     }
     else {
-      if (state.value) {
-        state.value = undefined
-      }
-
       if (!dragging) {
         if (element && !selecting) {
           onActivate()
@@ -400,6 +398,19 @@ function onEnginePointerDown(
         }
 
         onHover(downEvent)
+      }
+
+      if (state.value === 'painting' || state.value === 'selecting') {
+        selectionMarquee.value = new Aabb2D({ x: -1, y: -1, width: 0, height: 0 })
+      }
+      if (state.value === 'painting') {
+        exec('applyFormatPaint', selected)
+        if (!(upEvent?.ctrlKey || upEvent?.shiftKey || upEvent?.metaKey)) {
+          exec('exitFormatPaint')
+        }
+      }
+      else if (state.value) {
+        state.value = undefined
       }
     }
 
