@@ -7,6 +7,7 @@ export default {
   'exporting': 'Exporting',
   'painting': 'Painting',
   'selecting': 'Selecting',
+  'cropping': 'Cropping',
   'selectObject': 'Select object',
   'commitChanges': 'Commit changes',
   'extend': 'Extend',
