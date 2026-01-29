@@ -13,12 +13,12 @@ export default definePlugin((editor) => {
   const {
     root,
     exec,
-    viewportAabb,
+    drawboardAabb,
   } = editor
 
   function testPerformance(count = 500) {
     root.value.removeChildren()
-    const { width, height } = viewportAabb.value
+    const { width, height } = drawboardAabb.value
     for (let i = 0; i < count; i++) {
       const size = 10 + Math.random() * 40
       const x = Math.random() * (width - size)
