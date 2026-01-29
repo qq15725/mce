@@ -124,7 +124,7 @@ export default definePlugin((editor) => {
             position: start,
           })
 
-          const parentAabb = el.getParent<Element2D>()?.getGlobalAabb?.() ?? new Aabb2D()
+          const parentAabb = el.getParent<Element2D>()?.globalAabb ?? new Aabb2D()
 
           const path = new Path2D()
           path.moveTo(start.x - parentAabb.x, start.y - parentAabb.y)

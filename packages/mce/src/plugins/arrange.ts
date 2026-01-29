@@ -122,7 +122,7 @@ export default definePlugin((editor) => {
     }
 
     elementSelection.value.forEach((el) => {
-      const parentAabb = el.getParent<Element2D>()?.getGlobalAabb?.() ?? new Aabb2D()
+      const parentAabb = el.getParent<Element2D>()?.globalAabb ?? new Aabb2D()
       const hw = el.size.x / 2
       const hh = el.size.y / 2
       const cos = Math.cos(el.rotation)
@@ -183,7 +183,7 @@ export default definePlugin((editor) => {
           const item = sorted[i]
           current += gapSize
           let top = current
-          const parentAabb = item.el.getParent<Element2D>()?.getGlobalAabb?.()
+          const parentAabb = item.el.getParent<Element2D>()?.globalAabb
           if (parentAabb) {
             top = top - parentAabb.top
           }
@@ -206,7 +206,7 @@ export default definePlugin((editor) => {
           const item = sorted[i]
           current += gapSize
           let left = current
-          const parentAabb = item.el.getParent<Element2D>()?.getGlobalAabb?.()
+          const parentAabb = item.el.getParent<Element2D>()?.globalAabb
           if (parentAabb) {
             left = left - parentAabb.left
           }

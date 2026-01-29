@@ -234,7 +234,7 @@ const transform = computed({
       if (handle.startsWith('resize')) {
         const selectionAabb = getAabb(els)
         els.forEach((el) => {
-          const parentAabb = el.getParent<Element2D>()?.getGlobalAabb?.() ?? new Aabb2D()
+          const parentAabb = el.getParent<Element2D>()?.globalAabb ?? new Aabb2D()
           const { x, y } = startContext.offsetMap[el.instanceId]!
           el.style.left = selectionAabb.left - parentAabb.left + selectionAabb.width * x
           el.style.top = selectionAabb.top - parentAabb.left + selectionAabb.height * y
