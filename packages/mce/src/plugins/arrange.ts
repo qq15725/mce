@@ -110,7 +110,7 @@ export default definePlugin((editor) => {
     if (len === 1) {
       const parent = elementSelection.value[0]?.parent
       if (parent && isElement(parent)) {
-        targetAabb = parent.getGlobalAabb()
+        targetAabb = parent.globalAabb
       }
     }
     else {
@@ -163,7 +163,7 @@ export default definePlugin((editor) => {
     const items = els.map((el) => {
       return {
         el,
-        aabb: el.getGlobalAabb(),
+        aabb: el.globalAabb,
       }
     })
     const count = items.length

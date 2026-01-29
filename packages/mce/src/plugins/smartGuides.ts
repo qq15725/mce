@@ -214,7 +214,7 @@ export default definePlugin((editor) => {
         .filter((node) => {
           return !excluded.has(node.instanceId)
             && isElement(node)
-            && viewportAabb.value.overlap(node.getGlobalAabb())
+            && viewportAabb.value.overlap(node.globalAabb)
         })
         .map(node => createBox(node)!)
         .filter(Boolean) as Box[]

@@ -48,7 +48,7 @@ export default defineMixin((editor) => {
     let flag = false
     element.children.forEach((child) => {
       if (isElement(child)) {
-        const { min: _min, max: _max } = child.getAabb().toMinmax()
+        const { min: _min, max: _max } = child.aabb.toMinmax()
         min.x = Math.min(min.x, _min.x)
         min.y = Math.min(min.y, _min.y)
         max.x = Math.max(max.x, _max.x)
@@ -67,7 +67,7 @@ export default defineMixin((editor) => {
       const aabbs: Record<number, any> = {}
       element.children.forEach((child, index) => {
         if (isElement(child)) {
-          aabbs[index] = child.getGlobalAabb()
+          aabbs[index] = child.globalAabb
         }
       })
 
@@ -194,7 +194,7 @@ export default defineMixin((editor) => {
       // for vue reactive
       const style = node.style
       noop([style.left, style.top, style.width, style.height, style.rotate])
-      aabb = node.getGlobalAabb()
+      aabb = node.globalAabb
     }
     else {
       aabb = new Aabb2D()

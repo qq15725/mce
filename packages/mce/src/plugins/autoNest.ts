@@ -36,7 +36,7 @@ export default definePlugin((editor) => {
   ): void {
     const pointer = options?.pointer as any
     const frame1 = el.findAncestor(node => isTopFrame(node))
-    const aabb1 = el.getGlobalAabb()
+    const aabb1 = el.globalAabb
     const area1 = aabb1.getArea()
     let flag = true
     for (let i = 0, len = frames.value.length; i < len; i++) {
@@ -44,7 +44,7 @@ export default definePlugin((editor) => {
       if (options?.excluded.has(frame2.instanceId) || frame2.equal(el)) {
         continue
       }
-      const aabb2 = frame2.getGlobalAabb()
+      const aabb2 = frame2.globalAabb
       if (
         pointer
           ? aabb2.contains(pointer)
@@ -91,7 +91,7 @@ export default definePlugin((editor) => {
       selectionTransformStart: ({ handle, startEvent, elements }) => {
         if (handle === 'move' && !(startEvent as any)?.__FROM__) {
           const pointer = getGlobalPointer()
-          const startFrame = frames.value.find(frame => frame.getGlobalAabb().contains(pointer))
+          const startFrame = frames.value.find(frame => frame.globalAabb.contains(pointer))
 
           const idSet = new Set<number>()
           elements.forEach((el) => {

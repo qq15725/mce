@@ -141,7 +141,7 @@ const transform = computed({
       height: style.height + offsetStyle.height,
       rotate: (style.rotate + offsetStyle.rotate + 360) % 360,
     }
-    const oldAabb = el.getGlobalAabb()
+    const oldAabb = el.globalAabb
     const shape = el.shape
     resizeElement(
       el,
@@ -157,7 +157,7 @@ const transform = computed({
     newStyle.height = el.style.height
     Object.assign(el.style, newStyle)
     el.updateGlobalTransform()
-    const aabb = el.getGlobalAabb()
+    const aabb = el.globalAabb
     const offset = {
       left: aabb.left - oldAabb.left,
       top: aabb.top - oldAabb.top,
@@ -201,13 +201,13 @@ function onMouseDown(item: any, downEvent: MouseEvent) {
 
   // TODO
   const startPointer = { x: downEvent.clientX, y: downEvent.clientY }
-  const startAabb = el.getGlobalAabb()
+  const startAabb = el.globalAabb
   const currentAabb = new Aabb2D(startAabb)
   const startItems: { el: Element2D, aabb: Aabb2D }[] = []
   elementSelection.value.forEach((el) => {
     startItems.push({
       el,
-      aabb: el.getGlobalAabb(),
+      aabb: el.globalAabb,
     })
   })
   let prev: Element2D | undefined
@@ -239,7 +239,7 @@ function onMouseDown(item: any, downEvent: MouseEvent) {
               // TODO
               targetEl.position.y = currentAabb.y
               targetEl.updateGlobalTransform()
-              const newAabb = targetEl.getGlobalAabb()
+              const newAabb = targetEl.globalAabb
               currentAabb.y = newAabb.bottom
               item.aabb = newAabb
               prev = item.el

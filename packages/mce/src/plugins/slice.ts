@@ -21,7 +21,7 @@ export default definePlugin((editor) => {
       return
     }
 
-    const aabb = el.getGlobalAabb()
+    const aabb = el.globalAabb
 
     const doc = to('json', {
       ...options,

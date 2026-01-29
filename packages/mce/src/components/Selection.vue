@@ -128,7 +128,7 @@ function onStart() {
   startContext.rotate = 0
   const aabb = selectionAabb.value
   elementSelection.value.forEach((el) => {
-    const elAabb = el.getGlobalAabb()
+    const elAabb = el.globalAabb
     startContext.offsetMap[el.instanceId] = {
       x: (elAabb.x - aabb.x) / aabb.width,
       y: (elAabb.y - aabb.y) / aabb.height,
