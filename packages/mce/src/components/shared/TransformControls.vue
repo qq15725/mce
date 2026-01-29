@@ -149,7 +149,7 @@ const model = computed({
       width: width * scale[0],
       height: height * scale[1],
       rotate,
-      borderRadius,
+      borderRadius: borderRadius * scale[0],
     }
   },
   set: (val) => {
@@ -162,7 +162,7 @@ const model = computed({
       width: val.width / scale[0],
       height: val.height / scale[1],
       rotate: val.rotate,
-      borderRadius: val.borderRadius,
+      borderRadius: val.borderRadius / scale[0],
     }
   },
 })
