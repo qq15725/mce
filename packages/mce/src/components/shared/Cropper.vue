@@ -2,30 +2,22 @@
 import type { ImageFillCropRect } from 'modern-idoc'
 import { vResizeObserver } from '@vueuse/components'
 import { useImage } from '@vueuse/core'
-import { cloneDeep } from 'lodash-es'
+import { cloneDeep, isEqual } from 'lodash-es'
 import { computed, onBeforeMount, onBeforeUnmount, ref, useTemplateRef, watch } from 'vue'
+import { boundingBoxToStyle } from '../../utils'
 import TransformControls from './TransformControls.vue'
 
 /**
  * TODO 撤回无法重渲
  */
-
-const props = withDefaults(
-  defineProps<{
-    image: string
-    minScale?: number
-    maxScale?: number
-  }>(),
-  {
-    minScale: 0.1,
-    maxScale: 3,
-  },
-)
+type View = Record<'left' | 'top' | 'width' | 'height' | 'scaleX' | 'scaleY', number>
+const props = defineProps<{
+  image: string
+}>()
 
 const emit = defineEmits<{
-  'start': []
-  'end': []
-  'update:transform': [{ left: number, top: number, width: number, height: number }]
+  start: []
+  end: []
 }>()
 
 /**
@@ -58,16 +50,8 @@ const emit = defineEmits<{
  *  |----- 0 -----|
  */
 const cropRect = defineModel<ImageFillCropRect>({ default: () => ({}) })
-const styleModel = defineModel<Record<string, any>>('style', { default: () => ({}) })
-const rootBox = ref({ width: 0, height: 0 })
-const { state: imageRef } = useImage(
-  computed(() => ({
-    src: props.image,
-  })),
-)
-const backup = cloneDeep(cropRect.value)
-const canvasRef = useTemplateRef('canvasRef')
-const computedCropRect = computed({
+const cropBackup = cloneDeep(cropRect.value)
+const internalValue = computed({
   get: () => {
     const { left = 0, top = 0, right = 0, bottom = 0 } = cropRect.value
     return { left, top, right, bottom }
@@ -75,30 +59,37 @@ const computedCropRect = computed({
   set: val => cropRect.value = val,
 })
 
+const view = defineModel<View>('view', { required: true })
+const viewBackup = cloneDeep(view.value)
+
 const inverseMat = computed(() => {
-  const { left, top, right, bottom } = computedCropRect.value
+  const { left, top, right, bottom } = internalValue.value
   const sx = 1 / (1 - left - right)
   const sy = 1 / (1 - top - bottom)
   const tx = -left
   const ty = -top
   return { sx, sy, tx, ty }
 })
-
+const rootBox = ref({ width: 0, height: 0 })
+function onResizeObserver(entries: ResizeObserverEntry[]) {
+  const { width, height } = entries[0].contentRect
+  rootBox.value = { width, height }
+}
+function applyInverseMat({ width, height }: { width: number, height: number }) {
+  const { sx, sy, tx, ty } = inverseMat.value
+  const { scaleX = 1, scaleY = 1 } = view.value
+  return {
+    width: sx * width,
+    height: sy * height,
+    left: tx * scaleX * (sx * width),
+    top: ty * scaleY * (sy * height),
+  }
+}
 const sourceTransform = computed({
-  get: () => {
-    const { sx, sy, tx, ty } = inverseMat.value
-    const { scaleX = 1, scaleY = 1 } = styleModel.value
-    const { width, height } = rootBox.value
-    return {
-      width: sx * width,
-      height: sy * height,
-      left: tx * scaleX * (sx * width),
-      top: ty * scaleY * (sy * height),
-    }
-  },
+  get: () => applyInverseMat(rootBox.value),
   set: (newValue) => {
     const { width, height } = rootBox.value
-    const { scaleX = 1, scaleY = 1 } = styleModel.value
+    const { scaleX = 1, scaleY = 1 } = view.value
     const transform = {
       sx: newValue.width / width,
       sy: newValue.height / height,
@@ -111,48 +102,114 @@ const sourceTransform = computed({
     const h = 1 - (1 / transform.sy)
     const right = w - left
     const bottom = h - top
-    computedCropRect.value = { left, top, right, bottom }
+    internalValue.value = { left, top, right, bottom }
   },
+})
+
+// 外部view变化需要通过调整cropRect保持source视觉位置尺寸不变
+const viewEffect = watch(view, (val, old) => {
+  if (!isEqual(val, old)) {
+    const source = applyInverseMat(old)
+    const left = (val.left - old.left - source.left) / source.width
+    const top = (val.top - old.top - source.top) / source.height
+    const right = 1 - left - (val.width / source.width)
+    const bottom = 1 - top - (val.height / source.height)
+    internalValue.value = { left, top, right, bottom }
+  }
 })
 
 const scale = computed({
   get: () => inverseMat.value.sx,
   set: (value) => {
-    const transform = inverseMat.value
-    const rate = transform.sx / value
-    const left = -transform.tx
-    const top = -transform.ty
-    const w = 1 - (1 / value)
-    const h = 1 - (1 / transform.sy * rate)
-    const right = w - left
-    const bottom = h - top
-    computedCropRect.value = { left, top, right, bottom }
+    const { sx: oldSx, sy: oldSy } = inverseMat.value
+    const { left: oldLeft, top: oldTop, right: oldRight, bottom: oldBottom } = internalValue.value
+
+    // 原view宽高
+    const oldViewWidth = 1 - oldLeft - oldRight
+    const oldViewHeight = 1 - oldTop - oldBottom
+
+    // 原view中心点
+    const centerX = oldLeft + oldViewWidth * 0.5
+    const centerY = oldTop + oldViewHeight * 0.5
+
+    // 保持原宽高比
+    const newSx = value
+    const newSy = value * (oldSy / oldSx)
+
+    // 新view宽高
+    const newViewWidth = 1 / newSx
+    const newViewHeight = 1 / newSy
+
+    // 保持中心点位置不变
+    const newLeft = centerX - newViewWidth * 0.5
+    const newTop = centerY - newViewHeight * 0.5
+    const newRight = 1 - newViewWidth - newLeft
+    const newBottom = 1 - newViewHeight - newTop
+
+    internalValue.value = {
+      left: newLeft,
+      top: newTop,
+      right: newRight,
+      bottom: newBottom,
+    }
   },
 })
 
-onBeforeMount(() => emit('start'))
-onBeforeUnmount(() => emit('end'))
+function ok() {
+  emit('end')
+}
 
-const sourceStyle = computed(() => {
-  const { sx, sy, tx, ty } = inverseMat.value
-  const { scaleX = 1, scaleY = 1 } = styleModel.value
-  return {
-    transform: [
-      `scale(${sx}, ${sy})`,
-      `translate(${tx * scaleX * 100}%, ${ty * scaleY * 100}%)`,
-    ].join(' '),
+function cancel() {
+  cropRect.value = cropBackup
+  viewEffect.stop()
+  view.value = viewBackup
+  ok()
+}
+
+function setAspectRatio(ratio: 0 | [number, number]) {
+  const { left = 0, top = 0 } = view.value
+  const { left: sourceLeft, top: sourceTop, width: sourceWidth, height: sourceHeight } = applyInverseMat(view.value)
+  const aspectRatio = ratio === 0 ? sourceWidth / sourceHeight : ratio[0] / ratio[1]
+
+  let newViewWidth = sourceWidth
+  let newViewHeight = sourceWidth / aspectRatio
+  if (newViewHeight > sourceHeight) {
+    newViewHeight = sourceHeight
+    newViewWidth = sourceHeight * aspectRatio
   }
-})
+  const newViewLeft = left + sourceLeft + (sourceWidth - newViewWidth) / 2
+  const newViewTop = top + sourceTop + (sourceHeight - newViewHeight) / 2
 
+  view.value = {
+    ...view.value,
+    width: newViewWidth,
+    height: newViewHeight,
+    left: newViewLeft,
+    top: newViewTop,
+  }
+}
+
+// setTimeout(() => {
+//   setAspectRatio([16, 9])
+// }, 1000)
+// setTimeout(() => {
+//   cancel()
+// }, 2000)
+
+const { state: imageRef } = useImage(
+  computed(() => ({
+    src: props.image,
+  })),
+)
+const canvasRef = useTemplateRef('canvasRef')
 watch([canvasRef, imageRef], render)
-watch(computedCropRect, render, { deep: true })
-watch([() => styleModel.value.scaleX, () => styleModel.value.scaleY], render)
-
+watch(internalValue, render, { deep: true })
+watch([() => view.value.scaleX, () => view.value.scaleY], render)
 function render() {
   const ctx = canvasRef.value?.getContext('2d')
   if (!ctx || !imageRef.value)
     return
-  const { scaleX = 1, scaleY = 1 } = styleModel.value
+  const { scaleX = 1, scaleY = 1 } = view.value
   const { naturalWidth, naturalHeight } = imageRef.value
   ctx.canvas.width = naturalWidth
   ctx.canvas.height = naturalHeight
@@ -162,33 +219,8 @@ function render() {
   ctx.drawImage(imageRef.value, 0, 0, naturalWidth, naturalHeight)
 }
 
-function ok() {
-  emit('end')
-}
-
-function cancel() {
-  cropRect.value = backup
-  ok()
-}
-
-function onResizeObserver(entries: any) {
-  const { width, height } = entries[0].contentRect
-  rootBox.value = { width, height }
-}
-
-function applySourceTransformToStyle() {
-  const { left = 0, top = 0, width = 0, height = 0 } = styleModel.value
-  const { sx, sy, tx, ty } = inverseMat.value
-  cropRect.value = {}
-  styleModel.value = {
-    ...styleModel.value,
-    width: sx * width,
-    height: sy * height,
-    left: left + tx * (sx * width),
-    top: top + ty * (sy * height),
-  }
-  ok()
-}
+onBeforeMount(() => emit('start'))
+onBeforeUnmount(() => emit('end'))
 </script>
 
 <template>
@@ -198,7 +230,7 @@ function applySourceTransformToStyle() {
   >
     <div
       class="mce-cropper__source"
-      :style="sourceStyle"
+      :style="boundingBoxToStyle(sourceTransform)"
     >
       <canvas ref="canvasRef" />
     </div>
@@ -216,7 +248,7 @@ function applySourceTransformToStyle() {
       :scale="scale"
       :ok="ok"
       :cancel="cancel"
-      :apply-source-transform-to-style="applySourceTransformToStyle"
+      :set-aspect-ratio="setAspectRatio"
     />
   </div>
 </template>

@@ -323,6 +323,21 @@ defineExpose({
       :style="selectionMarquee.toCssStyle()"
     />
 
+    <template v-if="transform.width && transform.height">
+      <div
+        class="mce-selection__slot"
+        :style="selectionObbInDrawboard.toCssStyle()"
+      >
+        <ForegroundCropper>
+          <template #default="scope">
+            <slot name="foreground-cropper" v-bind="scope" />
+          </template>
+        </ForegroundCropper>
+
+        <slot />
+      </div>
+    </template>
+
     <TransformControls
       v-if="transform.width && transform.height"
       ref="transformControlsTpl"
@@ -345,17 +360,6 @@ defineExpose({
         <slot name="transform" />
       </template>
     </TransformControls>
-
-    <template v-if="transform.width && transform.height">
-      <div
-        class="mce-selection__slot"
-        :style="selectionObbInDrawboard.toCssStyle()"
-      >
-        <ForegroundCropper />
-
-        <slot />
-      </div>
-    </template>
   </div>
 </template>
 

@@ -7,6 +7,7 @@ import pdf from '@mce/pdf'
 import svg from '@mce/svg'
 import { Editor, EditorLayers, EditorLayout, EditorLayoutItem } from 'mce'
 import gifWorkerUrl from 'modern-gif/worker?url'
+import { computed } from 'vue'
 import 'mce/styles'
 
 const editor = new Editor({
@@ -38,6 +39,8 @@ if (tid || bid) {
 else if (url) {
   editor.loadDoc(url)
 }
+
+const element = computed(() => editor.elementSelection.value[0])
 </script>
 
 <template>
@@ -46,8 +49,16 @@ else if (url) {
       <template #selection />
       <template #selection.transform />
       <template #floatbar>
-        <div style="background: red;">
-          FLOATBAR-TOP
+        <div class="floatbar">
+          <template v-if="element?.foreground.isValid()">
+            <button @click="() => editor.state.value = editor.state.value === 'cropping' ? undefined : 'cropping'">
+              裁剪
+            </button>
+            <button @click="() => element!.meta.lockAspectRatio = !element!.meta.lockAspectRatio">
+              {{ element!.meta.lockAspectRatio ? '解锁' : '锁定' }}宽高比
+            </button>
+          </template>
+          <span v-else>FLOATBAR-TOP</span>
         </div>
       </template>
       <template #drawboard />
@@ -61,3 +72,22 @@ else if (url) {
     </EditorLayout>
   </div>
 </template>
+
+<style scoped lang="scss">
+.floatbar {
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+  button{
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    border: 1px solid #999;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+}
+</style>

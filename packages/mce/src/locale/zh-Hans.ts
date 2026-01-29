@@ -6,6 +6,7 @@ export default {
   'drawing': '绘制中...',
   'exporting': '导出中...',
   'selecting': '选择中...',
+  'cropping': '裁剪中...',
   'selectObject': '选择对象',
   'commitChanges': '提交修改',
   'extend': '扩展',
