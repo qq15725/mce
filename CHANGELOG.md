@@ -1,3 +1,17 @@
+## [0.15.40](https://github.com/qq15725/mce/compare/v0.15.39...v0.15.40) (2026-01-29)
+
+
+### Bug Fixes
+
+* text edit ([b31b3c6](https://github.com/qq15725/mce/commit/b31b3c646051ae9e0edf89d399042d7d1b81036f))
+
+
+### Features
+
+* up deps ([708f577](https://github.com/qq15725/mce/commit/708f5770cad84fd8c5901bc0474b797bb673d9a9))
+
+
+
 ## [0.15.39](https://github.com/qq15725/mce/compare/v0.15.38...v0.15.39) (2026-01-29)
 
 
