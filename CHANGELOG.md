@@ -1,3 +1,18 @@
+## [0.15.41](https://github.com/qq15725/mce/compare/v0.15.40...v0.15.41) (2026-01-29)
+
+
+### Bug Fixes
+
+* borderRadius transform ([98f8f19](https://github.com/qq15725/mce/commit/98f8f19ad3c56286b93ec065924f2b5065b90bc2))
+* smart selection ([a52f6c3](https://github.com/qq15725/mce/commit/a52f6c3d7cbee4570c09aa8f2f46b6414c5364fc))
+
+
+### Features
+
+* up deps ([53faad5](https://github.com/qq15725/mce/commit/53faad5677ec430d3c6cca03b13add9fd77f5258))
+
+
+
 ## [0.15.40](https://github.com/qq15725/mce/compare/v0.15.39...v0.15.40) (2026-01-29)
 
 
