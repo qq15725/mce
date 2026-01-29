@@ -7,6 +7,7 @@ import _autoNest from './autoNest'
 import _copyAs from './copyAs'
 import _drawingTool from './drawingTool'
 import _edit from './edit'
+import _formatPaint from './formatPaint'
 import _frame from './frame'
 import _gif from './gif'
 import _history from './history'
@@ -50,6 +51,7 @@ export const plugins = [
   _copyAs,
   _drawingTool,
   _edit,
+  _formatPaint,
   _frame,
   _gif,
   _history,

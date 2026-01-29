@@ -318,7 +318,7 @@ defineExpose({
     </template>
 
     <div
-      v-if="state === 'selecting'"
+      v-if="state === 'selecting' || state === 'painting'"
       class="mce-selection__marquee"
       :style="selectionMarquee.toCssStyle()"
     />
