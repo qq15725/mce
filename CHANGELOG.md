@@ -1,3 +1,23 @@
+## [0.15.39](https://github.com/qq15725/mce/compare/v0.15.38...v0.15.39) (2026-01-29)
+
+
+### Bug Fixes
+
+* cropper ([b93af85](https://github.com/qq15725/mce/commit/b93af854104529772c69096ed2ef92e3273d3093))
+* getGlobalAabb ([e047318](https://github.com/qq15725/mce/commit/e04731862c6d9945d37e614fcfb1afc2efb2d5f4))
+* hand mode ([45f53cf](https://github.com/qq15725/mce/commit/45f53cfe23777713032f3313ef969c62b0863133))
+* text selectionchange ([97736d7](https://github.com/qq15725/mce/commit/97736d7acef0e3be77371e18165427a2b731781e))
+
+
+### Features
+
+* add test plugins ([d63d683](https://github.com/qq15725/mce/commit/d63d68302c72105c53120bbf63a8fd594ec1be73))
+* format paint plugin ([fc2dc1a](https://github.com/qq15725/mce/commit/fc2dc1ac7c464234074183b67a7f05ad0ef7556d))
+* up deps ([0c6d9c5](https://github.com/qq15725/mce/commit/0c6d9c5a3df2651862e55ffb6f2cad29ec10c6a2))
+* up deps ([7f8185a](https://github.com/qq15725/mce/commit/7f8185a85162b24a470f2eb09458ea9bfcb1c7a8))
+
+
+
 ## [0.15.38](https://github.com/qq15725/mce/compare/v0.15.37...v0.15.38) (2026-01-26)
 
 
