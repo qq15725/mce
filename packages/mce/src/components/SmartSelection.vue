@@ -141,7 +141,7 @@ const transform = computed({
       height: style.height + offsetStyle.height,
       rotate: (style.rotate + offsetStyle.rotate + 360) % 360,
     }
-    const oldAabb = el.globalAabb
+    const { left, top, right, bottom } = el.globalAabb
     const shape = el.shape
     resizeElement(
       el,
@@ -159,10 +159,10 @@ const transform = computed({
     el.updateGlobalTransform()
     const aabb = el.globalAabb
     const offset = {
-      left: aabb.left - oldAabb.left,
-      top: aabb.top - oldAabb.top,
-      right: aabb.right - oldAabb.right,
-      bottom: aabb.bottom - oldAabb.bottom,
+      left: aabb.left - left,
+      top: aabb.top - top,
+      right: aabb.right - right,
+      bottom: aabb.bottom - bottom,
     }
 
     let after = false
