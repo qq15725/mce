@@ -617,7 +617,7 @@ export class TextEditor extends HTMLElement implements PropertyAccessor {
     else {
       this._textarea.addEventListener('mousedown', this.pointerDown.bind(this) as any)
     }
-    ;['selectstart', 'selectionchange'].forEach((key) => {
+    ;['keydown', 'keypress', 'keyup', 'input', 'focus', 'blur', 'selectionchange', 'selectionstart'].forEach((key) => {
       this._textarea.addEventListener(key, () => this._updateSelectionByDom())
     })
   }
