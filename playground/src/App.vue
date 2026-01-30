@@ -47,9 +47,29 @@ const element = computed(() => editor.elementSelection.value[0])
   <div style="width: 100vw; height: 100vh">
     <EditorLayout :editor="editor">
       <template #selection />
-      <template #selection.transform />
+      <template #selection-transform />
+      <template #selection-foreground-cropper="{ scale, setScale, setAspectRatio, ok, cancel }">
+        <div class="bar cropbar">
+          <button @click="() => setAspectRatio(0)">
+            原图大小
+          </button>
+          <button @click="() => setAspectRatio([3, 4])">
+            3:4
+          </button>
+          <button @click="() => setAspectRatio([16, 9])">
+            16:9
+          </button>
+          <input :value="scale" type="number" style="width: 64px" @change="setScale(($event.target as any).value)">
+          <button @click="cancel">
+            取消
+          </button>
+          <button @click="ok">
+            确定
+          </button>
+        </div>
+      </template>
       <template #floatbar>
-        <div class="floatbar">
+        <div class="bar floatbar">
           <template v-if="element?.foreground.isValid()">
             <button @click="() => editor.state.value = editor.state.value === 'cropping' ? undefined : 'cropping'">
               裁剪
@@ -74,7 +94,8 @@ const element = computed(() => editor.elementSelection.value[0])
 </template>
 
 <style scoped lang="scss">
-.floatbar {
+.bar{
+  min-width: max-content;
   padding: 4px;
   display: flex;
   align-items: center;
@@ -83,11 +104,17 @@ const element = computed(() => editor.elementSelection.value[0])
   background: white;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
   button{
-    padding: 4px 8px;
+    height: 24px;
+    padding: 0 8px;
     font-size: 0.75rem;
     border: 1px solid #999;
     border-radius: 8px;
     cursor: pointer;
   }
+}
+.cropbar{
+  position: absolute;
+  bottom: -12px;
+  transform: translateY(100%);
 }
 </style>
