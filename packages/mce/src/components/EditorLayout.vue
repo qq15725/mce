@@ -483,8 +483,8 @@ function RenderComponent(props: Record<string, any> & { item: EditorComponent })
       if (key === item.slot) {
         itemSlots.default = (slots as any)[key]
       }
-      else if (key.startsWith(`${item.slot}.`)) {
-        itemSlots[key.substring(`${item.slot}.`.length)] = (slots as any)[key]
+      else if (key.startsWith(`${item.slot}-`)) {
+        itemSlots[key.substring(`${item.slot}-`.length)] = (slots as any)[key]
       }
     })
   }

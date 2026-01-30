@@ -118,41 +118,42 @@ const viewEffect = watch(view, (val, old) => {
   }
 })
 
+function setScale(value: number) {
+  const { sx: oldSx, sy: oldSy } = inverseMat.value
+  const { left: oldLeft, top: oldTop, right: oldRight, bottom: oldBottom } = internalValue.value
+
+  // 原view宽高
+  const oldViewWidth = 1 - oldLeft - oldRight
+  const oldViewHeight = 1 - oldTop - oldBottom
+
+  // 原view中心点
+  const centerX = oldLeft + oldViewWidth * 0.5
+  const centerY = oldTop + oldViewHeight * 0.5
+
+  // 保持原宽高比
+  const newSx = value
+  const newSy = value * (oldSy / oldSx)
+
+  // 新view宽高
+  const newViewWidth = 1 / newSx
+  const newViewHeight = 1 / newSy
+
+  // 保持中心点位置不变
+  const newLeft = centerX - newViewWidth * 0.5
+  const newTop = centerY - newViewHeight * 0.5
+  const newRight = 1 - newViewWidth - newLeft
+  const newBottom = 1 - newViewHeight - newTop
+
+  internalValue.value = {
+    left: newLeft,
+    top: newTop,
+    right: newRight,
+    bottom: newBottom,
+  }
+}
 const scale = computed({
   get: () => inverseMat.value.sx,
-  set: (value) => {
-    const { sx: oldSx, sy: oldSy } = inverseMat.value
-    const { left: oldLeft, top: oldTop, right: oldRight, bottom: oldBottom } = internalValue.value
-
-    // 原view宽高
-    const oldViewWidth = 1 - oldLeft - oldRight
-    const oldViewHeight = 1 - oldTop - oldBottom
-
-    // 原view中心点
-    const centerX = oldLeft + oldViewWidth * 0.5
-    const centerY = oldTop + oldViewHeight * 0.5
-
-    // 保持原宽高比
-    const newSx = value
-    const newSy = value * (oldSy / oldSx)
-
-    // 新view宽高
-    const newViewWidth = 1 / newSx
-    const newViewHeight = 1 / newSy
-
-    // 保持中心点位置不变
-    const newLeft = centerX - newViewWidth * 0.5
-    const newTop = centerY - newViewHeight * 0.5
-    const newRight = 1 - newViewWidth - newLeft
-    const newBottom = 1 - newViewHeight - newTop
-
-    internalValue.value = {
-      left: newLeft,
-      top: newTop,
-      right: newRight,
-      bottom: newBottom,
-    }
-  },
+  set: setScale,
 })
 
 function ok() {
@@ -188,13 +189,6 @@ function setAspectRatio(ratio: 0 | [number, number]) {
     top: newViewTop,
   }
 }
-
-// setTimeout(() => {
-//   setAspectRatio([16, 9])
-// }, 1000)
-// setTimeout(() => {
-//   cancel()
-// }, 2000)
 
 const { state: imageRef } = useImage(
   computed(() => ({
@@ -246,6 +240,7 @@ onBeforeUnmount(() => emit('end'))
 
     <slot
       :scale="scale"
+      :set-scale="setScale"
       :ok="ok"
       :cancel="cancel"
       :set-aspect-ratio="setAspectRatio"
