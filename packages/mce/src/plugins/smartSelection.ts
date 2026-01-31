@@ -27,7 +27,7 @@ export default definePlugin((_editor) => {
         type: 'overlay',
         component: () => h(SmartSelection, {
           'modelValue': currentElement.value,
-          'onUpdate:modelValue': el => currentElement.value = el,
+          'onUpdate:modelValue': (el: any) => currentElement.value = el,
         }),
       },
     ],

@@ -7,6 +7,7 @@
   "scripts": {
     "build": "pnpm -F mce -F @mce/* build",
     "build:preset": "pnpm -F mce build:preset",
+    "build:doc": "pnpm -F mce build:doc",
     "test": "pnpm -r test",
     "lint": "pnpm -r lint",
     "dev": "MODE=local pnpm -F playground dev",

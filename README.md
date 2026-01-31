@@ -126,6 +126,13 @@ slot sub component
 </template>
 ```
 
+## Docs
+- [Options](packages/mce/docs/mce/namespaces/Mce/interfaces/Options.md)
+- [Config](packages/mce/docs/mce/namespaces/Mce/interfaces/Config.md)
+- [Commands](packages/mce/docs/mce/namespaces/Mce/interfaces/Commands.md)
+- [Events](packages/mce/docs/mce/namespaces/Mce/interfaces/Events.md)
+- [Slots](packages/mce/docs/mce/namespaces/Mce/interfaces/Slots.md)
+
 ## Related
 
 - [CodeSandbox Playground](https://codesandbox.io/p/devbox/thirsty-dawn-t2h69m)

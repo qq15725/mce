@@ -4,6 +4,7 @@
     "declarationDir": "./dist"
   },
   "include": [
+    "env.d.ts",
     "src/**/*.ts",
     "src/**/*.d.ts",
     "src/**/*.tsx",

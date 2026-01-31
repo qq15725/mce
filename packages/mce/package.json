@@ -59,6 +59,7 @@
     "build:tsc": "NODE_ENV=production vue-tsc --emitDeclarationOnly --project tsconfig.json",
     "build:preset": "jiti ./scripts/preset.ts",
     "build:dts": "jiti ./scripts/dts.ts",
+    "build:doc": "typedoc",
     "build": "pnpm build:code && pnpm build:tsc && pnpm build:dts",
     "lint": "eslint src",
     "test": "vitest",
@@ -104,6 +105,8 @@
     "@vitejs/plugin-vue": "^6.0.3",
     "jiti": "^2.6.1",
     "modern-gif": "^2.0.4",
-    "sass-embedded": "^1.97.3"
+    "sass-embedded": "^1.97.3",
+    "typedoc": "^0.28.16",
+    "typedoc-plugin-markdown": "^4.9.0"
   }
 }

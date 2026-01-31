@@ -40,13 +40,16 @@ export class Editor extends Observable<Events> {
   debug = ref(false)
   declare config: RemovableRef<Mce.Config>
   onEmit?: <K extends keyof Events & string>(event: K, ...args: Events[K]) => void
-  plugins = new Map<string, PluginObject>()
+  plugins: Record<string, PluginObject> = {}
 
   protected _pluginComponentTypes = ['panel', 'overlay', 'dialog']
 
   components = computed(() => {
     const groups: Record<string, EditorComponent[]> = {}
-    this.plugins.values().forEach((p) => {
+    const keys = Object.keys(this.plugins)
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i]
+      const p = this.plugins[key]
       p.components?.forEach((c, index) => {
         if (c.ignore?.() === true) {
           return
@@ -60,7 +63,7 @@ export class Editor extends Observable<Events> {
           indexInPlugin: index,
         })
       })
-    })
+    }
 
     const components = [] as EditorComponent[]
     this._pluginComponentTypes.forEach((type) => {
@@ -192,7 +195,7 @@ export class Editor extends Observable<Events> {
         result = plugin
       }
 
-      this.plugins.set(result.name, result)
+      this.plugins[result.name] = result
 
       const {
         events,
@@ -232,7 +235,7 @@ export class Editor extends Observable<Events> {
             console.error(`Failed to setup mixin`, err)
           }
         }),
-        ...[...this.plugins.values()].map(async (p) => {
+        ...Object.values(this.plugins).map(async (p) => {
           try {
             await p.setup?.()
           }
