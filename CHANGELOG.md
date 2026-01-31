@@ -1,3 +1,22 @@
+# [0.16.0](https://github.com/qq15725/mce/compare/v0.15.41...v0.16.0) (2026-01-31)
+
+
+### Bug Fixes
+
+* export ([5467f38](https://github.com/qq15725/mce/commit/5467f38f87ac0e2ef0cbd6f7e05b3a2a7f90267d))
+* getDoc ([c1bf11c](https://github.com/qq15725/mce/commit/c1bf11c23ddcf2a0987253218de3f7821c0675ef))
+* localdb ([9c6b08d](https://github.com/qq15725/mce/commit/9c6b08dbbb5f4f7b2d8d87caa63a32b8d19b5b2b))
+* vue reactive ([5b9a747](https://github.com/qq15725/mce/commit/5b9a7478b877ccc36e37b435d6151fd8e701cfdc))
+
+
+### Features
+
+* remove editor doc、setDoc、loadDoc, add setDoc、loadDoc commands ([f964caf](https://github.com/qq15725/mce/commit/f964caf74560d7133218de8090cd4f07b66f47b2))
+* remove editor.addNode ([865b01d](https://github.com/qq15725/mce/commit/865b01d697eb28080c375f733b243ebfb2a27a39))
+* remove isTopFrame ([5a77fad](https://github.com/qq15725/mce/commit/5a77fad9da237199819a765b59508fefa2029110))
+
+
+
 ## [0.15.41](https://github.com/qq15725/mce/compare/v0.15.40...v0.15.41) (2026-01-29)
 
 
