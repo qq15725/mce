@@ -67,7 +67,10 @@ declare global {
 }
 
 export default defineMixin((editor) => {
-  const root = ref(new Doc())
+  const _root = new Doc()
+  const root = ref(_root)
+  // TODO
+  ;(_root as any)._yDoc.root = root.value
   const docLoading = ref(false)
   const fonts = markRaw(new Fonts()) as Fonts
   const camera = ref(new Camera2D({ internalMode: 'front' }))
