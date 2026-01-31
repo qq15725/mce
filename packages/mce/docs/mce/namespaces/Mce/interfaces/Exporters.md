@@ -6,7 +6,7 @@
 
 # Interface: Exporters
 
-Defined in: [packages/mce/src/plugins/gif.ts:10](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/gif.ts#L10)
+Defined in: [packages/mce/src/plugins/gif.ts:10](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/gif.ts#L10)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: [packages/mce/src/plugins/gif.ts:10](https://github.com/qq15725/mce/
 
 > **gif**: `Promise`\<`Blob`\>
 
-Defined in: [packages/mce/src/plugins/gif.ts:11](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/gif.ts#L11)
+Defined in: [packages/mce/src/plugins/gif.ts:11](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/gif.ts#L11)
 
 ***
 
@@ -22,7 +22,7 @@ Defined in: [packages/mce/src/plugins/gif.ts:11](https://github.com/qq15725/mce/
 
 > **jpeg**: `Promise`\<`Blob`\>
 
-Defined in: [packages/mce/src/plugins/image.ts:18](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/image.ts#L18)
+Defined in: [packages/mce/src/plugins/image.ts:18](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/image.ts#L18)
 
 ***
 
@@ -30,7 +30,7 @@ Defined in: [packages/mce/src/plugins/image.ts:18](https://github.com/qq15725/mc
 
 > **json**: [`JsonData`](JsonData.md)
 
-Defined in: [packages/mce/src/plugins/json.ts:27](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/json.ts#L27)
+Defined in: [packages/mce/src/plugins/json.ts:27](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/json.ts#L27)
 
 ***
 
@@ -38,7 +38,7 @@ Defined in: [packages/mce/src/plugins/json.ts:27](https://github.com/qq15725/mce
 
 > **png**: `Promise`\<`Blob`\>
 
-Defined in: [packages/mce/src/plugins/image.ts:17](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/image.ts#L17)
+Defined in: [packages/mce/src/plugins/image.ts:17](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/image.ts#L17)
 
 ***
 
@@ -46,4 +46,4 @@ Defined in: [packages/mce/src/plugins/image.ts:17](https://github.com/qq15725/mc
 
 > **webp**: `Promise`\<`Blob`\>
 
-Defined in: [packages/mce/src/plugins/image.ts:19](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/image.ts#L19)
+Defined in: [packages/mce/src/plugins/image.ts:19](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/image.ts#L19)

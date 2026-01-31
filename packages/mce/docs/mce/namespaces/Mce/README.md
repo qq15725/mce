@@ -9,7 +9,6 @@
 ## Interfaces
 
 - [AddElementOptions](interfaces/AddElementOptions.md)
-- [AddNodeOptions](interfaces/AddNodeOptions.md)
 - [addTextElementOptions](interfaces/addTextElementOptions.md)
 - [Command](interfaces/Command.md)
 - [Commands](interfaces/Commands.md)
@@ -76,9 +75,9 @@
 - [ScrollTarget](type-aliases/ScrollTarget.md)
 - [SelectTarget](type-aliases/SelectTarget.md)
 - [State](type-aliases/State.md)
-- [Tblock](type-aliases/Tblock.md)
+- [TBlock](type-aliases/TBlock.md)
 - [Theme](type-aliases/Theme.md)
-- [Tinline](type-aliases/Tinline.md)
+- [TInline](type-aliases/TInline.md)
 - [TransformHandle](type-aliases/TransformHandle.md)
 - [TransformHandleCorner](type-aliases/TransformHandleCorner.md)
 - [TransformHandleDirection](type-aliases/TransformHandleDirection.md)

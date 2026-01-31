@@ -6,6 +6,6 @@
 
 # Type Alias: ParsedAnchor
 
-> **ParsedAnchor** = \{ `align`: `"center"`; `side`: `"center"`; \} \| \{ `align`: `"left"` \| `"right"` \| `"center"`; `side`: [`Tblock`](Tblock.md); \} \| \{ `align`: [`Tblock`](Tblock.md) \| `"center"`; `side`: `"left"` \| `"right"`; \}
+> **ParsedAnchor** = \{ `align`: `"center"`; `side`: `"center"`; \} \| \{ `align`: `"left"` \| `"right"` \| `"center"`; `side`: [`TBlock`](TBlock.md); \} \| \{ `align`: [`TBlock`](TBlock.md) \| `"center"`; `side`: `"left"` \| `"right"`; \}
 
-Defined in: [packages/mce/src/mixins/0.context.ts:24](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/0.context.ts#L24)
+Defined in: [packages/mce/src/mixins/0.context.ts:24](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.context.ts#L24)

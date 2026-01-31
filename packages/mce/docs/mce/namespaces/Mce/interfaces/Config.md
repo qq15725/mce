@@ -6,7 +6,7 @@
 
 # Interface: Config
 
-Defined in: [packages/mce/src/mixins/0.config/base.ts:27](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/0.config/base.ts#L27)
+Defined in: [packages/mce/src/mixins/0.config/base.ts:27](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L27)
 
 ## Extends
 
@@ -18,7 +18,7 @@ Defined in: [packages/mce/src/mixins/0.config/base.ts:27](https://github.com/qq1
 
 > **camera**: `boolean`
 
-Defined in: [packages/mce/src/mixins/0.config/base.ts:35](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/0.config/base.ts#L35)
+Defined in: [packages/mce/src/mixins/0.config/base.ts:35](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L35)
 
 ***
 
@@ -26,7 +26,7 @@ Defined in: [packages/mce/src/mixins/0.config/base.ts:35](https://github.com/qq1
 
 > **checkerboard**: `boolean`
 
-Defined in: [packages/mce/src/mixins/0.config/base.ts:31](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/0.config/base.ts#L31)
+Defined in: [packages/mce/src/mixins/0.config/base.ts:31](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L31)
 
 ***
 
@@ -34,7 +34,7 @@ Defined in: [packages/mce/src/mixins/0.config/base.ts:31](https://github.com/qq1
 
 > **checkerboardStyle**: `CheckerboardStyle`
 
-Defined in: [packages/mce/src/mixins/0.config/base.ts:32](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/0.config/base.ts#L32)
+Defined in: [packages/mce/src/mixins/0.config/base.ts:32](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L32)
 
 ***
 
@@ -42,7 +42,7 @@ Defined in: [packages/mce/src/mixins/0.config/base.ts:32](https://github.com/qq1
 
 > **frameGap**: `number`
 
-Defined in: [packages/mce/src/mixins/0.config/base.ts:37](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/0.config/base.ts#L37)
+Defined in: [packages/mce/src/mixins/0.config/base.ts:37](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L37)
 
 ***
 
@@ -50,7 +50,7 @@ Defined in: [packages/mce/src/mixins/0.config/base.ts:37](https://github.com/qq1
 
 > **frameOutline**: `boolean`
 
-Defined in: [packages/mce/src/mixins/0.config/base.ts:36](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/0.config/base.ts#L36)
+Defined in: [packages/mce/src/mixins/0.config/base.ts:36](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L36)
 
 ***
 
@@ -58,7 +58,7 @@ Defined in: [packages/mce/src/mixins/0.config/base.ts:36](https://github.com/qq1
 
 > **frameScreenshot**: `boolean`
 
-Defined in: [packages/mce/src/mixins/snapshot.ts:11](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/snapshot.ts#L11)
+Defined in: [packages/mce/src/mixins/snapshot.ts:11](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/snapshot.ts#L11)
 
 ***
 
@@ -66,7 +66,7 @@ Defined in: [packages/mce/src/mixins/snapshot.ts:11](https://github.com/qq15725/
 
 > **hotkeys**: [`HotkeyData`](HotkeyData.md)[]
 
-Defined in: [packages/mce/src/mixins/1.hotkey.ts:22](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/1.hotkey.ts#L22)
+Defined in: [packages/mce/src/mixins/1.hotkey.ts:22](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.hotkey.ts#L22)
 
 ***
 
@@ -80,7 +80,7 @@ Defined in: [packages/mce/src/mixins/1.hotkey.ts:22](https://github.com/qq15725/
 
 > **localDb**: `boolean`
 
-Defined in: [packages/mce/src/mixins/0.config/base.ts:40](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/0.config/base.ts#L40)
+Defined in: [packages/mce/src/mixins/0.config/base.ts:40](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L40)
 
 ***
 
@@ -88,7 +88,7 @@ Defined in: [packages/mce/src/mixins/0.config/base.ts:40](https://github.com/qq1
 
 > **madeWith**: `boolean`
 
-Defined in: [packages/mce/src/plugins/madeWith.ts:7](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/madeWith.ts#L7)
+Defined in: [packages/mce/src/plugins/madeWith.ts:7](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/madeWith.ts#L7)
 
 ***
 
@@ -96,7 +96,7 @@ Defined in: [packages/mce/src/plugins/madeWith.ts:7](https://github.com/qq15725/
 
 > **msaa**: `boolean`
 
-Defined in: [packages/mce/src/mixins/0.config/base.ts:30](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/0.config/base.ts#L30)
+Defined in: [packages/mce/src/mixins/0.config/base.ts:30](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L30)
 
 ***
 
@@ -104,7 +104,7 @@ Defined in: [packages/mce/src/mixins/0.config/base.ts:30](https://github.com/qq1
 
 > **nodeCreator**: `boolean`
 
-Defined in: [packages/mce/src/plugins/node.ts:11](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/node.ts#L11)
+Defined in: [packages/mce/src/plugins/node.ts:11](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/node.ts#L11)
 
 ***
 
@@ -112,7 +112,7 @@ Defined in: [packages/mce/src/plugins/node.ts:11](https://github.com/qq15725/mce
 
 > **pixelate**: `boolean`
 
-Defined in: [packages/mce/src/mixins/0.config/base.ts:34](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/0.config/base.ts#L34)
+Defined in: [packages/mce/src/mixins/0.config/base.ts:34](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L34)
 
 ***
 
@@ -120,7 +120,7 @@ Defined in: [packages/mce/src/mixins/0.config/base.ts:34](https://github.com/qq1
 
 > **pixelGrid**: `boolean`
 
-Defined in: [packages/mce/src/mixins/0.config/base.ts:33](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/0.config/base.ts#L33)
+Defined in: [packages/mce/src/mixins/0.config/base.ts:33](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L33)
 
 ***
 
@@ -128,7 +128,7 @@ Defined in: [packages/mce/src/mixins/0.config/base.ts:33](https://github.com/qq1
 
 > **ruler**: `boolean`
 
-Defined in: [packages/mce/src/plugins/ruler.ts:7](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/ruler.ts#L7)
+Defined in: [packages/mce/src/plugins/ruler.ts:7](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/ruler.ts#L7)
 
 ***
 
@@ -136,7 +136,7 @@ Defined in: [packages/mce/src/plugins/ruler.ts:7](https://github.com/qq15725/mce
 
 > **screenCenterOffset**: [`ScreenOffset`](ScreenOffset.md)
 
-Defined in: [packages/mce/src/mixins/0.config/base.ts:41](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/0.config/base.ts#L41)
+Defined in: [packages/mce/src/mixins/0.config/base.ts:41](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L41)
 
 ***
 
@@ -144,7 +144,7 @@ Defined in: [packages/mce/src/mixins/0.config/base.ts:41](https://github.com/qq1
 
 > **scrollbar**: `boolean`
 
-Defined in: [packages/mce/src/plugins/scroll.ts:27](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/scroll.ts#L27)
+Defined in: [packages/mce/src/plugins/scroll.ts:27](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/scroll.ts#L27)
 
 ***
 
@@ -152,7 +152,7 @@ Defined in: [packages/mce/src/plugins/scroll.ts:27](https://github.com/qq15725/m
 
 > **statusbar**: `boolean`
 
-Defined in: [packages/mce/src/plugins/statusbar.ts:7](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/statusbar.ts#L7)
+Defined in: [packages/mce/src/plugins/statusbar.ts:7](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/statusbar.ts#L7)
 
 ***
 
@@ -160,7 +160,7 @@ Defined in: [packages/mce/src/plugins/statusbar.ts:7](https://github.com/qq15725
 
 > **theme**: [`Theme`](../type-aliases/Theme.md)
 
-Defined in: [packages/mce/src/mixins/0.config/base.ts:28](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/0.config/base.ts#L28)
+Defined in: [packages/mce/src/mixins/0.config/base.ts:28](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L28)
 
 ***
 
@@ -168,7 +168,7 @@ Defined in: [packages/mce/src/mixins/0.config/base.ts:28](https://github.com/qq1
 
 > **timeline**: `boolean`
 
-Defined in: [packages/mce/src/plugins/timeline.ts:7](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/timeline.ts#L7)
+Defined in: [packages/mce/src/plugins/timeline.ts:7](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/timeline.ts#L7)
 
 ***
 
@@ -176,7 +176,7 @@ Defined in: [packages/mce/src/plugins/timeline.ts:7](https://github.com/qq15725/
 
 > **toolbelt**: `boolean`
 
-Defined in: [packages/mce/src/plugins/toolbelt.ts:7](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/toolbelt.ts#L7)
+Defined in: [packages/mce/src/plugins/toolbelt.ts:7](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/toolbelt.ts#L7)
 
 ***
 
@@ -184,7 +184,7 @@ Defined in: [packages/mce/src/plugins/toolbelt.ts:7](https://github.com/qq15725/
 
 > **transformControls**: [`TransformControlsConfig`](TransformControlsConfig.md)
 
-Defined in: [packages/mce/src/mixins/0.config/base.ts:39](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/0.config/base.ts#L39)
+Defined in: [packages/mce/src/mixins/0.config/base.ts:39](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L39)
 
 ***
 
@@ -192,7 +192,7 @@ Defined in: [packages/mce/src/mixins/0.config/base.ts:39](https://github.com/qq1
 
 > **typographyStrategy**: [`TypographyStrategy`](../type-aliases/TypographyStrategy.md)
 
-Defined in: [packages/mce/src/mixins/0.config/base.ts:38](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/0.config/base.ts#L38)
+Defined in: [packages/mce/src/mixins/0.config/base.ts:38](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L38)
 
 ***
 
@@ -200,7 +200,7 @@ Defined in: [packages/mce/src/mixins/0.config/base.ts:38](https://github.com/qq1
 
 > `optional` **watermark**: `string`
 
-Defined in: [packages/mce/src/mixins/0.config/base.ts:29](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/0.config/base.ts#L29)
+Defined in: [packages/mce/src/mixins/0.config/base.ts:29](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L29)
 
 ***
 
@@ -208,4 +208,4 @@ Defined in: [packages/mce/src/mixins/0.config/base.ts:29](https://github.com/qq1
 
 > **zoomToFit**: [`ZoomToMode`](../type-aliases/ZoomToMode.md)
 
-Defined in: [packages/mce/src/plugins/zoom.ts:29](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/zoom.ts#L29)
+Defined in: [packages/mce/src/plugins/zoom.ts:29](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/zoom.ts#L29)

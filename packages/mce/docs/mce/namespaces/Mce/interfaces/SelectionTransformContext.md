@@ -6,7 +6,7 @@
 
 # Interface: SelectionTransformContext
 
-Defined in: [packages/mce/src/plugins/selection.ts:64](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/selection.ts#L64)
+Defined in: [packages/mce/src/plugins/selection.ts:64](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L64)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: [packages/mce/src/plugins/selection.ts:64](https://github.com/qq1572
 
 > **elements**: `Element2D`[]
 
-Defined in: [packages/mce/src/plugins/selection.ts:67](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/selection.ts#L67)
+Defined in: [packages/mce/src/plugins/selection.ts:67](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L67)
 
 ***
 
@@ -22,7 +22,7 @@ Defined in: [packages/mce/src/plugins/selection.ts:67](https://github.com/qq1572
 
 > **handle**: [`TransformHandle`](../type-aliases/TransformHandle.md)
 
-Defined in: [packages/mce/src/plugins/selection.ts:66](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/selection.ts#L66)
+Defined in: [packages/mce/src/plugins/selection.ts:66](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L66)
 
 ***
 
@@ -30,4 +30,4 @@ Defined in: [packages/mce/src/plugins/selection.ts:66](https://github.com/qq1572
 
 > **startEvent**: `MouseEvent` \| `PointerEvent`
 
-Defined in: [packages/mce/src/plugins/selection.ts:65](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/selection.ts#L65)
+Defined in: [packages/mce/src/plugins/selection.ts:65](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L65)

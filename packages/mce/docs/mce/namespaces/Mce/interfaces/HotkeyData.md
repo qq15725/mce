@@ -6,7 +6,7 @@
 
 # Interface: HotkeyData
 
-Defined in: [packages/mce/src/mixins/1.hotkey.ts:25](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/1.hotkey.ts#L25)
+Defined in: [packages/mce/src/mixins/1.hotkey.ts:25](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.hotkey.ts#L25)
 
 ## Extended by
 
@@ -18,7 +18,7 @@ Defined in: [packages/mce/src/mixins/1.hotkey.ts:25](https://github.com/qq15725/
 
 > **command**: `string`
 
-Defined in: [packages/mce/src/mixins/1.hotkey.ts:26](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/1.hotkey.ts#L26)
+Defined in: [packages/mce/src/mixins/1.hotkey.ts:26](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.hotkey.ts#L26)
 
 ***
 
@@ -26,7 +26,7 @@ Defined in: [packages/mce/src/mixins/1.hotkey.ts:26](https://github.com/qq15725/
 
 > `optional` **editable**: `boolean`
 
-Defined in: [packages/mce/src/mixins/1.hotkey.ts:28](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/1.hotkey.ts#L28)
+Defined in: [packages/mce/src/mixins/1.hotkey.ts:28](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.hotkey.ts#L28)
 
 ***
 
@@ -34,7 +34,7 @@ Defined in: [packages/mce/src/mixins/1.hotkey.ts:28](https://github.com/qq15725/
 
 > `optional` **enabled**: `boolean`
 
-Defined in: [packages/mce/src/mixins/1.hotkey.ts:29](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/1.hotkey.ts#L29)
+Defined in: [packages/mce/src/mixins/1.hotkey.ts:29](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.hotkey.ts#L29)
 
 ***
 
@@ -42,7 +42,7 @@ Defined in: [packages/mce/src/mixins/1.hotkey.ts:29](https://github.com/qq15725/
 
 > **key**: `string` \| `string`[]
 
-Defined in: [packages/mce/src/mixins/1.hotkey.ts:27](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/1.hotkey.ts#L27)
+Defined in: [packages/mce/src/mixins/1.hotkey.ts:27](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.hotkey.ts#L27)
 
 ***
 
@@ -50,7 +50,7 @@ Defined in: [packages/mce/src/mixins/1.hotkey.ts:27](https://github.com/qq15725/
 
 > `optional` **preventDefault**: `boolean`
 
-Defined in: [packages/mce/src/mixins/1.hotkey.ts:31](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/1.hotkey.ts#L31)
+Defined in: [packages/mce/src/mixins/1.hotkey.ts:31](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.hotkey.ts#L31)
 
 ***
 
@@ -58,4 +58,4 @@ Defined in: [packages/mce/src/mixins/1.hotkey.ts:31](https://github.com/qq15725/
 
 > `optional` **system**: `boolean`
 
-Defined in: [packages/mce/src/mixins/1.hotkey.ts:30](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/1.hotkey.ts#L30)
+Defined in: [packages/mce/src/mixins/1.hotkey.ts:30](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.hotkey.ts#L30)

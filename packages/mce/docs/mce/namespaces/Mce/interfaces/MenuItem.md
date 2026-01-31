@@ -6,7 +6,7 @@
 
 # Interface: MenuItem
 
-Defined in: [packages/mce/src/plugins/menu.ts:9](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/menu.ts#L9)
+Defined in: [packages/mce/src/plugins/menu.ts:9](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/menu.ts#L9)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: [packages/mce/src/plugins/menu.ts:9](https://github.com/qq15725/mce/
 
 > `optional` **checked**: `boolean`
 
-Defined in: [packages/mce/src/plugins/menu.ts:12](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/menu.ts#L12)
+Defined in: [packages/mce/src/plugins/menu.ts:12](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/menu.ts#L12)
 
 ***
 
@@ -22,7 +22,7 @@ Defined in: [packages/mce/src/plugins/menu.ts:12](https://github.com/qq15725/mce
 
 > `optional` **children**: `MenuItem`[]
 
-Defined in: [packages/mce/src/plugins/menu.ts:13](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/menu.ts#L13)
+Defined in: [packages/mce/src/plugins/menu.ts:13](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/menu.ts#L13)
 
 ***
 
@@ -30,7 +30,7 @@ Defined in: [packages/mce/src/plugins/menu.ts:13](https://github.com/qq15725/mce
 
 > `optional` **disabled**: `boolean`
 
-Defined in: [packages/mce/src/plugins/menu.ts:11](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/menu.ts#L11)
+Defined in: [packages/mce/src/plugins/menu.ts:11](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/menu.ts#L11)
 
 ***
 
@@ -38,7 +38,7 @@ Defined in: [packages/mce/src/plugins/menu.ts:11](https://github.com/qq15725/mce
 
 > `optional` **handle**: (`event`) => `void`
 
-Defined in: [packages/mce/src/plugins/menu.ts:14](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/menu.ts#L14)
+Defined in: [packages/mce/src/plugins/menu.ts:14](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/menu.ts#L14)
 
 #### Parameters
 
@@ -56,4 +56,4 @@ Defined in: [packages/mce/src/plugins/menu.ts:14](https://github.com/qq15725/mce
 
 > **key**: `string`
 
-Defined in: [packages/mce/src/plugins/menu.ts:10](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/menu.ts#L10)
+Defined in: [packages/mce/src/plugins/menu.ts:10](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/menu.ts#L10)

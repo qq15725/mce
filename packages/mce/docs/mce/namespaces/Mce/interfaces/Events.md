@@ -6,7 +6,7 @@
 
 # Interface: Events
 
-Defined in: [packages/mce/src/mixins/0.command.ts:18](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/0.command.ts#L18)
+Defined in: [packages/mce/src/mixins/0.command.ts:18](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.command.ts#L18)
 
 ## Extends
 
@@ -18,7 +18,7 @@ Defined in: [packages/mce/src/mixins/0.command.ts:18](https://github.com/qq15725
 
 > **clearDoc**: \[\]
 
-Defined in: [packages/mce/src/mixins/4.4.doc.ts:36](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/4.4.doc.ts#L36)
+Defined in: [packages/mce/src/plugins/doc.ts:35](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/doc.ts#L35)
 
 ***
 
@@ -149,6 +149,16 @@ Defined in: [packages/mce/src/mixins/4.4.doc.ts:36](https://github.com/qq15725/m
 #### Inherited from
 
 [`Commands`](Commands.md).[`cancel`](Commands.md#cancel)
+
+***
+
+### command:clearDoc
+
+> **command:clearDoc**: \[`void`\]
+
+#### Inherited from
+
+[`Commands`](Commands.md).[`clearDoc`](Commands.md#cleardoc)
 
 ***
 
@@ -302,6 +312,26 @@ Defined in: [packages/mce/src/mixins/4.4.doc.ts:36](https://github.com/qq15725/m
 
 ***
 
+### command:getDoc
+
+> **command:getDoc**: \[[`JsonData`](JsonData.md)\]
+
+#### Inherited from
+
+[`Commands`](Commands.md).[`getDoc`](Commands.md#getdoc)
+
+***
+
+### command:getState
+
+> **command:getState**: \[[`State`](../type-aliases/State.md)\]
+
+#### Inherited from
+
+[`Commands`](Commands.md).[`getState`](Commands.md#getstate)
+
+***
+
 ### command:groupSelection
 
 > **command:groupSelection**: \[`void`\]
@@ -339,6 +369,16 @@ Defined in: [packages/mce/src/mixins/4.4.doc.ts:36](https://github.com/qq15725/m
 #### Inherited from
 
 [`Commands`](Commands.md).[`layerScrollIntoView`](Commands.md#layerscrollintoview)
+
+***
+
+### command:loadDoc
+
+> **command:loadDoc**: \[`Promise`\<`Doc`\>\]
+
+#### Inherited from
+
+[`Commands`](Commands.md).[`loadDoc`](Commands.md#loaddoc)
 
 ***
 
@@ -652,6 +692,16 @@ Defined in: [packages/mce/src/mixins/4.4.doc.ts:36](https://github.com/qq15725/m
 
 ***
 
+### command:setDoc
+
+> **command:setDoc**: \[`Promise`\<`Doc`\>\]
+
+#### Inherited from
+
+[`Commands`](Commands.md).[`setDoc`](Commands.md#setdoc)
+
+***
+
 ### command:setSmartSelectionCurrentElement
 
 > **command:setSmartSelectionCurrentElement**: \[`void`\]
@@ -826,7 +876,7 @@ Defined in: [packages/mce/src/mixins/4.4.doc.ts:36](https://github.com/qq15725/m
 
 > **docLoaded**: \[`any`, `Error` \| `Doc`\]
 
-Defined in: [packages/mce/src/mixins/4.4.doc.ts:35](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/4.4.doc.ts#L35)
+Defined in: [packages/mce/src/plugins/doc.ts:34](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/doc.ts#L34)
 
 ***
 
@@ -834,7 +884,7 @@ Defined in: [packages/mce/src/mixins/4.4.doc.ts:35](https://github.com/qq15725/m
 
 > **docLoading**: \[`any`\]
 
-Defined in: [packages/mce/src/mixins/4.4.doc.ts:34](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/4.4.doc.ts#L34)
+Defined in: [packages/mce/src/plugins/doc.ts:33](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/doc.ts#L33)
 
 ***
 
@@ -1130,7 +1180,7 @@ Defined in: [packages/mce/src/mixins/4.4.doc.ts:34](https://github.com/qq15725/m
 
 > **loadFont**: \[`FontLoadedResult`\]
 
-Defined in: [packages/mce/src/mixins/0.font.ts:18](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/0.font.ts#L18)
+Defined in: [packages/mce/src/mixins/0.font.ts:18](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.font.ts#L18)
 
 ***
 
@@ -1138,7 +1188,7 @@ Defined in: [packages/mce/src/mixins/0.font.ts:18](https://github.com/qq15725/mc
 
 > **pointerMove**: \[`PointerEvent`\]
 
-Defined in: [packages/mce/src/plugins/ui.ts:22](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/ui.ts#L22)
+Defined in: [packages/mce/src/plugins/ui.ts:22](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/ui.ts#L22)
 
 ***
 
@@ -1146,7 +1196,7 @@ Defined in: [packages/mce/src/plugins/ui.ts:22](https://github.com/qq15725/mce/b
 
 > **ready**: \[\]
 
-Defined in: [packages/mce/src/typed-global.d.ts:24](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/typed-global.d.ts#L24)
+Defined in: [packages/mce/src/typed-global.d.ts:24](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/typed-global.d.ts#L24)
 
 ***
 
@@ -1154,7 +1204,7 @@ Defined in: [packages/mce/src/typed-global.d.ts:24](https://github.com/qq15725/m
 
 > **selectionTransform**: \[[`SelectionTransformContext`](SelectionTransformContext.md)\]
 
-Defined in: [packages/mce/src/plugins/selection.ts:72](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/selection.ts#L72)
+Defined in: [packages/mce/src/plugins/selection.ts:72](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L72)
 
 ***
 
@@ -1162,7 +1212,7 @@ Defined in: [packages/mce/src/plugins/selection.ts:72](https://github.com/qq1572
 
 > **selectionTransformEnd**: \[[`SelectionTransformContext`](SelectionTransformContext.md)\]
 
-Defined in: [packages/mce/src/plugins/selection.ts:73](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/selection.ts#L73)
+Defined in: [packages/mce/src/plugins/selection.ts:73](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L73)
 
 ***
 
@@ -1170,15 +1220,15 @@ Defined in: [packages/mce/src/plugins/selection.ts:73](https://github.com/qq1572
 
 > **selectionTransformStart**: \[[`SelectionTransformContext`](SelectionTransformContext.md)\]
 
-Defined in: [packages/mce/src/plugins/selection.ts:71](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/selection.ts#L71)
+Defined in: [packages/mce/src/plugins/selection.ts:71](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L71)
 
 ***
 
 ### setDoc
 
-> **setDoc**: \[`Doc`\]
+> **setDoc**: \[`Doc`, `Doc`\]
 
-Defined in: [packages/mce/src/mixins/4.4.doc.ts:33](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/4.4.doc.ts#L33)
+Defined in: [packages/mce/src/plugins/doc.ts:32](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/doc.ts#L32)
 
 ***
 
@@ -1186,4 +1236,4 @@ Defined in: [packages/mce/src/mixins/4.4.doc.ts:33](https://github.com/qq15725/m
 
 > **updateDoc**: \[`Uint8Array`\<`ArrayBufferLike`\>, `any`\]
 
-Defined in: [packages/mce/src/mixins/4.4.doc.ts:37](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/4.4.doc.ts#L37)
+Defined in: [packages/mce/src/plugins/doc.ts:36](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/doc.ts#L36)

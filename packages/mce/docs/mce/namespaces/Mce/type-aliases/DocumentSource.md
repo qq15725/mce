@@ -8,4 +8,4 @@
 
 > **DocumentSource** = [`InternalDocument`](../interfaces/InternalDocument.md) \| `Element`[] \| `string`
 
-Defined in: [packages/mce/src/mixins/4.4.doc.ts:16](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/4.4.doc.ts#L16)
+Defined in: [packages/mce/src/plugins/doc.ts:19](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/doc.ts#L19)

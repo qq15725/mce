@@ -6,7 +6,7 @@
 
 # Interface: DrawingTools
 
-Defined in: [packages/mce/src/mixins/drawingTool.ts:8](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/drawingTool.ts#L8)
+Defined in: [packages/mce/src/mixins/drawingTool.ts:8](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/drawingTool.ts#L8)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: [packages/mce/src/mixins/drawingTool.ts:8](https://github.com/qq1572
 
 > **arrow**: \[\]
 
-Defined in: [packages/mce/src/plugins/shape.ts:11](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/shape.ts#L11)
+Defined in: [packages/mce/src/plugins/shape.ts:11](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/shape.ts#L11)
 
 ***
 
@@ -22,7 +22,7 @@ Defined in: [packages/mce/src/plugins/shape.ts:11](https://github.com/qq15725/mc
 
 > **ellipse**: \[\]
 
-Defined in: [packages/mce/src/plugins/shape.ts:12](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/shape.ts#L12)
+Defined in: [packages/mce/src/plugins/shape.ts:12](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/shape.ts#L12)
 
 ***
 
@@ -30,7 +30,7 @@ Defined in: [packages/mce/src/plugins/shape.ts:12](https://github.com/qq15725/mc
 
 > **image**: \[\]
 
-Defined in: [packages/mce/src/plugins/image.ts:23](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/image.ts#L23)
+Defined in: [packages/mce/src/plugins/image.ts:23](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/image.ts#L23)
 
 ***
 
@@ -38,7 +38,7 @@ Defined in: [packages/mce/src/plugins/image.ts:23](https://github.com/qq15725/mc
 
 > **line**: \[\]
 
-Defined in: [packages/mce/src/plugins/shape.ts:10](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/shape.ts#L10)
+Defined in: [packages/mce/src/plugins/shape.ts:10](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/shape.ts#L10)
 
 ***
 
@@ -46,7 +46,7 @@ Defined in: [packages/mce/src/plugins/shape.ts:10](https://github.com/qq15725/mc
 
 > **pen**: \[\]
 
-Defined in: [packages/mce/src/plugins/pen.ts:10](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/pen.ts#L10)
+Defined in: [packages/mce/src/plugins/pen.ts:10](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/pen.ts#L10)
 
 ***
 
@@ -54,7 +54,7 @@ Defined in: [packages/mce/src/plugins/pen.ts:10](https://github.com/qq15725/mce/
 
 > **pencil**: \[\]
 
-Defined in: [packages/mce/src/plugins/pen.ts:11](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/pen.ts#L11)
+Defined in: [packages/mce/src/plugins/pen.ts:11](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/pen.ts#L11)
 
 ***
 
@@ -62,7 +62,7 @@ Defined in: [packages/mce/src/plugins/pen.ts:11](https://github.com/qq15725/mce/
 
 > **polygon**: \[\]
 
-Defined in: [packages/mce/src/plugins/shape.ts:13](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/shape.ts#L13)
+Defined in: [packages/mce/src/plugins/shape.ts:13](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/shape.ts#L13)
 
 ***
 
@@ -70,7 +70,7 @@ Defined in: [packages/mce/src/plugins/shape.ts:13](https://github.com/qq15725/mc
 
 > **rectangle**: \[\]
 
-Defined in: [packages/mce/src/plugins/shape.ts:9](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/shape.ts#L9)
+Defined in: [packages/mce/src/plugins/shape.ts:9](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/shape.ts#L9)
 
 ***
 
@@ -78,7 +78,7 @@ Defined in: [packages/mce/src/plugins/shape.ts:9](https://github.com/qq15725/mce
 
 > **star**: \[\]
 
-Defined in: [packages/mce/src/plugins/shape.ts:14](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/shape.ts#L14)
+Defined in: [packages/mce/src/plugins/shape.ts:14](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/shape.ts#L14)
 
 ***
 
@@ -86,4 +86,4 @@ Defined in: [packages/mce/src/plugins/shape.ts:14](https://github.com/qq15725/mc
 
 > **text**: \[[`addTextElementOptions`](addTextElementOptions.md)\]
 
-Defined in: [packages/mce/src/plugins/text.ts:18](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/text.ts#L18)
+Defined in: [packages/mce/src/plugins/text.ts:18](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/text.ts#L18)

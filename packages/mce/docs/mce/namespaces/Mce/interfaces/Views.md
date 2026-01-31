@@ -6,7 +6,7 @@
 
 # Interface: Views
 
-Defined in: [packages/mce/src/plugins/view.ts:5](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/view.ts#L5)
+Defined in: [packages/mce/src/plugins/view.ts:5](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/view.ts#L5)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: [packages/mce/src/plugins/view.ts:5](https://github.com/qq15725/mce/
 
 > **checkerboard**: \[\]
 
-Defined in: [packages/mce/src/plugins/view.ts:7](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/view.ts#L7)
+Defined in: [packages/mce/src/plugins/view.ts:7](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/view.ts#L7)
 
 ***
 
@@ -22,7 +22,7 @@ Defined in: [packages/mce/src/plugins/view.ts:7](https://github.com/qq15725/mce/
 
 > **frameOutline**: \[\]
 
-Defined in: [packages/mce/src/plugins/view.ts:13](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/view.ts#L13)
+Defined in: [packages/mce/src/plugins/view.ts:13](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/view.ts#L13)
 
 ***
 
@@ -30,7 +30,7 @@ Defined in: [packages/mce/src/plugins/view.ts:13](https://github.com/qq15725/mce
 
 > **msaa**: \[\]
 
-Defined in: [packages/mce/src/plugins/view.ts:6](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/view.ts#L6)
+Defined in: [packages/mce/src/plugins/view.ts:6](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/view.ts#L6)
 
 ***
 
@@ -38,7 +38,7 @@ Defined in: [packages/mce/src/plugins/view.ts:6](https://github.com/qq15725/mce/
 
 > **pixelGrid**: \[\]
 
-Defined in: [packages/mce/src/plugins/view.ts:8](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/view.ts#L8)
+Defined in: [packages/mce/src/plugins/view.ts:8](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/view.ts#L8)
 
 ***
 
@@ -46,7 +46,7 @@ Defined in: [packages/mce/src/plugins/view.ts:8](https://github.com/qq15725/mce/
 
 > **ruler**: \[\]
 
-Defined in: [packages/mce/src/plugins/view.ts:9](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/view.ts#L9)
+Defined in: [packages/mce/src/plugins/view.ts:9](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/view.ts#L9)
 
 ***
 
@@ -54,7 +54,7 @@ Defined in: [packages/mce/src/plugins/view.ts:9](https://github.com/qq15725/mce/
 
 > **scrollbar**: \[\]
 
-Defined in: [packages/mce/src/plugins/view.ts:10](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/view.ts#L10)
+Defined in: [packages/mce/src/plugins/view.ts:10](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/view.ts#L10)
 
 ***
 
@@ -62,7 +62,7 @@ Defined in: [packages/mce/src/plugins/view.ts:10](https://github.com/qq15725/mce
 
 > **statusbar**: \[\]
 
-Defined in: [packages/mce/src/plugins/view.ts:12](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/view.ts#L12)
+Defined in: [packages/mce/src/plugins/view.ts:12](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/view.ts#L12)
 
 ***
 
@@ -70,4 +70,4 @@ Defined in: [packages/mce/src/plugins/view.ts:12](https://github.com/qq15725/mce
 
 > **timeline**: \[\]
 
-Defined in: [packages/mce/src/plugins/view.ts:11](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/view.ts#L11)
+Defined in: [packages/mce/src/plugins/view.ts:11](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/view.ts#L11)

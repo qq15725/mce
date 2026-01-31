@@ -6,7 +6,7 @@
 
 # Interface: CopyAsOptions
 
-Defined in: [packages/mce/src/plugins/copyAs.ts:5](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/plugins/copyAs.ts#L5)
+Defined in: [packages/mce/src/plugins/copyAs.ts:5](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/copyAs.ts#L5)
 
 ## Extends
 
@@ -18,7 +18,7 @@ Defined in: [packages/mce/src/plugins/copyAs.ts:5](https://github.com/qq15725/mc
 
 > `optional` **onProgress**: [`ExportOnProgress`](../type-aliases/ExportOnProgress.md)
 
-Defined in: [packages/mce/src/mixins/2.export.ts:13](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/2.export.ts#L13)
+Defined in: [packages/mce/src/mixins/2.export.ts:13](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/2.export.ts#L13)
 
 #### Inherited from
 
@@ -30,7 +30,7 @@ Defined in: [packages/mce/src/mixins/2.export.ts:13](https://github.com/qq15725/
 
 > `optional` **scale**: `number`
 
-Defined in: [packages/mce/src/mixins/2.export.ts:11](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/2.export.ts#L11)
+Defined in: [packages/mce/src/mixins/2.export.ts:11](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/2.export.ts#L11)
 
 #### Inherited from
 
@@ -42,7 +42,7 @@ Defined in: [packages/mce/src/mixins/2.export.ts:11](https://github.com/qq15725/
 
 > `optional` **selected**: `boolean` \| `Element2D`[]
 
-Defined in: [packages/mce/src/mixins/2.export.ts:12](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/2.export.ts#L12)
+Defined in: [packages/mce/src/mixins/2.export.ts:12](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/2.export.ts#L12)
 
 #### Inherited from
 

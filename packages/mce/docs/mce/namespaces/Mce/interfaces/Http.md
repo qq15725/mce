@@ -6,7 +6,7 @@
 
 # Interface: Http
 
-Defined in: [packages/mce/src/mixins/http.ts:33](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/http.ts#L33)
+Defined in: [packages/mce/src/mixins/http.ts:33](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/http.ts#L33)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: [packages/mce/src/mixins/http.ts:33](https://github.com/qq15725/mce/
 
 > **request**: (`config`) => `Promise`\<`any`\>
 
-Defined in: [packages/mce/src/mixins/http.ts:34](https://github.com/qq15725/mce/blob/838928ddc21b3cae616f531f0828e6215d4523da/packages/mce/src/mixins/http.ts#L34)
+Defined in: [packages/mce/src/mixins/http.ts:34](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/http.ts#L34)
 
 #### Parameters
 
