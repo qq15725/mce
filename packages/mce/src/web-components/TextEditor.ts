@@ -184,7 +184,7 @@ export class TextEditor extends HTMLElement implements PropertyAccessor {
   </style>
 
   <div class="container">
-    <textarea name="text-content"></textarea>
+    <textarea name="text-content" spellcheck="false"></textarea>
     <div class="selection"></div>
     <div class="cursor blink"></div>
   </div>

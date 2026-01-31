@@ -34,10 +34,10 @@ const tid = searchParams.get('tid')
 const bid = searchParams.get('bid')
 const url = searchParams.get('url')
 if (tid || bid) {
-  editor.loadDoc({ tid, bid })
+  editor.exec('loadDoc', { tid, bid })
 }
 else if (url) {
-  editor.loadDoc(url)
+  editor.exec('loadDoc', url)
 }
 
 const element = computed(() => editor.elementSelection.value[0])

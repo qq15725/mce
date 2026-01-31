@@ -40,7 +40,7 @@ declare global {
 
 export default defineMixin((editor) => {
   const {
-    doc,
+    root,
     rootAabb,
     textFontSizeToFit,
     textToFit,
@@ -80,10 +80,10 @@ export default defineMixin((editor) => {
     const isArray = Array.isArray(value)
     let offsetIndex = index
 
-    const elements = doc.value.transact(() => {
+    const elements = root.value.transact(() => {
       const values = isArray ? value : [value]
       const elements = values.map((element) => {
-        const el = doc.value.addNode(element, {
+        const el = root.value.addNode(element, {
           parentId: parent?.id,
           index: offsetIndex,
           regenId,

@@ -1,30 +1,30 @@
 import type { Cursor, Vector2, Vector2Like } from 'modern-canvas'
 import type { IndexCharacter as _IndexCharacter } from 'modern-text/web-components'
-import type { ComputedRef, Ref } from 'vue'
+import type { Ref } from 'vue'
 import { Aabb2D, Camera2D, DrawboardEffect, Element2D, Engine, Node, Timeline } from 'modern-canvas'
 import { Fonts } from 'modern-font'
 import { computed, markRaw, onBeforeMount, onScopeDispose, reactive, ref, watch } from 'vue'
-import { Doc } from '../crdt'
 import { defineMixin } from '../mixin'
+import { Doc } from '../nodes'
 
 declare global {
   namespace Mce {
-    type Tblock = 'top' | 'bottom'
+    type TBlock = 'top' | 'bottom'
 
-    type Tinline = 'start' | 'end' | 'left' | 'right'
+    type TInline = 'start' | 'end' | 'left' | 'right'
 
     type Anchor
-      = | Tblock
-        | Tinline
+      = | TBlock
+        | TInline
         | 'center'
         | 'center center'
-        | `${Tblock} ${Tinline | 'center'}`
-        | `${Tinline} ${Tblock | 'center'}`
+        | `${TBlock} ${TInline | 'center'}`
+        | `${TInline} ${TBlock | 'center'}`
 
     type ParsedAnchor
       = | { side: 'center', align: 'center' }
-        | { side: Tblock, align: 'left' | 'right' | 'center' }
-        | { side: 'left' | 'right', align: Tblock | 'center' }
+        | { side: TBlock, align: 'left' | 'right' | 'center' }
+        | { side: 'left' | 'right', align: TBlock | 'center' }
 
     type IndexCharacter = _IndexCharacter
 
@@ -41,9 +41,8 @@ declare global {
       drawboardAabb: Ref<Aabb2D>
       drawboardPointer: Ref<Vector2 | undefined>
       drawboardContextMenuPointer: Ref<Vector2 | undefined>
-      doc: Ref<Doc>
+      root: Ref<Doc>
       docLoading: Ref<boolean>
-      root: ComputedRef<Node>
       nodes: Ref<Node[]>
       nodeIndexMap: Map<string, number>
       selection: Ref<Node[]>
@@ -55,7 +54,7 @@ declare global {
       getGlobalPointer: () => Vector2Like
       parseAnchor: (anchor: Anchor, isRtl?: boolean) => ParsedAnchor
       isNode: (value: any) => value is Node
-      isRoot: (value: any) => value is Node
+      isRootNode: (value: any) => boolean
       inEditorIs: (node: Node, inEditorIs?: EditorNodeType) => boolean
       isElement: (value: any) => value is Element2D
       isFrame: (node: Node) => boolean
@@ -69,8 +68,12 @@ declare global {
 }
 
 export default defineMixin((editor) => {
+  const root = ref(new Doc())
+  const docLoading = ref(false)
   const fonts = markRaw(new Fonts()) as Fonts
+  const camera = ref(new Camera2D({ internalMode: 'front' }))
   const timeline = ref(new Timeline({ startTime: 0, endTime: 0, loop: true, paused: true }))
+  const drawboardEffect = ref(new DrawboardEffect({ internalMode: 'back', effectMode: 'before' }))
   const _renderEngine = new Engine({
     pixelRatio: 2,
     fonts,
@@ -79,20 +82,15 @@ export default defineMixin((editor) => {
     speed: 0,
   })
   markRaw(_renderEngine.renderer)
-
-  const camera = ref(new Camera2D({ internalMode: 'front' }))
-  const drawboardEffect = ref(new DrawboardEffect({ internalMode: 'back', effectMode: 'before' }))
   _renderEngine.root.append(camera.value as any)
   _renderEngine.root.append(drawboardEffect.value as any)
+  _renderEngine.root.append(root.value as any)
   const renderEngine = ref(_renderEngine)
 
   const drawboardDom = ref<HTMLElement>()
   const drawboardAabb = ref(new Aabb2D())
   const drawboardPointer = ref<Vector2Like>()
   const drawboardContextMenuPointer = ref<Vector2Like>()
-  const doc = ref(new Doc())
-  const docLoading = ref(false)
-  const root = computed(() => doc.value.root)
   const nodes = ref<Node[]>([])
   const nodeIndexMap = reactive(new Map<string, number>())
   const selection = ref<Element2D[]>([])
@@ -117,7 +115,7 @@ export default defineMixin((editor) => {
   const block = ['top', 'bottom']
   const inline = ['start', 'end', 'left', 'right']
 
-  function toPhysical(str: 'center' | Mce.Tblock | Mce.Tinline, isRtl?: boolean): 'bottom' | 'center' | 'left' | 'right' | 'top' {
+  function toPhysical(str: 'center' | Mce.TBlock | Mce.TInline, isRtl?: boolean): 'bottom' | 'center' | 'left' | 'right' | 'top' {
     if (str === 'start')
       return isRtl ? 'right' : 'left'
     if (str === 'end')
@@ -144,7 +142,7 @@ export default defineMixin((editor) => {
     return value instanceof Node
   }
 
-  function isRoot(value: any): value is Node {
+  function isRootNode(value: any): boolean {
     return isNode(value) && root.value.equal(value)
   }
 
@@ -188,7 +186,6 @@ export default defineMixin((editor) => {
     timeline,
     camera,
     drawboardEffect,
-    doc,
     docLoading,
     root,
     nodes,
@@ -207,7 +204,7 @@ export default defineMixin((editor) => {
     getGlobalPointer,
     parseAnchor,
     isNode,
-    isRoot,
+    isRootNode,
     isElement,
     inEditorIs,
     isFrame,

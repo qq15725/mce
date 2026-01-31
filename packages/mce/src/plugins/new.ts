@@ -14,11 +14,11 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    setDoc,
+    exec,
   } = editor
 
   function _new() {
-    setDoc([])
+    exec('setDoc', [])
   }
 
   return {

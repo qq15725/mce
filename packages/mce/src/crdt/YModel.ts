@@ -1,22 +1,23 @@
-import type { ReactivableEvents } from 'modern-idoc'
+import type { ObservableEvents } from 'modern-idoc'
 import type { Transaction } from 'yjs'
-import { idGenerator, Reactivable } from 'modern-idoc'
+import { idGenerator, Observable } from 'modern-idoc'
 import { markRaw } from 'vue'
 import * as Y from 'yjs'
 import { IndexeddbProvider } from '../indexeddb'
 
-export interface ModelEvents extends ReactivableEvents {
+export interface YModelEvents extends ObservableEvents {
+  history: [arg0: Y.UndoManager]
   update: [arg0: Uint8Array, arg1: any, arg2: Y.Doc, arg3: Transaction]
 }
 
-export interface Model {
-  on: <K extends keyof ModelEvents & string>(event: K, listener: (...args: ModelEvents[K]) => void) => this
-  once: <K extends keyof ModelEvents & string>(event: K, listener: (...args: ModelEvents[K]) => void) => this
-  off: <K extends keyof ModelEvents & string>(event: K, listener: (...args: ModelEvents[K]) => void) => this
-  emit: <K extends keyof ModelEvents & string>(event: K, ...args: ModelEvents[K]) => this
+export interface YModel {
+  on: <K extends keyof YModelEvents & string>(event: K, listener: (...args: YModelEvents[K]) => void) => this
+  once: <K extends keyof YModelEvents & string>(event: K, listener: (...args: YModelEvents[K]) => void) => this
+  off: <K extends keyof YModelEvents & string>(event: K, listener: (...args: YModelEvents[K]) => void) => this
+  emit: <K extends keyof YModelEvents & string>(event: K, ...args: YModelEvents[K]) => this
 }
 
-export class Model extends Reactivable {
+export class YModel extends Observable {
   _transacting: boolean | undefined = undefined
   _yDoc: Y.Doc
   _yProps: Y.Map<unknown>
@@ -31,12 +32,6 @@ export class Model extends Reactivable {
     this._yDoc = markRaw(new Y.Doc({ guid: this.id }))
     this._yDoc.on('update', (...args) => this.emit('update', ...args))
     this._yProps = markRaw(this._yDoc.getMap('props'))
-    this._propertyAccessor = {
-      getProperty: key => this._yProps.doc ? this._yProps.get(key) : undefined,
-      setProperty: (key, value) => {
-        this.transact(() => this._yProps.set(key, value))
-      },
-    }
   }
 
   protected _setupUndoManager(typeScope: any[] = []): void {
@@ -55,14 +50,6 @@ export class Model extends Reactivable {
     um.on('stack-item-popped', onHistory)
     um.on('stack-cleared', onHistory)
     this.undoManager = um
-  }
-
-  undo(): any {
-    return this.undoManager.undo()
-  }
-
-  redo(): any {
-    return this.undoManager.redo()
   }
 
   async loadIndexeddb(): Promise<void> {
@@ -112,12 +99,5 @@ export class Model extends Reactivable {
   reset(): this {
     this._yProps.clear()
     return this
-  }
-
-  toJSON(): Record<string, any> {
-    return {
-      id: this.id,
-      ...this._yProps.toJSON(),
-    }
   }
 }

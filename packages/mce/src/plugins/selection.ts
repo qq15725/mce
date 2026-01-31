@@ -83,7 +83,6 @@ export default definePlugin((editor) => {
     elementSelection,
     getObb,
     getAabb,
-    doc,
     root,
     findSibling,
     inEditorIs,
@@ -177,7 +176,7 @@ export default definePlugin((editor) => {
       cloned.style.top = child.style.top - aabb.top
       return cloned
     })
-    doc.value.transact(() => {
+    root.value.transact(() => {
       addElement({
         name: inEditorIs === 'Frame' ? 'Frame' : 'Group',
         style: {
@@ -213,7 +212,7 @@ export default definePlugin((editor) => {
       cloned.style.top = obb.top + parent.top
       return cloned
     })
-    doc.value.transact(() => {
+    root.value.transact(() => {
       addElements(items, {
         parent: element.parent,
         index: element.getIndex(),
@@ -289,6 +288,7 @@ export default definePlugin((editor) => {
       { command: 'lockOrUnlockSelection', key: 'Shift+CmdOrCtrl+L' },
     ],
     events: {
+      clearDoc: () => select('none'),
       selectionTransform: ({ elements }) => {
         elements.forEach((el) => {
           el.findAncestor((ancestor) => {

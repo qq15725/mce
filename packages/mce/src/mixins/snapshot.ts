@@ -1,6 +1,6 @@
 import type { Element2D, Node } from 'modern-canvas'
 import type { Element } from 'modern-idoc'
-import type { Doc } from '../crdt'
+import type { Doc } from '../nodes'
 import { render } from 'modern-canvas'
 import { onBeforeMount, onScopeDispose } from 'vue'
 import { defineMixin } from '../mixin'
@@ -118,8 +118,8 @@ export default defineMixin((editor) => {
         }
       }
 
-      doc.root.on('addChild', onAddChild)
-      doc.root.on('removeChild', onRemoveChild)
+      doc.on('addChild', onAddChild)
+      doc.on('removeChild', onRemoveChild)
     }
 
     onBeforeMount(() => {

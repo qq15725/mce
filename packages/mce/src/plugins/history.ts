@@ -1,4 +1,5 @@
 import type { Ref } from 'vue'
+import type * as Y from 'yjs'
 import { ref } from 'vue'
 import { definePlugin } from '../plugin'
 
@@ -25,27 +26,24 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    doc,
-    on,
+    root,
   } = editor
 
   const canUndo = ref(false)
   const canRedo = ref(false)
 
   function redo(): void {
-    doc.value.redo()
+    root.value.redo()
   }
 
   function undo(): void {
-    doc.value.undo()
+    root.value.undo()
   }
 
-  on('setDoc', (doc) => {
-    doc.on('history', (um) => {
-      canUndo.value = um.canUndo()
-      canRedo.value = um.canRedo()
-    })
-  })
+  function onHistory(um: Y.UndoManager) {
+    canUndo.value = um.canUndo()
+    canRedo.value = um.canRedo()
+  }
 
   Object.assign(editor, {
     canUndo,
@@ -64,5 +62,11 @@ export default definePlugin((editor) => {
       { command: 'undo', key: 'CmdOrCtrl+Z' },
       { command: 'redo', key: 'Shift+CmdOrCtrl+Z' },
     ],
+    events: {
+      setDoc: (root, oldRoot) => {
+        oldRoot?.off('history', onHistory)
+        root.on('history', onHistory)
+      },
+    },
   }
 })

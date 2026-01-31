@@ -5,6 +5,7 @@
 import _arrange from './arrange'
 import _autoNest from './autoNest'
 import _copyAs from './copyAs'
+import _doc from './doc'
 import _drawingTool from './drawingTool'
 import _edit from './edit'
 import _formatPaint from './formatPaint'
@@ -50,6 +51,7 @@ export const plugins = [
   _arrange,
   _autoNest,
   _copyAs,
+  _doc,
   _drawingTool,
   _edit,
   _formatPaint,

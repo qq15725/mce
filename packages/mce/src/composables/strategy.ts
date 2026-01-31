@@ -65,7 +65,7 @@ export const defaultActiveStrategy: ActiveStrategy = (context) => {
   }
 
   const {
-    isRoot,
+    isRootNode,
     inEditorIs,
     isElement,
     elementSelection,
@@ -80,8 +80,8 @@ export const defaultActiveStrategy: ActiveStrategy = (context) => {
         node.equal(activeElement)
         || parent?.equal(activeElement)
         || parent?.equal(activeElement?.parent)
-        || (parent && inEditorIs(parent, 'Frame') && isRoot(parent.parent))
-        || isRoot(parent)
+        || (parent && inEditorIs(parent, 'Frame') && isRootNode(parent.parent))
+        || isRootNode(parent)
       )
     ) {
       return true
@@ -116,7 +116,7 @@ export const defaultHoverStrategy: HoverStrategy = (context) => {
   }
 
   const {
-    isRoot,
+    isRootNode,
     inEditorIs,
     isElement,
     elementSelection,
@@ -131,8 +131,8 @@ export const defaultHoverStrategy: HoverStrategy = (context) => {
         node.equal(activeElement)
         || parent?.equal(activeElement)
         || parent?.equal(activeElement?.parent)
-        || (parent && inEditorIs(parent, 'Frame') && isRoot(parent.parent))
-        || isRoot(parent)
+        || (parent && inEditorIs(parent, 'Frame') && isRootNode(parent.parent))
+        || isRootNode(parent)
       )
     ) {
       return true

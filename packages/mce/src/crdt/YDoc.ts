@@ -1,14 +1,13 @@
 import type { CoreObject } from 'modern-canvas'
 import type { Document, Element, PropertyAccessor } from 'modern-idoc'
 import type { Transaction, YArrayEvent, YMapEvent } from 'yjs'
-import type { ModelEvents } from './Model'
+import type { YModelEvents } from './YModel'
 import { Element2D, Node } from 'modern-canvas'
-import { property } from 'modern-idoc'
 import { isReactive, markRaw, reactive } from 'vue'
 import * as Y from 'yjs'
-import { Model } from './Model'
+import { YModel } from './YModel'
 
-interface AddNodeOptions {
+export interface AddNodeOptions {
   parentId?: string
   index?: number
   regenId?: boolean
@@ -32,34 +31,26 @@ export type YNode = Y.Map<unknown> & {
     & (<T = unknown>(prop: string) => T)
 }
 
-export interface DocEvents extends ModelEvents {
-  history: [arg0: Y.UndoManager]
+export interface YDocEvents extends YModelEvents {
+  //
 }
 
-export interface Doc {
-  on: <K extends keyof DocEvents & string>(event: K, listener: (...args: DocEvents[K]) => void) => this
-  once: <K extends keyof DocEvents & string>(event: K, listener: (...args: DocEvents[K]) => void) => this
-  off: <K extends keyof DocEvents & string>(event: K, listener: (...args: DocEvents[K]) => void) => this
-  emit: <K extends keyof DocEvents & string>(event: K, ...args: DocEvents[K]) => this
+export interface YDoc {
+  on: <K extends keyof YDocEvents & string>(event: K, listener: (...args: YDocEvents[K]) => void) => this
+  once: <K extends keyof YDocEvents & string>(event: K, listener: (...args: YDocEvents[K]) => void) => this
+  off: <K extends keyof YDocEvents & string>(event: K, listener: (...args: YDocEvents[K]) => void) => this
+  emit: <K extends keyof YDocEvents & string>(event: K, ...args: YDocEvents[K]) => this
 }
 
-export class Doc extends Model {
+export class YDoc extends YModel {
   protected _yChildren: Y.Map<YNode>
   protected _yChildrenIds: Y.Array<string>
-
-  @property() declare name: string
-
-  readonly root = reactive(new Node({
-    id: 'root',
-    name: 'Doc',
-  })) as Node
-
   protected _nodeMap = new Map<string, Node>()
 
-  get meta() { return this.root.meta }
-  set meta(val) { this.root.meta = val }
-
-  constructor(id?: string) {
+  constructor(
+    protected readonly root: Node,
+    id?: string,
+  ) {
     super(id)
     this._yChildren = markRaw(this._yDoc.getMap('children'))
     this._yChildrenIds = markRaw(this._yDoc.getArray('childrenIds') as Y.Array<string>)
@@ -69,22 +60,6 @@ export class Doc extends Model {
     ])
     this._yProps.set('id', this.root.id)
     this._yProps.set('name', this.root.name)
-  }
-
-  override setProperties(properties?: Record<string, any>): this {
-    if (properties) {
-      const {
-        meta,
-        ...restProperties
-      } = properties
-
-      if (meta) {
-        this.meta = meta
-      }
-
-      super.setProperties(restProperties)
-    }
-    return this
   }
 
   override async load(initFn?: () => void | Promise<void>): Promise<this> {
@@ -142,6 +117,12 @@ export class Doc extends Model {
     return this
   }
 
+  override destroy(): void {
+    this.reset()
+    this.root.remove()
+    super.destroy()
+  }
+
   protected _addNode(data: Element, options: AddNodeOptions = {}): Node {
     const { parentId, index, regenId } = options
     let parent
@@ -184,7 +165,6 @@ export class Doc extends Model {
       ..._props,
     }
     this.reset()
-    this.setProperties(props)
     for (const key in props) {
       this._yProps.set(key, (props as any)[key])
     }
@@ -469,12 +449,5 @@ export class Doc extends Model {
       this._nodeMap.set(id, node)
     }
     return node
-  }
-
-  toJSON(): Record<string, any> {
-    return {
-      ...super.toJSON(),
-      children: this._yChildren.toJSON(),
-    }
   }
 }

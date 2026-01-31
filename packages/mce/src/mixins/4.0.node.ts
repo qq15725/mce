@@ -20,9 +20,8 @@ declare global {
 
 export default defineMixin((editor) => {
   const {
-    doc,
-    selection,
     root,
+    selection,
   } = editor
 
   function findSibling(target: 'next' | 'previous'): Node | undefined {
@@ -66,7 +65,7 @@ export default defineMixin((editor) => {
       regenId,
     } = options
 
-    const node = doc.value.addNode(value, {
+    const node = root.value.addNode(value, {
       parentId: parent?.id,
       index,
       regenId,

@@ -83,6 +83,7 @@ export default definePlugin((editor) => {
           } = options
 
           let id = idGenerator()
+          let name = 'Doc'
           let elements: Element2D[] = []
           if (Array.isArray(selected)) {
             elements = selected
@@ -94,6 +95,7 @@ export default definePlugin((editor) => {
 
             if (elements.length === 0 && root.value) {
               id = root.value.id
+              name = root.value.name
               elements = root.value.children as Element2D[]
             }
           }
@@ -102,6 +104,7 @@ export default definePlugin((editor) => {
 
           return {
             id,
+            name,
             style: {
               width: box.width * scale,
               height: box.height * scale,
