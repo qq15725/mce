@@ -1,3 +1,12 @@
+## [0.16.1](https://github.com/qq15725/mce/compare/v0.16.0...v0.16.1) (2026-01-31)
+
+
+### Bug Fixes
+
+* vue reactive ([6468d45](https://github.com/qq15725/mce/commit/6468d45b07553bca4b4dfc452a762778150892b3))
+
+
+
 # [0.16.0](https://github.com/qq15725/mce/compare/v0.15.41...v0.16.0) (2026-01-31)
 
 
