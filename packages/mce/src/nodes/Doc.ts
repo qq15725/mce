@@ -26,7 +26,9 @@ export class Doc extends Node {
     source?: Mce.DocumentSource,
     protected readonly _localDb = false,
   ) {
-    super()
+    super({
+      name: 'Doc',
+    })
 
     let id: string | undefined
     let _source: any = source

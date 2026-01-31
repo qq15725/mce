@@ -45,11 +45,12 @@ export default definePlugin((editor, options) => {
     emit,
     docLoading,
     renderEngine,
+    config,
   } = editor
 
   const setDoc: Mce.Commands['setDoc'] = async (source) => {
     const oldRoot = root.value
-    const _root = new Doc(source)
+    const _root = new Doc(source, config.value.localDb)
     await _root.load()
     oldRoot.remove()
     renderEngine.value.root.append(_root)
