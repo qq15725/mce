@@ -1,19 +1,10 @@
 import type { Node } from 'modern-canvas'
-import type { Element } from 'modern-idoc'
 import { defineMixin } from '../mixin'
 
 declare global {
   namespace Mce {
-    export interface AddNodeOptions {
-      parent?: Node
-      index?: number
-      active?: boolean
-      regenId?: boolean
-    }
-
     interface Editor {
       findSibling: (target: 'previous' | 'next') => Node | undefined
-      addNode: (value: Element, options?: AddNodeOptions) => Node
     }
   }
 }
@@ -57,29 +48,7 @@ export default defineMixin((editor) => {
     return undefined
   }
 
-  function addNode(value: Element, options: Mce.AddNodeOptions = {}): Node {
-    const {
-      parent,
-      index,
-      active,
-      regenId,
-    } = options
-
-    const node = root.value.addNode(value, {
-      parentId: parent?.id,
-      index,
-      regenId,
-    })
-
-    if (active) {
-      selection.value = [node]
-    }
-
-    return node
-  }
-
   Object.assign(editor, {
     findSibling,
-    addNode,
   })
 })

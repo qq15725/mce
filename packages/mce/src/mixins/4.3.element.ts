@@ -44,7 +44,6 @@ export default defineMixin((editor) => {
     rootAabb,
     textFontSizeToFit,
     textToFit,
-    log,
     isElement,
     config,
     getAabb,
@@ -60,8 +59,6 @@ export default defineMixin((editor) => {
     value: Element | Element[],
     options: Mce.AddElementOptions = {},
   ): Element2D | Element2D[] {
-    log('addElement', value, options)
-
     const {
       frameGap,
     } = config.value

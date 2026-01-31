@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { customNodes } from 'modern-canvas'
+import { customNodes, Node } from 'modern-canvas'
 import { computed, h, ref } from 'vue'
 import { useEditor } from '../composables'
 import Btn from './shared/Btn.vue'
@@ -14,7 +14,6 @@ interface ClassNode {
 
 const {
   t,
-  addNode,
   selection,
 } = useEditor()
 
@@ -65,19 +64,18 @@ function create() {
   isActive.value = false
   const name = activeNodeName.value
   if (name) {
-    addNode({
+    const node = Node.parse({
       name,
       meta: {
         inCanvasIs: name,
       },
-    }, {
-      parent: selection.value[0],
-      active: true,
     })
+    selection.value[0].append(node)
+    selection.value = [node]
   }
 }
 
-function Node(props: any = {}): any {
+function CreatorNode(props: any = {}): any {
   const { indent = 0, node } = props
   return [
     h('div', {
@@ -91,7 +89,7 @@ function Node(props: any = {}): any {
       onClick: () => activeNodeName.value = node.name,
     }, node.name),
     ...node.children.map((node: any) => {
-      return h(Node, { node, indent: indent + 1 })
+      return h(CreatorNode, { node, indent: indent + 1 })
     }),
   ]
 }
@@ -101,7 +99,7 @@ function Node(props: any = {}): any {
   <div class="mce-node-creator">
     <div class="mce-node-creator__tree">
       <template v-for="(node, index) in tree" :key="index">
-        <Node :node="node" />
+        <CreatorNode :node="node" />
       </template>
     </div>
 
