@@ -66,7 +66,7 @@ const {
   components,
   componentRefs,
   isElement,
-  isTopFrame,
+  isFrameNode,
   config,
   drawboardDom,
   renderEngine,
@@ -149,7 +149,7 @@ function onHover(event: PointerInputEvent) {
     isElement(hovered)
     && !isLock(hovered)
     && !hovered.findAncestor(ancestor => isLock(ancestor))
-    && (!hovered.children.some(node => isElement(node)) || !isTopFrame(hovered))
+    && (!hovered.children.some(node => isElement(node)) || !isFrameNode(hovered, true))
   )) {
     hovered = undefined
     cursor = undefined
@@ -182,7 +182,7 @@ function onEnginePointerDown(
   function isIncluded(node: any): node is Element2D {
     return isElement(node)
       && !isLock(node)
-      && (allowTopFrame || (!node.children.some(node => isElement(node)) || !isTopFrame(node)))
+      && (allowTopFrame || (!node.children.some(node => isElement(node)) || !isFrameNode(node, true)))
       && !node.findAncestor(ancestor => isLock(ancestor))
   }
 

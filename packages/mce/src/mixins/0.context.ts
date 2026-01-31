@@ -54,11 +54,10 @@ declare global {
       getGlobalPointer: () => Vector2Like
       parseAnchor: (anchor: Anchor, isRtl?: boolean) => ParsedAnchor
       isNode: (value: any) => value is Node
-      isRootNode: (value: any) => boolean
+      isRootNode: (node: Node) => boolean
+      isFrameNode: (node: Node, isTop?: boolean) => boolean
       inEditorIs: (node: Node, inEditorIs?: EditorNodeType) => boolean
       isElement: (value: any) => value is Element2D
-      isFrame: (node: Node) => boolean
-      isTopFrame: (node: Node) => boolean
       isVisible: (node: Node) => boolean
       setVisible: (node: Node, visible: boolean) => void
       isLock: (node: Node) => boolean
@@ -142,8 +141,15 @@ export default defineMixin((editor) => {
     return value instanceof Node
   }
 
-  function isRootNode(value: any): boolean {
-    return isNode(value) && root.value.equal(value)
+  function isRootNode(node: Node): boolean {
+    return root.value.equal(node)
+  }
+
+  function isFrameNode(node: Node, isTop = false): boolean {
+    return inEditorIs(node, 'Frame') && (
+      !isTop
+      || Boolean(node.parent?.equal(root.value as any))
+    )
   }
 
   function isElement(value: any): value is Element2D {
@@ -152,14 +158,6 @@ export default defineMixin((editor) => {
 
   function inEditorIs(value: Node, inEditorIs: Mce.EditorNodeType): boolean {
     return value.meta.inEditorIs === inEditorIs
-  }
-
-  function isFrame(value: Node): boolean {
-    return inEditorIs(value, 'Frame')
-  }
-
-  function isTopFrame(value: Node): boolean {
-    return isFrame(value) && Boolean(value.parent?.equal(root.value as any))
   }
 
   function isVisible(node: Node): boolean {
@@ -207,8 +205,7 @@ export default defineMixin((editor) => {
     isRootNode,
     isElement,
     inEditorIs,
-    isFrame,
-    isTopFrame,
+    isFrameNode,
     isVisible,
     setVisible,
     isLock,

@@ -13,7 +13,7 @@ export default defineMixin((editor) => {
   const {
     frames,
     isElement,
-    isTopFrame,
+    isFrameNode,
     selection,
     getAncestorFrame,
   } = editor
@@ -22,7 +22,7 @@ export default defineMixin((editor) => {
     let current: Element2D | undefined
     const node = selection.value[0]
     if (node) {
-      current = isElement(node) && isTopFrame(node)
+      current = isElement(node) && isFrameNode(node, true)
         ? node
         : getAncestorFrame(node, true)
     }

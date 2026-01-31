@@ -23,15 +23,14 @@ declare global {
 export default defineMixin((editor) => {
   const {
     root,
-    isFrame,
-    isTopFrame,
+    isFrameNode,
   } = editor
 
-  const frames = computed(() => root.value.children.filter(isFrame) ?? [])
+  const frames = computed(() => root.value.children.filter(v => isFrameNode(v)) ?? [])
   const frameThumbs = ref<Mce.FrameThumb[]>([])
 
   function getAncestorFrame(node?: Node, isTop?: boolean): Element2D | undefined {
-    const when = isTop ? isTopFrame : isFrame
+    const when = isTop ? (v: Node) => isFrameNode(v, true) : isFrameNode
     return node?.findAncestor<Element2D>(node => when(node))
   }
 

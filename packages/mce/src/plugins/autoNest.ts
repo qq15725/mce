@@ -23,7 +23,7 @@ export default definePlugin((editor) => {
   const {
     getGlobalPointer,
     frames,
-    isTopFrame,
+    isFrameNode,
     exec,
     root,
   } = editor
@@ -35,7 +35,7 @@ export default definePlugin((editor) => {
     options?: Mce.NestIntoFrameOptions,
   ): void {
     const pointer = options?.pointer as any
-    const frame1 = el.findAncestor(node => isTopFrame(node))
+    const frame1 = el.findAncestor(node => isFrameNode(node, true))
     const aabb1 = el.globalAabb
     const area1 = aabb1.getArea()
     let flag = true
@@ -95,7 +95,7 @@ export default definePlugin((editor) => {
 
           const idSet = new Set<number>()
           elements.forEach((el) => {
-            const frame = isTopFrame(el) ? el : el.findAncestor(isTopFrame)
+            const frame = isFrameNode(el, true) ? el : el.findAncestor(v => isFrameNode(v, true))
             if (frame) {
               if (frame.equal(startFrame)) {
                 idSet.add(frame.instanceId)

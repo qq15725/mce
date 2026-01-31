@@ -86,7 +86,7 @@ export default definePlugin((editor) => {
     root,
     findSibling,
     inEditorIs,
-    isTopFrame,
+    isFrameNode,
     addElement,
     addElements,
     obbToFit,
@@ -146,7 +146,7 @@ export default definePlugin((editor) => {
       ?.children
       .flatMap((node) => {
         if (
-          isTopFrame(node)
+          isFrameNode(node, true)
           && !area.contains(getObb(node, 'drawboard'))
         ) {
           return node.children as unknown as Element2D[]
