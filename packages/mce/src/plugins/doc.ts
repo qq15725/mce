@@ -46,7 +46,12 @@ export default definePlugin((editor, options) => {
     docLoading,
     renderEngine,
     config,
+    to,
   } = editor
+
+  const getDoc: Mce.Commands['getDoc'] = () => {
+    return to('json')
+  }
 
   const setDoc: Mce.Commands['setDoc'] = async (source) => {
     const oldRoot = root.value
@@ -82,8 +87,9 @@ export default definePlugin((editor, options) => {
   return {
     name: 'mce:doc',
     commands: [
-      { command: 'loadDoc', handle: loadDoc },
+      { command: 'getDoc', handle: getDoc },
       { command: 'setDoc', handle: setDoc },
+      { command: 'loadDoc', handle: loadDoc },
       { command: 'clearDoc', handle: clearDoc },
     ],
     setup: async () => {
