@@ -73,10 +73,6 @@ export class Doc extends Node {
     this._yDoc.undoManager.redo()
   }
 
-  proxyNode = (node: Node): void => {
-    this._yDoc.proxyNode(node)
-  }
-
   set = (source: Document): this => {
     const { children = [], ..._props } = source
     const props = {
@@ -85,7 +81,7 @@ export class Doc extends Node {
       ..._props,
     }
     this.resetProperties()
-    this._yDoc.set(this, props)
+    this._yDoc.proxyRoot(this, props)
     this.append(children)
     return this
   }

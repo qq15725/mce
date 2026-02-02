@@ -116,7 +116,7 @@ export class YDoc extends YModel {
     super.destroy()
   }
 
-  set(root: Node, props: Record<string, any>): this {
+  proxyRoot(root: Node, props: Record<string, any>): this {
     const { meta = {}, ..._props } = props
     this.reset()
     for (const key in _props) {
@@ -124,7 +124,7 @@ export class YDoc extends YModel {
     }
     this._yProps.set('meta', new Y.Map(Object.entries(meta)))
     this._transacting = true
-    this.proxyNode(
+    this._proxyNode(
       root,
       this._yProps as any,
       this._yChildrenIds,
@@ -205,7 +205,7 @@ export class YDoc extends YModel {
       }
       this.transact(() => {
         this._debug(`addChild ${child.id}`, child.name, newIndex)
-        this.proxyNode(child)
+        this._proxyNode(child)
         childrenIds.insert(newIndex, [child.id])
       })
     })
@@ -223,7 +223,7 @@ export class YDoc extends YModel {
     })
 
     node.children.forEach((child) => {
-      this.proxyNode(child)
+      this._proxyNode(child)
     })
 
     const cachedChildrenIds = childrenIds.toArray()
@@ -299,7 +299,7 @@ export class YDoc extends YModel {
     childrenIds.observe(observeFn)
   }
 
-  proxyNode(node: Node, yNode?: YNode, yChildrenIds?: Y.Array<string>): void {
+  protected _proxyNode(node: Node, yNode?: YNode, yChildrenIds?: Y.Array<string>): void {
     if (node.internalMode !== 'default') {
       return
     }
@@ -398,7 +398,7 @@ export class YDoc extends YModel {
           },
         }),
       ) as Node
-      this.proxyNode(node, yNode)
+      this._proxyNode(node, yNode)
       this._nodeMap.set(id, node)
     }
     return node
