@@ -50,8 +50,8 @@ declare global {
 
     interface Slots {
       'selection'?: () => void
-      'selection-transform'?: () => void
-      'selection-foreground-cropper'?: (props: { scale: number, setScale: (scale: number) => void, setAspectRatio: (aspectRatio: 0 | [number, number]) => void, ok: () => void, cancel: () => void }) => void
+      'selection.transform'?: () => void
+      'selection.foreground-cropper'?: (props: { scale: number, setScale: (scale: number) => void, setAspectRatio: (aspectRatio: 0 | [number, number]) => void, ok: () => void, cancel: () => void }) => void
     }
 
     interface SelectionTransformContext {
