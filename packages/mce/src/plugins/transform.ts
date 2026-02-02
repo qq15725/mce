@@ -192,7 +192,6 @@ export default definePlugin((editor) => {
     ],
     events: {
       selectionTransformStart: () => {
-        startContext.rotate = 0
         const aabb = selectionAabb.value
         elementSelection.value.forEach((el) => {
           const elAabb = el.globalAabb
@@ -203,7 +202,10 @@ export default definePlugin((editor) => {
         })
       },
       selectionTransform: ctx => transform(ctx.handle, ctx.value, ctx.oldValue),
-      selectionTransformEnd: () => {},
+      selectionTransformEnd: () => {
+        startContext.rotate = 0
+        startContext.offsetMap = {}
+      },
     },
   }
 })
