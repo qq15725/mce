@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Element2D, Obb2D } from 'modern-canvas'
-import type { TransformValue } from './shared/TransformControls.vue'
 import { computed, onBeforeMount, onBeforeUnmount, ref, useTemplateRef } from 'vue'
 import { defaultResizeStrategy } from '../composables'
 import { useEditor } from '../composables/editor'
@@ -84,7 +83,7 @@ const selectionObbStyles = computed(() => {
   })
 })
 
-function createTransformContext(): Mce.SelectionTransformContext {
+function createTransformContext(): Mce.BaseSelectionTransformContext {
   return {
     startEvent: startEvent.value!,
     handle: (transformControls.value?.activeHandle ?? 'move') as Mce.TransformHandle,
@@ -110,12 +109,12 @@ function onEnd() {
 
 const transform = computed({
   get: () => exec('getTransformValue'),
-  set: (value: TransformValue) => {
+  set: (value: Mce.TransformValue) => {
     emit('selectionTransform', {
       ...createTransformContext(),
       value,
       oldValue: transform.value,
-    })
+    } as Mce.SelectionTransformContext)
   },
 })
 
