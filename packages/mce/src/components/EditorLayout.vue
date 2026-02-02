@@ -462,16 +462,10 @@ function onScroll() {
 }
 
 async function onDoubleclick(event: MouseEvent) {
-  const state = props.doubleclickStrategy({
+  props.doubleclickStrategy({
     event: event as any,
     editor,
   })
-  switch (state) {
-    case 'typing': {
-      await exec('startTyping', event)
-      break
-    }
-  }
 }
 
 function setComponentRef(ref: any, item: EditorComponent) {

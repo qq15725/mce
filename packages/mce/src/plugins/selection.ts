@@ -53,23 +53,14 @@ declare global {
       'selection.transform'?: () => void
     }
 
-    type TransformHandleDirection = 't' | 'l' | 'r' | 'b'
-    type TransformHandleCorner = 'tl' | 'tr' | 'bl' | 'br'
-    type TransformHandle
-      = | 'move'
-        | `resize-${TransformHandleDirection | TransformHandleCorner}`
-        | `rotate-${TransformHandleCorner}`
-        | `round-${TransformHandleCorner}`
-
     interface SelectionTransformContext {
       startEvent: MouseEvent | PointerEvent
       handle: TransformHandle
-      elements: Element2D[]
     }
 
     interface Events {
       selectionTransformStart: [context: SelectionTransformContext]
-      selectionTransform: [context: SelectionTransformContext]
+      selectionTransform: [context: SelectionTransformContext & { value: TransformValue, oldValue: TransformValue }]
       selectionTransformEnd: [context: SelectionTransformContext]
     }
   }
@@ -289,8 +280,8 @@ export default definePlugin((editor) => {
     ],
     events: {
       clearDoc: () => select('none'),
-      selectionTransform: ({ elements }) => {
-        elements.forEach((el) => {
+      selectionTransform: () => {
+        elementSelection.value.forEach((el) => {
           el.findAncestor((ancestor) => {
             if (
               isElement(ancestor)

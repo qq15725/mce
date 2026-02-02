@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { Element2D, Obb2D } from 'modern-canvas'
 import type { TransformValue } from './shared/TransformControls.vue'
-import { Aabb2D } from 'modern-canvas'
 import { computed, onBeforeMount, onBeforeUnmount, ref, useTemplateRef } from 'vue'
 import { defaultResizeStrategy } from '../composables'
 import { useEditor } from '../composables/editor'
@@ -11,8 +10,8 @@ import TransformControls from './shared/TransformControls.vue'
 const {
   emit,
   isElement,
+  exec,
   state,
-  resizeElement,
   selection,
   selectionMarquee,
   elementSelection,
@@ -20,16 +19,11 @@ const {
   selectionObbInDrawboard,
   camera,
   getObb,
-  getAabb,
   registerCommand,
   unregisterCommand,
-  inEditorIs,
   isLock,
   config,
-  snapThreshold,
-  getSnapPoints,
   hoverElement,
-  selectionAabb,
 } = useEditor()
 
 const transformControls = useTemplateRef('transformControlsTpl')
@@ -90,50 +84,14 @@ const selectionObbStyles = computed(() => {
   })
 })
 
-function snap(currentPos: number, type: 'x' | 'y'): number {
-  const points = getSnapPoints()
-  let closest: undefined | number
-  let minDist = Infinity
-
-  for (const pt of points[type]) {
-    const dist = pt - currentPos
-    const absDist = Math.abs(dist)
-    if (absDist < minDist) {
-      minDist = absDist
-      closest = pt
-    }
-  }
-
-  if (minDist < snapThreshold.value) {
-    currentPos = closest ?? currentPos
-  }
-
-  return currentPos
-}
-
 function createTransformContext(): Mce.SelectionTransformContext {
   return {
     startEvent: startEvent.value!,
     handle: (transformControls.value?.activeHandle ?? 'move') as Mce.TransformHandle,
-    elements: elementSelection.value,
   }
 }
 
-const startContext = {
-  rotate: 0,
-  offsetMap: {} as Record<number, { x: number, y: number }>,
-}
-
 function onStart() {
-  startContext.rotate = 0
-  const aabb = selectionAabb.value
-  elementSelection.value.forEach((el) => {
-    const elAabb = el.globalAabb
-    startContext.offsetMap[el.instanceId] = {
-      x: (elAabb.x - aabb.x) / aabb.width,
-      y: (elAabb.y - aabb.y) / aabb.height,
-    }
-  })
   emit('selectionTransformStart', createTransformContext())
 }
 
@@ -151,98 +109,13 @@ function onEnd() {
 }
 
 const transform = computed({
-  get: () => {
-    const { left, top, width, height, rotationDegrees } = selectionObb.value
-    return {
-      left,
-      top,
-      width,
-      height,
-      rotate: rotationDegrees,
-      borderRadius: elementSelection.value[0]?.style.borderRadius ?? 0,
-    }
-  },
+  get: () => exec('getTransformValue'),
   set: (value: TransformValue) => {
-    const oldTransform = transform.value
-    const handle: string = transformControls.value?.activeHandle ?? 'move'
-
-    if (handle === 'move') {
-      value.left = snap(Math.round(value.left), 'x')
-      value.top = snap(Math.round(value.top), 'y')
-    }
-
-    const offsetStyle = {
-      left: value.left - oldTransform.left,
-      top: value.top - oldTransform.top,
-      width: value.width - oldTransform.width,
-      height: value.height - oldTransform.height,
-      rotate: value.rotate - oldTransform.rotate,
-      borderRadius: value.borderRadius - oldTransform.borderRadius,
-    }
-
-    const els = elementSelection.value
-
-    if (els.length > 1) {
-      if (handle.startsWith('rotate')) {
-        offsetStyle.rotate = value.rotate - startContext.rotate
-        startContext.rotate += offsetStyle.rotate
-      }
-    }
-
-    els.forEach((el) => {
-      const style = el.style
-
-      const newStyle = {
-        left: style.left + offsetStyle.left,
-        top: style.top + offsetStyle.top,
-        width: style.width + offsetStyle.width,
-        height: style.height + offsetStyle.height,
-        rotate: (style.rotate + offsetStyle.rotate + 360) % 360,
-        borderRadius: Math.round(style.borderRadius + offsetStyle.borderRadius),
-      }
-
-      if (handle.startsWith('rotate')) {
-        newStyle.rotate = Math.round(newStyle.rotate * 100) / 100
-      }
-      else if (handle.startsWith('resize')) {
-        const scale = newStyle.rotate ? 100 : 1
-        const newWidth = Math.max(1, Math.round(newStyle.width * scale) / scale)
-        const newHeight = Math.max(1, Math.round(newStyle.height * scale) / scale)
-        const shape = el.shape
-        resizeElement(
-          el,
-          newWidth,
-          newHeight,
-          inEditorIs(el, 'Frame')
-            ? undefined
-            : shape.isValid()
-              ? { deep: true }
-              : handle.split('-')[1].length > 1
-                ? { deep: true, textFontSizeToFit: true }
-                : { deep: true, textToFit: true },
-        )
-        newStyle.width = el.style.width
-        newStyle.height = el.style.height
-      }
-
-      Object.assign(style, newStyle)
-
-      el.updateGlobalTransform()
+    emit('selectionTransform', {
+      ...createTransformContext(),
+      value,
+      oldValue: transform.value,
     })
-
-    if (els.length > 1) {
-      if (handle.startsWith('resize')) {
-        const selectionAabb = getAabb(els)
-        els.forEach((el) => {
-          const parentAabb = el.getParent<Element2D>()?.globalAabb ?? new Aabb2D()
-          const { x, y } = startContext.offsetMap[el.instanceId]!
-          el.style.left = selectionAabb.left - parentAabb.left + selectionAabb.width * x
-          el.style.top = selectionAabb.top - parentAabb.left + selectionAabb.height * y
-        })
-      }
-    }
-
-    emit('selectionTransform', createTransformContext())
   },
 })
 

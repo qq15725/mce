@@ -26,6 +26,7 @@ export default definePlugin((editor) => {
     isFrameNode,
     exec,
     root,
+    elementSelection,
   } = editor
 
   let startContext = {} as Record<string, any>
@@ -88,13 +89,13 @@ export default definePlugin((editor) => {
       { command: 'nestIntoFrame', handle: nestIntoFrame },
     ],
     events: {
-      selectionTransformStart: ({ handle, startEvent, elements }) => {
+      selectionTransformStart: ({ handle, startEvent }) => {
         if (handle === 'move' && !(startEvent as any)?.__FROM__) {
           const pointer = getGlobalPointer()
           const startFrame = frames.value.find(frame => frame.globalAabb.contains(pointer))
 
           const idSet = new Set<number>()
-          elements.forEach((el) => {
+          elementSelection.value.forEach((el) => {
             const frame = isFrameNode(el, true) ? el : el.findAncestor(v => isFrameNode(v, true))
             if (frame) {
               if (frame.equal(startFrame)) {
@@ -107,7 +108,7 @@ export default definePlugin((editor) => {
           })
           if (idSet.size === 1) {
             const ctx: Record<string, any> = {}
-            elements.forEach((el) => {
+            elementSelection.value.forEach((el) => {
               ctx[el.instanceId] = {
                 parent: el.getParent(),
                 index: el.getIndex(),
@@ -117,11 +118,11 @@ export default definePlugin((editor) => {
           }
         }
       },
-      selectionTransform: ({ handle, startEvent, elements }) => {
+      selectionTransform: ({ handle, startEvent }) => {
         if (handle === 'move' && !(startEvent as any)?.__FROM__) {
           if (Object.keys(startContext).length > 0) {
-            const excluded = new Set(elements.map(el => el.instanceId))
-            elements.forEach((el) => {
+            const excluded = new Set(elementSelection.value.map(el => el.instanceId))
+            elementSelection.value.forEach((el) => {
               nestIntoFrame(
                 el,
                 {

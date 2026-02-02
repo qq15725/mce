@@ -31,9 +31,7 @@ export type ActiveStrategy = (context: ActiveStrategyContext) =>
   | Element2D
   | undefined
 
-export type DoubleclickStrategy = (context: DoubleclickStrategyContext) =>
-  | Mce.State
-  | undefined
+export type DoubleclickStrategy = (context: DoubleclickStrategyContext) => void
 
 export type HoverStrategy = (context: HoverStrategyContext) =>
   | {
@@ -97,15 +95,7 @@ export const defaultActiveStrategy: ActiveStrategy = (context) => {
 }
 
 export const defaultDoubleclickStrategy: DoubleclickStrategy = (context) => {
-  const { editor } = context
-  const { elementSelection } = editor
-  const element = elementSelection.value[0]
-  if (element && !element.meta.lock) {
-    return element.foreground.isValid()
-      ? undefined
-      : 'typing'
-  }
-  return undefined
+  context.editor.exec('enter')
 }
 
 export const defaultHoverStrategy: HoverStrategy = (context) => {

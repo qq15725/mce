@@ -1,5 +1,4 @@
 import type { Node } from 'modern-canvas'
-import type { ComputedRef } from 'vue'
 import { Aabb2D } from 'modern-canvas'
 import { computed, h, ref } from 'vue'
 import SmartGuides from '../components/SmartGuides.vue'
@@ -8,9 +7,8 @@ import { BSTree } from '../utils/BSTree'
 
 declare global {
   namespace Mce {
-    interface Editor {
-      snapThreshold: ComputedRef<number>
-      getSnapPoints: (resizing?: boolean) => { x: number[], y: number[] }
+    interface Commands {
+      snap: (axis: 'x' | 'y', position: number) => number
     }
   }
 }
@@ -467,13 +465,32 @@ export default definePlugin((editor) => {
     return { x, y }
   }
 
-  Object.assign(editor, {
-    snapThreshold,
-    getSnapPoints,
-  })
+  function snap(axis: 'x' | 'y', position: number): number {
+    const points = getSnapPoints()
+    let closest: undefined | number
+    let minDist = Infinity
+
+    for (const pt of points[axis]) {
+      const dist = pt - position
+      const absDist = Math.abs(dist)
+      if (absDist < minDist) {
+        minDist = absDist
+        closest = pt
+      }
+    }
+
+    if (minDist < snapThreshold.value) {
+      position = closest ?? position
+    }
+
+    return position
+  }
 
   return {
     name: 'mce:smartGuides',
+    commands: [
+      { command: 'snap', handle: snap },
+    ],
     events: {
       selectionTransform: ({ handle }) => {
         if (
