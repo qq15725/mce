@@ -47,8 +47,8 @@ const element = computed(() => editor.elementSelection.value[0])
   <div style="width: 100vw; height: 100vh">
     <EditorLayout :editor="editor">
       <template #selection />
-      <template #selection-transform />
-      <template #selection-foreground-cropper="{ scale, setScale, setAspectRatio, ok, cancel }">
+      <template #selection.transform />
+      <template #selection.foreground-cropper="{ scale, setScale, setAspectRatio, ok, cancel }">
         <div class="bar cropbar">
           <button @click="() => setAspectRatio(0)">
             原图大小

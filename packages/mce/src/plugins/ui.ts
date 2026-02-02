@@ -20,9 +20,6 @@ declare global {
 
     interface Events {
       pointerMove: [event: PointerEvent]
-      selectionTransformStart: [context: SelectionTransformContext]
-      selectionTransform: [context: SelectionTransformContext]
-      selectionTransformEnd: [context: SelectionTransformContext]
     }
   }
 }
