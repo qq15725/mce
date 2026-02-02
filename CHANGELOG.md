@@ -1,3 +1,13 @@
+## [0.16.2](https://github.com/qq15725/mce/compare/v0.16.1...v0.16.2) (2026-02-02)
+
+
+### Bug Fixes
+
+* crdt ([1146693](https://github.com/qq15725/mce/commit/1146693f88660a14ceff8b9872ee11f7758c2b93))
+* crdt ([f9da952](https://github.com/qq15725/mce/commit/f9da952f860b0c4c8d9ad5f5d00150002b038302))
+
+
+
 ## [0.16.1](https://github.com/qq15725/mce/compare/v0.16.0...v0.16.1) (2026-01-31)
 
 
