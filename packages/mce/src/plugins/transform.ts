@@ -27,7 +27,7 @@ declare global {
     interface Commands {
       enter: () => void
       getTransformValue: () => TransformValue
-      transform: (handle: Mce.TransformHandle, value: TransformValue) => void
+      transform: (handle: Mce.TransformHandle, value: Partial<TransformValue>) => void
       flip: (type: Mce.FlipType) => void
       flipHorizontal: () => void
       flipVertical: () => void
@@ -61,7 +61,7 @@ export default definePlugin((editor) => {
     }
   }
 
-  const startContext = {
+  const startState = {
     rotate: 0,
     offsetMap: {} as Record<number, { x: number, y: number }>,
   }
@@ -80,10 +80,17 @@ export default definePlugin((editor) => {
 
   function transform(
     handle: Mce.TransformHandle,
-    value: Mce.TransformValue,
-    oldValue = transformValue.value,
+    partialValue: Partial<Mce.TransformValue>,
   ): void {
-    if (handle === 'move') {
+    const oldValue = transformValue.value
+    const value = {
+      ...oldValue,
+      ...partialValue,
+    }
+    const [type, direction = ''] = handle.split('-')
+    const isCorner = direction.length > 1
+
+    if (type === 'move') {
       value.left = exec('snap', 'x', Math.round(value.left))
       value.top = exec('snap', 'y', Math.round(value.top))
     }
@@ -100,9 +107,9 @@ export default definePlugin((editor) => {
     const els = elementSelection.value
 
     if (els.length > 1) {
-      if (handle.startsWith('rotate')) {
-        offsetStyle.rotate = value.rotate - startContext.rotate
-        startContext.rotate += offsetStyle.rotate
+      if (type === 'rotate') {
+        offsetStyle.rotate = value.rotate - startState.rotate
+        startState.rotate += offsetStyle.rotate
       }
     }
 
@@ -118,10 +125,10 @@ export default definePlugin((editor) => {
         borderRadius: Math.round(style.borderRadius + offsetStyle.borderRadius),
       }
 
-      if (handle.startsWith('rotate')) {
+      if (type === 'rotate') {
         newStyle.rotate = Math.round(newStyle.rotate * 100) / 100
       }
-      else if (handle.startsWith('resize')) {
+      else if (type === 'resize') {
         const scale = newStyle.rotate ? 100 : 1
         const newWidth = Math.max(1, Math.round(newStyle.width * scale) / scale)
         const newHeight = Math.max(1, Math.round(newStyle.height * scale) / scale)
@@ -134,7 +141,7 @@ export default definePlugin((editor) => {
             ? undefined
             : shape.isValid()
               ? { deep: true }
-              : handle.split('-')[1].length > 1
+              : isCorner
                 ? { deep: true, textFontSizeToFit: true }
                 : { deep: true, textToFit: true },
         )
@@ -148,11 +155,11 @@ export default definePlugin((editor) => {
     })
 
     if (els.length > 1) {
-      if (handle.startsWith('resize')) {
+      if (type === 'resize') {
         const selectionAabb = getAabb(els)
         els.forEach((el) => {
           const parentAabb = el.getParent<Element2D>()?.globalAabb ?? new Aabb2D()
-          const { x, y } = startContext.offsetMap[el.instanceId]!
+          const { x, y } = startState.offsetMap[el.instanceId]!
           el.style.left = selectionAabb.left - parentAabb.left + selectionAabb.width * x
           el.style.top = selectionAabb.top - parentAabb.left + selectionAabb.height * y
         })
@@ -195,16 +202,16 @@ export default definePlugin((editor) => {
         const aabb = selectionAabb.value
         elementSelection.value.forEach((el) => {
           const elAabb = el.globalAabb
-          startContext.offsetMap[el.instanceId] = {
+          startState.offsetMap[el.instanceId] = {
             x: (elAabb.x - aabb.x) / aabb.width,
             y: (elAabb.y - aabb.y) / aabb.height,
           }
         })
       },
-      selectionTransform: ctx => transform(ctx.handle, ctx.value, ctx.oldValue),
+      selectionTransform: ctx => transform(ctx.handle, ctx.value),
       selectionTransformEnd: () => {
-        startContext.rotate = 0
-        startContext.offsetMap = {}
+        startState.rotate = 0
+        startState.offsetMap = {}
       },
     },
   }

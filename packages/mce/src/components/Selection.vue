@@ -113,7 +113,6 @@ const transform = computed({
     emit('selectionTransform', {
       ...createTransformContext(),
       value,
-      oldValue: transform.value,
     } as Mce.SelectionTransformContext)
   },
 })

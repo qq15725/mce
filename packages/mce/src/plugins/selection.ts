@@ -61,7 +61,6 @@ declare global {
 
     interface SelectionTransformContext extends BaseSelectionTransformContext {
       value: TransformValue
-      oldValue: TransformValue
     }
 
     interface Events {
