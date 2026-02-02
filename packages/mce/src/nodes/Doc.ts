@@ -50,12 +50,14 @@ export class Doc extends Node {
     }
 
     const _doc = new YDoc(id)
-
+    _doc._yProps.set('id', this.id)
+    _doc._yProps.set('name', this.name)
     _doc.on(
       'update',
       throttle((update, origin) => this.emit('update', update, origin), 200),
     )
     _doc.on('history', um => this.emit('history', um))
+    _doc._proxyRoot(this)
 
     this._yDoc = _doc
     this._source = _source
@@ -73,20 +75,29 @@ export class Doc extends Node {
     this._yDoc.undoManager.redo()
   }
 
+  stopCapturing = (): void => {
+    this._yDoc.undoManager.stopCapturing()
+  }
+
+  clearHistory = (): void => {
+    this._yDoc.undoManager.clear()
+  }
+
   set = (source: Document): this => {
-    const { children = [], ..._props } = source
-    const props = {
-      id: this.id,
-      name: this.name,
-      ..._props,
-    }
+    const { children = [], ...props } = source
+    const oldTransacting = this._yDoc._transacting
+    this._yDoc.reset()
+    this._yDoc._transacting = true
+    this.stopCapturing()
     this.resetProperties()
-    this._yDoc.proxyRoot(this, props)
+    this.removeChildren()
+    this.setProperties(props)
     this.append(children)
+    this._yDoc._transacting = oldTransacting
     return this
   }
 
-  async load(): Promise<void> {
+  load = async (): Promise<void> => {
     const source = this._source
     await this._yDoc.load(async () => {
       if (this._localDb) {

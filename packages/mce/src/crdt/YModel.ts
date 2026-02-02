@@ -18,7 +18,7 @@ export interface YModel {
 }
 
 export class YModel extends Observable {
-  _transacting: boolean | undefined = undefined
+  _transacting?: boolean
   _yDoc: Y.Doc
   _yProps: Y.Map<unknown>
   indexeddb?: IndexeddbProvider
@@ -58,7 +58,7 @@ export class YModel extends Observable {
     console.info('loaded data from indexed db')
   }
 
-  transact<T>(fn: () => T, should = true): T {
+  transact<T>(fn: () => T, should: boolean = true): T {
     if (this._transacting !== undefined) {
       return fn()
     }
@@ -71,9 +71,7 @@ export class YModel extends Observable {
           result = fn()
         }
         catch (e) {
-          console.error(
-            `An error occurred while Y.doc ${doc.guid} transacting:`,
-          )
+          console.error(`An error occurred while Y.doc ${doc.guid} transacting:`)
           console.error(e)
         }
       },

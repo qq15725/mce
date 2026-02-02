@@ -80,7 +80,7 @@ export class YDoc extends YModel {
       return
     }
 
-    this._debug('yChildrenChange', event)
+    this._debug('[yChildrenChange]', event)
 
     const { keysChanged, changes } = event
 
@@ -116,19 +116,15 @@ export class YDoc extends YModel {
     super.destroy()
   }
 
-  proxyRoot(root: Node, props: Record<string, any>): this {
-    const { meta = {}, ..._props } = props
-    this.reset()
-    for (const key in _props) {
-      this._yProps.set(key, (_props as any)[key])
-    }
-    this._yProps.set('meta', new Y.Map(Object.entries(meta)))
+  _proxyRoot(root: Node): this {
+    const oldTransacting = this._transacting
     this._transacting = true
     this._proxyNode(
       root,
       this._yProps as any,
       this._yChildrenIds,
     )
+    this._transacting = oldTransacting
     return this
   }
 
@@ -167,7 +163,7 @@ export class YDoc extends YModel {
         return
       }
 
-      this._debug('_proxyProps', event, obj)
+      this._debug('[proxyProps]', event, obj)
 
       this.transact(() => {
         const { keysChanged, changes } = event
@@ -204,17 +200,18 @@ export class YDoc extends YModel {
         return
       }
       this.transact(() => {
-        this._debug(`addChild ${child.id}`, child.name, newIndex)
+        this._debug(`[addChild][${child.id}]`, child.name, newIndex)
         this._proxyNode(child)
         childrenIds.insert(newIndex, [child.id])
       })
     })
+
     node.on('removeChild', (child, oldIndex) => {
       if (this._transacting === false || child.internalMode !== 'default') {
         return
       }
       this.transact(() => {
-        this._debug(`removeChild ${child.id}`, child.name, oldIndex)
+        this._debug(`[removeChild][${child.id}]`, child.name, oldIndex)
         const index = childrenIds.toJSON().indexOf(child.id)
         if (index > -1) {
           childrenIds.delete(index, 1)
@@ -231,7 +228,7 @@ export class YDoc extends YModel {
     const observeFn = (event: YArrayEvent<any>, transaction: Transaction): void => {
       const skip = this._isSelfTransaction(transaction)
 
-      this._debug(`yChildren ${node.id} changes skip:${skip}`, event.changes.delta)
+      this._debug(`[yChildren][${node.id}][changes]${skip ? 'skip' : ''}`, event.changes.delta)
 
       let retain = 0
       event.changes.delta.forEach((action) => {
@@ -241,6 +238,7 @@ export class YDoc extends YModel {
 
         if (action.delete) {
           if (!skip) {
+            const deleted: Node[] = []
             for (let i = retain; i < retain + action.delete; i++) {
               const id = cachedChildrenIds[i]
               if (!id) {
@@ -252,11 +250,17 @@ export class YDoc extends YModel {
                 && child.parent?.equal(node)
                 && child.getIndex() === i
               ) {
-                this.transact(() => {
-                  child.remove()
-                  this._debug(`yChildren remove ${child.id}`, child.name, i)
-                }, false)
+                deleted.push(child)
+                this._debug(`[yChildren][remove] ${id}`, i)
               }
+            }
+
+            if (deleted.length > 0) {
+              this.transact(() => {
+                deleted.forEach((item) => {
+                  item.remove()
+                })
+              }, false)
             }
           }
 
@@ -272,7 +276,7 @@ export class YDoc extends YModel {
               const cb = (child: Node): void => {
                 this.transact(() => {
                   node.moveChild(child, retain + index)
-                  this._debug(`yChildren insert ${child.id}`, child.name, retain + index)
+                  this._debug(`[yChildren] insert ${child.id}`, child.name, retain + index)
                 }, false)
               }
               if (child) {
@@ -337,7 +341,7 @@ export class YDoc extends YModel {
       node.on('destroy', () => {
         this._nodeMap.delete(node.id)
         this._yChildren.delete(node.id)
-        this._debug('destroy', node.id)
+        this._debug('[destroy]', node.id)
       })
 
       this._proxyProps(node, yNode)
