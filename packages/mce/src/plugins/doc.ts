@@ -47,6 +47,7 @@ export default definePlugin((editor, options) => {
     renderEngine,
     config,
     to,
+    waitUntilFontLoad,
   } = editor
 
   const getDoc: Mce.Commands['getDoc'] = () => {
@@ -60,8 +61,6 @@ export default definePlugin((editor, options) => {
     oldRoot.remove()
     renderEngine.value.root.append(_root)
     root.value = _root
-    // TODO
-    ;(_root as any)._yDoc.root = root.value
     emit('setDoc', _root, oldRoot)
     return _root
   }
@@ -70,6 +69,7 @@ export default definePlugin((editor, options) => {
     docLoading.value = true
     emit('docLoading', source)
     try {
+      await waitUntilFontLoad()
       const _doc = await setDoc(await load(source))
       emit('docLoaded', source, _doc)
       docLoading.value = false

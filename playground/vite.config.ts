@@ -4,8 +4,8 @@ import vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vite'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
-const baseURI = 'https://neweditor.bige.show'
-// const baseURI = 'https://admin.bige.show'
+// const baseURI = 'https://neweditor.bige.show'
+const baseURI = 'https://admin.bige.show'
 
 // https://vite.dev/config/
 export default defineConfig(() => {

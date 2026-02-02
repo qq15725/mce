@@ -1,7 +1,6 @@
 import type { NodeEvents } from 'modern-canvas'
-import type { Element } from 'modern-idoc'
+import type { Document } from 'modern-idoc'
 import type * as Y from 'yjs'
-import type { AddNodeOptions } from '../crdt'
 import { throttle } from 'lodash-es'
 import { Node } from 'modern-canvas'
 import { YDoc } from '../crdt'
@@ -19,7 +18,7 @@ export interface Doc {
 }
 
 export class Doc extends Node {
-  protected _yDoc: YDoc
+  _yDoc: YDoc
   protected _source: any
 
   constructor(
@@ -50,7 +49,7 @@ export class Doc extends Node {
       }
     }
 
-    const _doc = new YDoc(this, id)
+    const _doc = new YDoc(id)
 
     _doc.on(
       'update',
@@ -66,16 +65,29 @@ export class Doc extends Node {
     return this._yDoc.transact(fn, should)
   }
 
-  addNode = (data: Element, options?: AddNodeOptions): Node => {
-    return this._yDoc.addNode(data, options)
-  }
-
   undo = (): void => {
     this._yDoc.undoManager.undo()
   }
 
   redo = (): void => {
     this._yDoc.undoManager.redo()
+  }
+
+  proxyNode = (node: Node): void => {
+    this._yDoc.proxyNode(node)
+  }
+
+  set = (source: Document): this => {
+    const { children = [], ..._props } = source
+    const props = {
+      id: this.id,
+      name: this.name,
+      ..._props,
+    }
+    this.resetProperties()
+    this._yDoc.set(this, props)
+    this.append(children)
+    return this
   }
 
   async load(): Promise<void> {
@@ -91,10 +103,10 @@ export class Doc extends Node {
       }
       if (source && typeof source !== 'string') {
         if (Array.isArray(source)) {
-          this._yDoc.set({ children: source })
+          this.set({ children: source })
         }
         else {
-          this._yDoc.set(source)
+          this.set(source)
         }
       }
     })

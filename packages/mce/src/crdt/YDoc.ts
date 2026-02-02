@@ -1,5 +1,5 @@
 import type { CoreObject } from 'modern-canvas'
-import type { Document, Element, PropertyAccessor } from 'modern-idoc'
+import type { PropertyAccessor } from 'modern-idoc'
 import type { Transaction, YArrayEvent, YMapEvent } from 'yjs'
 import type { YModelEvents } from './YModel'
 import { Element2D, Node } from 'modern-canvas'
@@ -45,12 +45,9 @@ export interface YDoc {
 export class YDoc extends YModel {
   protected _yChildren: Y.Map<YNode>
   protected _yChildrenIds: Y.Array<string>
-  protected _nodeMap = new Map<string, Node>()
+  _nodeMap = new Map<string, Node>()
 
-  constructor(
-    protected readonly root: Node,
-    id?: string,
-  ) {
+  constructor(id?: string) {
     super(id)
     this._yChildren = markRaw(this._yDoc.getMap('children'))
     this._yChildrenIds = markRaw(this._yDoc.getArray('childrenIds') as Y.Array<string>)
@@ -58,8 +55,6 @@ export class YDoc extends YModel {
       this._yChildren,
       this._yChildrenIds,
     ])
-    this._yProps.set('id', this.root.id)
-    this._yProps.set('name', this.root.name)
   }
 
   override async load(initFn?: () => void | Promise<void>): Promise<this> {
@@ -108,7 +103,6 @@ export class YDoc extends YModel {
 
   override reset(): this {
     super.reset()
-    this.root.resetProperties()
     this._yChildren.clear()
     this._yChildrenIds.delete(0, this._yChildrenIds.length)
     this._nodeMap.clear()
@@ -119,63 +113,22 @@ export class YDoc extends YModel {
 
   override destroy(): void {
     this.reset()
-    this.root.remove()
     super.destroy()
   }
 
-  protected _addNode(data: Element, options: AddNodeOptions = {}): Node {
-    const { parentId, index, regenId } = options
-    let parent
-    if (parentId && parentId !== this.root.id) {
-      parent = this._nodeMap.get(parentId) ?? this.root
-    }
-    else {
-      parent = this.root
-    }
-    const value = {
-      ...data,
-      meta: {
-        inCanvasIs: 'Element2D',
-        ...(data?.meta ?? {}),
-      },
-    }
-    if (regenId) {
-      delete value.id
-    }
-    const node = reactive(Node.parse(value)) as Node
-    if (index === undefined) {
-      parent.appendChild(node)
-    }
-    else {
-      parent.moveChild(node, index)
-    }
-    this._proxyNode(node)
-    return node
-  }
-
-  addNode(data: Element, options?: AddNodeOptions): Node {
-    return this.transact(() => this._addNode(data, options))
-  }
-
-  set(source: Document): this {
-    const { children = [], meta = {}, ..._props } = source
-    const props = {
-      id: this.root.id,
-      name: this.root.name,
-      ..._props,
-    }
+  set(root: Node, props: Record<string, any>): this {
+    const { meta = {}, ..._props } = props
     this.reset()
-    for (const key in props) {
-      this._yProps.set(key, (props as any)[key])
+    for (const key in _props) {
+      this._yProps.set(key, (_props as any)[key])
     }
     this._yProps.set('meta', new Y.Map(Object.entries(meta)))
     this._transacting = true
-    this._proxyNode(
-      this.root,
+    this.proxyNode(
+      root,
       this._yProps as any,
       this._yChildrenIds,
     )
-    this.root.append(children)
     return this
   }
 
@@ -252,7 +205,7 @@ export class YDoc extends YModel {
       }
       this.transact(() => {
         this._debug(`addChild ${child.id}`, child.name, newIndex)
-        this._proxyNode(child)
+        this.proxyNode(child)
         childrenIds.insert(newIndex, [child.id])
       })
     })
@@ -270,7 +223,7 @@ export class YDoc extends YModel {
     })
 
     node.children.forEach((child) => {
-      this._proxyNode(child)
+      this.proxyNode(child)
     })
 
     const cachedChildrenIds = childrenIds.toArray()
@@ -346,7 +299,7 @@ export class YDoc extends YModel {
     childrenIds.observe(observeFn)
   }
 
-  protected _proxyNode(node: Node, yNode?: YNode, yChildrenIds?: Y.Array<string>): void {
+  proxyNode(node: Node, yNode?: YNode, yChildrenIds?: Y.Array<string>): void {
     if (node.internalMode !== 'default') {
       return
     }
@@ -445,7 +398,7 @@ export class YDoc extends YModel {
           },
         }),
       ) as Node
-      this._proxyNode(node, yNode)
+      this.proxyNode(node, yNode)
       this._nodeMap.set(id, node)
     }
     return node

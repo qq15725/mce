@@ -1,5 +1,7 @@
-import type { Element2D, Node, Vector2Like } from 'modern-canvas'
+import type { Element2D, Vector2Like } from 'modern-canvas'
 import type { Element } from 'modern-idoc'
+import { Node } from 'modern-canvas'
+import { reactive } from 'vue'
 import { defineMixin } from '../mixin'
 
 declare global {
@@ -78,13 +80,34 @@ export default defineMixin((editor) => {
     let offsetIndex = index
 
     const elements = root.value.transact(() => {
+      const parentId = parent?.id
+      const index = offsetIndex
       const values = isArray ? value : [value]
-      const elements = values.map((element) => {
-        const el = root.value.addNode(element, {
-          parentId: parent?.id,
-          index: offsetIndex,
-          regenId,
-        }) as Element2D
+      const elements = values.map((data) => {
+        let parent
+        if (parentId && parentId !== root.value.id) {
+          parent = root.value._yDoc._nodeMap.get(parentId) ?? root.value
+        }
+        else {
+          parent = root.value
+        }
+        const value = {
+          ...data,
+          meta: {
+            inCanvasIs: 'Element2D',
+            ...(data?.meta ?? {}),
+          },
+        }
+        if (regenId) {
+          delete value.id
+        }
+        const el = reactive(Node.parse(value)) as Element2D
+        if (index === undefined) {
+          parent.appendChild(el)
+        }
+        else {
+          parent.moveChild(el, index)
+        }
 
         if (offsetIndex !== undefined) {
           offsetIndex++
