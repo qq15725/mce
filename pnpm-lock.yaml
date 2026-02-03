@@ -88,8 +88,8 @@ importers:
         specifier: ^0.4.4
         version: 0.4.4
       modern-idoc:
-        specifier: ^0.10.20
-        version: 0.10.20
+        specifier: ^0.10.21
+        version: 0.10.21
       modern-text:
         specifier: ^1.10.15
         version: 1.10.15
@@ -1556,8 +1556,8 @@ packages:
   earcut@3.0.2:
     resolution: {integrity: sha512-X7hshQbLyMJ/3RPhyObLARM2sNxxmRALLKx1+NVFFnQ9gKzmCrxm9+uLIAdBcvc8FNLpctqlQ2V6AE92Ol9UDQ==}
 
-  electron-to-chromium@1.5.283:
-    resolution: {integrity: sha512-3vifjt1HgrGW/h76UEeny+adYApveS9dH2h3p57JYzBSXJIKUJAvtmIytDKjcSCt9xHfrNCFJ7gts6vkhuq++w==}
+  electron-to-chromium@1.5.286:
+    resolution: {integrity: sha512-9tfDXhJ4RKFNerfjdCcZfufu49vg620741MNs26a9+bhLThdB+plgMeou98CAaHu/WATj2iHOOHTp1hWtABj2A==}
 
   empathic@2.0.0:
     resolution: {integrity: sha512-i6UzDscO/XfAcNYD75CfICkmfLedpyPDdozrLMmQc5ORaQcdMoc21OnlEylMIqI7U8eniKrPMxxtj8k0vhmJhA==}
@@ -2294,8 +2294,8 @@ packages:
   modern-idoc-svg@0.2.0:
     resolution: {integrity: sha512-3QDox0oB+O9PoUaS4pFHwB1xSqxNq/wtfAWVv+dcBm/Qb7MwlAoBsacO124B3outy3sKy4jKiN2DFepSZqUrgw==}
 
-  modern-idoc@0.10.20:
-    resolution: {integrity: sha512-I0eCLvRDCNs3VO1Bh3+//MmckigoZ4BJI2SGT0kRu1VXIgtD6aT8PxmOcqwkE712DcqJqJJXFJsVHd2rTM5KzA==}
+  modern-idoc@0.10.21:
+    resolution: {integrity: sha512-sdN5Qfjxto90VizQV8LujvUVD0d9B4iwom6gkPWKbJLF+QUOaCCet1BycBwrUrutAcZqjvFeRlOO352sa0iQow==}
 
   modern-mp4@0.2.0:
     resolution: {integrity: sha512-Z2X7+B1Kru8MTI2E6mpcSqm1E7FMxYg61DXoTkwq/KnMMfeyFcMCY4UVjvklFtdw4/NnvKA93bxw7XsqtMB1Tw==}
@@ -4184,7 +4184,7 @@ snapshots:
     dependencies:
       baseline-browser-mapping: 2.9.19
       caniuse-lite: 1.0.30001767
-      electron-to-chromium: 1.5.283
+      electron-to-chromium: 1.5.286
       node-releases: 2.0.27
       update-browserslist-db: 1.2.3(browserslist@4.28.1)
 
@@ -4437,7 +4437,7 @@ snapshots:
 
   earcut@3.0.2: {}
 
-  electron-to-chromium@1.5.283: {}
+  electron-to-chromium@1.5.286: {}
 
   empathic@2.0.0: {}
 
@@ -5380,7 +5380,7 @@ snapshots:
       colord: 2.9.3
       earcut: 3.0.2
       modern-font: 0.4.4
-      modern-idoc: 0.10.20
+      modern-idoc: 0.10.21
       modern-path2d: 1.4.16
       modern-text: 1.10.15
     optionalDependencies:
@@ -5398,10 +5398,10 @@ snapshots:
 
   modern-idoc-svg@0.2.0:
     dependencies:
-      modern-idoc: 0.10.20
+      modern-idoc: 0.10.21
       modern-text: 1.10.15
 
-  modern-idoc@0.10.20:
+  modern-idoc@0.10.21:
     dependencies:
       colord: 2.9.3
       nanoid: 5.1.6
@@ -5413,7 +5413,7 @@ snapshots:
   modern-openxml@1.10.1:
     dependencies:
       fflate: 0.8.2
-      modern-idoc: 0.10.20
+      modern-idoc: 0.10.21
       modern-path2d: 1.4.16
 
   modern-palette@2.0.0: {}
@@ -5427,7 +5427,7 @@ snapshots:
       colord: 2.9.3
       fflate: 0.8.2
       modern-font: 0.4.4
-      modern-idoc: 0.10.20
+      modern-idoc: 0.10.21
       modern-path2d: 1.4.16
       modern-text: 1.10.15
 
@@ -5435,7 +5435,7 @@ snapshots:
     dependencies:
       diff: 8.0.3
       modern-font: 0.4.4
-      modern-idoc: 0.10.20
+      modern-idoc: 0.10.21
       modern-path2d: 1.4.16
 
   mp4box@2.1.1: {}

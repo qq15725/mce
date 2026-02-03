@@ -7,12 +7,6 @@ import { isReactive, markRaw, reactive } from 'vue'
 import * as Y from 'yjs'
 import { IndexeddbProvider } from '../indexeddb'
 
-export interface AddNodeOptions {
-  parentId?: string
-  index?: number
-  regenId?: boolean
-}
-
 export type YNode = Y.Map<unknown> & {
   get:
     & ((prop: 'id') => string)
@@ -140,7 +134,7 @@ export class YDoc extends Observable {
   }
 
   protected _debug(..._args: any[]) {
-    console.log(..._args)
+    // console.log(..._args)
   }
 
   protected _yChildrenChange(
@@ -164,8 +158,6 @@ export class YDoc extends Observable {
           }
           break
         case 'delete':
-          this._nodeMap.get(id)?.destroy()
-          this._nodeMap.delete(id)
           this._debug('[yChildren][delete]', id)
           break
       }
@@ -177,6 +169,7 @@ export class YDoc extends Observable {
     this._yChildren.clear()
     this._yChildrenIds.delete(0, this._yChildrenIds.length)
     this._nodeMap.forEach((node) => {
+      // TODO
       if (!('_yDoc' in node)) {
         node.destroy()
       }
@@ -239,7 +232,7 @@ export class YDoc extends Observable {
         return
       }
 
-      this._debug('[proxyProps]', event, obj)
+      this._debug('[props]', event.keysChanged)
 
       this.transact(() => {
         const { keysChanged, changes } = event
@@ -276,8 +269,8 @@ export class YDoc extends Observable {
         return
       }
       this.transact(() => {
-        const childId = child.offsetGetProperty('id')
-        this._debug(`[addChild][${childId}]`, child.offsetGetProperty('name'), newIndex)
+        const childId = child.id
+        this._debug(`[addChild][${childId}]`, child.name, newIndex)
         this._proxyNode(child)
         childrenIds.insert(newIndex, [childId])
       })
@@ -288,14 +281,11 @@ export class YDoc extends Observable {
         return
       }
       this.transact(() => {
-        const childId = child.offsetGetProperty('id')
-        this._debug(`[removeChild][${childId}]`, child.offsetGetProperty('name'), oldIndex)
+        const childId = child.id
+        this._debug(`[removeChild][${childId}]`, child.name, oldIndex)
         const index = childrenIds.toJSON().indexOf(childId)
         if (index > -1) {
           childrenIds.delete(index, 1)
-          this._yChildren.delete(childId)
-          this._nodeMap.delete(childId)
-          child.setPropertyAccessor(undefined)
         }
       })
     })
