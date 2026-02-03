@@ -1,3 +1,31 @@
+## [0.16.3](https://github.com/qq15725/mce/compare/v0.16.2...v0.16.3) (2026-02-03)
+
+
+### Bug Fixes
+
+* 动态插槽分隔符还是用'.' ([e6e54af](https://github.com/qq15725/mce/commit/e6e54af8ca56a7f215f64578362edde438722444))
+* crdt ([9f16b41](https://github.com/qq15725/mce/commit/9f16b417b1a6a6f1486a45198be045b82bc04d9f))
+* crdt ([9ae6762](https://github.com/qq15725/mce/commit/9ae6762eff2f272f9185aa04ead2e0576c4fea88))
+* crdt ([0577510](https://github.com/qq15725/mce/commit/0577510f4a76756d98b58230a1e7cff70b0ca51e))
+* create Element2D ([50626d6](https://github.com/qq15725/mce/commit/50626d6b0f1d1b01df58d9f7a4de03dd50a747a9))
+* gc ([8cddb95](https://github.com/qq15725/mce/commit/8cddb954d69e673478471539580ed27f3915f3ec))
+* memory ([c840430](https://github.com/qq15725/mce/commit/c8404307005fd14cddb72699e7dc5057201b1a20))
+* ruler ([cee7984](https://github.com/qq15725/mce/commit/cee7984991fb5d65e5fd2ffb9b8fb92c6625ee02))
+* slots ([368686e](https://github.com/qq15725/mce/commit/368686e0eb66465757b6ffbf8e3cd54558040259))
+* third party ([94d87a1](https://github.com/qq15725/mce/commit/94d87a17a381a9f2d82aabc5ba0d9ac8dafa2bc6))
+* transform ([188972f](https://github.com/qq15725/mce/commit/188972fac1919263379b74ae8db6da680cf3e112))
+* transform ([5c04212](https://github.com/qq15725/mce/commit/5c0421264fb847f9ea13896eb4e4185494ecf94c))
+
+
+### Features
+
+* add transform command ([e90a106](https://github.com/qq15725/mce/commit/e90a106b62b83f15cf65bdb472d7f6ba6796a88d))
+* memory ([f18cdc4](https://github.com/qq15725/mce/commit/f18cdc4485f65a2cf8c51b66cd38ef505fa28ef1))
+* memory manager ([437147c](https://github.com/qq15725/mce/commit/437147c113b2c73f52a88f38ed63a458c1e4a8fc))
+* ruler config ([aaa7815](https://github.com/qq15725/mce/commit/aaa781510f44144a440a47f3a53d01aff7fb8161))
+
+
+
 ## [0.16.2](https://github.com/qq15725/mce/compare/v0.16.1...v0.16.2) (2026-02-02)
 
 
