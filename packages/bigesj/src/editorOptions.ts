@@ -3,7 +3,7 @@ export const editorOptions: Partial<Mce.Options> = {
   checkerboardStyle: 'grid',
   pixelGrid: true,
   camera: true,
-  ruler: true,
+  ruler: { visible: true },
   scrollbar: true,
   statusbar: true,
   frameGap: 48,
