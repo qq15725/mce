@@ -1,11 +1,11 @@
 import type { CoreObject } from 'modern-canvas'
-import type { PropertyAccessor } from 'modern-idoc'
+import type { ObservableEvents, PropertyAccessor } from 'modern-idoc'
 import type { Transaction, YArrayEvent, YMapEvent } from 'yjs'
-import type { YModelEvents } from './YModel'
 import { Element2D, Node } from 'modern-canvas'
+import { idGenerator, Observable } from 'modern-idoc'
 import { isReactive, markRaw, reactive } from 'vue'
 import * as Y from 'yjs'
-import { YModel } from './YModel'
+import { IndexeddbProvider } from '../indexeddb'
 
 export interface AddNodeOptions {
   parentId?: string
@@ -31,8 +31,9 @@ export type YNode = Y.Map<unknown> & {
     & (<T = unknown>(prop: string) => T)
 }
 
-export interface YDocEvents extends YModelEvents {
-  //
+export interface YDocEvents extends ObservableEvents {
+  history: [arg0: Y.UndoManager]
+  update: [arg0: Uint8Array, arg1: any, arg2: Y.Doc, arg3: Transaction]
 }
 
 export interface YDoc {
@@ -42,34 +43,104 @@ export interface YDoc {
   emit: <K extends keyof YDocEvents & string>(event: K, ...args: YDocEvents[K]) => this
 }
 
-export class YDoc extends YModel {
-  protected _yChildren: Y.Map<YNode>
-  protected _yChildrenIds: Y.Array<string>
+export class YDoc extends Observable {
+  _transacting?: boolean
+  _yDoc: Y.Doc
+  _yProps: Y.Map<unknown>
+  _yChildren: Y.Map<YNode>
+  _yChildrenIds: Y.Array<string>
   _nodeMap = new Map<string, Node>()
+  indexeddb?: IndexeddbProvider
+  declare undoManager: Y.UndoManager
+  protected _ready = false
 
-  constructor(id?: string) {
-    super(id)
+  constructor(
+    public id = idGenerator(),
+  ) {
+    super()
+    this._yDoc = markRaw(new Y.Doc({ guid: id }))
+    this._yProps = markRaw(this._yDoc.getMap('props'))
     this._yChildren = markRaw(this._yDoc.getMap('children'))
     this._yChildrenIds = markRaw(this._yDoc.getArray('childrenIds') as Y.Array<string>)
-    this._setupUndoManager([
+    this._initUndoManager([
       this._yChildren,
       this._yChildrenIds,
     ])
+    this._yDoc.on('update', (...args) => this.emit('update', ...args))
+    this._yChildren.observe(this._yChildrenChange.bind(this) as any)
   }
 
-  override async load(initFn?: () => void | Promise<void>): Promise<this> {
-    return super.load(async () => {
+  protected _isSelfTransaction(transaction?: Y.Transaction): boolean {
+    if (transaction) {
+      return !transaction.origin || transaction.origin === this._yDoc.clientID
+    }
+    else {
+      return this._transacting === false
+    }
+  }
+
+  protected _initUndoManager(typeScope: any[] = []): void {
+    const um = markRaw(new Y.UndoManager([
+      this._yProps,
+      ...typeScope,
+    ], {
+      trackedOrigins: new Set([this._yDoc.clientID]),
+    }))
+    um.trackedOrigins.add(um)
+    const onHistory = (): void => {
+      this.emit('history', um)
+    }
+    um.on('stack-item-added', onHistory)
+    um.on('stack-item-updated', onHistory)
+    um.on('stack-item-popped', onHistory)
+    um.on('stack-cleared', onHistory)
+    this.undoManager = um
+  }
+
+  async loadIndexeddb(): Promise<void> {
+    const indexeddb = new IndexeddbProvider(this._yDoc.guid, this._yDoc)
+    this.indexeddb = await indexeddb.whenSynced
+    console.info('loaded data from indexed db')
+  }
+
+  transact<T>(fn: () => T, should: boolean = true): T {
+    if (this._transacting !== undefined) {
+      return fn()
+    }
+    this._transacting = should
+    let result = undefined as T
+    const doc = this._yDoc
+    doc.transact(
+      () => {
+        try {
+          result = fn()
+        }
+        catch (e) {
+          console.error(`An error occurred while Y.doc ${doc.guid} transacting:`)
+          console.error(e)
+        }
+      },
+      should ? doc.clientID : null,
+    )
+    this._transacting = undefined
+    return result!
+  }
+
+  async load(initFn?: () => void | Promise<void>): Promise<this> {
+    if (this._ready) {
+      return this
+    }
+    this._ready = true
+    await this.transact(async () => {
+      this._yDoc.load()
       await initFn?.()
-      this._yChildren.observe(this._yChildrenChange.bind(this) as any)
-    })
-  }
-
-  protected _isSelfTransaction(transaction: Y.Transaction) {
-    return !transaction.origin || transaction.origin === this._yDoc.clientID
+    }, false)
+    this.undoManager.clear()
+    return this
   }
 
   protected _debug(..._args: any[]) {
-    // console.log(..._args)
+    console.log(..._args)
   }
 
   protected _yChildrenChange(
@@ -80,31 +151,36 @@ export class YDoc extends YModel {
       return
     }
 
-    this._debug('[yChildrenChange]', event)
-
     const { keysChanged, changes } = event
 
-    keysChanged.forEach((key) => {
-      const change = changes.keys.get(key)
-      const yNode = this._yChildren.get(key)
+    keysChanged.forEach((id) => {
+      const change = changes.keys.get(id)
+      const yNode = this._yChildren.get(id)
       switch (change?.action) {
         case 'add':
           if (yNode) {
             this._initYNode(yNode)
+            this._debug('[yChildren][add]', id, yNode.toJSON())
           }
           break
         case 'delete':
-          this._nodeMap.get(key)?.remove()
-          this._nodeMap.delete(key)
+          this._nodeMap.get(id)?.destroy()
+          this._nodeMap.delete(id)
+          this._debug('[yChildren][delete]', id)
           break
       }
     })
   }
 
-  override reset(): this {
-    super.reset()
+  reset(): this {
+    this._yProps.clear()
     this._yChildren.clear()
     this._yChildrenIds.delete(0, this._yChildrenIds.length)
+    this._nodeMap.forEach((node) => {
+      if (!('_yDoc' in node)) {
+        node.destroy()
+      }
+    })
     this._nodeMap.clear()
     this.undoManager.clear()
     this.indexeddb?.clearData()
@@ -132,7 +208,7 @@ export class YDoc extends YModel {
     const accessor: PropertyAccessor = {
       getProperty: key => yMap.doc ? yMap.get(key) : undefined,
       setProperty: (key, value) => {
-        if (this._transacting === false) {
+        if (this._isSelfTransaction()) {
           return
         }
         this.transact(() => yMap.set(key, value))
@@ -196,7 +272,7 @@ export class YDoc extends YModel {
 
   protected _proxyChildren(node: Node, childrenIds: Y.Array<string>): void {
     node.on('addChild', (child, newIndex) => {
-      if (this._transacting === false || child.internalMode !== 'default') {
+      if (this._isSelfTransaction() || child.internalMode !== 'default') {
         return
       }
       this.transact(() => {
@@ -207,14 +283,17 @@ export class YDoc extends YModel {
     })
 
     node.on('removeChild', (child, oldIndex) => {
-      if (this._transacting === false || child.internalMode !== 'default') {
+      if (this._isSelfTransaction() || child.internalMode !== 'default') {
         return
       }
       this.transact(() => {
-        this._debug(`[removeChild][${child.id}]`, child.name, oldIndex)
-        const index = childrenIds.toJSON().indexOf(child.id)
+        const childId = child.id
+        this._debug(`[removeChild][${childId}]`, child.name, oldIndex)
+        const index = childrenIds.toJSON().indexOf(childId)
         if (index > -1) {
+          this._yChildren.delete(childId)
           childrenIds.delete(index, 1)
+          this._nodeMap.delete(childId)
         }
       })
     })
@@ -227,8 +306,6 @@ export class YDoc extends YModel {
 
     const observeFn = (event: YArrayEvent<any>, transaction: Transaction): void => {
       const skip = this._isSelfTransaction(transaction)
-
-      this._debug(`[yChildren][${node.id}][changes]${skip ? 'skip' : ''}`, event.changes.delta)
 
       let retain = 0
       event.changes.delta.forEach((action) => {
@@ -251,7 +328,7 @@ export class YDoc extends YModel {
                 && child.getIndex() === i
               ) {
                 deleted.push(child)
-                this._debug(`[yChildren][remove] ${id}`, i)
+                this._debug(`[childrenIds][remove][${id}]`, i)
               }
             }
 
@@ -276,7 +353,7 @@ export class YDoc extends YModel {
               const cb = (child: Node): void => {
                 this.transact(() => {
                   node.moveChild(child, retain + index)
-                  this._debug(`[yChildren] insert ${child.id}`, child.name, retain + index)
+                  this._debug(`[childrenIds][insert][${id}]`, retain + index)
                 }, false)
               }
               if (child) {
@@ -336,12 +413,6 @@ export class YDoc extends YModel {
       yNode.set('parentId', node.parent?.id)
       node.on('parented', () => {
         yNode.set('parentId', node.parent?.id)
-      })
-
-      node.on('destroy', () => {
-        this._nodeMap.delete(node.id)
-        this._yChildren.delete(node.id)
-        this._debug('[destroy]', node.id)
       })
 
       this._proxyProps(node, yNode)

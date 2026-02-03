@@ -1,16 +1,15 @@
 import type { NormalizedShape } from 'modern-idoc'
 import type { ParsedPresetShapeDefinition } from 'modern-openxml'
 import { OoxmlNode, parsePresetShapeDefinition } from 'modern-openxml'
-import presetShapeDefinitions from '../assets/presetShapeDefinitions.xml?raw'
 
-export function convertShapeElementToShape(el: Record<string, any>): NormalizedShape {
+export async function convertShapeElementToShape(el: Record<string, any>): Promise<NormalizedShape> {
   if (!['square', 'circle', 'triangle', 'star', 'line'].includes(el.drawType)) {
     return {
-      svg: createPresetShape(el.drawType, {
+      svg: (await createPresetShape(el.drawType, {
         ...el,
         width: el.style.width,
         height: el.style.height,
-      }).svg,
+      })).svg,
     }
   }
 
@@ -329,8 +328,9 @@ function _createPresetShape(node: OoxmlNode, options: Options): BigeParsedPreset
 let root: OoxmlNode | undefined
 let presetShapes: Record<string, BigeParsedPresetShapeDefinition> | undefined
 
-function getRoot() {
+async function getRoot() {
   if (!root) {
+    const presetShapeDefinitions = await import('../assets/presetShapeDefinitions.xml?raw').then(rep => rep.default)
     root = OoxmlNode.fromXML(presetShapeDefinitions)
   }
   return root
@@ -343,9 +343,9 @@ const excluded = new Set([
   'chartPlus',
 ])
 
-export function getPresetShapes(options: Options = {}) {
+export async function getPresetShapes(options: Options = {}) {
   if (!presetShapes) {
-    presetShapes = getRoot()
+    presetShapes = (await getRoot())
       .get('presetShapeDefinitons/*')
       .filter(node => !excluded.has(node.name))
       .map(node => _createPresetShape(node, {
@@ -360,7 +360,7 @@ export function getPresetShapes(options: Options = {}) {
   return presetShapes
 }
 
-export function getPresetShapeGroupds(options: Options = {}) {
+export async function getPresetShapeGroupds(options: Options = {}) {
   const groups: Record<string, any> = {}
   for (const cate in presetShapeCates) {
     groups[cate] = {
@@ -368,7 +368,7 @@ export function getPresetShapeGroupds(options: Options = {}) {
       shapes: [],
     }
   }
-  const shapes = getPresetShapes(options)
+  const shapes = await getPresetShapes(options)
   for (const key in shapes) {
     const shape = shapes[key]
     groups[shape.cate].shapes.push(shape)
@@ -376,8 +376,8 @@ export function getPresetShapeGroupds(options: Options = {}) {
   return groups
 }
 
-export function createPresetShape(name: string, options: Options = {}): BigeParsedPresetShapeDefinition {
-  const node = getRoot().find(name)
+export async function createPresetShape(name: string, options: Options = {}): Promise<BigeParsedPresetShapeDefinition> {
+  const node = (await getRoot()).find(name)
   return _createPresetShape(node!, {
     width: 18,
     height: 18,

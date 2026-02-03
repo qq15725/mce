@@ -2,7 +2,7 @@ import type { NodeEvents } from 'modern-canvas'
 import type { Document } from 'modern-idoc'
 import type * as Y from 'yjs'
 import { throttle } from 'lodash-es'
-import { Node } from 'modern-canvas'
+import { assets, Node } from 'modern-canvas'
 import { YDoc } from '../crdt'
 
 export interface DocEvents extends NodeEvents {
@@ -86,6 +86,7 @@ export class Doc extends Node {
   set = (source: Document): this => {
     const { children = [], ...props } = source
     const oldTransacting = this._yDoc._transacting
+    assets.gc()
     this._yDoc.reset()
     this._yDoc._transacting = true
     this.stopCapturing()
@@ -99,6 +100,7 @@ export class Doc extends Node {
 
   load = async (): Promise<void> => {
     const source = this._source
+    this._source = undefined
     await this._yDoc.load(async () => {
       if (this._localDb) {
         try {
@@ -117,5 +119,10 @@ export class Doc extends Node {
         }
       }
     })
+  }
+
+  destroy = () => {
+    super.destroy()
+    this._yDoc.destroy()
   }
 }

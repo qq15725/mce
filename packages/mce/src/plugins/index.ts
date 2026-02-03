@@ -19,6 +19,7 @@ import _import from './import'
 import _json from './json'
 import _layers from './layers'
 import _madeWith from './madeWith'
+import _memory from './memory'
 import _menu from './menu'
 import _move from './move'
 import _new from './new'
@@ -65,6 +66,7 @@ export const plugins = [
   _json,
   _layers,
   _madeWith,
+  _memory,
   _menu,
   _move,
   _new,

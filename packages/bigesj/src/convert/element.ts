@@ -181,7 +181,7 @@ export async function convertElement(
     case 'shape':
       meta.inCanvasIs = 'Element2D'
       meta.inPptIs = 'Shape'
-      element.shape = convertShapeElementToShape(el)
+      element.shape = await convertShapeElementToShape(el)
       element.fill = { color: el.fill }
       element.outline = {
         color: el.stroke,

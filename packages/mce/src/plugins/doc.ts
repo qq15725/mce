@@ -48,6 +48,8 @@ export default definePlugin((editor, options) => {
     config,
     to,
     waitUntilFontLoad,
+    fonts,
+    assets,
   } = editor
 
   const getDoc: Mce.Commands['getDoc'] = () => {
@@ -55,13 +57,16 @@ export default definePlugin((editor, options) => {
   }
 
   const setDoc: Mce.Commands['setDoc'] = async (source) => {
+    fonts.clear()
     const oldRoot = root.value
-    const _root = new Doc(source, config.value.localDb)
-    await _root.load()
     oldRoot.remove()
+    const _root = new Doc(source, config.value.localDb)
+    assets.gc()
+    await _root.load()
     renderEngine.value.root.append(_root)
     root.value = _root
     emit('setDoc', _root, oldRoot)
+    oldRoot.destroy()
     return _root
   }
 

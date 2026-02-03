@@ -80,16 +80,15 @@ export default defineMixin((editor) => {
     let offsetIndex = index
 
     const elements = root.value.transact(() => {
-      const parentId = parent?.id
       const index = offsetIndex
       const values = isArray ? value : [value]
       const elements = values.map((data) => {
-        let parent
-        if (parentId && parentId !== root.value.id) {
-          parent = root.value._yDoc._nodeMap.get(parentId) ?? root.value
+        let _parent
+        if (parent && parent.id !== root.value.id) {
+          _parent = parent
         }
         else {
-          parent = root.value
+          _parent = root.value
         }
         const value = {
           ...data,
@@ -103,10 +102,10 @@ export default defineMixin((editor) => {
         }
         const el = reactive(Node.parse(value)) as Element2D
         if (index === undefined) {
-          parent.appendChild(el)
+          _parent.appendChild(el)
         }
         else {
-          parent.moveChild(el, index)
+          _parent.moveChild(el, index)
         }
 
         if (offsetIndex !== undefined) {

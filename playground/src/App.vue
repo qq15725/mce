@@ -12,6 +12,7 @@ import 'mce/styles'
 
 const editor = new Editor({
   ...editorOptions,
+  debug: true,
   plugins: [
     bigesj({ font: true }),
     gaoding(),

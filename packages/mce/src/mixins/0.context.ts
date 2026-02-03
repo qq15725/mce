@@ -1,7 +1,7 @@
-import type { Cursor, Vector2, Vector2Like } from 'modern-canvas'
+import type { Assets, Cursor, Vector2, Vector2Like } from 'modern-canvas'
 import type { IndexCharacter as _IndexCharacter } from 'modern-text/web-components'
 import type { Ref } from 'vue'
-import { Aabb2D, Camera2D, DrawboardEffect, Element2D, Engine, Node, Timeline } from 'modern-canvas'
+import { Aabb2D, assets, Camera2D, DrawboardEffect, Element2D, Engine, Node, Timeline } from 'modern-canvas'
 import { Fonts } from 'modern-font'
 import { computed, markRaw, onBeforeMount, onScopeDispose, reactive, ref, watch } from 'vue'
 import { defineMixin } from '../mixin'
@@ -32,6 +32,7 @@ declare global {
 
     interface Editor {
       fonts: Fonts
+      assets: Assets
       renderEngine: Ref<Engine>
       timeline: Ref<Timeline>
       camera: Ref<Camera2D>
@@ -180,6 +181,7 @@ export default defineMixin((editor) => {
 
   Object.assign(editor, {
     fonts,
+    assets,
     renderEngine,
     timeline,
     camera,

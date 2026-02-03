@@ -49,7 +49,6 @@ export default definePlugin((editor) => {
     exec,
     inEditorIs,
     resizeElement,
-    getAabb,
   } = editor
 
   async function enter() {
@@ -63,7 +62,12 @@ export default definePlugin((editor) => {
 
   const startState = {
     rotate: 0,
-    offsetMap: {} as Record<number, { x: number, y: number }>,
+    minMaxMap: {} as Record<number, {
+      minX: number
+      minY: number
+      maxX: number
+      maxY: number
+    }>,
   }
 
   const transformValue = computed(() => {
@@ -89,6 +93,8 @@ export default definePlugin((editor) => {
     }
     const [type, direction = ''] = handle.split('-')
     const isCorner = direction.length > 1
+    const els = elementSelection.value
+    const isMultiple = els.length > 1
 
     if (type === 'move') {
       value.left = exec('snap', 'x', Math.round(value.left))
@@ -104,9 +110,7 @@ export default definePlugin((editor) => {
       borderRadius: value.borderRadius - oldValue.borderRadius,
     }
 
-    const els = elementSelection.value
-
-    if (els.length > 1) {
+    if (isMultiple) {
       if (type === 'rotate') {
         offsetStyle.rotate = value.rotate - startState.rotate
         startState.rotate += offsetStyle.rotate
@@ -129,17 +133,22 @@ export default definePlugin((editor) => {
         newStyle.rotate = Math.round(newStyle.rotate * 100) / 100
       }
       else if (type === 'resize') {
+        if (isMultiple) {
+          const parentAabb = el.getParent<Element2D>()?.globalAabb ?? new Aabb2D()
+          const minMax = startState.minMaxMap[el.instanceId]!
+          newStyle.left = value.left - parentAabb.left + value.width * minMax.minX
+          newStyle.top = value.top - parentAabb.left + value.height * minMax.minY
+          newStyle.width = value.width * (minMax.maxX - minMax.minX)
+          newStyle.height = value.height * (minMax.maxY - minMax.minY)
+        }
         const scale = newStyle.rotate ? 100 : 1
-        const newWidth = Math.max(1, Math.round(newStyle.width * scale) / scale)
-        const newHeight = Math.max(1, Math.round(newStyle.height * scale) / scale)
-        const shape = el.shape
         resizeElement(
           el,
-          newWidth,
-          newHeight,
+          Math.max(1, Math.round(newStyle.width * scale) / scale),
+          Math.max(1, Math.round(newStyle.height * scale) / scale),
           inEditorIs(el, 'Frame')
             ? undefined
-            : shape.isValid()
+            : el.shape.isValid()
               ? { deep: true }
               : isCorner
                 ? { deep: true, textFontSizeToFit: true }
@@ -153,18 +162,6 @@ export default definePlugin((editor) => {
 
       el.updateGlobalTransform()
     })
-
-    if (els.length > 1) {
-      if (type === 'resize') {
-        const selectionAabb = getAabb(els)
-        els.forEach((el) => {
-          const parentAabb = el.getParent<Element2D>()?.globalAabb ?? new Aabb2D()
-          const { x, y } = startState.offsetMap[el.instanceId]!
-          el.style.left = selectionAabb.left - parentAabb.left + selectionAabb.width * x
-          el.style.top = selectionAabb.top - parentAabb.left + selectionAabb.height * y
-        })
-      }
-    }
   }
 
   function flip(type: Mce.FlipType) {
@@ -202,16 +199,18 @@ export default definePlugin((editor) => {
         const aabb = selectionAabb.value
         elementSelection.value.forEach((el) => {
           const elAabb = el.globalAabb
-          startState.offsetMap[el.instanceId] = {
-            x: (elAabb.x - aabb.x) / aabb.width,
-            y: (elAabb.y - aabb.y) / aabb.height,
+          startState.minMaxMap[el.instanceId] = {
+            minX: (elAabb.min.x - aabb.min.x) / aabb.width,
+            minY: (elAabb.min.y - aabb.min.y) / aabb.height,
+            maxX: (elAabb.max.x - aabb.min.x) / aabb.width,
+            maxY: (elAabb.max.y - aabb.min.y) / aabb.height,
           }
         })
       },
       selectionTransform: ctx => transform(ctx.handle, ctx.value),
       selectionTransformEnd: () => {
         startState.rotate = 0
-        startState.offsetMap = {}
+        startState.minMaxMap = {}
       },
     },
   }

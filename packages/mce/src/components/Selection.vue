@@ -28,12 +28,14 @@ const {
 const transformControls = useTemplateRef('transformControlsTpl')
 const startEvent = ref<MouseEvent | PointerEvent>()
 const resizeStrategy = computed(() => {
-  const first = elementSelection.value[0]
-  if (first) {
-    if (first.text.isValid()) {
-      return 'lockAspectRatioDiagonal'
+  if (elementSelection.value.length === 1) {
+    const el = elementSelection.value[0]
+    if (el) {
+      if (el.text.isValid()) {
+        return 'lockAspectRatioDiagonal'
+      }
+      return defaultResizeStrategy(el)
     }
-    return defaultResizeStrategy(first)
   }
   return undefined
 })
