@@ -1,4 +1,5 @@
 import type { Element } from 'modern-idoc'
+import { Element2D } from 'modern-canvas'
 import { Doc } from '../nodes'
 import { definePlugin } from '../plugin'
 
@@ -49,7 +50,6 @@ export default definePlugin((editor, options) => {
     to,
     waitUntilFontLoad,
     fonts,
-    assets,
   } = editor
 
   const getDoc: Mce.Commands['getDoc'] = () => {
@@ -60,9 +60,27 @@ export default definePlugin((editor, options) => {
     fonts.clear()
     const oldRoot = root.value
     const _root = new Doc(source, config.value.localDb)
+    // TODO gc
+    oldRoot.findOne((node) => {
+      if (node instanceof Element2D) {
+        node.foreground.texture?.destroy()
+        node.foreground.animatedTexture?.destroy()
+        node.fill.texture?.destroy()
+        node.fill.animatedTexture?.destroy()
+        node.background.texture?.destroy()
+        node.background.animatedTexture?.destroy()
+        // TODO
+        // if (node.context.fillStyle && 'destroy' in node.context.fillStyle) {
+        //   node.context.fillStyle.destroy()
+        // }
+        // if (node.context.strokeStyle && 'destroy' in node.context.strokeStyle) {
+        //   node.context.strokeStyle.destroy()
+        // }
+      }
+      return false
+    })
     root.value = _root
     oldRoot.remove()
-    assets.gc()
     await _root.load()
     renderEngine.value.root.append(_root)
     emit('setDoc', _root, oldRoot)
