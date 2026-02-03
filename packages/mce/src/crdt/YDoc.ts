@@ -160,7 +160,7 @@ export class YDoc extends Observable {
         case 'add':
           if (yNode) {
             this._initYNode(yNode)
-            this._debug('[yChildren][add]', id, yNode.toJSON())
+            this._debug('[yChildren][add]', id)
           }
           break
         case 'delete':
@@ -276,9 +276,10 @@ export class YDoc extends Observable {
         return
       }
       this.transact(() => {
-        this._debug(`[addChild][${child.id}]`, child.name, newIndex)
+        const childId = child.id
+        this._debug(`[addChild][${childId}]`, child.name, newIndex)
         this._proxyNode(child)
-        childrenIds.insert(newIndex, [child.id])
+        childrenIds.insert(newIndex, [childId])
       })
     })
 

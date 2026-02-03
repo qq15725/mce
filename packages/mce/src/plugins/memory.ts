@@ -30,13 +30,19 @@ export default definePlugin((editor) => {
 
     if ('memory' in performance) {
       const memory = performance.memory as any
-      console.log(`used memory: ${humanBytes(memory.usedJSHeapSize)}, total memory: ${humanBytes(memory.totalJSHeapSize)}`)
+      console.log(
+        `%cused memory: ${humanBytes(memory.usedJSHeapSize)}, total memory: ${humanBytes(memory.totalJSHeapSize)}`,
+        'color: #CCC',
+      )
     }
 
     if ('measureUserAgentSpecificMemory' in performance) {
       const measureUserAgentSpecificMemory = performance.measureUserAgentSpecificMemory as any
       measureUserAgentSpecificMemory(editor).then((bytes: any) => {
-        console.log(`editor memory: ${humanBytes(bytes.bytes)}`)
+        console.log(
+          `%ceditor memory: ${humanBytes(bytes.bytes)}`,
+          'color: #CCC',
+        )
       })
     }
   }
