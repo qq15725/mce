@@ -10,12 +10,12 @@ declare global {
       locked?: boolean
     }
 
-    interface Options {
-      ruler: boolean & RulerConfig
-    }
-
     interface Config {
       ruler: RulerConfig
+    }
+
+    interface Options {
+      ruler?: boolean & RulerConfig
     }
 
     interface Commands {
