@@ -2,7 +2,7 @@ import type { NodeEvents } from 'modern-canvas'
 import type { Document } from 'modern-idoc'
 import type * as Y from 'yjs'
 import { throttle } from 'lodash-es'
-import { assets, Node } from 'modern-canvas'
+import { Node } from 'modern-canvas'
 import { YDoc } from '../crdt'
 
 export interface DocEvents extends NodeEvents {
@@ -86,7 +86,6 @@ export class Doc extends Node {
   set = (source: Document): this => {
     const { children = [], ...props } = source
     const oldTransacting = this._yDoc._transacting
-    assets.gc()
     this._yDoc.reset()
     this._yDoc._transacting = true
     this.stopCapturing()

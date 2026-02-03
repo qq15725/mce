@@ -2,17 +2,57 @@ import type { NormalizedDocument } from 'modern-idoc'
 import { idGenerator } from 'modern-idoc'
 import { convertLayout } from './layout'
 
+export interface ConvertDocOptions {
+  gap?: number
+  included?: number[]
+}
+
 export async function convertDoc(
   doc: Record<string, any>,
-  gap = 0,
+  options: ConvertDocOptions = {},
 ): Promise<NormalizedDocument> {
   const {
+    gap = 0,
+    included,
+  } = options
+
+  let data: Record<string, any>
+  let raw: Record<string, any> = {}
+  if (doc.content) {
+    const { content, ...rest } = doc
+    raw = rest
+    if (typeof content === 'string') {
+      data = JSON.parse(content)
+    }
+    else {
+      data = { ...content }
+    }
+  }
+  else {
+    data = { ...doc }
+  }
+
+  const version = Number(data.version || 1)
+
+  // v2
+  if (Number(version) > 1) {
+    if (included && data.children) {
+      data.children = data.children.filter((_: any, index: number) => included.includes(index))
+    }
+    return data as NormalizedDocument
+  }
+
+  // v1
+  let {
     layouts,
-    raw = {},
-  } = doc
+  } = data
 
   const context = {
     endTime: 0,
+  }
+
+  if (included) {
+    layouts = layouts.filter((_: any, index: number) => included.includes(index))
   }
 
   let children = await Promise.all(

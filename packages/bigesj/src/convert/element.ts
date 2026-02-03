@@ -1,6 +1,6 @@
 import type { NormalizedElement } from 'modern-idoc'
 import type { BigeElement } from './types'
-import { idGenerator, isGradientFill, normalizeGradientFill } from 'modern-idoc'
+import { clearUndef, idGenerator, isGradientFill, normalizeGradientFill } from 'modern-idoc'
 import { parseAnimations } from './animation'
 import { convertBackground } from './background'
 import { croppingToCropRect } from './cropping'
@@ -145,11 +145,11 @@ export async function convertElement(
         ...convertTextStyle(el),
       }
 
-      element.text = {
+      element.text = clearUndef({
         content: convertTextContent(el),
         effects: await convertTextEffects(el),
         // plugins: [deformation(el.deformation?.type?.endsWith("byWord") ? -1 : 999, () => el.deformation)],
-      } as any
+      } as any)
 
       meta.textEffectsId = el.effectId
 
@@ -218,5 +218,6 @@ export async function convertElement(
       console.warn(el)
       break
   }
-  return element
+
+  return clearUndef(element)
 }

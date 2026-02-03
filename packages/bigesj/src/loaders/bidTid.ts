@@ -1,5 +1,4 @@
 import type { Editor } from 'mce'
-import type { NormalizedDocument } from 'modern-idoc'
 import { convertDoc } from '../convert'
 
 export function bidTidLoader(editor: Editor, api: Record<string, any>): Mce.Loader {
@@ -29,24 +28,9 @@ export function bidTidLoader(editor: Editor, api: Record<string, any>): Mce.Load
           }
           const included = text2 ? text2.split(',').map(v => Number(v)) : undefined
           const bigeDoc = await load(id)
-          const { content: _content, ...raw } = bigeDoc
-          const content = JSON.parse(_content)
-          const version = Number(content.version ?? 1)
-          let doc: NormalizedDocument
-          if (version > 1) {
-            doc = content
-            if (!doc.meta) {
-              doc.meta = {}
-            }
-            doc.meta.version = version
-            doc.meta.raw = raw
-          }
-          else {
-            if (included !== undefined) {
-              content.layouts = content.layouts.filter((_: any, index: number) => included.includes(index))
-            }
-            doc = await convertDoc({ ...content, raw })
-          }
+          const doc = await convertDoc(bigeDoc, {
+            included,
+          })
           maxTime = Math.max(maxTime, doc.meta?.maxTime ?? 0)
           return doc
         }),

@@ -1,6 +1,6 @@
 import type { Node } from 'modern-canvas'
 import type { Ref, WritableComputedRef } from 'vue'
-import { assets, clamp, TimelineNode, Video2D } from 'modern-canvas'
+import { clamp, TimelineNode, Video2D } from 'modern-canvas'
 import { computed, onBeforeMount, onScopeDispose, ref } from 'vue'
 import { defineMixin } from '../mixin'
 
@@ -90,6 +90,7 @@ export default defineMixin((editor) => {
 
   return () => {
     const {
+      assets,
       on,
       off,
     } = editor

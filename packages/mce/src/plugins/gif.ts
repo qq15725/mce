@@ -1,4 +1,4 @@
-import { assets, render } from 'modern-canvas'
+import { render } from 'modern-canvas'
 import { definePlugin } from '../plugin'
 
 declare global {
@@ -15,6 +15,7 @@ declare global {
 
 export default definePlugin((editor, options) => {
   const {
+    assets,
     fonts,
     to,
   } = editor

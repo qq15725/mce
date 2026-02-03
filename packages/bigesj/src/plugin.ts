@@ -1,7 +1,6 @@
 import type { Editor } from 'mce'
 import type { Node } from 'modern-canvas'
 import { definePlugin } from 'mce'
-import { assets } from 'modern-canvas'
 import { onBeforeMount, onScopeDispose } from 'vue'
 import { useFonts } from './composables'
 import { bidTidLoader, bigeLoader } from './loaders'
@@ -46,6 +45,7 @@ export function plugin(options: PluginOptions = {}) {
 
 async function setupFonts(editor: Editor, api: Record<string, any>): Promise<void> {
   const {
+    assets,
     on,
     off,
     root,

@@ -59,12 +59,12 @@ export default definePlugin((editor, options) => {
   const setDoc: Mce.Commands['setDoc'] = async (source) => {
     fonts.clear()
     const oldRoot = root.value
-    oldRoot.remove()
     const _root = new Doc(source, config.value.localDb)
+    root.value = _root
+    oldRoot.remove()
     assets.gc()
     await _root.load()
     renderEngine.value.root.append(_root)
-    root.value = _root
     emit('setDoc', _root, oldRoot)
     oldRoot.destroy()
     return _root
