@@ -93,7 +93,11 @@ const element = computed(() => editor.elementSelection.value[0])
           <button @click="() => editor.exec('clearRulerLines')">
             清空标尺
           </button>
-          <input v-model="editor.config.value.ruler.lineColor" type="color">
+          <input
+            :value="editor.config.value.ruler.lineColor || '#000000'"
+            type="color"
+            @input="e => editor.config.value.ruler.lineColor = e.target.value"
+          >
         </div>
       </template>
 
