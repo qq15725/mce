@@ -21,6 +21,7 @@ const editor = new Editor({
     pdf(),
     svg(),
   ],
+  ruler: { visible: true },
   watermark: '/example.jpg',
   screenCenterOffset: { left: 100, top: 100, right: 100, bottom: 100 },
   gifWorkerUrl,
@@ -82,7 +83,20 @@ const element = computed(() => editor.elementSelection.value[0])
           <span v-else>FLOATBAR-TOP</span>
         </div>
       </template>
-      <template #drawboard />
+      <template #drawboard>
+        <div class="bar toolbar">
+          <button @click="() => editor.exec('view', 'ruler')">
+            {{ editor.config.value.ruler.visible ? '隐藏' : '显示' }}标尺
+          </button>
+          <button @click="editor.config.value.ruler.locked = !editor.config.value.ruler.locked">
+            {{ editor.config.value.ruler.locked ? '解锁' : '锁定' }}标尺
+          </button>
+          <button @click="() => editor.exec('clearRulerLines')">
+            清空标尺
+          </button>
+          <input v-model="editor.config.value.ruler.lineColor" type="color">
+        </div>
+      </template>
 
       <EditorLayoutItem
         position="left"
@@ -117,5 +131,11 @@ const element = computed(() => editor.elementSelection.value[0])
   position: absolute;
   bottom: -12px;
   transform: translateY(100%);
+}
+.toolbar{
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  pointer-events: auto;
 }
 </style>

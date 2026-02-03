@@ -1,25 +1,42 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useEditor } from '../composables/editor'
 import Ruler from './shared/Ruler.vue'
 
 const {
   camera,
   selectionAabbInDrawboard,
+  config,
 } = useEditor()
+
+const hLines = ref<number[]>([])
+const vLines = ref<number[]>([])
+function clean() {
+  hLines.value = []
+  vLines.value = []
+}
+
+defineExpose({
+  clean,
+})
 </script>
 
 <template>
   <div class="mce-rulers">
     <Ruler
+      v-model="hLines"
       refline
       :zoom="camera.zoom.x"
       :position="camera.position.x"
       :selected="selectionAabbInDrawboard"
       axis
       :size="16"
+      :line-color="config.ruler.lineColor"
+      :locked="config.ruler.locked"
     />
 
     <Ruler
+      v-model="vLines"
       refline
       :zoom="camera.zoom.y"
       :position="camera.position.y"
@@ -27,6 +44,8 @@ const {
       axis
       vertical
       :size="16"
+      :line-color="config.ruler.lineColor"
+      :locked="config.ruler.locked"
     />
 
     <div class="mce-rulers__left-top" />

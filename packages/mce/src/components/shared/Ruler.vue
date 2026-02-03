@@ -6,7 +6,6 @@ import {
   computed,
   onBeforeUnmount,
   onMounted,
-  reactive,
   ref,
   useAttrs,
   useTemplateRef,
@@ -30,6 +29,10 @@ const props = withDefaults(
     pixelRatio?: number
     refline?: boolean
     axis?: boolean
+    borderColor?: string
+    textColor?: string
+    lineColor?: string
+    locked?: boolean
     labelFormat?: (tick: number) => string
   }>(),
   {
@@ -54,10 +57,10 @@ const offscreenCanvas = 'OffscreenCanvas' in window
   : document.createElement('canvas')
 const ctx = offscreenCanvas.getContext('2d') as CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
 const box = ref<AxisAlignedBoundingBox>()
-const colors = reactive({
-  text: '#000',
-  border: '#000',
-})
+
+const borderColor = computed(() => props.borderColor ?? (canvas.value ? window.getComputedStyle(canvas.value).getPropertyValue('--text-color').trim() : '#000'))
+const textColor = computed(() => props.textColor ?? (canvas.value ? window.getComputedStyle(canvas.value).getPropertyValue('--text-color').trim() : '#000'))
+const lineColor = computed(() => props.lineColor ?? 'rgb(var(--mce-theme-primary))')
 
 function drawSelected() {
   if (!props.selected?.width || !props.selected?.height)
@@ -135,6 +138,18 @@ function pxToNum(px: number) {
   return Math.round((px + props.position) / props.zoom)
 }
 
+const renderTransfer = 'transferToImageBitmap' in offscreenCanvas
+  ? (cvs: HTMLCanvasElement) => {
+      cvs.getContext('bitmaprenderer')!.transferFromImageBitmap(offscreenCanvas.transferToImageBitmap())
+    }
+  : (cvs: HTMLCanvasElement) => {
+      const ctx = cvs.getContext('2d')
+      if (ctx) {
+        ctx.clearRect(0, 0, cvs.width, cvs.height)
+        ctx.drawImage(offscreenCanvas, 0, 0)
+      }
+    }
+
 function render() {
   const cvs = canvas.value
 
@@ -158,7 +173,7 @@ function render() {
       [0, props.size],
       [props.vertical ? cvs.height : cvs.width, props.size],
       2,
-      colors.border,
+      borderColor.value,
     )
   }
 
@@ -174,8 +189,8 @@ function render() {
 
   ctx.beginPath()
   ctx.lineWidth = 1
-  ctx.strokeStyle = colors.text
-  ctx.fillStyle = colors.text
+  ctx.strokeStyle = textColor.value
+  ctx.fillStyle = textColor.value
   for (let tick = start.value; tick <= end.value; tick += inc) {
     if (tick % unit.value === 0) {
       drawPrimary(numToPx(tick), props.labelFormat(tick))
@@ -184,7 +199,7 @@ function render() {
   ctx.stroke()
   ctx.beginPath()
   ctx.lineWidth = 1
-  ctx.strokeStyle = colors.border
+  ctx.strokeStyle = borderColor.value
   for (let tick = start.value; tick <= end.value; tick += inc) {
     if (tick % unit.value === 0) {
       //
@@ -197,20 +212,11 @@ function render() {
 
   ctx.restore()
 
-  if ('transferToImageBitmap' in offscreenCanvas) {
-    cvs.getContext('bitmaprenderer')!.transferFromImageBitmap(offscreenCanvas.transferToImageBitmap())
-  }
-  else {
-    const mainCtx = cvs.getContext('2d')
-    if (mainCtx) {
-      mainCtx.clearRect(0, 0, cvs.width, cvs.height)
-      mainCtx.drawImage(offscreenCanvas, 0, 0)
-    }
-  }
+  renderTransfer(cvs)
 }
 
 watch(
-  [canvas, () => props.zoom, () => props.position, () => props.selected],
+  [canvas, () => props.zoom, () => props.position, () => props.selected, () => borderColor.value, () => textColor.value],
   () => {
     render()
   },
@@ -229,22 +235,14 @@ const resize = useDebounceFn(() => {
   render()
 }, 50)
 
-onMounted(() => {
-  resize()
-  const dom = canvas.value
-  if (dom) {
-    const style = window.getComputedStyle(dom)
-    colors.text = style.getPropertyValue('--text-color').trim()
-    colors.border = style.getPropertyValue('--border-color').trim()
-  }
-})
+onMounted(resize)
 
 onBeforeUnmount(() => {
   offscreenCanvas.width = 0
   offscreenCanvas.height = 0
 })
 
-const savedLines = ref<number[]>([])
+const savedLines = defineModel<number[]>({ default: () => [] })
 const tempLine = ref<number>()
 const lines = computed(() => {
   const res = [...savedLines.value]
@@ -283,10 +281,16 @@ function onLeave() {
 }
 
 function onReflineDblclick(index: number) {
+  if (props.locked) {
+    return
+  }
   savedLines.value.splice(index, 1)
 }
 
 function onReflineMousedown(e: MouseEvent, index: number) {
+  if (props.locked) {
+    return
+  }
   e.stopPropagation()
   e.preventDefault()
   const move = (e: MouseEvent) => {
@@ -333,12 +337,14 @@ defineExpose({
       'mce-ruler-refline--vertical': props.vertical,
       'mce-ruler-refline--horizontal': !props.vertical,
       'mce-ruler-refline--temp': item === tempLine,
+      'mce-ruler-refline--locked': props.locked,
     }"
     :style="{
       [props.vertical ? 'height' : 'width']: '0',
       [props.vertical ? 'width' : 'height']: '100%',
       [props.vertical ? 'top' : 'left']: `${numToPx(item)}px`,
       [props.vertical ? 'left' : 'top']: 0,
+      '--line-color': lineColor,
     }"
     @dblclick="onReflineDblclick(index)"
     @mousedown="onReflineMousedown($event, index)"
@@ -389,7 +395,7 @@ defineExpose({
   position: absolute;
   border-style: dashed;
   border-width: 0;
-  border-color: rgb(var(--mce-theme-primary));
+  border-color: var(--line-color);
   pointer-events: auto !important;
 
   &--vertical {
@@ -403,8 +409,12 @@ defineExpose({
   }
 
   &--temp {
-    border-color: rgba(var(--mce-theme-primary), var(--mce-low-emphasis-opacity));
+    opacity: var(--mce-low-emphasis-opacity);
     pointer-events: none !important;
+  }
+
+  &--locked {
+    cursor: not-allowed;
   }
 }
 </style>

@@ -12,5 +12,6 @@ export default antfu({ type: 'lib' }, {
     'ts/no-empty-object-type': 'off',
     'vue/custom-event-name-casing': 'off',
     'vue/valid-template-root': 'off',
+    'vue/valid-v-slot': 'off',
   },
 })
