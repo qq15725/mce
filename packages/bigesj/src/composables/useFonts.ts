@@ -29,8 +29,6 @@ export function useFonts() {
     loadFont: baseLoadFont,
   } = useEditor()
 
-  const fontPromises = ref(new Map<string, Promise<FontLoadedResult>>())
-
   async function loadBigeFonts(url: string, init = false): Promise<BigeFont[]> {
     let result = bigeFonts.value
     if (!init || !result.length) {
@@ -98,29 +96,21 @@ export function useFonts() {
     const names = typeof name === 'string' ? [name] : name
     const result: Promise<FontLoadedResult | undefined>[] = []
     for (const name of names) {
-      let promise = fontPromises.value.get(name)
-      if (!promise) {
-        const font = searchBigeFont(name)
-        if (font) {
-          promise = fontPromises.value.get(font.en_name)
-          if (!promise) {
-            const names = Array.from(
+      const font = searchBigeFont(name)
+      if (font) {
+        result.push(
+          baseLoadFont({
+            family: Array.from(
               new Set(
                 [name, font.en_name]
                   .filter(Boolean)
                   .map((v: any) => v.replace(/"/g, '')),
               ),
-            )
-            promise = baseLoadFont({
-              family: names,
-              src: font.fonturl,
-            })
-            names.forEach(name => fontPromises.value.set(name, promise!))
-            fontPromises.value.set(String(name), promise)
-          }
-        }
+            ),
+            src: font.fonturl,
+          }),
+        )
       }
-      promise && result.push(promise)
     }
     return await Promise.all(result)
   }
