@@ -3,14 +3,21 @@ import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {
-    interface Config {
-      ruler: {
-        visible?: boolean
-        adsorbed?: boolean
-        lineColor?: string
-        locked?: boolean
-      }
+    interface RulerConfig {
+      visible?: boolean
+      adsorbed?: boolean
+      lineColor?: string
+      locked?: boolean
     }
+
+    interface Options {
+      ruler: boolean & RulerConfig
+    }
+
+    interface Config {
+      ruler: RulerConfig
+    }
+
     interface Commands {
       clearRulerLines: () => void
     }
@@ -19,18 +26,28 @@ declare global {
 
 export default definePlugin((editor) => {
   const {
-    config,
     registerConfig,
     componentRefs,
   } = editor
 
-  registerConfig('ruler', {
-    visible: false,
+  const defaultConfig = (visible = true) => ({
+    visible,
     adsorbed: false,
     locked: false,
-  } as Mce.Config['ruler'])
+  })
+
+  const ruler = registerConfig('ruler', {
+    setter: (val) => {
+      if (typeof val === 'boolean') {
+        return defaultConfig(val)
+      }
+      return val
+    },
+    default: () => defaultConfig(),
+  })
 
   const name = 'mce:ruler'
+
   function clearRulerLines() {
     componentRefs.value[name].forEach((com: any) => com?.clean())
   }
@@ -44,7 +61,7 @@ export default definePlugin((editor) => {
       {
         type: 'overlay',
         component: Rulers,
-        ignore: () => !config.value.ruler.visible,
+        ignore: () => !ruler.value.visible,
         order: 'after',
       },
     ],

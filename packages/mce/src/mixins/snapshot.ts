@@ -29,7 +29,7 @@ export default defineMixin((editor) => {
     registerConfig,
   } = editor
 
-  registerConfig('frameScreenshot', false)
+  registerConfig('frameScreenshot', { default: false })
 
   async function snapshot(): Promise<void> {
     frameThumbs.value = frames.value.map(() => ({

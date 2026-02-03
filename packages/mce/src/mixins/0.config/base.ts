@@ -49,31 +49,32 @@ export default defineMixin((editor, options) => {
     config,
   } = editor
 
-  registerConfig('theme', 'system')
-  registerConfig('watermark', undefined)
-  registerConfig('msaa', false)
-  registerConfig('checkerboard', false)
-  registerConfig('checkerboardStyle', 'grid')
-  registerConfig('pixelGrid', false)
-  registerConfig('pixelate', false)
-  registerConfig('camera', false)
-  registerConfig('frameOutline', false)
-  registerConfig('frameGap', 48)
-  registerConfig('typographyStrategy', 'autoHeight')
-  registerConfig('transformControls', {})
-  registerConfig('screenCenterOffset', { left: 0, top: 0, bottom: 0, right: 0 })
-  registerConfig('localDb', false)
+  registerConfig('theme', { default: 'system' })
+  registerConfig('watermark', { default: undefined })
+  registerConfig('msaa', { default: false })
+  registerConfig('checkerboard', { default: false })
+  registerConfig('checkerboardStyle', { default: 'grid' })
+  registerConfig('pixelGrid', { default: false })
+  registerConfig('pixelate', { default: false })
+  registerConfig('camera', { default: false })
+  registerConfig('frameOutline', { default: false })
+  registerConfig('frameGap', { default: 48 })
+  registerConfig('typographyStrategy', { default: 'autoHeight' })
+  registerConfig('transformControls', { default: {} })
+  registerConfig('screenCenterOffset', { default: { left: 0, top: 0, bottom: 0, right: 0 } })
+  registerConfig('localDb', { default: false })
 
   return () => {
     const {
       renderEngine,
       camera,
       drawboardEffect,
+      setConfigValue,
     } = editor
 
     Object.keys(config.value).forEach((key) => {
       if (key in options) {
-        ;(config.value as any)[key] = (options as any)[key]
+        setConfigValue(key, (options as any)[key])
       }
     })
 

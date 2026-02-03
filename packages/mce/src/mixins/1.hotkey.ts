@@ -236,7 +236,9 @@ export default defineMixin((editor) => {
     registerConfig,
   } = editor
 
-  const hotkeysData = registerConfig<Mce.HotkeyData[]>('hotkeys', [])
+  const hotkeysData = registerConfig<Mce.HotkeyData[]>('hotkeys', {
+    default: () => [],
+  })
   const hotkeys: Mce.Editor['hotkeys'] = reactive(new Map())
 
   function registerHotkey(value: Mce.Hotkey | Mce.Hotkey[]): void {

@@ -64,7 +64,7 @@ export default definePlugin((editor) => {
     viewportAabb,
   } = editor
 
-  registerConfig('zoomToFit', 'contain')
+  registerConfig('zoomToFit', { default: 'contain' })
 
   async function zoomTo(target: Mce.ZoomTarget, options: Mce.ZoomToOptions = {}) {
     const {

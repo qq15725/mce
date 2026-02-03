@@ -7,11 +7,17 @@ import { defineMixin } from '../mixin'
 
 declare global {
   namespace Mce {
+    interface ConfigDeclaration<T = any> {
+      default?: T | (() => T)
+      getter?: (val: any) => any
+      setter?: (val: any) => any
+    }
+
     interface Editor {
       getConfigValue: (path: keyof Config | string, defaultValue?: any) => any
       setConfigValue: (path: keyof Config | string, value: any) => void
       getConfig: <T = any>(path: string) => WritableComputedRef<T>
-      registerConfig: <T>(path: keyof Config | string, initValue: T) => WritableComputedRef<T>
+      registerConfig: <T>(path: keyof Config | string, declaration?: ConfigDeclaration<T>) => WritableComputedRef<T>
       importConfig: () => Promise<void>
       exportConfig: () => Blob
       saveAsConfig: (filename?: string) => void
@@ -24,11 +30,22 @@ export default defineMixin((editor) => {
     config,
   } = editor
 
+  const configDeclarations = new Map<string, Mce.ConfigDeclaration>()
+
   function getConfigValue(path: string, defaultValue?: any): any {
-    return getObjectValueByPath(config.value, path) ?? defaultValue
+    let value = getObjectValueByPath(config.value, path)
+    const declaration = configDeclarations.get(path)
+    if (declaration?.getter) {
+      value = declaration.getter(value)
+    }
+    return value ?? defaultValue
   }
 
   function setConfigValue(path: string, value: any): void {
+    const declaration = configDeclarations.get(path)
+    if (declaration?.setter) {
+      value = declaration.setter(value)
+    }
     setObjectValueByPath(config.value, path, value)
   }
 
@@ -39,10 +56,16 @@ export default defineMixin((editor) => {
     })
   }
 
-  function registerConfig<T>(path: string, initValue?: T): WritableComputedRef<T> {
+  function registerConfig<T>(path: string, declaration: Mce.ConfigDeclaration<T> = {}): WritableComputedRef<T> {
+    configDeclarations.set(path, declaration)
     const ref = getConfig(path)
     if (ref.value === undefined) {
-      ref.value = initValue
+      if (typeof declaration.default === 'function') {
+        ref.value = (declaration.default as any)()
+      }
+      else {
+        ref.value = declaration.default
+      }
     }
     return ref
   }

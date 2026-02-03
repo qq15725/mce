@@ -6,6 +6,7 @@ import {
   computed,
   onBeforeUnmount,
   onMounted,
+  reactive,
   ref,
   useAttrs,
   useTemplateRef,
@@ -58,8 +59,12 @@ const offscreenCanvas = 'OffscreenCanvas' in window
 const ctx = offscreenCanvas.getContext('2d') as CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
 const box = ref<AxisAlignedBoundingBox>()
 
-const borderColor = computed(() => props.borderColor ?? (canvas.value ? window.getComputedStyle(canvas.value).getPropertyValue('--text-color').trim() : '#000'))
-const textColor = computed(() => props.textColor ?? (canvas.value ? window.getComputedStyle(canvas.value).getPropertyValue('--text-color').trim() : '#000'))
+const colors = reactive({
+  text: '#000',
+  border: '#000',
+})
+const borderColor = computed(() => props.borderColor ?? colors.border)
+const textColor = computed(() => props.textColor ?? colors.text)
 const lineColor = computed(() => props.lineColor ?? 'rgb(var(--mce-theme-primary))')
 
 function drawSelected() {
@@ -235,7 +240,15 @@ const resize = useDebounceFn(() => {
   render()
 }, 50)
 
-onMounted(resize)
+onMounted(() => {
+  resize()
+  const dom = canvas.value
+  if (dom) {
+    const style = window.getComputedStyle(dom)
+    colors.text = style.getPropertyValue('--text-color').trim()
+    colors.border = style.getPropertyValue('--border-color').trim()
+  }
+})
 
 onBeforeUnmount(() => {
   offscreenCanvas.width = 0

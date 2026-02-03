@@ -21,7 +21,6 @@ const editor = new Editor({
     pdf(),
     svg(),
   ],
-  ruler: { visible: true },
   watermark: '/example.jpg',
   screenCenterOffset: { left: 100, top: 100, right: 100, bottom: 100 },
   gifWorkerUrl,

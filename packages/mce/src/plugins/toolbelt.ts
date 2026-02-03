@@ -14,7 +14,7 @@ export default definePlugin((editor) => {
     registerConfig,
   } = editor
 
-  const toolbelt = registerConfig('toolbelt', false)
+  const toolbelt = registerConfig('toolbelt', { default: false })
 
   return {
     name: 'mce:toolbelt',

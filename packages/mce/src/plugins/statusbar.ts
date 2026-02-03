@@ -18,7 +18,7 @@ export default definePlugin((editor) => {
     registerConfig,
   } = editor
 
-  registerConfig('statusbar', false)
+  registerConfig('statusbar', { default: false })
 
   return {
     name: 'mce:statusbar',

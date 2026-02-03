@@ -18,7 +18,7 @@ export default definePlugin((editor) => {
     registerConfig,
   } = editor
 
-  registerConfig('timeline', false)
+  registerConfig('timeline', { default: false })
 
   return {
     name: 'mce:timeline',

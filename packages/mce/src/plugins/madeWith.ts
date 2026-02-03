@@ -15,7 +15,7 @@ export default definePlugin((editor) => {
     registerConfig,
   } = editor
 
-  registerConfig('madeWith', false)
+  registerConfig('madeWith', { default: false })
 
   return {
     name: 'mce:madeWith',

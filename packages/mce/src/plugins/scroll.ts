@@ -42,7 +42,7 @@ export default definePlugin((editor) => {
     screenCenterOffset,
   } = editor
 
-  registerConfig('scrollbar', false)
+  registerConfig('scrollbar', { default: false })
 
   const scrollTo: Mce.Commands['scrollTo'] = async (target, options = {}) => {
     const {

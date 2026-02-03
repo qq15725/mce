@@ -19,7 +19,7 @@ export default definePlugin((editor) => {
     config,
   } = editor
 
-  registerConfig('nodeCreator', false)
+  registerConfig('nodeCreator', { default: false })
 
   return {
     name: 'mce:node',
