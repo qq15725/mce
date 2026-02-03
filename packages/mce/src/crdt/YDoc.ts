@@ -276,8 +276,8 @@ export class YDoc extends Observable {
         return
       }
       this.transact(() => {
-        const childId = child.id
-        this._debug(`[addChild][${childId}]`, child.name, newIndex)
+        const childId = child.offsetGetProperty('id')
+        this._debug(`[addChild][${childId}]`, child.offsetGetProperty('name'), newIndex)
         this._proxyNode(child)
         childrenIds.insert(newIndex, [childId])
       })
@@ -288,13 +288,14 @@ export class YDoc extends Observable {
         return
       }
       this.transact(() => {
-        const childId = child.id
-        this._debug(`[removeChild][${childId}]`, child.name, oldIndex)
+        const childId = child.offsetGetProperty('id')
+        this._debug(`[removeChild][${childId}]`, child.offsetGetProperty('name'), oldIndex)
         const index = childrenIds.toJSON().indexOf(childId)
         if (index > -1) {
-          this._yChildren.delete(childId)
           childrenIds.delete(index, 1)
+          this._yChildren.delete(childId)
           this._nodeMap.delete(childId)
+          child.setPropertyAccessor(undefined)
         }
       })
     })
@@ -394,7 +395,7 @@ export class YDoc extends Observable {
 
     if (!yNode) {
       yNode = new Y.Map<unknown>(Object.entries({
-        ...node.getProperties(),
+        ...node.offsetGetProperties(),
         id,
       })) as YNode
       this._yChildren.set(id, yNode)
@@ -420,7 +421,7 @@ export class YDoc extends Observable {
 
       let meta = yNode.get('meta')
       if (!meta || !(meta instanceof Y.Map)) {
-        meta = new Y.Map(Object.entries(node.meta.getProperties()))
+        meta = new Y.Map(Object.entries(node.meta.offsetGetProperties()))
         yNode.set('meta', meta)
       }
       this._proxyProps(node.meta, meta, true)
@@ -438,7 +439,7 @@ export class YDoc extends Observable {
         ].forEach((key) => {
           let yMap = yNode.get(key) as Y.Map<any> | undefined
           if (!yMap || !(yMap instanceof Y.Map)) {
-            yMap = new Y.Map(Object.entries((node as any)[key].getProperties()))
+            yMap = new Y.Map(Object.entries((node as any)[key].offsetGetProperties()))
             yNode.set(key, yMap)
           }
           this._proxyProps((node as any)[key], yMap)
