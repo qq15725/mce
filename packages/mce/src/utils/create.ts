@@ -10,6 +10,7 @@ export function createShapeElement(shape?: Element['shape'], fill?: Fill, outlin
     outline,
     meta: {
       inPptIs: 'Shape',
+      inCanvasIs: 'Element2D',
     },
   }
 }
@@ -26,6 +27,7 @@ export function createTextElement(content: string, style?: Record<string, any>):
     text: { content: normalizeTextContent(content) },
     meta: {
       inPptIs: 'Shape',
+      inCanvasIs: 'Element2D',
     },
   }
 }
@@ -38,6 +40,7 @@ export async function createImageElement(image: string): Promise<Element> {
     foreground: { image },
     meta: {
       inPptIs: 'Picture',
+      inCanvasIs: 'Element2D',
       lockAspectRatio: true,
     },
   }
