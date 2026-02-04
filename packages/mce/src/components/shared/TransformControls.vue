@@ -324,17 +324,22 @@ const sizeStyle = computed(() => {
     height: props.initialSize && !height ? undefined : `${height}px`,
   }
 })
+const DEG_TO_RAD = Math.PI / 180
 const style = computed(() => {
   const { left = 0, top = 0, rotate = 0 } = model.value
-  const radian = rotate * Math.PI / 180
-  const cos = Math.cos(radian)
-  const sin = Math.sin(radian)
+  const rad = rotate * DEG_TO_RAD
+  const cos = Math.cos(rad)
+  const sin = Math.sin(rad)
   return {
     ...sizeStyle.value,
     transform: `matrix(${cos}, ${sin}, ${-sin}, ${cos}, ${left}, ${top})`,
   }
 })
-const tip = computed(() => typeof props.tip === 'string' ? props.tip : props.tip?.('size'))
+const tip = computed(() => {
+  return typeof props.tip === 'string'
+    ? props.tip
+    : props.tip?.('size')
+})
 
 function start(event?: MouseEvent, index?: number): boolean {
   if (event && event.button !== undefined && event.button !== 0) {
@@ -396,7 +401,7 @@ function start(event?: MouseEvent, index?: number): boolean {
   const startAngle = Math.atan2(
     rotatedStartPoint.y - centerPoint.y,
     rotatedStartPoint.x - centerPoint.x,
-  ) / (Math.PI / 180)
+  ) / DEG_TO_RAD
 
   let startClientPoint: { x: number, y: number } | undefined = event
     ? { x: event.clientX, y: event.clientY }
@@ -450,7 +455,7 @@ function start(event?: MouseEvent, index?: number): boolean {
         const endAngle = Math.atan2(
           rotatedCurrentPoint.y - centerPoint.y,
           rotatedCurrentPoint.x - centerPoint.x,
-        ) / (Math.PI / 180)
+        ) / DEG_TO_RAD
 
         updated.rotate = rotate + endAngle - startAngle
       }
@@ -603,10 +608,10 @@ function getCursor(type: Handle) {
   return `url("data:image/svg+xml,${create(model.value.rotate ?? 0)}") 16 16, pointer`
 }
 
-function rotatePoint(point: Point, origin: Point, angle: number): Point {
-  const radian = angle * Math.PI / 180
-  const cos = Math.cos(radian)
-  const sin = Math.sin(radian)
+function rotatePoint(point: Point, origin: Point, deg: number): Point {
+  const rad = deg * DEG_TO_RAD
+  const cos = Math.cos(rad)
+  const sin = Math.sin(rad)
   return {
     x: (point.x - origin.x) * cos - (point.y - origin.y) * sin + origin.x,
     y: (point.x - origin.x) * sin + (point.y - origin.y) * cos + origin.y,

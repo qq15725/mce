@@ -48,7 +48,7 @@ export default defineMixin((editor) => {
     let flag = false
     element.children.forEach((child) => {
       if (isElement(child)) {
-        const { min: _min, max: _max } = child.aabb.toMinmax()
+        const { min: _min, max: _max } = child.aabb
         min.x = Math.min(min.x, _min.x)
         min.y = Math.min(min.y, _min.y)
         max.x = Math.max(max.x, _max.x)

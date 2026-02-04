@@ -1,5 +1,5 @@
 import type { Element2D } from 'modern-canvas'
-import { Aabb2D } from 'modern-canvas'
+import { DEG_TO_RAD } from 'modern-canvas'
 import { computed } from 'vue'
 import { definePlugin } from '../plugin'
 
@@ -49,24 +49,31 @@ export default definePlugin((editor) => {
     exec,
     inEditorIs,
     resizeElement,
+    state,
   } = editor
 
   async function enter() {
-    if (elementSelection.value.length === 1) {
-      const element = elementSelection.value[0]
-      if (element.text.isValid()) {
+    const els = elementSelection.value
+    if (els.length === 1) {
+      const el = els[0]
+      if (el.text.isValid()) {
         await exec('startTyping')
+      }
+      else if (el.foreground.isValid()) {
+        state.value = 'cropping'
       }
     }
   }
 
-  const startState = {
+  const transformCtx = {
     rotate: 0,
-    minMaxMap: {} as Record<number, {
+    resize: {} as Record<number, {
       minX: number
       minY: number
       maxX: number
       maxY: number
+      scaleX: number
+      scaleY: number
     }>,
   }
 
@@ -82,14 +89,34 @@ export default definePlugin((editor) => {
     }
   })
 
+  function onSelectionTransformStart(): void {
+    const aabb = selectionAabb.value
+    elementSelection.value.forEach((el) => {
+      const elAabb = el.globalAabb
+      transformCtx.resize[el.instanceId] = {
+        minX: (elAabb.min.x - aabb.min.x) / aabb.width,
+        minY: (elAabb.min.y - aabb.min.y) / aabb.height,
+        maxX: (elAabb.max.x - aabb.min.x) / aabb.width,
+        maxY: (elAabb.max.y - aabb.min.y) / aabb.height,
+        scaleX: el.style.width / elAabb.width,
+        scaleY: el.style.height / elAabb.height,
+      }
+    })
+  }
+
+  function onSelectionTransformEnd(): void {
+    transformCtx.rotate = 0
+    transformCtx.resize = {}
+  }
+
   function transform(
     handle: Mce.TransformHandle,
-    partialValue: Partial<Mce.TransformValue>,
+    partialTransform: Partial<Mce.TransformValue>,
   ): void {
-    const oldValue = transformValue.value
-    const value = {
-      ...oldValue,
-      ...partialValue,
+    const oldTransform = transformValue.value
+    const transform = {
+      ...oldTransform,
+      ...partialTransform,
     }
     const [type, direction = ''] = handle.split('-')
     const isCorner = direction.length > 1
@@ -97,23 +124,27 @@ export default definePlugin((editor) => {
     const isMultiple = els.length > 1
 
     if (type === 'move') {
-      value.left = exec('snap', 'x', Math.round(value.left))
-      value.top = exec('snap', 'y', Math.round(value.top))
+      transform.left = Math.round(transform.left)
+      transform.top = Math.round(transform.top)
+      if (!transform.rotate) {
+        transform.left = exec('snap', 'x', transform.left)
+        transform.top = exec('snap', 'y', transform.top)
+      }
     }
 
     const offsetStyle = {
-      left: value.left - oldValue.left,
-      top: value.top - oldValue.top,
-      width: value.width - oldValue.width,
-      height: value.height - oldValue.height,
-      rotate: value.rotate - oldValue.rotate,
-      borderRadius: value.borderRadius - oldValue.borderRadius,
+      left: transform.left - oldTransform.left,
+      top: transform.top - oldTransform.top,
+      width: transform.width - oldTransform.width,
+      height: transform.height - oldTransform.height,
+      rotate: transform.rotate - oldTransform.rotate,
+      borderRadius: transform.borderRadius - oldTransform.borderRadius,
     }
 
     if (isMultiple) {
       if (type === 'rotate') {
-        offsetStyle.rotate = value.rotate - startState.rotate
-        startState.rotate += offsetStyle.rotate
+        offsetStyle.rotate = transform.rotate - transformCtx.rotate
+        transformCtx.rotate += offsetStyle.rotate
       }
     }
 
@@ -125,21 +156,53 @@ export default definePlugin((editor) => {
         top: style.top + offsetStyle.top,
         width: style.width + offsetStyle.width,
         height: style.height + offsetStyle.height,
-        rotate: (style.rotate + offsetStyle.rotate + 360) % 360,
+        rotate: ((style.rotate + offsetStyle.rotate) + 360) % 360,
         borderRadius: Math.round(style.borderRadius + offsetStyle.borderRadius),
       }
 
       if (type === 'rotate') {
+        if (isMultiple) {
+          const center = el.globalAabb.getCenter().rotate(
+            offsetStyle.rotate * DEG_TO_RAD,
+            {
+              x: transform.left + transform.width / 2,
+              y: transform.top + transform.height / 2,
+            },
+          )
+          const parentAabb = el.getParent<Element2D>()?.globalAabb
+          if (parentAabb) {
+            center.x -= parentAabb.left
+            center.y -= parentAabb.top
+          }
+          newStyle.left = center.x - newStyle.width / 2
+          newStyle.top = center.y - newStyle.height / 2
+        }
         newStyle.rotate = Math.round(newStyle.rotate * 100) / 100
       }
       else if (type === 'resize') {
         if (isMultiple) {
-          const parentAabb = el.getParent<Element2D>()?.globalAabb ?? new Aabb2D()
-          const minMax = startState.minMaxMap[el.instanceId]!
-          newStyle.left = value.left - parentAabb.left + value.width * minMax.minX
-          newStyle.top = value.top - parentAabb.left + value.height * minMax.minY
-          newStyle.width = value.width * (minMax.maxX - minMax.minX)
-          newStyle.height = value.height * (minMax.maxY - minMax.minY)
+          const ctx = transformCtx.resize[el.instanceId]
+          if (ctx) {
+            const min = {
+              x: transform.left + transform.width * ctx.minX,
+              y: transform.top + transform.height * ctx.minY,
+            }
+            const max = {
+              x: transform.left + transform.width * ctx.maxX,
+              y: transform.top + transform.height * ctx.maxY,
+            }
+            const size = { x: max.x - min.x, y: max.y - min.y }
+            const center = { x: min.x + size.x / 2, y: min.y + size.y / 2 }
+            const parentAabb = el.getParent<Element2D>()?.globalAabb
+            if (parentAabb) {
+              center.x -= parentAabb.left
+              center.y -= parentAabb.top
+            }
+            newStyle.width = size.x * ctx.scaleX
+            newStyle.height = size.y * ctx.scaleY
+            newStyle.left = center.x - newStyle.width / 2
+            newStyle.top = center.y - newStyle.height / 2
+          }
         }
         const scale = newStyle.rotate ? 100 : 1
         resizeElement(
@@ -195,23 +258,9 @@ export default definePlugin((editor) => {
       { command: 'flipVertical', key: 'Shift+V' },
     ],
     events: {
-      selectionTransformStart: () => {
-        const aabb = selectionAabb.value
-        elementSelection.value.forEach((el) => {
-          const elAabb = el.globalAabb
-          startState.minMaxMap[el.instanceId] = {
-            minX: (elAabb.min.x - aabb.min.x) / aabb.width,
-            minY: (elAabb.min.y - aabb.min.y) / aabb.height,
-            maxX: (elAabb.max.x - aabb.min.x) / aabb.width,
-            maxY: (elAabb.max.y - aabb.min.y) / aabb.height,
-          }
-        })
-      },
+      selectionTransformStart: onSelectionTransformStart,
       selectionTransform: ctx => transform(ctx.handle, ctx.value),
-      selectionTransformEnd: () => {
-        startState.rotate = 0
-        startState.minMaxMap = {}
-      },
+      selectionTransformEnd: onSelectionTransformEnd,
     },
   }
 })
