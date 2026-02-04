@@ -67,8 +67,13 @@ declare global {
   }
 }
 
-export default defineMixin((editor) => {
-  const root = ref(new Doc())
+export default defineMixin((editor, options) => {
+  const root = ref(
+    new Doc(
+      options.localDb ? 'doc' : undefined,
+      options.localDb,
+    ),
+  )
   const docLoading = ref(false)
   const fonts = markRaw(new Fonts()) as Fonts
   const camera = ref(new Camera2D({ internalMode: 'front' }))
@@ -256,6 +261,7 @@ export default defineMixin((editor) => {
     onBeforeMount(() => {
       on('setDoc', onSetDoc)
       renderEngine.value.start()
+      root.value.load()
     })
 
     onScopeDispose(() => {

@@ -30,7 +30,7 @@ export class Doc extends Node {
     })
 
     let id: string | undefined
-    let _source: any = source
+    let _source: any | undefined
     if (typeof source === 'string') {
       id = source
     }

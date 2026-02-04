@@ -25,6 +25,7 @@ const editor = new Editor({
   screenCenterOffset: { left: 100, top: 100, right: 100, bottom: 100 },
   gifWorkerUrl,
   toolbelt: true,
+  localDb: true,
 })
 
 window.editor = editor
