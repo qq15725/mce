@@ -1,3 +1,12 @@
+## [0.16.5](https://github.com/qq15725/mce/compare/v0.16.4...v0.16.5) (2026-02-04)
+
+
+### Bug Fixes
+
+* setDoc ([3561784](https://github.com/qq15725/mce/commit/3561784942bb9383165b841052c5ee04f367d083))
+
+
+
 ## [0.16.4](https://github.com/qq15725/mce/compare/v0.16.3...v0.16.4) (2026-02-04)
 
 
