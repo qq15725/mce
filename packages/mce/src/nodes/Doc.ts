@@ -38,8 +38,11 @@ export class Doc extends Node {
       if (Array.isArray(source) && source.length === 1) {
         _source = source[0]
       }
+      else {
+        _source = source
+      }
 
-      if (!Array.isArray(_source)) {
+      if (_source && !Array.isArray(_source)) {
         if (_source.meta?.inEditorIs === 'Doc') {
           id = _source.id
         }

@@ -82,8 +82,8 @@ importers:
         specifier: ^5
         version: 5.13.0
       modern-canvas:
-        specifier: ^0.15.3
-        version: 0.15.3(lottie-web@5.13.0)(modern-gif@2.0.4)(yoga-layout@3.2.1)
+        specifier: ^0.15.4
+        version: 0.15.4(lottie-web@5.13.0)(modern-gif@2.0.4)(yoga-layout@3.2.1)
       modern-font:
         specifier: ^0.4.4
         version: 0.4.4
@@ -207,8 +207,8 @@ importers:
         specifier: ^8.0.4
         version: 8.0.4
       vite-plugin-vue-devtools:
-        specifier: ^8.0.5
-        version: 8.0.5(vite@7.3.1(@types/node@25.2.0)(jiti@2.6.1)(sass-embedded@1.97.3)(sass@1.97.3)(yaml@2.8.2))(vue@3.5.27(typescript@5.9.3))
+        specifier: ^8.0.6
+        version: 8.0.6(vite@7.3.1(@types/node@25.2.0)(jiti@2.6.1)(sass-embedded@1.97.3)(sass@1.97.3)(yaml@2.8.2))(vue@3.5.27(typescript@5.9.3))
 
 packages:
 
@@ -1160,16 +1160,16 @@ packages:
   '@vue/compiler-ssr@3.5.27':
     resolution: {integrity: sha512-Sj7h+JHt512fV1cTxKlYhg7qxBvack+BGncSpH+8vnN+KN95iPIcqB5rsbblX40XorP+ilO7VIKlkuu3Xq2vjw==}
 
-  '@vue/devtools-core@8.0.5':
-    resolution: {integrity: sha512-dpCw8nl0GDBuiL9SaY0mtDxoGIEmU38w+TQiYEPOLhW03VDC0lfNMYXS/qhl4I0YlysGp04NLY4UNn6xgD0VIQ==}
+  '@vue/devtools-core@8.0.6':
+    resolution: {integrity: sha512-fN7iVtpSQQdtMORWwVZ1JiIAKriinhD+lCHqPw9Rr252ae2TczILEmW0zcAZifPW8HfYcbFkn+h7Wv6kQQCayw==}
     peerDependencies:
       vue: ^3.0.0
 
-  '@vue/devtools-kit@8.0.5':
-    resolution: {integrity: sha512-q2VV6x1U3KJMTQPUlRMyWEKVbcHuxhqJdSr6Jtjz5uAThAIrfJ6WVZdGZm5cuO63ZnSUz0RCsVwiUUb0mDV0Yg==}
+  '@vue/devtools-kit@8.0.6':
+    resolution: {integrity: sha512-9zXZPTJW72OteDXeSa5RVML3zWDCRcO5t77aJqSs228mdopYj5AiTpihozbsfFJ0IodfNs7pSgOGO3qfCuxDtw==}
 
-  '@vue/devtools-shared@8.0.5':
-    resolution: {integrity: sha512-bRLn6/spxpmgLk+iwOrR29KrYnJjG9DGpHGkDFG82UM21ZpJ39ztUT9OXX3g+usW7/b2z+h46I9ZiYyB07XMXg==}
+  '@vue/devtools-shared@8.0.6':
+    resolution: {integrity: sha512-Pp1JylTqlgMJvxW6MGyfTF8vGvlBSCAvMFaDCYa82Mgw7TT5eE5kkHgDvmOGHWeJE4zIDfCpCxHapsK2LtIAJg==}
 
   '@vue/language-core@3.2.4':
     resolution: {integrity: sha512-bqBGuSG4KZM45KKTXzGtoCl9cWju5jsaBKaJJe3h5hRAAWpZUuj5G+L+eI01sPIkm4H6setKRlw7E85wLdDNew==}
@@ -2271,8 +2271,8 @@ packages:
   mlly@1.8.0:
     resolution: {integrity: sha512-l8D9ODSRWLe2KHJSifWGwBqpTZXIXTeo8mlKjY+E2HAakaTeNpqAyBZ8GSqLzHgw4XmHmC8whvpjJNMbFZN7/g==}
 
-  modern-canvas@0.15.3:
-    resolution: {integrity: sha512-YtxiTROo+KdjiAowKSRvnG+x3yy6aJdXV+MG2UXrdw/KtqZsWKCppQxN8GvywtVBJkawKaRnY0CG9bEQXiEtPA==}
+  modern-canvas@0.15.4:
+    resolution: {integrity: sha512-umgfOJ93O+x8sb7/HA82VVQ0NtMJl/07Y+mQA8JcIE5/iTn2ExdhFNpd283gbL9pQyQNQaCDo6RgqoV3jYqJyQ==}
     peerDependencies:
       lottie-web: ^5
       modern-gif: ^2
@@ -2922,8 +2922,8 @@ packages:
       '@nuxt/kit':
         optional: true
 
-  vite-plugin-vue-devtools@8.0.5:
-    resolution: {integrity: sha512-p619BlKFOqQXJ6uDWS1vUPQzuJOD6xJTfftj57JXBGoBD/yeQCowR7pnWcr/FEX4/HVkFbreI6w2uuGBmQOh6A==}
+  vite-plugin-vue-devtools@8.0.6:
+    resolution: {integrity: sha512-IiTCIJDb1ZliOT8fPbYXllyfgARzz1+R1r8RN9ScGIDzAB6o8bDME1a9JjrfdSJibL7i8DIPQH+pGv0U7haBeA==}
     engines: {node: '>=v14.21.3'}
     peerDependencies:
       vite: ^6.0.0 || ^7.0.0-0
@@ -4044,10 +4044,10 @@ snapshots:
       '@vue/compiler-dom': 3.5.27
       '@vue/shared': 3.5.27
 
-  '@vue/devtools-core@8.0.5(vite@7.3.1(@types/node@25.2.0)(jiti@2.6.1)(sass-embedded@1.97.3)(sass@1.97.3)(yaml@2.8.2))(vue@3.5.27(typescript@5.9.3))':
+  '@vue/devtools-core@8.0.6(vite@7.3.1(@types/node@25.2.0)(jiti@2.6.1)(sass-embedded@1.97.3)(sass@1.97.3)(yaml@2.8.2))(vue@3.5.27(typescript@5.9.3))':
     dependencies:
-      '@vue/devtools-kit': 8.0.5
-      '@vue/devtools-shared': 8.0.5
+      '@vue/devtools-kit': 8.0.6
+      '@vue/devtools-shared': 8.0.6
       mitt: 3.0.1
       nanoid: 5.1.6
       pathe: 2.0.3
@@ -4056,9 +4056,9 @@ snapshots:
     transitivePeerDependencies:
       - vite
 
-  '@vue/devtools-kit@8.0.5':
+  '@vue/devtools-kit@8.0.6':
     dependencies:
-      '@vue/devtools-shared': 8.0.5
+      '@vue/devtools-shared': 8.0.6
       birpc: 2.9.0
       hookable: 5.5.3
       mitt: 3.0.1
@@ -4066,7 +4066,7 @@ snapshots:
       speakingurl: 14.0.1
       superjson: 2.2.6
 
-  '@vue/devtools-shared@8.0.5':
+  '@vue/devtools-shared@8.0.6':
     dependencies:
       rfdc: 1.4.1
 
@@ -5375,7 +5375,7 @@ snapshots:
       pkg-types: 1.3.1
       ufo: 1.6.3
 
-  modern-canvas@0.15.3(lottie-web@5.13.0)(modern-gif@2.0.4)(yoga-layout@3.2.1):
+  modern-canvas@0.15.4(lottie-web@5.13.0)(modern-gif@2.0.4)(yoga-layout@3.2.1):
     dependencies:
       colord: 2.9.3
       earcut: 3.0.2
@@ -6004,11 +6004,11 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  vite-plugin-vue-devtools@8.0.5(vite@7.3.1(@types/node@25.2.0)(jiti@2.6.1)(sass-embedded@1.97.3)(sass@1.97.3)(yaml@2.8.2))(vue@3.5.27(typescript@5.9.3)):
+  vite-plugin-vue-devtools@8.0.6(vite@7.3.1(@types/node@25.2.0)(jiti@2.6.1)(sass-embedded@1.97.3)(sass@1.97.3)(yaml@2.8.2))(vue@3.5.27(typescript@5.9.3)):
     dependencies:
-      '@vue/devtools-core': 8.0.5(vite@7.3.1(@types/node@25.2.0)(jiti@2.6.1)(sass-embedded@1.97.3)(sass@1.97.3)(yaml@2.8.2))(vue@3.5.27(typescript@5.9.3))
-      '@vue/devtools-kit': 8.0.5
-      '@vue/devtools-shared': 8.0.5
+      '@vue/devtools-core': 8.0.6(vite@7.3.1(@types/node@25.2.0)(jiti@2.6.1)(sass-embedded@1.97.3)(sass@1.97.3)(yaml@2.8.2))(vue@3.5.27(typescript@5.9.3))
+      '@vue/devtools-kit': 8.0.6
+      '@vue/devtools-shared': 8.0.6
       sirv: 3.0.2
       vite: 7.3.1(@types/node@25.2.0)(jiti@2.6.1)(sass-embedded@1.97.3)(sass@1.97.3)(yaml@2.8.2)
       vite-plugin-inspect: 11.3.3(vite@7.3.1(@types/node@25.2.0)(jiti@2.6.1)(sass-embedded@1.97.3)(sass@1.97.3)(yaml@2.8.2))
