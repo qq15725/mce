@@ -1,3 +1,13 @@
+## [0.16.4](https://github.com/qq15725/mce/compare/v0.16.3...v0.16.4) (2026-02-04)
+
+
+### Bug Fixes
+
+* localDb ([39a6ff6](https://github.com/qq15725/mce/commit/39a6ff66454c793e4017fd0b1569d4df142e61af))
+* multiple selection transform resize / rotate ([460ae00](https://github.com/qq15725/mce/commit/460ae006e2f51372e02e5a602c81593e4a39cf5b))
+
+
+
 ## [0.16.3](https://github.com/qq15725/mce/compare/v0.16.2...v0.16.3) (2026-02-03)
 
 
