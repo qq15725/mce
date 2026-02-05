@@ -33,7 +33,7 @@ const elements = computed(() => {
       }
     }
     return false
-  })
+  }).reverse()
 })
 
 function onWheel(e: WheelEvent) {
@@ -131,7 +131,10 @@ onBeforeUnmount(pause)
     </div>
 
     <div class="mce-timeline__main">
-      <div class="mce-timeline__left">
+      <div
+        class="mce-timeline__left"
+        @wheel="onWheel"
+      >
         <div class="mce-timeline__left-wrapper">
           <div
             :style="{
@@ -231,8 +234,7 @@ onBeforeUnmount(pause)
       flex-direction: column-reverse;
       align-items: center;
       width: 120px;
-      height: max-content;
-      min-height: 100%;
+      height: 100%;
       padding-top: 24px;
       overflow: hidden;
 

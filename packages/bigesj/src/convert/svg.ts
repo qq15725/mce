@@ -27,6 +27,27 @@ export async function convertSvgElementToUrl(el: Record<string, any>): Promise<s
     throw new TypeError(`Failed to DOMParser, parse svg to DOM error: ${xml}`)
   }
 
+  const images = svg.querySelectorAll('image')
+  for (let i = 0; i < images.length; i++) {
+    const image = images[i]
+    const url = image.href.baseVal
+    if (!url.startsWith('http')) {
+      continue
+    }
+    image?.setAttribute(
+      'href',
+      await assets.fetchImageBitmap(url)
+        .then((bitmap) => {
+          const canvas = document.createElement('canvas')
+          canvas.width = bitmap.width
+          canvas.height = bitmap.height
+          canvas.getContext('2d')?.drawImage(bitmap, 0, 0)
+          bitmap.close()
+          return canvas.toDataURL('image/png')
+        }),
+    )
+  }
+
   // image fill
   if (background.src) {
     const fillId = `#${id}-fill-blip`

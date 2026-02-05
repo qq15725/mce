@@ -93,6 +93,7 @@ export default defineMixin((editor) => {
       assets,
       on,
       off,
+      config,
     } = editor
 
     async function updateEndTime() {
@@ -100,6 +101,10 @@ export default defineMixin((editor) => {
       timeline.value.endTime = root.value
         ? getTimeRange(root.value).endTime
         : 0
+
+      if (!config.value.timeline) {
+        timeline.value.currentTime = timeline.value.endTime
+      }
     }
 
     onBeforeMount(() => {

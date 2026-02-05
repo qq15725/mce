@@ -1,10 +1,11 @@
 import type { NormalizedElement } from 'modern-idoc'
 import type { BigeElement } from './types'
 import { clearUndef, idGenerator, isGradientFill, normalizeGradientFill } from 'modern-idoc'
+import { svgToPath2DSet } from 'modern-path2d'
 import { parseAnimations } from './animation'
 import { convertBackground } from './background'
 import { croppingToCropRect } from './cropping'
-import { convertShapeElementToShape } from './shape'
+import { convertShapeElementToSvg } from './shape'
 import { getStyle } from './style'
 import { convertSvgElementToUrl } from './svg'
 import { convertTextContent, convertTextEffects, convertTextStyle } from './text'
@@ -66,7 +67,7 @@ export async function convertElement(
     }
   }
 
-  if (el.editable === false) {
+  if (el.editable === false || el.hidden === true) {
     style.visibility = 'hidden'
   }
 
@@ -77,7 +78,9 @@ export async function convertElement(
   if (el.animations?.length) {
     const parsed = parseAnimations(el)
     ;(element as any).delay = parsed.delay
-    ;(element as any).duration = parsed.duration
+    if (parsed.hasOut) {
+      ;(element as any).duration = parsed.duration
+    }
     element.children!.push(...parsed.animations as any)
     if (context) {
       parsed.animations.forEach((animation) => {
@@ -92,6 +95,7 @@ export async function convertElement(
 
   switch (el.type) {
     case 'image':
+      element.name = element.name ?? '图片'
       meta.inCanvasIs = 'Element2D'
       meta.inPptIs = 'Picture'
       meta.lockAspectRatio = true
@@ -103,6 +107,10 @@ export async function convertElement(
 
       if (el.clipUrl) {
         meta.rawForegroundImage = el.url
+      }
+
+      if (el.maskUrl) {
+        style.maskImage = el.maskUrl
       }
 
       if (el.cropping) {
@@ -121,6 +129,7 @@ export async function convertElement(
       }
       break
     case 'svg': {
+      element.name = element.name ?? 'SVG'
       meta.inCanvasIs = 'Element2D'
       meta.inPptIs = 'Picture'
       meta.lockAspectRatio = true
@@ -131,6 +140,7 @@ export async function convertElement(
       break
     }
     case 'text': {
+      element.name = element.name ?? '文字'
       meta.inCanvasIs = 'Element2D'
       meta.inPptIs = 'Shape'
       if (style.writingMode === 'horizontal-tb') {
@@ -160,6 +170,7 @@ export async function convertElement(
       break
     }
     case 'com':
+      element.name = element.name ?? '组合'
       meta.inCanvasIs = 'Element2D'
       meta.inPptIs = 'GroupShape'
       element.children!.push(
@@ -178,21 +189,47 @@ export async function convertElement(
         ),
       )
       break
-    case 'shape':
+    case 'shape': {
+      element.name = element.name ?? '形状'
       meta.inCanvasIs = 'Element2D'
       meta.inPptIs = 'Shape'
-      element.shape = await convertShapeElementToShape(el)
-      element.fill = { color: el.fill }
-      element.outline = {
-        color: el.stroke,
-        width: el.strokeWidth,
+      const svg = await convertShapeElementToSvg(el)
+      const set = svgToPath2DSet(svg)
+      if (set.paths.length === 1) {
+        const path = set.paths[0]
+        element.shape = {
+          paths: [
+            { ...path.style, data: path.toData() },
+          ],
+          viewBox: set.viewBox,
+        }
+        if (path.style.fill !== 'none') {
+          element.fill = { color: el.fill }
+        }
+        if (path.style.stroke !== 'none') {
+          element.outline = {
+            color: el.stroke,
+            width: el.strokeWidth,
+          }
+        }
+      }
+      else {
+        element.shape = { svg }
+        element.fill = { color: el.fill }
+        element.outline = {
+          color: el.stroke,
+          width: el.strokeWidth,
+        }
       }
       break
+    }
     case 'anim':
+      element.name = element.name ?? 'Lottie'
       meta.inCanvasIs = 'Lottie2D'
       ;(element as any).src = el.url
       break
     case 'video':
+      element.name = element.name ?? '视频'
       meta.inCanvasIs = 'Video2D'
       ;(element as any).src = el.src
       break

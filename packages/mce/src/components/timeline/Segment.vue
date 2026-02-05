@@ -82,9 +82,7 @@ const style = computed(() => {
       :key="index"
       class="mce-segment__block"
       :style="block.style"
-    >
-      {{ block.name }}
-    </div>
+    />
 
     <div v-if="active" class="mce-segment__edge mce-segment__edge--front" />
 

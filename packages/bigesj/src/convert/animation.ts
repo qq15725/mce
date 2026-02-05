@@ -476,6 +476,7 @@ export function parseAnimations(
   return {
     delay: startTime,
     duration: Math.max(0, endTime - startTime),
+    hasOut: Boolean(_animOut),
     animations: animations.filter(v => !!v?.keyframes),
   }
 }

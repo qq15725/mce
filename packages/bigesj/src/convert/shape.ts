@@ -1,16 +1,13 @@
-import type { NormalizedShape } from 'modern-idoc'
 import type { ParsedPresetShapeDefinition } from 'modern-openxml'
 import { OoxmlNode, parsePresetShapeDefinition } from 'modern-openxml'
 
-export async function convertShapeElementToShape(el: Record<string, any>): Promise<NormalizedShape> {
+export async function convertShapeElementToSvg(el: Record<string, any>): Promise<string> {
   if (!['square', 'circle', 'triangle', 'star', 'line'].includes(el.drawType)) {
-    return {
-      svg: (await createPresetShape(el.drawType, {
-        ...el,
-        width: el.style.width,
-        height: el.style.height,
-      })).svg,
-    }
+    return (await createPresetShape(el.drawType, {
+      ...el,
+      width: el.style.width,
+      height: el.style.height,
+    })).svg
   }
 
   const when = (flag: boolean, trueVal = '', falseVal = '') => flag ? trueVal : falseVal
@@ -271,9 +268,7 @@ export async function convertShapeElementToShape(el: Record<string, any>): Promi
   )}
   </svg>`
 
-  return {
-    svg: doc,
-  }
+  return doc
 }
 
 interface Context {
