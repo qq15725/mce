@@ -1,3 +1,12 @@
+## [0.16.6](https://github.com/qq15725/mce/compare/v0.16.5...v0.16.6) (2026-02-05)
+
+
+### Bug Fixes
+
+* timeline ([f5e50d6](https://github.com/qq15725/mce/commit/f5e50d661fc5c752ab23b597e44c9e026bc779c8))
+
+
+
 ## [0.16.5](https://github.com/qq15725/mce/compare/v0.16.4...v0.16.5) (2026-02-04)
 
 
