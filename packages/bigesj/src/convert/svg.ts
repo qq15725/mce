@@ -1,5 +1,4 @@
 import { assets } from 'modern-canvas'
-import { convertImageElementToUrl } from './image'
 
 export async function convertSvgElementToUrl(el: Record<string, any>): Promise<string> {
   const {
@@ -79,13 +78,5 @@ export async function convertSvgElementToUrl(el: Record<string, any>): Promise<s
   if (style.height)
     svg.setAttribute('height', String(style.height * 2))
 
-  return await convertImageElementToUrl({
-    ...el,
-    transform: {
-      ...el.transform,
-      originWidth: style.width,
-      originHeight: style.height,
-    },
-    url: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg.outerHTML)}`,
-  })
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg.outerHTML)}`
 }
