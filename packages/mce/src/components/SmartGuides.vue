@@ -1,11 +1,20 @@
 <script setup lang="ts">
+import { useEditor } from '../composables'
+
 defineProps<{
   snapLines?: Record<string, any>[]
 }>()
+
+const {
+  state,
+} = useEditor()
 </script>
 
 <template>
-  <div class="mce-smart-guides">
+  <div
+    v-if="state === 'transforming' || state === 'moving'"
+    class="mce-smart-guides"
+  >
     <template
       v-for="(item, key) in snapLines" :key="key"
     >

@@ -57,7 +57,6 @@ export default definePlugin((editor) => {
     isElement,
     elementSelection,
     selectionAabb,
-    state,
     getAabb,
     root,
     camera,
@@ -326,8 +325,6 @@ export default definePlugin((editor) => {
   }
 
   const snapLines = computed(() => {
-    if (state.value !== 'transforming')
-      return []
     const { zoom, position } = camera.value
 
     const scaleX = (v: number) => v * zoom.x

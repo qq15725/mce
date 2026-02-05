@@ -27,6 +27,7 @@ const {
 
 const transformControls = useTemplateRef('transformControlsTpl')
 const startEvent = ref<MouseEvent | PointerEvent>()
+const activeHandle = computed(() => (transformControls.value?.activeHandle ?? 'move') as Mce.TransformHandle)
 const resizeStrategy = computed(() => {
   if (elementSelection.value.length === 1) {
     const el = elementSelection.value[0]
@@ -88,7 +89,7 @@ const selectionObbStyles = computed(() => {
 function createTransformContext(): Mce.BaseSelectionTransformContext {
   return {
     startEvent: startEvent.value!,
-    handle: (transformControls.value?.activeHandle ?? 'move') as Mce.TransformHandle,
+    handle: activeHandle.value,
   }
 }
 
@@ -98,12 +99,12 @@ function onStart() {
 
 function onMove() {
   if (!state.value) {
-    state.value = 'transforming'
+    state.value = activeHandle.value === 'move' ? 'moving' : 'transforming'
   }
 }
 
 function onEnd() {
-  if (state.value === 'transforming') {
+  if (state.value === 'moving' || state.value === 'transforming') {
     state.value = undefined
   }
   emit('selectionTransformEnd', createTransformContext())
@@ -180,7 +181,7 @@ defineExpose({
     />
 
     <template
-      v-if="state !== 'transforming'"
+      v-if="state !== 'moving' && state !== 'transforming'"
     >
       <div
         v-for="(style, index) in selectionObbStyles"
@@ -221,6 +222,7 @@ defineExpose({
       :rotatable="rotatable"
       :roundable="roundable"
       :resize-strategy="resizeStrategy"
+      :hide-ui="state === 'moving'"
       class="mce-selection__transform"
       :tip="tip"
       :scale="[camera.zoom.x, camera.zoom.y]"

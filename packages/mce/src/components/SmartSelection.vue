@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import type { Element2D } from 'modern-canvas'
+import type { Aabb2D, Element2D } from 'modern-canvas'
 import type { TransformValue } from './shared/TransformControls.vue'
-import { Aabb2D } from 'modern-canvas'
 import { computed, ref, watch } from 'vue'
 import { useEditor } from '../composables'
 import TransformControls from './shared/TransformControls.vue'
@@ -18,14 +17,14 @@ const {
   resizeElement,
   inEditorIs,
   getGlobalPointer,
+  aabbToDrawboardAabb,
 } = useEditor()
 
 const info = ref({
   active: false,
   direction: undefined as 'vertical' | 'horizontal' | undefined,
   spacing: undefined as number | undefined,
-  xItems: [] as { el: Element2D, aabb: Aabb2D }[],
-  yItems: [] as { el: Element2D, aabb: Aabb2D }[],
+  items: [] as { el: Element2D, aabb: Aabb2D }[],
 })
 
 function update() {
@@ -37,16 +36,15 @@ function update() {
   let active = false
   let direction: 'vertical' | 'horizontal' | undefined
   let spacing: number | undefined
-  let xItems: { el: Element2D, aabb: Aabb2D }[] = []
-  let yItems: { el: Element2D, aabb: Aabb2D }[] = []
+  let items: { el: Element2D, aabb: Aabb2D }[] = []
 
-  if (state.value !== 'transforming' && els.length > 1) {
+  if (els.length > 1) {
     let prev
 
-    const items = els.map(el => ({ el, aabb: getAabb(el) }))
+    const _els = els.map(el => ({ el, aabb: el.globalAabb }))
 
     active = true
-    const sorted = [...items].sort((a, b) => a.aabb.y - b.aabb.y)
+    const sorted = [..._els].sort((a, b) => a.aabb.y - b.aabb.y)
     for (let i = 0; i < sorted.length; i++) {
       const cur = sorted[i]
       if (prev) {
@@ -65,14 +63,14 @@ function update() {
     }
 
     if (active) {
-      yItems = sorted
+      items = sorted
       direction = 'vertical'
     }
     else {
       active = true
       prev = undefined
       spacing = undefined
-      const sorted = [...items].sort((a, b) => a.aabb.x - b.aabb.x)
+      const sorted = [..._els].sort((a, b) => a.aabb.x - b.aabb.x)
       for (let i = 0; i < sorted.length; i++) {
         const cur = sorted[i]
         if (prev) {
@@ -90,7 +88,7 @@ function update() {
         prev = cur
       }
       if (active) {
-        xItems = sorted
+        items = sorted
         direction = 'horizontal'
       }
     }
@@ -100,8 +98,7 @@ function update() {
     active,
     direction,
     spacing,
-    xItems,
-    yItems,
+    items,
   }
 }
 
@@ -115,6 +112,52 @@ const handles = computed(() => {
       style: getObb(el, 'drawboard').toCssStyle(),
     }
   })
+})
+
+const spacingHandles = computed(() => {
+  const { direction, spacing = 0, items } = info.value
+  const zoom = camera.value.zoom
+  const position = camera.value.position
+
+  switch (direction) {
+    case 'horizontal':
+      return items.map((item) => {
+        const pos = {
+          x: item.aabb.x + spacing / 2,
+          y: item.aabb.y,
+        }
+        pos.x *= zoom.x
+        pos.y *= zoom.y
+        pos.x -= position.x
+        pos.y -= position.y
+        return {
+          style: {
+            width: '2px',
+            transform: `matrix(1, 0, 0, 1, ${pos.x}, ${pos.y})`,
+          },
+        }
+      })
+    case 'vertical':
+      return items.slice(0, items.length - 1).map((item) => {
+        const pos = {
+          x: item.aabb.x,
+          y: item.aabb.y + item.aabb.height + spacing / 2,
+        }
+        pos.x *= zoom.x
+        pos.y *= zoom.y
+        pos.x -= position.x
+        pos.y -= position.y
+        pos.y -= 1
+        return {
+          style: {
+            height: '2px',
+            transform: `matrix(1, 0, 0, 1, ${pos.x}, ${pos.y})`,
+          },
+        }
+      })
+  }
+
+  return []
 })
 
 const transform = computed({
@@ -165,44 +208,53 @@ const transform = computed({
       bottom: aabb.bottom - bottom,
     }
 
-    let after = false
-    info.value.yItems.forEach((item) => {
-      if (item.el.equal(el)) {
-        after = true
-      }
-      else if (after) {
-        item.el.style.top += offset.bottom
-      }
-      else {
-        item.el.style.top += offset.top
-      }
-    })
+    const { direction, items } = info.value
 
-    after = false
-    info.value.xItems.forEach((item) => {
-      if (item.el.equal(el)) {
-        after = true
-      }
-      else if (after) {
-        item.el.style.left += offset.right
-      }
-      else {
-        item.el.style.left += offset.left
-      }
-    })
+    let after = false
+    switch (direction) {
+      case 'horizontal':
+        items.forEach((item) => {
+          if (item.el.equal(el)) {
+            after = true
+          }
+          else if (after) {
+            item.el.style.left += offset.right
+          }
+          else {
+            item.el.style.left += offset.left
+          }
+        })
+        break
+      case 'vertical':
+        items.forEach((item) => {
+          if (item.el.equal(el)) {
+            after = true
+          }
+          else if (after) {
+            item.el.style.top += offset.bottom
+          }
+          else {
+            item.el.style.top += offset.top
+          }
+        })
+        break
+    }
   },
+})
+
+const globalAabb = ref<Aabb2D>()
+const _globalAabb = computed(() => {
+  return globalAabb.value ? aabbToDrawboardAabb(globalAabb.value as any) : undefined
 })
 
 function onMouseDown(item: any, downEvent: MouseEvent) {
   const el = item.el as Element2D
-
   currentElement.value = el
-  return
 
   // TODO
-  const startPointer = { x: downEvent.clientX, y: downEvent.clientY }
-  const startAabb = el.globalAabb
-  const currentAabb = new Aabb2D(startAabb)
+  let currentPos = { x: downEvent.clientX, y: downEvent.clientY }
+  globalAabb.value = el.globalAabb.clone()
+  const elAabb = globalAabb.value
   const startItems: { el: Element2D, aabb: Aabb2D }[] = []
   elementSelection.value.forEach((el) => {
     startItems.push({
@@ -210,39 +262,48 @@ function onMouseDown(item: any, downEvent: MouseEvent) {
       aabb: el.globalAabb,
     })
   })
-  let prev: Element2D | undefined
 
+  let startDrag = false
   function onMouseMove(moveEvent: MouseEvent) {
-    const movePointer = { x: moveEvent.clientX, y: moveEvent.clientY }
-    const offset = { x: movePointer.x - startPointer.x, y: movePointer.y - startPointer.y }
+    const movePos = { x: moveEvent.clientX, y: moveEvent.clientY }
+    const offset = { x: movePos.x - currentPos.x, y: movePos.y - currentPos.y }
 
-    if (
+    if (!startDrag && (
       Math.abs(offset.x) >= 3
       || Math.abs(offset.y) >= 3
-    ) {
-      state.value = 'transforming'
+    )) {
+      startDrag = true
+      state.value = 'moving'
+    }
+
+    if (startDrag) {
+      currentPos = { ...movePos }
+
       const { zoom } = camera.value
-      el.position.x = startAabb.x + offset.x / zoom.x
-      el.position.y = startAabb.y + offset.y / zoom.y
+      el.position.x += offset.x / zoom.x
+      el.position.y += offset.y / zoom.y
 
       const pointer = getGlobalPointer()
       switch (info.value.direction) {
         case 'vertical':
-          startItems.forEach((item) => {
-            const targetEl = item.el
-            if (
-              !targetEl.equal(el)
-              && (!prev || !prev.equal(item.el))
-              && item.aabb.top < pointer.y
-              && item.aabb.bottom > pointer.y
-            ) {
-              // TODO
-              targetEl.position.y = currentAabb.y
-              targetEl.updateGlobalTransform()
-              const newAabb = targetEl.globalAabb
-              currentAabb.y = newAabb.bottom
-              item.aabb = newAabb
-              prev = item.el
+          startItems.forEach((target) => {
+            if (!target.el.equal(el)) {
+              if (
+                target.aabb.top < pointer.y
+                && target.aabb.bottom > pointer.y
+              ) {
+                if (target.aabb.top < elAabb.top) {
+                  const top = target.aabb.top
+                  target.el.style.top = elAabb.bottom - target.aabb.height
+                  elAabb.top = top
+                }
+                else {
+                  const top = elAabb.top
+                  elAabb.top = target.aabb.bottom - elAabb.height
+                  target.el.style.top = top
+                }
+                target.el.updateGlobalTransform()
+              }
             }
           })
           break
@@ -254,8 +315,12 @@ function onMouseDown(item: any, downEvent: MouseEvent) {
   }
 
   function onMouseUp(_upEvent: MouseEvent) {
-    el.position.x = currentAabb.x
-    el.position.y = currentAabb.y
+    el.style.left = elAabb.x
+    el.style.top = elAabb.y
+    el.position.x = elAabb.x
+    el.position.y = elAabb.y
+    el.updateGlobalTransform()
+    globalAabb.value = undefined
     state.value = undefined
 
     document.removeEventListener('mousemove', onMouseMove)
@@ -272,33 +337,51 @@ function onMouseDown(item: any, downEvent: MouseEvent) {
     v-if="info.active"
     class="mce-smart-selection"
   >
-    <div
-      v-for="(item, index) in handles"
-      :key="index"
-      class="mce-smart-handle"
-      :class="{
-        'mce-smart-handle--active': item.el.equal(currentElement),
-      }"
-      :style="item.style"
-      data-pointerdown_to_drawboard
+    <template
+      v-if="state !== 'moving'"
     >
       <div
-        class="mce-smart-handle__btn"
+        v-for="(item, index) in handles"
+        :key="index"
+        class="mce-smart-handle"
         :class="{
-          'mce-smart-handle__btn--active': state === 'transforming' || isPointerInSelection,
+          'mce-smart-handle--active': item.el.equal(currentElement),
         }"
-        @mousedown="onMouseDown(item, $event)"
-      />
-    </div>
+        :style="item.style"
+        data-pointerdown_to_drawboard
+      >
+        <div
+          class="mce-smart-handle__btn"
+          :class="{
+            'mce-smart-handle__btn--active': isPointerInSelection,
+          }"
+          @mousedown="onMouseDown(item, $event)"
+        />
+      </div>
 
-    <TransformControls
-      v-if="transform.width && transform.height"
-      v-model="transform"
-      :handles="['resize-l', 'resize-r', 'resize-t', 'resize-b']"
-      class="mce-smart-selection__transform"
-      color="#FF24BD"
-      :scale="[camera.zoom.x, camera.zoom.y]"
-      :offset="[-camera.position.x, -camera.position.y]"
+      <div
+        v-for="(item, index) in spacingHandles"
+        :key="index"
+        class="mce-smart-spacing-handle"
+        :style="item.style"
+        data-pointerdown_to_drawboard
+      />
+
+      <TransformControls
+        v-if="transform.width && transform.height"
+        v-model="transform"
+        :handles="['resize-l', 'resize-r', 'resize-t', 'resize-b']"
+        class="mce-smart-selection__transform"
+        color="#FF24BD"
+        :scale="[camera.zoom.x, camera.zoom.y]"
+        :offset="[-camera.position.x, -camera.position.y]"
+      />
+    </template>
+
+    <div
+      v-else-if="_globalAabb"
+      class="mce-smart-drag"
+      :style="_globalAabb.toCssStyle()"
     />
   </div>
 </template>
@@ -311,6 +394,11 @@ function onMouseDown(item: any, downEvent: MouseEvent) {
     right: 0;
     top: 0;
     bottom: 0;
+
+    .mce-smart-drag {
+      position: absolute;
+      border: 1px solid rgb(var(--mce-theme-primary));
+    }
 
     .mce-smart-handle {
       position: absolute;
@@ -339,6 +427,13 @@ function onMouseDown(item: any, downEvent: MouseEvent) {
       &--active .mce-smart-handle__btn {
         background: #FF24BD;
       }
+    }
+
+    .mce-smart-spacing-handle {
+      position: absolute;
+      background-color: #FF24BD;
+      height: 20px;
+      width: 20px;
     }
   }
 </style>

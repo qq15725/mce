@@ -33,6 +33,7 @@ declare global {
         | 'hand'
         | 'drawing'
         | 'selecting'
+        | 'moving'
         | 'transforming'
         | 'typing'
         | 'cropping'
