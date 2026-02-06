@@ -1,7 +1,7 @@
 {
   "name": "mce",
   "type": "module",
-  "version": "0.16.6",
+  "version": "0.16.7",
   "description": "A headless infinite canvas editor framework built on WebGL rendering, supports exporting to image, video, and PPT. Only the ESM.",
   "author": "wxm",
   "license": "MIT",

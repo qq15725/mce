@@ -1,3 +1,18 @@
+## [0.16.7](https://github.com/qq15725/mce/compare/v0.16.6...v0.16.7) (2026-02-06)
+
+
+### Bug Fixes
+
+* third party ([e73b076](https://github.com/qq15725/mce/commit/e73b0763d27a8eccfe6a9815f71a70c03c7e5852))
+
+
+### Features
+
+* smart selection ([8d35a6f](https://github.com/qq15725/mce/commit/8d35a6ff90b77c00f004e44a00e50e4e89354e27))
+* smart selection ([00980b2](https://github.com/qq15725/mce/commit/00980b22ecb44559f5be912c7d1361b0a84d0435))
+
+
+
 ## [0.16.6](https://github.com/qq15725/mce/compare/v0.16.5...v0.16.6) (2026-02-05)
 
 
