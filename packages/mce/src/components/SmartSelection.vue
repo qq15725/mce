@@ -3,6 +3,7 @@ import type { Aabb2D, Element2D } from 'modern-canvas'
 import type { TransformValue } from './shared/TransformControls.vue'
 import { computed, ref, watch } from 'vue'
 import { useEditor } from '../composables'
+import { handleDrag } from '../utils'
 import TransformControls from './shared/TransformControls.vue'
 
 const currentElement = defineModel<Element2D>()
@@ -11,50 +12,46 @@ const {
   isPointerInSelection,
   elementSelection,
   getObb,
-  getAabb,
   state,
   camera,
   resizeElement,
   inEditorIs,
-  getGlobalPointer,
   aabbToDrawboardAabb,
 } = useEditor()
 
-const info = ref({
-  active: false,
-  direction: undefined as 'vertical' | 'horizontal' | undefined,
-  spacing: undefined as number | undefined,
-  items: [] as { el: Element2D, aabb: Aabb2D }[],
-})
+const info = ref<{
+  direction: 'horizontal' | 'vertical'
+  spacing: number
+  items: Element2D[]
+}>()
 
-function update() {
-  if (currentElement.value) {
+const disableUpdate = ref(false)
+
+function _update(): void {
+  if (disableUpdate.value) {
     return
   }
 
-  const els = elementSelection.value
-  let active = false
-  let direction: 'vertical' | 'horizontal' | undefined
-  let spacing: number | undefined
-  let items: { el: Element2D, aabb: Aabb2D }[] = []
+  const _selection = elementSelection.value
 
-  if (els.length > 1) {
+  let direction: 'vertical' | 'horizontal' = 'vertical'
+  let spacing: number | undefined
+  let items: Element2D[] = []
+
+  if (_selection.length > 1) {
     let prev
 
-    const _els = els.map(el => ({ el, aabb: el.globalAabb }))
-
-    active = true
-    const sorted = [..._els].sort((a, b) => a.aabb.y - b.aabb.y)
+    const sorted = [..._selection].sort((a, b) => a.globalAabb.y - b.globalAabb.y)
     for (let i = 0; i < sorted.length; i++) {
       const cur = sorted[i]
       if (prev) {
-        if (!cur.aabb.overlap(prev.aabb, 'x')) {
-          active = false
+        if (!cur.globalAabb.overlap(prev.globalAabb, 'x')) {
+          spacing = undefined
           break
         }
-        const _spacing = cur.aabb.y - (prev.aabb.y + prev.aabb.height)
+        const _spacing = cur.globalAabb.top - prev.globalAabb.bottom
         if (spacing !== undefined && Math.abs(spacing - _spacing) >= 1) {
-          active = false
+          spacing = undefined
           break
         }
         spacing = _spacing
@@ -62,50 +59,65 @@ function update() {
       prev = cur
     }
 
-    if (active) {
+    if (spacing !== undefined) {
       items = sorted
       direction = 'vertical'
     }
     else {
-      active = true
       prev = undefined
-      spacing = undefined
-      const sorted = [..._els].sort((a, b) => a.aabb.x - b.aabb.x)
+      const sorted = [..._selection].sort((a, b) => a.globalAabb.x - b.globalAabb.x)
       for (let i = 0; i < sorted.length; i++) {
         const cur = sorted[i]
         if (prev) {
-          if (!cur.aabb.overlap(prev.aabb, 'y')) {
-            active = false
+          if (!cur.globalAabb.overlap(prev.globalAabb, 'y')) {
+            spacing = undefined
             break
           }
-          const _spacing = cur.aabb.x - (prev.aabb.x + prev.aabb.width)
+          const _spacing = cur.globalAabb.left - prev.globalAabb.right
           if (spacing !== undefined && Math.abs(spacing - _spacing) >= 1) {
-            active = false
+            spacing = undefined
             break
           }
           spacing = _spacing
         }
         prev = cur
       }
-      if (active) {
+      if (spacing !== undefined) {
         items = sorted
         direction = 'horizontal'
       }
     }
   }
 
-  info.value = {
-    active,
-    direction,
-    spacing,
-    items,
+  if (spacing !== undefined) {
+    info.value = {
+      direction,
+      spacing,
+      items,
+    }
+  }
+  else {
+    info.value = undefined
   }
 }
 
-watch(() => elementSelection.value.map(el => getAabb(el)), update)
-watch(elementSelection, () => currentElement.value = undefined)
+watch(() => {
+  return elementSelection.value.map((el) => {
+    return {
+      left: el.style.left,
+      top: el.style.top,
+      width: el.style.width,
+      height: el.style.height,
+      rotate: el.style.rotate,
+    }
+  })
+}, _update)
 
-const handles = computed(() => {
+watch(() => {
+  return elementSelection.value.map(el => el.instanceId)
+}, () => currentElement.value = undefined)
+
+const boxes = computed(() => {
   return elementSelection.value.map((el) => {
     return {
       el,
@@ -115,58 +127,68 @@ const handles = computed(() => {
 })
 
 const spacingHandles = computed(() => {
-  const { direction, spacing = 0, items } = info.value
-  const zoom = camera.value.zoom
-  const position = camera.value.position
+  const handles: { el: Element2D, style: Record<string, any> }[] = []
 
-  switch (direction) {
-    case 'horizontal':
-      return items.map((item) => {
-        const pos = {
-          x: item.aabb.x + spacing / 2,
-          y: item.aabb.y,
-        }
-        pos.x *= zoom.x
-        pos.y *= zoom.y
-        pos.x -= position.x
-        pos.y -= position.y
-        return {
-          style: {
-            width: '2px',
-            transform: `matrix(1, 0, 0, 1, ${pos.x}, ${pos.y})`,
-          },
-        }
-      })
-    case 'vertical':
-      return items.slice(0, items.length - 1).map((item) => {
-        const pos = {
-          x: item.aabb.x,
-          y: item.aabb.y + item.aabb.height + spacing / 2,
-        }
-        pos.x *= zoom.x
-        pos.y *= zoom.y
-        pos.x -= position.x
-        pos.y -= position.y
-        pos.y -= 1
-        return {
-          style: {
-            height: '2px',
-            transform: `matrix(1, 0, 0, 1, ${pos.x}, ${pos.y})`,
-          },
-        }
-      })
+  if (!info.value) {
+    return handles
   }
 
-  return []
+  const { direction, spacing = 0, items } = info.value
+  const { zoom, position } = camera.value
+
+  const toScreen = (pos: { x: number, y: number }) => {
+    pos.x *= zoom.x
+    pos.y *= zoom.y
+    pos.x -= position.x
+    pos.y -= position.y
+  }
+
+  for (let i = 0; i < items.length; i++) {
+    const cur = items[i]
+    const next = items[i + 1]
+
+    if (!next) {
+      break
+    }
+
+    const axis = direction === 'horizontal' ? 'y' : 'x'
+    const min = Math.max(cur.globalAabb.min[axis], next.globalAabb.min[axis])
+    const max = Math.min(cur.globalAabb.max[axis], next.globalAabb.max[axis])
+    let pos
+    switch (direction) {
+      case 'horizontal':
+        pos = {
+          x: cur.globalAabb.x + cur.globalAabb.width + spacing / 2,
+          y: min + (max - min) / 2,
+        }
+        break
+      case 'vertical':
+        pos = {
+          x: min + (max - min) / 2,
+          y: cur.globalAabb.y + cur.globalAabb.height + spacing / 2,
+        }
+        break
+    }
+    toScreen(pos)
+    pos[axis] -= 2
+    handles.push({
+      el: cur,
+      style: {
+        transform: `matrix(1, 0, 0, 1, ${pos.x}, ${pos.y})`,
+      },
+    })
+  }
+
+  return handles
 })
 
-const transform = computed({
+const currentTransform = computed({
   get: () => {
     const { left, top, width, height, rotationDegrees: rotate } = getObb(currentElement.value)
     return { left, top, width, height, rotate }
   },
   set: (val: TransformValue) => {
-    const oldTransform = transform.value
+    const oldTransform = currentTransform.value
     const offsetStyle = {
       left: val.left - oldTransform.left,
       top: val.top - oldTransform.top,
@@ -208,33 +230,38 @@ const transform = computed({
       bottom: aabb.bottom - bottom,
     }
 
-    const { direction, items } = info.value
-
+    const _info = info.value
+    if (!_info) {
+      return
+    }
+    const { direction, items } = _info
     let after = false
     switch (direction) {
       case 'horizontal':
         items.forEach((item) => {
-          if (item.el.equal(el)) {
+          // TODO 旋转
+          if (item.equal(el)) {
             after = true
           }
           else if (after) {
-            item.el.style.left += offset.right
+            item.style.left += offset.right
           }
           else {
-            item.el.style.left += offset.left
+            item.style.left += offset.left
           }
         })
         break
       case 'vertical':
         items.forEach((item) => {
-          if (item.el.equal(el)) {
+          // TODO 旋转
+          if (item.equal(el)) {
             after = true
           }
           else if (after) {
-            item.el.style.top += offset.bottom
+            item.style.top += offset.bottom
           }
           else {
-            item.el.style.top += offset.top
+            item.style.top += offset.top
           }
         })
         break
@@ -247,129 +274,219 @@ const _globalAabb = computed(() => {
   return globalAabb.value ? aabbToDrawboardAabb(globalAabb.value as any) : undefined
 })
 
-function onMouseDown(item: any, downEvent: MouseEvent) {
+function onRingMouseDown(event: MouseEvent, item: any) {
   const el = item.el as Element2D
   currentElement.value = el
 
-  // TODO
-  let currentPos = { x: downEvent.clientX, y: downEvent.clientY }
+  const _info = info.value
+  if (!_info) {
+    return
+  }
+
+  const { direction, spacing } = _info
   globalAabb.value = el.globalAabb.clone()
   const elAabb = globalAabb.value
-  const startItems: { el: Element2D, aabb: Aabb2D }[] = []
-  elementSelection.value.forEach((el) => {
-    startItems.push({
-      el,
-      aabb: el.globalAabb,
-    })
-  })
 
-  let startDrag = false
-  function onMouseMove(moveEvent: MouseEvent) {
-    const movePos = { x: moveEvent.clientX, y: moveEvent.clientY }
-    const offset = { x: movePos.x - currentPos.x, y: movePos.y - currentPos.y }
-
-    if (!startDrag && (
-      Math.abs(offset.x) >= 3
-      || Math.abs(offset.y) >= 3
-    )) {
-      startDrag = true
+  handleDrag(event, {
+    start: () => {
+      disableUpdate.value = true
       state.value = 'moving'
-    }
-
-    if (startDrag) {
-      currentPos = { ...movePos }
-
+    },
+    move: (offset) => {
       const { zoom } = camera.value
-      el.position.x += offset.x / zoom.x
-      el.position.y += offset.y / zoom.y
-
-      const pointer = getGlobalPointer()
-      switch (info.value.direction) {
-        case 'vertical':
-          startItems.forEach((target) => {
-            if (!target.el.equal(el)) {
-              if (
-                target.aabb.top < pointer.y
-                && target.aabb.bottom > pointer.y
-              ) {
-                if (target.aabb.top < elAabb.top) {
-                  const top = target.aabb.top
-                  target.el.style.top = elAabb.bottom - target.aabb.height
-                  elAabb.top = top
+      el.position.set(
+        el.position.x + offset.x / zoom.x,
+        el.position.y + offset.y / zoom.y,
+      )
+      const fixedCenter = elAabb.getCenter()
+      const center = el.globalAabb.getCenter()
+      switch (direction) {
+        case 'horizontal': {
+          const diff = center.x - fixedCenter.x
+          const absDiff = Math.abs(diff)
+          if (absDiff > spacing + elAabb.height / 2) {
+            const sorted = [...elementSelection.value].sort((a, b) => {
+              if (a.equal(el))
+                return elAabb.x - b.globalAabb.x
+              if (b.equal(el))
+                return a.globalAabb.x - elAabb.x
+              return a.globalAabb.x - b.globalAabb.x
+            })
+            const index = sorted.findIndex(v => v.equal(el))
+            if (diff > 0) {
+              const target = sorted[index + 1]
+              if (target) {
+                // TODO 旋转
+                const left = target.globalAabb.right - elAabb.width
+                let _left = elAabb.left
+                const parentAabb = target.getParent<Element2D>()?.globalAabb
+                if (parentAabb) {
+                  _left -= parentAabb.x
                 }
-                else {
-                  const top = elAabb.top
-                  elAabb.top = target.aabb.bottom - elAabb.height
-                  target.el.style.top = top
-                }
-                target.el.updateGlobalTransform()
+                target.style.left = _left
+                elAabb.x = left
+                target.updateGlobalTransform()
               }
             }
+            else {
+              const target = sorted[index - 1]
+              if (target) {
+                // TODO 旋转
+                let left = elAabb.right - target.globalAabb.width
+                elAabb.x = target.globalAabb.left
+                const parentAabb = target.getParent<Element2D>()?.globalAabb
+                if (parentAabb) {
+                  left -= parentAabb.x
+                }
+                target.style.left = left
+                target.updateGlobalTransform()
+              }
+            }
+          }
+          break
+        }
+        case 'vertical': {
+          const diff = center.y - fixedCenter.y
+          const absDiff = Math.abs(diff)
+          if (absDiff > spacing + elAabb.height / 2) {
+            const sorted = [...elementSelection.value].sort((a, b) => {
+              if (a.equal(el))
+                return elAabb.y - b.globalAabb.y
+              if (b.equal(el))
+                return a.globalAabb.y - elAabb.y
+              return a.globalAabb.y - b.globalAabb.y
+            })
+            const index = sorted.findIndex(v => v.equal(el))
+            if (diff > 0) {
+              const target = sorted[index + 1]
+              if (target) {
+                // TODO 旋转
+                const top = target.globalAabb.bottom - elAabb.height
+                let _top = elAabb.top
+                const parentAabb = target.getParent<Element2D>()?.globalAabb
+                if (parentAabb) {
+                  _top -= parentAabb.y
+                }
+                target.style.top = _top
+                elAabb.y = top
+                target.updateGlobalTransform()
+              }
+            }
+            else {
+              const target = sorted[index - 1]
+              if (target) {
+                // TODO 旋转
+                let top = elAabb.bottom - target.globalAabb.height
+                elAabb.y = target.globalAabb.top
+                const parentAabb = target.getParent<Element2D>()?.globalAabb
+                if (parentAabb) {
+                  top -= parentAabb.y
+                }
+                target.style.top = top
+                target.updateGlobalTransform()
+              }
+            }
+          }
+          break
+        }
+      }
+    },
+    end: () => {
+      // TODO 旋转
+      let x = elAabb.x
+      let y = elAabb.y
+      const parentAabb = el.getParent<Element2D>()?.globalAabb
+      if (parentAabb) {
+        x -= parentAabb.x
+        y -= parentAabb.y
+      }
+      el.style.left = x
+      el.style.top = y
+      el.updateGlobalTransform()
+      globalAabb.value = undefined
+      state.value = undefined
+      disableUpdate.value = false
+    },
+  })
+}
+
+function onSpacingMouseDown(event: MouseEvent) {
+  const _info = info.value
+
+  if (!_info) {
+    return
+  }
+
+  const { direction, items } = _info
+
+  handleDrag(event, {
+    start: () => state.value = 'moving',
+    move: (offset) => {
+      const { zoom } = camera.value
+
+      offset.x /= zoom.x
+      offset.y /= zoom.y
+
+      switch (direction) {
+        case 'horizontal':
+          items.forEach((item, index) => {
+            // TODO 旋转
+            item.style.left += index * offset.x
           })
           break
-        case 'horizontal':
-          // TODO
+        case 'vertical':
+          items.forEach((item, index) => {
+            // TODO 旋转
+            item.style.top += index * offset.y
+          })
           break
       }
-    }
-  }
-
-  function onMouseUp(_upEvent: MouseEvent) {
-    el.style.left = elAabb.x
-    el.style.top = elAabb.y
-    el.position.x = elAabb.x
-    el.position.y = elAabb.y
-    el.updateGlobalTransform()
-    globalAabb.value = undefined
-    state.value = undefined
-
-    document.removeEventListener('mousemove', onMouseMove)
-    document.removeEventListener('mouseup', onMouseUp)
-  }
-
-  document.addEventListener('mousemove', onMouseMove)
-  document.addEventListener('mouseup', onMouseUp)
+    },
+    end: () => state.value = undefined,
+  })
 }
 </script>
 
 <template>
   <div
-    v-if="info.active"
+    v-if="info"
     class="mce-smart-selection"
+    :class="{
+      'mce-smart-selection--hover': isPointerInSelection,
+      [`mce-smart-selection--${info.direction}`]: true,
+    }"
   >
     <template
       v-if="state !== 'moving'"
     >
       <div
-        v-for="(item, index) in handles"
+        v-for="(item, index) in boxes"
         :key="index"
-        class="mce-smart-handle"
+        class="mce-smart-selection__node"
         :class="{
-          'mce-smart-handle--active': item.el.equal(currentElement),
+          'mce-smart-selection__node--active': item.el.equal(currentElement),
         }"
         :style="item.style"
-        data-pointerdown_to_drawboard
       >
         <div
-          class="mce-smart-handle__btn"
-          :class="{
-            'mce-smart-handle__btn--active': isPointerInSelection,
-          }"
-          @mousedown="onMouseDown(item, $event)"
+          class="mce-smart-selection__ring"
+          @mousedown="onRingMouseDown($event, item)"
         />
       </div>
 
       <div
         v-for="(item, index) in spacingHandles"
         :key="index"
-        class="mce-smart-spacing-handle"
+        class="mce-smart-selection__spacing"
         :style="item.style"
-        data-pointerdown_to_drawboard
-      />
+        @mousedown="onSpacingMouseDown($event)"
+      >
+        <div class="mce-smart-selection__spacing-line" />
+      </div>
 
       <TransformControls
-        v-if="transform.width && transform.height"
-        v-model="transform"
+        v-if="currentTransform.width && currentTransform.height"
+        v-model="currentTransform"
         :handles="['resize-l', 'resize-r', 'resize-t', 'resize-b']"
         class="mce-smart-selection__transform"
         color="#FF24BD"
@@ -380,7 +497,7 @@ function onMouseDown(item: any, downEvent: MouseEvent) {
 
     <div
       v-else-if="_globalAabb"
-      class="mce-smart-drag"
+      class="mce-smart-selection__ghost"
       :style="_globalAabb.toCssStyle()"
     />
   </div>
@@ -388,6 +505,7 @@ function onMouseDown(item: any, downEvent: MouseEvent) {
 
 <style lang="scss">
   .mce-smart-selection {
+    $root: &;
     position: absolute;
     overflow: hidden;
     left: 0;
@@ -395,45 +513,83 @@ function onMouseDown(item: any, downEvent: MouseEvent) {
     top: 0;
     bottom: 0;
 
-    .mce-smart-drag {
-      position: absolute;
-      border: 1px solid rgb(var(--mce-theme-primary));
-    }
-
-    .mce-smart-handle {
+    &__node {
       position: absolute;
       display: flex;
       align-items: center;
       justify-content: center;
-      pointer-events: auto;
 
-      &__btn {
-        width: 1px;
-        height: 1px;
-        border-radius: 100%;
-        border: 1px solid #FF24BD;
-        outline: 1px solid #FFFFFF;
-
-        &:hover {
-          background: #FF24BD;
-        }
-
-        &--active {
-          width: 10px;
-          height: 10px;
-        }
-      }
-
-      &--active .mce-smart-handle__btn {
+      &--active #{$root}__ring {
         background: #FF24BD;
       }
     }
 
-    .mce-smart-spacing-handle {
+    &__ghost {
       position: absolute;
-      background-color: #FF24BD;
-      height: 20px;
-      width: 20px;
+      border: 1px solid rgb(var(--mce-theme-primary));
+    }
+
+    &__ring {
+      width: 1px;
+      height: 1px;
+      border-radius: 100%;
+      border: 1px solid #FF24BD;
+      outline: 1px solid #FFFFFF;
+      pointer-events: auto;
+
+      &:hover {
+        background: #FF24BD;
+      }
+    }
+
+    &__spacing {
+      position: absolute;
+      height: 10px;
+      width: 10px;
+      visibility: hidden;
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &-line {
+        width: 100%;
+        height: 100%;
+        background-color: #FF24BD;
+      }
+    }
+
+    &--hover {
+      #{$root}__ring {
+        width: 10px;
+        height: 10px;
+      }
+
+      #{$root}__spacing {
+        visibility: visible;
+      }
+    }
+
+    &--vertical {
+      #{$root}__spacing {
+        height: 4px;
+        cursor: row-resize;
+      }
+
+      #{$root}__spacing-line {
+        height: 1px;
+      }
+    }
+
+    &--horizontal {
+      #{$root}__spacing {
+        width: 4px;
+        cursor: col-resize;
+      }
+
+      #{$root}__spacing-line {
+        width: 1px;
+      }
     }
   }
 </style>

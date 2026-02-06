@@ -32,7 +32,7 @@ const {
       </template>
 
       <template
-        v-else-if="state === 'transforming'"
+        v-else-if="state === 'transforming' || state === 'moving'"
       >
         <div class="mce-statusbar__item">
           <Icon icon="$mouseRightClick" />
