@@ -460,7 +460,6 @@ function onSpacingMouseDown(event: MouseEvent) {
     },
     move: (offset) => {
       const { zoom } = camera.value
-
       offset.x /= zoom.x
       offset.y /= zoom.y
 
@@ -492,7 +491,7 @@ function onSpacingMouseDown(event: MouseEvent) {
     v-if="info"
     class="mce-smart-selection"
     :class="{
-      'mce-smart-selection--hover': state !== 'moving' && isPointerInSelection,
+      'mce-smart-selection--hover': !state && isPointerInSelection,
       [`mce-smart-selection--${info.direction}`]: true,
       [`mce-smart-selection--${dragState}`]: dragState !== undefined,
     }"
