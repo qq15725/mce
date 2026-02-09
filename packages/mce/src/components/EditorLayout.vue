@@ -123,8 +123,8 @@ function onHover(event: PointerInputEvent) {
   if (
     elementSelection.value.length > 1
     && selectionAabbInDrawboard.value.contains({
-      x: event.clientX,
-      y: event.clientY,
+      x: event.clientX - drawboardAabb.value.left,
+      y: event.clientY - drawboardAabb.value.top,
     })
   ) {
     cursor = 'move'

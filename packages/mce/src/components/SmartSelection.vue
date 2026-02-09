@@ -155,25 +155,37 @@ const spacingHandles = computed(() => {
     const min = Math.max(cur.globalAabb.min[axis], next.globalAabb.min[axis])
     const max = Math.min(cur.globalAabb.max[axis], next.globalAabb.max[axis])
     let pos
+    let size
     switch (direction) {
       case 'horizontal':
         pos = {
-          x: cur.globalAabb.x + cur.globalAabb.width + spacing / 2,
-          y: min + (max - min) / 2,
+          x: cur.globalAabb.x + cur.globalAabb.width,
+          y: min,
+        }
+        size = {
+          x: spacing,
+          y: max - min,
         }
         break
       case 'vertical':
         pos = {
-          x: min + (max - min) / 2,
-          y: cur.globalAabb.y + cur.globalAabb.height + spacing / 2,
+          x: min,
+          y: cur.globalAabb.y + cur.globalAabb.height,
+        }
+        size = {
+          x: max - min,
+          y: spacing,
         }
         break
     }
     toScreen(pos)
-    pos[axis] -= 2
+    size.x *= zoom.x
+    size.y *= zoom.y
     handles.push({
       el: cur,
       style: {
+        width: `${size.x}px`,
+        height: `${size.y}px`,
         transform: `matrix(1, 0, 0, 1, ${pos.x}, ${pos.y})`,
       },
     })
@@ -283,9 +295,47 @@ function onRingMouseDown(event: MouseEvent, item: any) {
     return
   }
 
-  const { direction, spacing } = _info
+  const { direction } = _info
   globalAabb.value = el.globalAabb.clone()
   const elAabb = globalAabb.value
+
+  let sorted: Element2D[] = []
+  let min = Number.MIN_SAFE_INTEGER
+  let max = Number.MAX_SAFE_INTEGER
+  let prev: Element2D | undefined
+  let next: Element2D | undefined
+
+  function update() {
+    const key = direction === 'horizontal' ? 'x' : 'y'
+    sorted = [...elementSelection.value].sort((a, b) => {
+      if (a.equal(el))
+        return elAabb[key] - b.globalAabb[key]
+      if (b.equal(el))
+        return a.globalAabb[key] - elAabb[key]
+      return a.globalAabb[key] - b.globalAabb[key]
+    })
+    const index = sorted.findIndex(v => v.equal(el))
+    prev = sorted[index - 1]
+    next = sorted[index + 1]
+    if (direction === 'horizontal') {
+      if (prev) {
+        min = prev.globalAabb.left + elAabb.width
+      }
+      if (next) {
+        max = next.globalAabb.right - elAabb.width
+      }
+    }
+    else {
+      if (prev) {
+        min = prev.globalAabb.top + elAabb.height
+      }
+      if (next) {
+        max = next.globalAabb.bottom - elAabb.height
+      }
+    }
+  }
+
+  update()
 
   handleDrag(event, {
     start: () => {
@@ -298,93 +348,68 @@ function onRingMouseDown(event: MouseEvent, item: any) {
         el.position.x + offset.x / zoom.x,
         el.position.y + offset.y / zoom.y,
       )
-      const fixedCenter = elAabb.getCenter()
       const center = el.globalAabb.getCenter()
       switch (direction) {
         case 'horizontal': {
-          const diff = center.x - fixedCenter.x
-          const absDiff = Math.abs(diff)
-          if (absDiff > spacing + elAabb.height / 2) {
-            const sorted = [...elementSelection.value].sort((a, b) => {
-              if (a.equal(el))
-                return elAabb.x - b.globalAabb.x
-              if (b.equal(el))
-                return a.globalAabb.x - elAabb.x
-              return a.globalAabb.x - b.globalAabb.x
-            })
-            const index = sorted.findIndex(v => v.equal(el))
-            if (diff > 0) {
-              const target = sorted[index + 1]
-              if (target) {
-                // TODO 旋转
-                const left = target.globalAabb.right - elAabb.width
-                let _left = elAabb.left
-                const parentAabb = target.getParent<Element2D>()?.globalAabb
-                if (parentAabb) {
-                  _left -= parentAabb.x
-                }
-                target.style.left = _left
-                elAabb.x = left
-                target.updateGlobalTransform()
+          if (center.x < min) {
+            if (next) {
+              // TODO 旋转
+              const left = next.globalAabb.right - elAabb.width
+              let _left = elAabb.left
+              const parentAabb = next.getParent<Element2D>()?.globalAabb
+              if (parentAabb) {
+                _left -= parentAabb.x
               }
+              next.style.left = _left
+              elAabb.x = left
+              next.updateGlobalTransform()
+              update()
             }
-            else {
-              const target = sorted[index - 1]
-              if (target) {
-                // TODO 旋转
-                let left = elAabb.right - target.globalAabb.width
-                elAabb.x = target.globalAabb.left
-                const parentAabb = target.getParent<Element2D>()?.globalAabb
-                if (parentAabb) {
-                  left -= parentAabb.x
-                }
-                target.style.left = left
-                target.updateGlobalTransform()
+          }
+          else if (center.x > max) {
+            if (prev) {
+              // TODO 旋转
+              let left = elAabb.right - prev.globalAabb.width
+              elAabb.x = prev.globalAabb.left
+              const parentAabb = prev.getParent<Element2D>()?.globalAabb
+              if (parentAabb) {
+                left -= parentAabb.x
               }
+              prev.style.left = left
+              prev.updateGlobalTransform()
+              update()
             }
           }
           break
         }
         case 'vertical': {
-          const diff = center.y - fixedCenter.y
-          const absDiff = Math.abs(diff)
-          if (absDiff > spacing + elAabb.height / 2) {
-            const sorted = [...elementSelection.value].sort((a, b) => {
-              if (a.equal(el))
-                return elAabb.y - b.globalAabb.y
-              if (b.equal(el))
-                return a.globalAabb.y - elAabb.y
-              return a.globalAabb.y - b.globalAabb.y
-            })
-            const index = sorted.findIndex(v => v.equal(el))
-            if (diff > 0) {
-              const target = sorted[index + 1]
-              if (target) {
-                // TODO 旋转
-                const top = target.globalAabb.bottom - elAabb.height
-                let _top = elAabb.top
-                const parentAabb = target.getParent<Element2D>()?.globalAabb
-                if (parentAabb) {
-                  _top -= parentAabb.y
-                }
-                target.style.top = _top
-                elAabb.y = top
-                target.updateGlobalTransform()
+          if (center.y < min) {
+            if (prev) {
+              // TODO 旋转
+              let top = elAabb.bottom - prev.globalAabb.height
+              elAabb.y = prev.globalAabb.top
+              const parentAabb = prev.getParent<Element2D>()?.globalAabb
+              if (parentAabb) {
+                top -= parentAabb.y
               }
+              prev.style.top = top
+              prev.updateGlobalTransform()
+              update()
             }
-            else {
-              const target = sorted[index - 1]
-              if (target) {
-                // TODO 旋转
-                let top = elAabb.bottom - target.globalAabb.height
-                elAabb.y = target.globalAabb.top
-                const parentAabb = target.getParent<Element2D>()?.globalAabb
-                if (parentAabb) {
-                  top -= parentAabb.y
-                }
-                target.style.top = top
-                target.updateGlobalTransform()
+          }
+          else if (center.y > max) {
+            if (next) {
+              // TODO 旋转
+              const top = next.globalAabb.bottom - elAabb.height
+              let _top = elAabb.top
+              const parentAabb = next.getParent<Element2D>()?.globalAabb
+              if (parentAabb) {
+                _top -= parentAabb.y
               }
+              next.style.top = _top
+              elAabb.y = top
+              next.updateGlobalTransform()
+              update()
             }
           }
           break
@@ -402,6 +427,8 @@ function onRingMouseDown(event: MouseEvent, item: any) {
       }
       el.style.left = x
       el.style.top = y
+      el.position.x = x
+      el.position.y = y
       el.updateGlobalTransform()
       globalAabb.value = undefined
       state.value = undefined
@@ -454,6 +481,7 @@ function onSpacingMouseDown(event: MouseEvent) {
     :class="{
       'mce-smart-selection--hover': isPointerInSelection,
       [`mce-smart-selection--${info.direction}`]: true,
+      [`mce-smart-selection--moving`]: state === 'moving',
     }"
   >
     <template
@@ -474,16 +502,6 @@ function onSpacingMouseDown(event: MouseEvent) {
         />
       </div>
 
-      <div
-        v-for="(item, index) in spacingHandles"
-        :key="index"
-        class="mce-smart-selection__spacing"
-        :style="item.style"
-        @mousedown="onSpacingMouseDown($event)"
-      >
-        <div class="mce-smart-selection__spacing-line" />
-      </div>
-
       <TransformControls
         v-if="currentTransform.width && currentTransform.height"
         v-model="currentTransform"
@@ -496,7 +514,19 @@ function onSpacingMouseDown(event: MouseEvent) {
     </template>
 
     <div
-      v-else-if="_globalAabb"
+      v-for="(item, index) in spacingHandles"
+      :key="index"
+      class="mce-smart-selection__spacing"
+      :style="item.style"
+    >
+      <div
+        class="mce-smart-selection__spacing-line"
+        @mousedown="onSpacingMouseDown($event)"
+      />
+    </div>
+
+    <div
+      v-if="_globalAabb"
       class="mce-smart-selection__ghost"
       :style="_globalAabb.toCssStyle()"
     />
@@ -544,18 +574,38 @@ function onSpacingMouseDown(event: MouseEvent) {
 
     &__spacing {
       position: absolute;
-      height: 10px;
-      width: 10px;
       visibility: hidden;
-      pointer-events: auto;
       display: flex;
       align-items: center;
       justify-content: center;
 
       &-line {
-        width: 100%;
-        height: 100%;
+        height: 10px;
+        width: 10px;
+        pointer-events: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:before {
+          content: '';
+          display: block;
+          width: 100%;
+          height: 100%;
+          background-color: #FF24BD;
+        }
+      }
+    }
+
+    &--moving {
+      #{$root}__spacing {
+        visibility: visible;
         background-color: #FF24BD;
+        opacity: .3;
+      }
+
+      #{$root}__spacing-line {
+        visibility: hidden;
       }
     }
 
@@ -571,23 +621,23 @@ function onSpacingMouseDown(event: MouseEvent) {
     }
 
     &--vertical {
-      #{$root}__spacing {
+      #{$root}__spacing-line {
         height: 4px;
         cursor: row-resize;
       }
 
-      #{$root}__spacing-line {
+      #{$root}__spacing-line:before {
         height: 1px;
       }
     }
 
     &--horizontal {
-      #{$root}__spacing {
+      #{$root}__spacing-line {
         width: 4px;
         cursor: col-resize;
       }
 
-      #{$root}__spacing-line {
+      #{$root}__spacing-line:before {
         width: 1px;
       }
     }
