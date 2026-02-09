@@ -26,6 +26,7 @@ const info = ref<{
 }>()
 
 const disableUpdate = ref(false)
+const dragState = ref<'spacing' | 'ring'>()
 
 function _update(): void {
   if (disableUpdate.value) {
@@ -113,9 +114,10 @@ watch(() => {
   })
 }, _update)
 
-watch(() => {
-  return elementSelection.value.map(el => el.instanceId)
-}, () => currentElement.value = undefined)
+watch(
+  () => elementSelection.value.map(el => el.instanceId),
+  () => currentElement.value = undefined,
+)
 
 const boxes = computed(() => {
   return elementSelection.value.map((el) => {
@@ -190,6 +192,8 @@ const spacingHandles = computed(() => {
       },
     })
   }
+
+  console.log(handles)
 
   return handles
 })
@@ -341,6 +345,7 @@ function onRingMouseDown(event: MouseEvent, item: any) {
     start: () => {
       disableUpdate.value = true
       state.value = 'moving'
+      dragState.value = 'ring'
     },
     move: (offset) => {
       const { zoom } = camera.value
@@ -432,7 +437,9 @@ function onRingMouseDown(event: MouseEvent, item: any) {
       el.updateGlobalTransform()
       globalAabb.value = undefined
       state.value = undefined
+      dragState.value = undefined
       disableUpdate.value = false
+      _update()
     },
   })
 }
@@ -447,7 +454,10 @@ function onSpacingMouseDown(event: MouseEvent) {
   const { direction, items } = _info
 
   handleDrag(event, {
-    start: () => state.value = 'moving',
+    start: () => {
+      state.value = 'moving'
+      dragState.value = 'spacing'
+    },
     move: (offset) => {
       const { zoom } = camera.value
 
@@ -469,7 +479,10 @@ function onSpacingMouseDown(event: MouseEvent) {
           break
       }
     },
-    end: () => state.value = undefined,
+    end: () => {
+      state.value = undefined
+      dragState.value = undefined
+    },
   })
 }
 </script>
@@ -479,9 +492,9 @@ function onSpacingMouseDown(event: MouseEvent) {
     v-if="info"
     class="mce-smart-selection"
     :class="{
-      'mce-smart-selection--hover': isPointerInSelection,
+      'mce-smart-selection--hover': state !== 'moving' && isPointerInSelection,
       [`mce-smart-selection--${info.direction}`]: true,
-      [`mce-smart-selection--moving`]: state === 'moving',
+      [`mce-smart-selection--${dragState}`]: dragState !== undefined,
     }"
   >
     <template
@@ -574,6 +587,8 @@ function onSpacingMouseDown(event: MouseEvent) {
 
     &__spacing {
       position: absolute;
+      left: 0;
+      top: 0;
       visibility: hidden;
       display: flex;
       align-items: center;
@@ -594,18 +609,6 @@ function onSpacingMouseDown(event: MouseEvent) {
           height: 100%;
           background-color: #FF24BD;
         }
-      }
-    }
-
-    &--moving {
-      #{$root}__spacing {
-        visibility: visible;
-        background-color: #FF24BD;
-        opacity: .3;
-      }
-
-      #{$root}__spacing-line {
-        visibility: hidden;
       }
     }
 
@@ -639,6 +642,24 @@ function onSpacingMouseDown(event: MouseEvent) {
 
       #{$root}__spacing-line:before {
         width: 1px;
+      }
+    }
+
+    &--ring {
+      #{$root}__spacing {
+        visibility: hidden;
+      }
+    }
+
+    &--spacing {
+      #{$root}__spacing {
+        visibility: visible;
+        background-color: #FF24BD;
+        opacity: .3;
+      }
+
+      #{$root}__spacing-line {
+        visibility: hidden;
       }
     }
   }
