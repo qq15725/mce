@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, getCurrentInstance, h, nextTick, onMounted, ref } from 'vue'
+import { addDragListener } from '../../utils'
 
 export interface TransformValue {
   left: number
@@ -96,9 +97,9 @@ const props = withDefaults(defineProps<{
 })
 
 const emit = defineEmits<{
-  start: [TransformValue]
-  move: [TransformValue, TransformValue]
-  end: [TransformValue]
+  start: [context: Mce.TransformContext]
+  move: [context: Mce.TransformMoveContext]
+  end: [context: Mce.TransformContext]
 }>()
 
 const _model = defineModel<
@@ -123,48 +124,73 @@ const cursors: Record<string, any> = {
   'resize-bl': (angle: number) => createCursor('resizeBevel', 180 + angle),
 }
 
+function getRawModel(): TransformValue {
+  let {
+    left = 0,
+    top = 0,
+    width = 0,
+    height = 0,
+    rotate = 0,
+    borderRadius = 0,
+  } = _model.value ?? {}
+
+  if (Number.isNaN(Number(width)))
+    width = 0
+
+  if (Number.isNaN(Number(height)))
+    height = 0
+
+  return {
+    left,
+    top,
+    width,
+    height,
+    rotate,
+    borderRadius,
+  }
+}
+
+function modelGetter() {
+  const value = getRawModel()
+  const scale = props.scale
+  const offset = props.offset
+
+  const {
+    left,
+    top,
+    width,
+    height,
+    rotate,
+    borderRadius,
+  } = value
+
+  return {
+    left: left * scale[0] + offset[0],
+    top: top * scale[1] + offset[1],
+    width: width * scale[0],
+    height: height * scale[1],
+    rotate,
+    borderRadius: borderRadius * scale[0],
+  }
+}
+
+function modelSetter(value: TransformValue): TransformValue {
+  const scale = props.scale
+  const offset = props.offset
+
+  return {
+    left: (value.left - offset[0]) / scale[0],
+    top: (value.top - offset[1]) / scale[1],
+    width: value.width / scale[0],
+    height: value.height / scale[1],
+    rotate: value.rotate,
+    borderRadius: value.borderRadius / scale[0],
+  }
+}
+
 const model = computed({
-  get: () => {
-    const scale = props.scale
-    const offset = props.offset
-
-    let {
-      left = 0,
-      top = 0,
-      width = 0,
-      height = 0,
-      rotate = 0,
-      borderRadius = 0,
-    } = _model.value ?? {}
-
-    if (Number.isNaN(Number(width)))
-      width = 0
-
-    if (Number.isNaN(Number(height)))
-      height = 0
-
-    return {
-      left: left * scale[0] + offset[0],
-      top: top * scale[1] + offset[1],
-      width: width * scale[0],
-      height: height * scale[1],
-      rotate,
-      borderRadius: borderRadius * scale[0],
-    }
-  },
-  set: (val) => {
-    const scale = props.scale
-    const offset = props.offset
-
-    _model.value = {
-      left: (val.left - offset[0]) / scale[0],
-      top: (val.top - offset[1]) / scale[1],
-      width: val.width / scale[0],
-      height: val.height / scale[1],
-      rotate: val.rotate,
-      borderRadius: val.borderRadius / scale[0],
-    }
-  },
+  get: modelGetter,
+  set: value => _model.value = modelSetter(value),
 })
 const transforming = ref(false)
 const activeHandle = ref<Handle>()
@@ -341,7 +367,7 @@ const tip = computed(() => {
     : props.tip?.('size')
 })
 
-function start(event?: MouseEvent, index?: number): boolean {
+function onPointerDown(event?: MouseEvent, index?: number): boolean {
   if (event && event.button !== undefined && event.button !== 0) {
     return false
   }
@@ -356,12 +382,13 @@ function start(event?: MouseEvent, index?: number): boolean {
     aspectRatio = width / height
   }
 
-  const handle = index === undefined
+  const handleObj = index === undefined
     ? { type: 'move', x: 0, y: 0, width: 0, height: 0 } as HandleObject
     : computedHandles.value[index]
+  const handle = handleObj.type
 
-  activeHandle.value = handle.type
-  const handleArr = handle.type.split('-')
+  activeHandle.value = handle
+  const handleArr = handle.split('-')
   const last = handleArr.length > 1 ? (handleArr.pop() || '') : ''
   const key = handleArr.join('-')
 
@@ -382,8 +409,8 @@ function start(event?: MouseEvent, index?: number): boolean {
   }
 
   if (!isMove) {
-    startPoint.x += handle.x + handle.width / 2
-    startPoint.y += handle.y + handle.height / 2
+    startPoint.x += handleObj.x + handleObj.width / 2
+    startPoint.y += handleObj.y + handleObj.height / 2
   }
 
   const sign = {
@@ -403,184 +430,156 @@ function start(event?: MouseEvent, index?: number): boolean {
     rotatedStartPoint.x - centerPoint.x,
   ) / DEG_TO_RAD
 
-  let startClientPoint: { x: number, y: number } | undefined = event
-    ? { x: event.clientX, y: event.clientY }
-    : undefined
-
-  function startTransform() {
-    transforming.value = true
-    emit('start', model.value)
-  }
-
-  if (!props.threshold && !transforming.value) {
-    startTransform()
-  }
-
-  function _onPointerMove(event: MouseEvent): void {
-    const updated = {} as TransformValue
-
-    if (!startClientPoint) {
-      startClientPoint = { x: event.clientX, y: event.clientY }
-    }
-
-    const rotatedOffset = {
-      x: event.clientX - startClientPoint.x,
-      y: event.clientY - startClientPoint.y,
-    }
-
-    if (!transforming.value) {
-      if (
-        Math.abs(rotatedOffset.x) < props.threshold
-        && Math.abs(rotatedOffset.y) < props.threshold
-      ) {
-        return
+  addDragListener(event, {
+    threshold: props.threshold,
+    start: (ctx) => {
+      transforming.value = true
+      emit('start', { ...ctx, handle, value: getRawModel() })
+    },
+    move: (ctx) => {
+      const rotatedOffset = {
+        x: ctx.movePoint.x - ctx.startPoint.x,
+        y: ctx.movePoint.y - ctx.startPoint.y,
       }
 
-      startTransform()
-    }
+      const updated = {} as TransformValue
 
-    const rotatedCurrentPoint = {
-      x: rotatedStartPoint.x + rotatedOffset.x,
-      y: rotatedStartPoint.y + rotatedOffset.y,
-    }
-
-    if (isMove) {
-      if (props.movable) {
-        updated.left = startPoint.x + rotatedOffset.x
-        updated.top = startPoint.y + rotatedOffset.y
+      const rotatedCurrentPoint = {
+        x: rotatedStartPoint.x + rotatedOffset.x,
+        y: rotatedStartPoint.y + rotatedOffset.y,
       }
-    }
-    else if (isRotate) {
-      if (props.rotatable) {
-        const endAngle = Math.atan2(
-          rotatedCurrentPoint.y - centerPoint.y,
-          rotatedCurrentPoint.x - centerPoint.x,
-        ) / DEG_TO_RAD
 
-        updated.rotate = rotate + endAngle - startAngle
-      }
-    }
-    else if (isRound) {
-      const offset = rotatePoint(rotatedOffset, { x: 0, y: 0 }, -rotate)
-      const dx = -sign.x * offset.x
-      const dy = -sign.y * offset.y
-      const _offset = dx < dy ? dy : dx
-      updated.borderRadius = borderRadius + _offset
-    }
-    else if (isHorizontalVertical) {
-      const currentPoint = rotatePoint(rotatedCurrentPoint, centerPoint, -rotate)
-      const newCurrentPoint = isHorizontal
-        ? { x: currentPoint.x, y: startPoint.y }
-        : { x: startPoint.x, y: currentPoint.y }
-      const newRotatedCurrentPoint = rotatePoint(newCurrentPoint, centerPoint, rotate)
-      const distance = Math.abs(getDistance(newRotatedCurrentPoint, rotatedSymmetricPoint))
-      if (isHorizontal) {
-        updated.width = distance
-        if (props.resizeStrategy === 'lockAspectRatio' && aspectRatio) {
-          updated.height = distance / aspectRatio
-        }
-        else {
-          updated.height = height
+      if (isMove) {
+        if (props.movable) {
+          updated.left = startPoint.x + rotatedOffset.x
+          updated.top = startPoint.y + rotatedOffset.y
         }
       }
-      else {
-        updated.height = distance
-        if (props.resizeStrategy === 'lockAspectRatio' && aspectRatio) {
-          updated.width = distance * aspectRatio
-        }
-        else {
-          updated.width = width
+      else if (isRotate) {
+        if (props.rotatable) {
+          const endAngle = Math.atan2(
+            rotatedCurrentPoint.y - centerPoint.y,
+            rotatedCurrentPoint.x - centerPoint.x,
+          ) / DEG_TO_RAD
+
+          updated.rotate = rotate + endAngle - startAngle
         }
       }
-
-      const newCenterPoint = getMidpoint(newRotatedCurrentPoint, rotatedSymmetricPoint)
-
-      updated.left = newCenterPoint.x - (updated.width / 2)
-      updated.top = newCenterPoint.y - (updated.height / 2)
-    }
-    else {
-      let newRotatedCurrentPoint
-      if (
-        (
-          props.resizeStrategy === 'lockAspectRatio'
-          || props.resizeStrategy === 'lockAspectRatioDiagonal'
-        ) && aspectRatio
-      ) {
+      else if (isRound) {
         const offset = rotatePoint(rotatedOffset, { x: 0, y: 0 }, -rotate)
-        const dx = sign.x * offset.x
-        const dy = sign.y * offset.y
-        let newCurrentPoint
-        if (dx > dy * aspectRatio) {
-          newCurrentPoint = {
-            x: startPoint.x + sign.x * dx,
-            y: startPoint.y + sign.y * dx / aspectRatio,
+        const dx = -sign.x * offset.x
+        const dy = -sign.y * offset.y
+        const _offset = dx < dy ? dy : dx
+        updated.borderRadius = borderRadius + _offset
+      }
+      else if (isHorizontalVertical) {
+        const currentPoint = rotatePoint(rotatedCurrentPoint, centerPoint, -rotate)
+        const newCurrentPoint = isHorizontal
+          ? { x: currentPoint.x, y: startPoint.y }
+          : { x: startPoint.x, y: currentPoint.y }
+        const newRotatedCurrentPoint = rotatePoint(newCurrentPoint, centerPoint, rotate)
+        const distance = Math.abs(getDistance(newRotatedCurrentPoint, rotatedSymmetricPoint))
+        if (isHorizontal) {
+          updated.width = distance
+          if (props.resizeStrategy === 'lockAspectRatio' && aspectRatio) {
+            updated.height = distance / aspectRatio
+          }
+          else {
+            updated.height = height
           }
         }
         else {
-          newCurrentPoint = {
-            x: startPoint.x + sign.x * dy * aspectRatio,
-            y: startPoint.y + sign.y * dy,
+          updated.height = distance
+          if (props.resizeStrategy === 'lockAspectRatio' && aspectRatio) {
+            updated.width = distance * aspectRatio
+          }
+          else {
+            updated.width = width
           }
         }
-        newRotatedCurrentPoint = rotatePoint(newCurrentPoint, centerPoint, rotate)
+
+        const newCenterPoint = getMidpoint(newRotatedCurrentPoint, rotatedSymmetricPoint)
+
+        updated.left = newCenterPoint.x - (updated.width / 2)
+        updated.top = newCenterPoint.y - (updated.height / 2)
       }
       else {
-        newRotatedCurrentPoint = rotatedCurrentPoint
+        let newRotatedCurrentPoint
+        if (
+          (
+            props.resizeStrategy === 'lockAspectRatio'
+            || props.resizeStrategy === 'lockAspectRatioDiagonal'
+          ) && aspectRatio
+        ) {
+          const offset = rotatePoint(rotatedOffset, { x: 0, y: 0 }, -rotate)
+          const dx = sign.x * offset.x
+          const dy = sign.y * offset.y
+          let newCurrentPoint
+          if (dx > dy * aspectRatio) {
+            newCurrentPoint = {
+              x: startPoint.x + sign.x * dx,
+              y: startPoint.y + sign.y * dx / aspectRatio,
+            }
+          }
+          else {
+            newCurrentPoint = {
+              x: startPoint.x + sign.x * dy * aspectRatio,
+              y: startPoint.y + sign.y * dy,
+            }
+          }
+          newRotatedCurrentPoint = rotatePoint(newCurrentPoint, centerPoint, rotate)
+        }
+        else {
+          newRotatedCurrentPoint = rotatedCurrentPoint
+        }
+
+        const newCenterPoint = getMidpoint(newRotatedCurrentPoint, rotatedSymmetricPoint)
+
+        const points = [
+          rotatePoint(newRotatedCurrentPoint, newCenterPoint, -rotate),
+          rotatePoint(rotatedSymmetricPoint, newCenterPoint, -rotate),
+        ]
+
+        const [minX, maxX] = points[0].x > points[1].x
+          ? [points[1].x, points[0].x]
+          : [points[0].x, points[1].x]
+
+        const [minY, maxY] = points[0].y > points[1].y
+          ? [points[1].y, points[0].y]
+          : [points[0].y, points[1].y]
+
+        updated.width = maxX - minX
+        updated.height = maxY - minY
+        updated.left = minX
+        updated.top = minY
       }
 
-      const newCenterPoint = getMidpoint(newRotatedCurrentPoint, rotatedSymmetricPoint)
+      if ('width' in updated) {
+        updated.width = Math.max(1, updated.width)
+      }
 
-      const points = [
-        rotatePoint(newRotatedCurrentPoint, newCenterPoint, -rotate),
-        rotatePoint(rotatedSymmetricPoint, newCenterPoint, -rotate),
-      ]
+      if ('height' in updated) {
+        updated.height = Math.max(1, updated.height)
+      }
 
-      const [minX, maxX] = points[0].x > points[1].x
-        ? [points[1].x, points[0].x]
-        : [points[0].x, points[1].x]
+      if (updated.borderRadius ?? borderRadius) {
+        updated.borderRadius = Math.min(
+          Math.max(0, updated.borderRadius ?? borderRadius),
+          Math.min((updated.width ?? width) / 2, (updated.height ?? height) / 2),
+        )
+      }
 
-      const [minY, maxY] = points[0].y > points[1].y
-        ? [points[1].y, points[0].y]
-        : [points[0].y, points[1].y]
-
-      updated.width = maxX - minX
-      updated.height = maxY - minY
-      updated.left = minX
-      updated.top = minY
-    }
-
-    if ('width' in updated) {
-      updated.width = Math.max(1, updated.width)
-    }
-
-    if ('height' in updated) {
-      updated.height = Math.max(1, updated.height)
-    }
-
-    if (updated.borderRadius ?? borderRadius) {
-      updated.borderRadius = Math.min(
-        Math.max(0, updated.borderRadius ?? borderRadius),
-        Math.min((updated.width ?? width) / 2, (updated.height ?? height) / 2),
-      )
-    }
-
-    const oldValue = { ...model.value }
-    const newValue = { ...model.value, ...updated }
-
-    model.value = newValue
-    emit('move', newValue, oldValue)
-  }
-
-  function _onPointerUp(): void {
-    window.removeEventListener('pointermove', _onPointerMove)
-    window.removeEventListener('pointerup', _onPointerUp, true)
-    transforming.value = false
-    activeHandle.value = undefined
-    emit('end', model.value)
-  }
-
-  window.addEventListener('pointermove', _onPointerMove)
-  window.addEventListener('pointerup', _onPointerUp, true)
+      const oldValue = getRawModel()
+      const value = modelSetter({ ...model.value, ...updated })
+      _model.value = value
+      emit('move', { ...ctx, handle, value, oldValue })
+    },
+    end: (ctx) => {
+      transforming.value = false
+      activeHandle.value = undefined
+      emit('end', { ...ctx, handle, value: getRawModel() })
+    },
+  })
 
   return true
 }
@@ -666,7 +665,7 @@ onMounted(async () => {
 })
 
 defineExpose({
-  start,
+  start: onPointerDown,
   activeHandle,
   transforming,
 })
@@ -742,9 +741,9 @@ function Diagonal() {
     <slot
       :value="model"
       :props="{
-        onPointerdown: start,
+        onPointerdown: onPointerDown,
       }"
-      :start="start"
+      :start="onPointerDown"
     />
 
     <svg
@@ -830,7 +829,7 @@ function Diagonal() {
             :aria-label="handle.type"
             class="mce-transform-controls__handle-rect"
             :cursor="transforming ? 'auto' : getCursor(handle.type)"
-            @pointerdown="(event: PointerEvent) => start(event, index)"
+            @pointerdown="(event: PointerEvent) => onPointerDown(event, index)"
           />
         </template>
       </g>

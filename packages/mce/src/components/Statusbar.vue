@@ -43,12 +43,14 @@ const {
           <span>{{ t('cancel') }}</span>
         </div>
 
-        <div class="mce-statusbar__divider" />
+        <template v-if="state === 'moving'">
+          <div class="mce-statusbar__divider" />
 
-        <div class="mce-statusbar__item">
-          <span class="mce-statusbar__kbd">{{ getKbd('Shift') }}</span>
-          <span>{{ t('constrainToAxis') }}</span>
-        </div>
+          <div class="mce-statusbar__item">
+            <span class="mce-statusbar__kbd">{{ getKbd('Shift') }}</span>
+            <span>{{ t('constrainMovement') }}</span>
+          </div>
+        </template>
       </template>
 
       <span v-else-if="state">{{ t(state) }}</span>

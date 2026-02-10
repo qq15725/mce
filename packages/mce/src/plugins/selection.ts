@@ -54,19 +54,10 @@ declare global {
       'selection.foreground-cropper'?: (props: { scale: number, setScale: (scale: number) => void, setAspectRatio: (aspectRatio: 0 | [number, number]) => void, ok: () => void, cancel: () => void }) => void
     }
 
-    interface BaseSelectionTransformContext {
-      startEvent: MouseEvent | PointerEvent
-      handle: TransformHandle
-    }
-
-    interface SelectionTransformContext extends BaseSelectionTransformContext {
-      value: TransformValue
-    }
-
     interface Events {
-      selectionTransformStart: [context: BaseSelectionTransformContext]
-      selectionTransform: [context: SelectionTransformContext]
-      selectionTransformEnd: [context: BaseSelectionTransformContext]
+      selectionTransformStart: [context: TransformContext]
+      selectionTransform: [context: TransformMoveContext]
+      selectionTransformEnd: [context: TransformContext]
     }
   }
 }

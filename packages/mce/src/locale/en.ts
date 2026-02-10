@@ -1,7 +1,7 @@
 export default {
   'cancel': 'Cancel',
   'create': 'Create',
-  'constrainToAxis': 'Constrain to axis',
+  'constrainMovement': 'Constrain movement',
   'loading': 'Loading',
   'drawing': 'Drawing',
   'exporting': 'Exporting',

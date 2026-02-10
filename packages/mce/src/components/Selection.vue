@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Element2D, Obb2D } from 'modern-canvas'
-import { computed, onBeforeMount, onBeforeUnmount, ref, useTemplateRef } from 'vue'
+import { computed, onBeforeMount, onBeforeUnmount, useTemplateRef } from 'vue'
 import { defaultResizeStrategy } from '../composables'
 import { useEditor } from '../composables/editor'
 import ForegroundCropper from './ForegroundCropper.vue'
@@ -26,8 +26,6 @@ const {
 } = useEditor()
 
 const transformControls = useTemplateRef('transformControlsTpl')
-const startEvent = ref<MouseEvent | PointerEvent>()
-const activeHandle = computed(() => (transformControls.value?.activeHandle ?? 'move') as Mce.TransformHandle)
 const resizeStrategy = computed(() => {
   if (elementSelection.value.length === 1) {
     const el = elementSelection.value[0]
@@ -45,7 +43,6 @@ onBeforeMount(() => {
   registerCommand({
     command: 'startTransform',
     handle: (event) => {
-      startEvent.value = event
       Boolean(transformControls.value?.start(event))
     },
   })
@@ -86,39 +83,25 @@ const selectionObbStyles = computed(() => {
   })
 })
 
-function createTransformContext(): Mce.BaseSelectionTransformContext {
-  return {
-    startEvent: startEvent.value!,
-    handle: activeHandle.value,
-  }
+function onStart(ctx: Mce.TransformContext): void {
+  emit('selectionTransformStart', ctx)
 }
 
-function onStart() {
-  emit('selectionTransformStart', createTransformContext())
-}
-
-function onMove() {
+function onMove(ctx: Mce.TransformMoveContext) {
   if (!state.value) {
-    state.value = activeHandle.value === 'move' ? 'moving' : 'transforming'
+    state.value = ctx.handle === 'move' ? 'moving' : 'transforming'
   }
+  emit('selectionTransform', ctx)
 }
 
-function onEnd() {
+function onEnd(ctx: Mce.TransformContext) {
   if (state.value === 'moving' || state.value === 'transforming') {
     state.value = undefined
   }
-  emit('selectionTransformEnd', createTransformContext())
+  emit('selectionTransformEnd', ctx)
 }
 
-const transform = computed({
-  get: () => exec('getTransformValue'),
-  set: (value: Mce.TransformValue) => {
-    emit('selectionTransform', {
-      ...createTransformContext(),
-      value,
-    } as Mce.SelectionTransformContext)
-  },
-})
+const transform = computed(() => exec('getTransformValue'))
 
 const movable = computed(() => {
   return state.value !== 'typing'
@@ -216,7 +199,7 @@ defineExpose({
       v-if="transform.width && transform.height"
       ref="transformControlsTpl"
       v-bind="config.transformControls"
-      v-model="transform"
+      :model-value="transform"
       :movable="movable"
       :resizable="resizable"
       :rotatable="rotatable"

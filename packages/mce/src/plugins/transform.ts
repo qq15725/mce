@@ -1,4 +1,5 @@
 import type { Element2D } from 'modern-canvas'
+import type { DragContext } from '../utils'
 import { DEG_TO_RAD } from 'modern-canvas'
 import { computed } from 'vue'
 import { definePlugin } from '../plugin'
@@ -22,12 +23,25 @@ declare global {
         | `rotate-${TransformHandleCorner}`
         | `round-${TransformHandleCorner}`
 
+    interface TransformContext extends DragContext {
+      handle: TransformHandle
+      value: TransformValue
+    }
+
+    interface TransformMoveContext extends TransformContext {
+      oldValue: TransformValue
+    }
+
     type FlipType = 'horizontal' | 'vertical'
 
     interface Commands {
       enter: () => void
       getTransformValue: () => TransformValue
-      transform: (handle: Mce.TransformHandle, value: Partial<TransformValue>) => void
+      transform: (
+        handle: Mce.TransformHandle,
+        value: Partial<TransformValue>,
+        event?: MouseEvent,
+      ) => void
       flip: (type: Mce.FlipType) => void
       flipHorizontal: () => void
       flipVertical: () => void
@@ -65,16 +79,43 @@ export default definePlugin((editor) => {
     }
   }
 
-  const transformCtx = {
-    rotate: 0,
-    resize: {} as Record<number, {
-      minX: number
-      minY: number
-      maxX: number
-      maxY: number
-      scaleX: number
-      scaleY: number
-    }>,
+  let context: {
+    batchRotate: number
+    batchScaling: Record<number, {
+      min: { x: number, y: number }
+      max: { x: number, y: number }
+      scale: { x: number, y: number }
+    }>
+    constrainMovement: {
+      event?: MouseEvent
+      startPoint?: { x: number, y: number }
+    }
+  } | undefined
+
+  function initContext() {
+    context = {
+      batchRotate: 0,
+      batchScaling: {},
+      constrainMovement: {},
+    }
+    const aabb = selectionAabb.value
+    elementSelection.value.forEach((el) => {
+      const elAabb = el.globalAabb
+      context!.batchScaling[el.instanceId] = {
+        min: {
+          x: (elAabb.min.x - aabb.min.x) / aabb.width,
+          y: (elAabb.min.y - aabb.min.y) / aabb.height,
+        },
+        max: {
+          x: (elAabb.max.x - aabb.min.x) / aabb.width,
+          y: (elAabb.max.y - aabb.min.y) / aabb.height,
+        },
+        scale: {
+          x: el.style.width / elAabb.width,
+          y: el.style.height / elAabb.height,
+        },
+      }
+    })
   }
 
   const transformValue = computed(() => {
@@ -90,33 +131,27 @@ export default definePlugin((editor) => {
   })
 
   function onSelectionTransformStart(): void {
-    const aabb = selectionAabb.value
-    elementSelection.value.forEach((el) => {
-      const elAabb = el.globalAabb
-      transformCtx.resize[el.instanceId] = {
-        minX: (elAabb.min.x - aabb.min.x) / aabb.width,
-        minY: (elAabb.min.y - aabb.min.y) / aabb.height,
-        maxX: (elAabb.max.x - aabb.min.x) / aabb.width,
-        maxY: (elAabb.max.y - aabb.min.y) / aabb.height,
-        scaleX: el.style.width / elAabb.width,
-        scaleY: el.style.height / elAabb.height,
-      }
-    })
+    initContext()
   }
 
   function onSelectionTransformEnd(): void {
-    transformCtx.rotate = 0
-    transformCtx.resize = {}
+    context = undefined
   }
 
   function transform(
     handle: Mce.TransformHandle,
-    partialTransform: Partial<Mce.TransformValue>,
+    value: Partial<Mce.TransformValue>,
+    event?: MouseEvent,
   ): void {
+    if (!context) {
+      initContext()
+    }
+    const _context = context!
+
     const oldTransform = transformValue.value
     const transform = {
       ...oldTransform,
-      ...partialTransform,
+      ...value,
     }
     const [type, direction = ''] = handle.split('-')
     const isCorner = direction.length > 1
@@ -126,6 +161,28 @@ export default definePlugin((editor) => {
     if (type === 'move') {
       transform.left = Math.round(transform.left)
       transform.top = Math.round(transform.top)
+
+      // Constrain movement
+      if (event?.shiftKey) {
+        const ctx = _context.constrainMovement
+        if (!ctx.event) {
+          ctx.event = event
+        }
+        if (!ctx.startPoint) {
+          ctx.startPoint = { x: oldTransform.left, y: oldTransform.top }
+        }
+        const offset = {
+          x: (event?.clientX ?? 0) - (ctx.event?.clientX ?? 0),
+          y: (event?.clientY ?? 0) - (ctx.event?.clientY ?? 0),
+        }
+        if (Math.abs(offset.x) > Math.abs(offset.y)) {
+          transform.top = ctx.startPoint.y
+        }
+        else {
+          transform.left = ctx.startPoint.x
+        }
+      }
+
       if (!transform.rotate) {
         transform.left = exec('snap', 'x', transform.left)
         transform.top = exec('snap', 'y', transform.top)
@@ -143,8 +200,8 @@ export default definePlugin((editor) => {
 
     if (isMultiple) {
       if (type === 'rotate') {
-        offsetStyle.rotate = transform.rotate - transformCtx.rotate
-        transformCtx.rotate += offsetStyle.rotate
+        offsetStyle.rotate = transform.rotate - _context.batchRotate
+        _context.batchRotate += offsetStyle.rotate
       }
     }
 
@@ -181,15 +238,15 @@ export default definePlugin((editor) => {
       }
       else if (type === 'resize') {
         if (isMultiple) {
-          const ctx = transformCtx.resize[el.instanceId]
+          const ctx = _context.batchScaling[el.instanceId]
           if (ctx) {
             const min = {
-              x: transform.left + transform.width * ctx.minX,
-              y: transform.top + transform.height * ctx.minY,
+              x: transform.left + transform.width * ctx.min.x,
+              y: transform.top + transform.height * ctx.min.y,
             }
             const max = {
-              x: transform.left + transform.width * ctx.maxX,
-              y: transform.top + transform.height * ctx.maxY,
+              x: transform.left + transform.width * ctx.max.x,
+              y: transform.top + transform.height * ctx.max.y,
             }
             const size = { x: max.x - min.x, y: max.y - min.y }
             const center = { x: min.x + size.x / 2, y: min.y + size.y / 2 }
@@ -198,8 +255,8 @@ export default definePlugin((editor) => {
               center.x -= parentAabb.left
               center.y -= parentAabb.top
             }
-            newStyle.width = size.x * ctx.scaleX
-            newStyle.height = size.y * ctx.scaleY
+            newStyle.width = size.x * ctx.scale.x
+            newStyle.height = size.y * ctx.scale.y
             newStyle.left = center.x - newStyle.width / 2
             newStyle.top = center.y - newStyle.height / 2
           }
@@ -259,7 +316,7 @@ export default definePlugin((editor) => {
     ],
     events: {
       selectionTransformStart: onSelectionTransformStart,
-      selectionTransform: ctx => transform(ctx.handle, ctx.value),
+      selectionTransform: ctx => transform(ctx.handle, ctx.value, ctx.event),
       selectionTransformEnd: onSelectionTransformEnd,
     },
   }

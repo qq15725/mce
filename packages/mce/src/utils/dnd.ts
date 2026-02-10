@@ -1,11 +1,26 @@
-export interface HandleDragOptions {
-  threshold?: number
-  start?: (event: MouseEvent) => void
-  move?: (offset: { x: number, y: number }, event: MouseEvent) => void
-  end?: (event: MouseEvent) => void
+export interface DragContext {
+  event: MouseEvent
+  dragging: boolean
+  startPoint: { x: number, y: number }
+  currentPoint: { x: number, y: number }
 }
 
-export function handleDrag(downEvent: MouseEvent, options: HandleDragOptions = {}): void {
+export interface DragMoveContext extends DragContext {
+  movePoint: { x: number, y: number }
+}
+
+export interface DragEndContext extends DragContext {
+  endPoint: { x: number, y: number }
+}
+
+export interface DragListenerOptions {
+  threshold?: number
+  start?: (ctx: DragContext) => void
+  move?: (ctx: DragMoveContext) => void
+  end?: (ctx: DragEndContext) => void
+}
+
+export function addDragListener(downEvent: MouseEvent | undefined, options: DragListenerOptions = {}): () => void {
   const {
     start,
     move,
@@ -13,38 +28,72 @@ export function handleDrag(downEvent: MouseEvent, options: HandleDragOptions = {
     threshold = 3,
   } = options
 
-  let dragging = false
-  let currentPos = { x: downEvent.clientX, y: downEvent.clientY }
+  const startPoint = downEvent
+    ? { x: downEvent.clientX, y: downEvent.clientY }
+    : undefined
 
-  function onMouseMove(moveEvent: MouseEvent) {
-    const movePos = { x: moveEvent.clientX, y: moveEvent.clientY }
-    const offsetPos = { x: movePos.x - currentPos.x, y: movePos.y - currentPos.y }
+  const context: Omit<DragContext, 'event'> = {
+    dragging: false,
+    startPoint: startPoint!,
+    currentPoint: (startPoint ? { ...startPoint } : undefined)!,
+  }
+
+  function onMove(moveEvent: MouseEvent) {
+    let { startPoint, currentPoint, dragging } = context
+
+    const movePoint = {
+      x: moveEvent.clientX,
+      y: moveEvent.clientY,
+    }
+
+    if (!startPoint) {
+      context.startPoint = { ...movePoint }
+    }
+
+    if (!currentPoint) {
+      context.currentPoint = currentPoint = { ...movePoint }
+    }
+
+    const offset = {
+      x: movePoint.x - currentPoint.x,
+      y: movePoint.y - currentPoint.y,
+    }
 
     if (
       !dragging
       && (
-        Math.abs(offsetPos.x) >= threshold
-        || Math.abs(offsetPos.y) >= threshold
+        Math.abs(offset.x) >= threshold
+        || Math.abs(offset.y) >= threshold
       )
     ) {
-      dragging = true
-      start?.(moveEvent)
+      context.dragging = dragging = true
+
+      start?.({ ...context, event: downEvent ?? moveEvent })
     }
 
     if (dragging) {
-      currentPos = { ...movePos }
-      move?.(offsetPos, moveEvent)
+      move?.({ ...context, movePoint, event: moveEvent })
+
+      context.currentPoint = { ...movePoint }
     }
   }
 
-  function onMouseUp(upEvent: MouseEvent) {
-    if (dragging) {
-      end?.(upEvent)
+  function onUp(upEvent?: MouseEvent) {
+    if (context.dragging && upEvent) {
+      const endPoint = {
+        x: upEvent.clientX,
+        y: upEvent.clientY,
+      }
+
+      end?.({ ...context, endPoint, event: upEvent })
     }
-    document.removeEventListener('mousemove', onMouseMove)
-    document.removeEventListener('mouseup', onMouseUp)
+
+    document.removeEventListener('pointermove', onMove)
+    document.removeEventListener('pointerup', onUp)
   }
 
-  document.addEventListener('mousemove', onMouseMove)
-  document.addEventListener('mouseup', onMouseUp)
+  document.addEventListener('pointermove', onMove)
+  document.addEventListener('pointerup', onUp)
+
+  return onUp
 }

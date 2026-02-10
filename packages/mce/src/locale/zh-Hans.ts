@@ -1,7 +1,7 @@
 export default {
   'cancel': '取消',
   'create': '创建',
-  'constrainToAxis': '约束到轴',
+  'constrainMovement': '约束移动',
   'loading': '加载中...',
   'drawing': '绘制中...',
   'exporting': '导出中...',

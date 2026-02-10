@@ -3,7 +3,7 @@ import type { Aabb2D, Element2D } from 'modern-canvas'
 import type { TransformValue } from './shared/TransformControls.vue'
 import { computed, ref, watch } from 'vue'
 import { useEditor } from '../composables'
-import { handleDrag } from '../utils'
+import { addDragListener } from '../utils'
 import TransformControls from './shared/TransformControls.vue'
 
 const currentElement = defineModel<Element2D>()
@@ -193,8 +193,6 @@ const spacingHandles = computed(() => {
     })
   }
 
-  console.log(handles)
-
   return handles
 })
 
@@ -290,7 +288,7 @@ const _globalAabb = computed(() => {
   return globalAabb.value ? aabbToDrawboardAabb(globalAabb.value as any) : undefined
 })
 
-function onRingMouseDown(event: MouseEvent, item: any) {
+function onRingDrag(event: PointerEvent, item: any) {
   const el = item.el as Element2D
   currentElement.value = el
 
@@ -341,13 +339,17 @@ function onRingMouseDown(event: MouseEvent, item: any) {
 
   update()
 
-  handleDrag(event, {
+  addDragListener(event, {
     start: () => {
       disableUpdate.value = true
       state.value = 'moving'
       dragState.value = 'ring'
     },
-    move: (offset) => {
+    move: ({ movePoint, currentPoint }) => {
+      const offset = {
+        x: movePoint.x - currentPoint.x,
+        y: movePoint.y - currentPoint.y,
+      }
       const { zoom } = camera.value
       el.position.set(
         el.position.x + offset.x / zoom.x,
@@ -444,7 +446,7 @@ function onRingMouseDown(event: MouseEvent, item: any) {
   })
 }
 
-function onSpacingMouseDown(event: MouseEvent) {
+function onSpacingDrag(event: PointerEvent) {
   const _info = info.value
 
   if (!_info) {
@@ -453,12 +455,17 @@ function onSpacingMouseDown(event: MouseEvent) {
 
   const { direction, items } = _info
 
-  handleDrag(event, {
+  addDragListener(event, {
     start: () => {
       state.value = 'moving'
       dragState.value = 'spacing'
     },
-    move: (offset) => {
+    move: ({ movePoint, currentPoint }) => {
+      const offset = {
+        x: movePoint.x - currentPoint.x,
+        y: movePoint.y - currentPoint.y,
+      }
+
       const { zoom } = camera.value
       offset.x /= zoom.x
       offset.y /= zoom.y
@@ -510,7 +517,7 @@ function onSpacingMouseDown(event: MouseEvent) {
       >
         <div
           class="mce-smart-selection__ring"
-          @mousedown="onRingMouseDown($event, item)"
+          @pointerdown="onRingDrag($event, item)"
         />
       </div>
 
@@ -533,7 +540,7 @@ function onSpacingMouseDown(event: MouseEvent) {
     >
       <div
         class="mce-smart-selection__spacing-line"
-        @mousedown="onSpacingMouseDown($event)"
+        @pointerdown="onSpacingDrag($event)"
       />
     </div>
 
