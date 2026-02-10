@@ -10,9 +10,12 @@ export const editorOptions: Partial<Mce.Options> = {
   zoomToFit: 'width',
   typography: {
     strategy: 'autoHeight',
+    defaultFont: {
+      family: 'SourceHanSansCN-Normal',
+      src: 'https://bige.cdn.bcebos.com/files/202006/cBNrzOsE_rAQB.woff',
+    },
   },
   locale: { locale: 'zhHans' },
-  defaultFont: { family: 'SourceHanSansCN-Normal', src: 'https://bige.cdn.bcebos.com/files/202006/cBNrzOsE_rAQB.woff' },
   transformControls: {
     handleShape: 'circle',
     handleStrategy: 'point',

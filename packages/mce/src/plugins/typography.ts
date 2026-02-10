@@ -1,4 +1,5 @@
 import type { Element2D } from 'modern-canvas'
+import type { FontSource } from 'modern-font'
 import type { NormalizedFill, NormalizedFragment, NormalizedParagraph, NormalizedTextContent } from 'modern-idoc'
 import type { Ref } from 'vue'
 import type { IndexCharacter } from '../web-components'
@@ -18,6 +19,7 @@ declare global {
 
     interface TypographyConfig {
       strategy: TypographyStrategy
+      defaultFont?: FontSource
     }
 
     interface Config {
@@ -473,10 +475,20 @@ export default definePlugin((editor) => {
       { command: 'setTextFill', handle: setTextFill },
       { command: 'setTextContentByEachFragment', handle: setTextContentByEachFragment },
     ],
-    setup: () => {
+    setup: async () => {
+      const {
+        setDefaultFont,
+      } = editor
+
       onBeforeMount(() => {
         TextEditor.register()
       })
+
+      const defaultFont = getConfig('typography.defaultFont')
+
+      if (defaultFont) {
+        await setDefaultFont(defaultFont)
+      }
     },
   }
 })

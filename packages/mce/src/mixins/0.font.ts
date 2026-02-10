@@ -10,10 +10,6 @@ declare global {
       waitUntilFontLoad: () => Promise<void>
     }
 
-    interface Options {
-      defaultFont?: FontSource
-    }
-
     interface Events {
       loadFont: [font: FontLoadedResult]
     }
@@ -57,14 +53,4 @@ export default defineMixin((editor, options) => {
     setDefaultFont,
     waitUntilFontLoad,
   })
-
-  return () => {
-    const {
-      defaultFont,
-    } = options
-
-    if (defaultFont) {
-      setDefaultFont(defaultFont)
-    }
-  }
 })
