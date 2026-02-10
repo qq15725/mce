@@ -95,7 +95,6 @@ export async function convertElement(
 
   switch (el.type) {
     case 'image':
-      element.name = element.name ?? '图片'
       meta.inCanvasIs = 'Element2D'
       meta.inPptIs = 'Picture'
       meta.lockAspectRatio = true
@@ -129,7 +128,6 @@ export async function convertElement(
       }
       break
     case 'svg': {
-      element.name = element.name ?? 'SVG'
       meta.inCanvasIs = 'Element2D'
       meta.inPptIs = 'Picture'
       meta.lockAspectRatio = true
@@ -140,7 +138,6 @@ export async function convertElement(
       break
     }
     case 'text': {
-      element.name = element.name ?? '文字'
       meta.inCanvasIs = 'Element2D'
       meta.inPptIs = 'Shape'
       if (style.writingMode === 'horizontal-tb') {
@@ -170,7 +167,6 @@ export async function convertElement(
       break
     }
     case 'com':
-      element.name = element.name ?? '组合'
       meta.inCanvasIs = 'Element2D'
       meta.inPptIs = 'GroupShape'
       element.children!.push(
@@ -190,7 +186,6 @@ export async function convertElement(
       )
       break
     case 'shape': {
-      element.name = element.name ?? '形状'
       meta.inCanvasIs = 'Element2D'
       meta.inPptIs = 'Shape'
       const svg = await convertShapeElementToSvg(el)
@@ -224,12 +219,10 @@ export async function convertElement(
       break
     }
     case 'anim':
-      element.name = element.name ?? 'Lottie'
       meta.inCanvasIs = 'Lottie2D'
       ;(element as any).src = el.url
       break
     case 'video':
-      element.name = element.name ?? '视频'
       meta.inCanvasIs = 'Video2D'
       ;(element as any).src = el.src
       break

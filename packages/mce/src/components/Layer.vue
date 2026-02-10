@@ -91,7 +91,7 @@ const thumbnailIcon = computed(() => {
 const thumbnailName = computed(() => {
   const node = props.node
   let value = node.name
-  if (!value) {
+  if (!value || value.startsWith('Element2D:')) {
     if (inEditorIs(node, 'Frame')) {
       return t('frame')
     }
