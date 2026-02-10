@@ -43,6 +43,7 @@ import _text from './text'
 import _timeline from './timeline'
 import _toolbelt from './toolbelt'
 import _transform from './transform'
+import _typography from './typography'
 import _ui from './ui'
 import _url from './url'
 import _view from './view'
@@ -90,6 +91,7 @@ export const plugins = [
   _timeline,
   _toolbelt,
   _transform,
+  _typography,
   _ui,
   _url,
   _view,

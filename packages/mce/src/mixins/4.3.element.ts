@@ -44,8 +44,6 @@ export default defineMixin((editor) => {
   const {
     root,
     rootAabb,
-    textFontSizeToFit,
-    textToFit,
     isElement,
     config,
     getAabb,
@@ -300,8 +298,8 @@ export default defineMixin((editor) => {
       })
     }
 
-    options.textToFit && textToFit(el)
-    options.textFontSizeToFit && textFontSizeToFit(el, scaleX)
+    options.textToFit && exec('textToFit', el)
+    options.textFontSizeToFit && exec('textFontSizeToFit', el, scaleX)
   }
 
   Object.assign(editor, {

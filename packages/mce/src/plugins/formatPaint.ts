@@ -15,23 +15,22 @@ declare global {
 export default definePlugin((editor) => {
   const {
     elementSelection,
-    getTextFill,
-    getTextStyle,
     exec,
-    textToFit,
     state,
   } = editor
+
   let source: NormalizedText | undefined
+
   function activateFormatPaint() {
     if (!elementSelection.value?.[0]?.text?.textContent) {
       return
     }
     const text = elementSelection.value[0].text
-    const fill = getTextFill()
+    const fill = exec('getTextFill')
     // TODO 获取文本选区所有样式值
     const excludes: (keyof NormalizedStyle)[] = ['left', 'top', 'width', 'height']
     const fields = (Object.keys(text.style ?? {}) as (keyof NormalizedStyle)[]).filter(key => !excludes.includes(key))
-    const style = fields.reduce((acc, field) => ({ ...acc, [field]: getTextStyle(field) }), {} as Partial<NormalizedStyle>)
+    const style = fields.reduce((acc, field) => ({ ...acc, [field]: exec('getTextStyle', field) }), {} as Partial<NormalizedStyle>)
     source = {
       ...text,
       fill,
@@ -41,6 +40,7 @@ export default definePlugin((editor) => {
     exec('setState', 'painting')
     elementSelection.value = []
   }
+
   function applyFormatPaint(targets = elementSelection.value) {
     if (!source)
       return
@@ -56,14 +56,16 @@ export default definePlugin((editor) => {
             },
           ],
         }
-        textToFit(target)
+        exec('textToFit', target)
       }
     })
   }
+
   function exitFormatPaint() {
     source = undefined
     state.value === 'painting' && exec('setState', undefined)
   }
+
   return {
     name: 'mce:formatPaint',
     commands: [

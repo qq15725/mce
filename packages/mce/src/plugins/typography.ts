@@ -4,13 +4,13 @@ import type { Ref } from 'vue'
 import type { IndexCharacter } from '../web-components'
 import { isEqualObject, normalizeCRLF } from 'modern-idoc'
 import { measureText } from 'modern-text'
-import { computed } from 'vue'
-import { defineMixin } from '../mixin'
+import { computed, onBeforeMount } from 'vue'
+import { definePlugin } from '../plugin'
 import { TextEditor } from '../web-components'
 
 declare global {
   namespace Mce {
-    interface Editor {
+    interface Commands {
       hasTextSelectionRange: Ref<boolean>
       isTextAllSelected: Ref<boolean>
       handleTextSelection: (textSelection: IndexCharacter[], cb: (arg: Record<string, any>) => boolean) => void
@@ -25,7 +25,7 @@ declare global {
   }
 }
 
-export default defineMixin((editor) => {
+export default definePlugin((editor) => {
   const {
     isElement,
     config,
@@ -438,17 +438,24 @@ export default defineMixin((editor) => {
   Object.assign(editor, {
     hasTextSelectionRange,
     isTextAllSelected,
-    handleTextSelection,
-    textFontSizeToFit,
-    textToFit,
-    setTextStyle,
-    getTextStyle,
-    getTextFill,
-    setTextFill,
-    setTextContentByEachFragment,
   })
 
-  return () => {
-    TextEditor.register()
+  return {
+    name: 'mce:typography',
+    commands: [
+      { command: 'handleTextSelection', handle: handleTextSelection },
+      { command: 'textFontSizeToFit', handle: textFontSizeToFit },
+      { command: 'textToFit', handle: textToFit },
+      { command: 'setTextStyle', handle: setTextStyle },
+      { command: 'getTextStyle', handle: getTextStyle },
+      { command: 'getTextFill', handle: getTextFill },
+      { command: 'setTextFill', handle: setTextFill },
+      { command: 'setTextContentByEachFragment', handle: setTextContentByEachFragment },
+    ],
+    setup: () => {
+      onBeforeMount(() => {
+        TextEditor.register()
+      })
+    },
   }
 })

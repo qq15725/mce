@@ -29,7 +29,7 @@ export default definePlugin((editor) => {
     elementSelection,
   } = editor
 
-  let startContext = {} as Record<string, any>
+  let context: Record<string, any> | undefined
 
   function nestIntoFrame(
     el: Element2D,
@@ -89,54 +89,54 @@ export default definePlugin((editor) => {
       { command: 'nestIntoFrame', handle: nestIntoFrame },
     ],
     events: {
-      selectionTransformStart: ({ handle, startEvent }) => {
-        if (handle === 'move' && !(startEvent as any)?.__FROM__) {
-          const pointer = getGlobalPointer()
-          const startFrame = frames.value.find(frame => frame.globalAabb.contains(pointer))
+      selectionTransformStart: ({ handle, event }) => {
+        if (handle !== 'move' || (event as any)?.__FROM__) {
+          return
+        }
 
-          const idSet = new Set<number>()
-          elementSelection.value.forEach((el) => {
-            const frame = isFrameNode(el, true) ? el : el.findAncestor(v => isFrameNode(v, true))
-            if (frame) {
-              if (frame.equal(startFrame)) {
-                idSet.add(frame.instanceId)
-              }
+        const pointer = getGlobalPointer()
+        const startFrame = frames.value.find(frame => frame.globalAabb.contains(pointer))
+
+        const idSet = new Set<number>()
+        elementSelection.value.forEach((el) => {
+          const frame = isFrameNode(el, true) ? el : el.findAncestor(v => isFrameNode(v, true))
+          if (frame) {
+            if (frame.equal(startFrame)) {
+              idSet.add(frame.instanceId)
             }
-            else {
-              idSet.add(0)
+          }
+          else {
+            idSet.add(0)
+          }
+        })
+        if (idSet.size === 1) {
+          const ctx: Record<string, any> = {}
+          elementSelection.value.forEach((el) => {
+            ctx[el.instanceId] = {
+              parent: el.getParent(),
+              index: el.getIndex(),
             }
           })
-          if (idSet.size === 1) {
-            const ctx: Record<string, any> = {}
-            elementSelection.value.forEach((el) => {
-              ctx[el.instanceId] = {
-                parent: el.getParent(),
-                index: el.getIndex(),
-              }
-            })
-            startContext = ctx
-          }
+          context = ctx
         }
       },
-      selectionTransform: ({ handle, startEvent }) => {
-        if (handle === 'move' && !(startEvent as any)?.__FROM__) {
-          if (Object.keys(startContext).length > 0) {
-            const excluded = new Set(elementSelection.value.map(el => el.instanceId))
-            elementSelection.value.forEach((el) => {
-              nestIntoFrame(
-                el,
-                {
-                  ...startContext[el.instanceId],
-                  pointer: getGlobalPointer(),
-                  excluded,
-                } as any,
-              )
-            })
-          }
+      selectionTransform: () => {
+        if (context) {
+          const excluded = new Set(elementSelection.value.map(el => el.instanceId))
+          elementSelection.value.forEach((el) => {
+            nestIntoFrame(
+              el,
+              {
+                ...context![el.instanceId],
+                pointer: getGlobalPointer(),
+                excluded,
+              } as any,
+            )
+          })
         }
       },
       selectionTransformEnd: () => {
-        startContext = {}
+        context = undefined
       },
     },
   }

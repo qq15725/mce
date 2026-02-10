@@ -7,7 +7,7 @@ const {
   elementSelection,
   state,
   textSelection,
-  textToFit,
+  exec,
   getObb,
   registerCommand,
   unregisterCommand,
@@ -42,7 +42,7 @@ function onUpdateTextSelection(e: CustomEvent): void {
 function onUpdate(): void {
   const element = elementSelection.value[0]!
   if (!element.shape.isValid()) {
-    textToFit(element)
+    exec('textToFit', element)
   }
 }
 
