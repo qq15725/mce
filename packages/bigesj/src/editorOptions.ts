@@ -8,7 +8,9 @@ export const editorOptions: Partial<Mce.Options> = {
   statusbar: true,
   frameGap: 48,
   zoomToFit: 'width',
-  typographyStrategy: 'autoHeight',
+  typography: {
+    strategy: 'autoHeight',
+  },
   locale: { locale: 'zhHans' },
   defaultFont: { family: 'SourceHanSansCN-Normal', src: 'https://bige.cdn.bcebos.com/files/202006/cBNrzOsE_rAQB.woff' },
   transformControls: {

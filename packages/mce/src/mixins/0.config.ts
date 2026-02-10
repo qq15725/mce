@@ -14,9 +14,9 @@ declare global {
     }
 
     interface Editor {
-      getConfigValue: (path: keyof Config | string, defaultValue?: any) => any
-      setConfigValue: (path: keyof Config | string, value: any) => void
-      getConfig: <T = any>(path: string) => WritableComputedRef<T>
+      getConfig: (path: keyof Config | string, defaultValue?: any) => any
+      setConfig: (path: keyof Config | string, value: any) => void
+      getConfigRef: <T = any>(path: string) => WritableComputedRef<T>
       registerConfig: <T>(path: keyof Config | string, declaration?: ConfigDeclaration<T>) => WritableComputedRef<T>
       importConfig: () => Promise<void>
       exportConfig: () => Blob
@@ -32,7 +32,7 @@ export default defineMixin((editor) => {
 
   const configDeclarations = new Map<string, Mce.ConfigDeclaration>()
 
-  function getConfigValue(path: string, defaultValue?: any): any {
+  function getConfig(path: string, defaultValue?: any): any {
     let value = getObjectValueByPath(config.value, path)
     const declaration = configDeclarations.get(path)
     if (declaration?.getter) {
@@ -41,7 +41,7 @@ export default defineMixin((editor) => {
     return value ?? defaultValue
   }
 
-  function setConfigValue(path: string, value: any): void {
+  function setConfig(path: string, value: any): void {
     const declaration = configDeclarations.get(path)
     if (declaration?.setter) {
       value = declaration.setter(value)
@@ -49,16 +49,16 @@ export default defineMixin((editor) => {
     setObjectValueByPath(config.value, path, value)
   }
 
-  function getConfig<T = any>(path: string): WritableComputedRef<T> {
+  function getConfigRef<T = any>(path: string): WritableComputedRef<T> {
     return computed({
-      get: () => getConfigValue(path),
-      set: value => setConfigValue(path, value),
+      get: () => getConfig(path),
+      set: value => setConfig(path, value),
     })
   }
 
   function registerConfig<T>(path: string, declaration: Mce.ConfigDeclaration<T> = {}): WritableComputedRef<T> {
     configDeclarations.set(path, declaration)
-    const ref = getConfig(path)
+    const ref = getConfigRef(path)
     if (ref.value === undefined) {
       if (typeof declaration.default === 'function') {
         ref.value = (declaration.default as any)()
@@ -104,9 +104,9 @@ export default defineMixin((editor) => {
   }
 
   Object.assign(editor, {
-    getConfigValue,
-    setConfigValue,
     getConfig,
+    setConfig,
+    getConfigRef,
     registerConfig,
     importConfig,
     exportConfig,

@@ -9,7 +9,6 @@ declare global {
     }
 
     type Theme = 'system' | 'light' | 'dark'
-    type TypographyStrategy = 'autoHeight' | 'autoWidth' | 'fixedWidthHeight' | 'autoFontSize'
 
     interface ScreenOffset {
       left?: number
@@ -35,7 +34,6 @@ declare global {
       camera: boolean
       frameOutline: boolean
       frameGap: number
-      typographyStrategy: TypographyStrategy
       transformControls: TransformControlsConfig
       localDb: boolean
       screenCenterOffset: ScreenOffset
@@ -59,7 +57,6 @@ export default defineMixin((editor, options) => {
   registerConfig('camera', { default: false })
   registerConfig('frameOutline', { default: false })
   registerConfig('frameGap', { default: 48 })
-  registerConfig('typographyStrategy', { default: 'autoHeight' })
   registerConfig('transformControls', { default: {} })
   registerConfig('screenCenterOffset', { default: { left: 0, top: 0, bottom: 0, right: 0 } })
   registerConfig('localDb', { default: false })
@@ -69,12 +66,12 @@ export default defineMixin((editor, options) => {
       renderEngine,
       camera,
       drawboardEffect,
-      setConfigValue,
+      setConfig,
     } = editor
 
     Object.keys(config.value).forEach((key) => {
       if (key in options) {
-        setConfigValue(key, (options as any)[key])
+        setConfig(key, (options as any)[key])
       }
     })
 

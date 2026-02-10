@@ -10,12 +10,26 @@ import { TextEditor } from '../web-components'
 
 declare global {
   namespace Mce {
+    type TypographyStrategy
+      = | 'autoHeight'
+        | 'autoWidth'
+        | 'fixedWidthHeight'
+        | 'autoFontSize'
+
+    interface TypographyConfig {
+      strategy: TypographyStrategy
+    }
+
+    interface Config {
+      typography: TypographyConfig
+    }
+
     interface Commands {
       hasTextSelectionRange: Ref<boolean>
       isTextAllSelected: Ref<boolean>
       handleTextSelection: (textSelection: IndexCharacter[], cb: (arg: Record<string, any>) => boolean) => void
       textFontSizeToFit: (element: Element2D, scale?: number) => void
-      textToFit: (element: Element2D, typography?: Mce.TypographyStrategy) => void
+      textToFit: (element: Element2D, typography?: TypographyStrategy) => void
       getTextStyle: (key: string) => any
       setTextStyle: (key: string, value: any) => void
       getTextFill: () => NormalizedFill | undefined
@@ -28,11 +42,18 @@ declare global {
 export default definePlugin((editor) => {
   const {
     isElement,
-    config,
     elementSelection,
     textSelection,
     fonts,
+    getConfig,
+    registerConfig,
   } = editor
+
+  registerConfig<Mce.Options['typography']>('typography', {
+    default: {
+      strategy: 'autoHeight',
+    },
+  })
 
   const hasTextSelectionRange = computed(() => {
     return (textSelection.value?.length ?? 0) > 1
@@ -123,7 +144,7 @@ export default definePlugin((editor) => {
   }
 
   function textToFit(element: Element2D, typography?: Mce.TypographyStrategy): void {
-    const strategy = typography ?? config.value.typographyStrategy
+    const strategy = typography ?? getConfig('typography.strategy')
     if (strategy === 'fixedWidthHeight') {
       return
     }
