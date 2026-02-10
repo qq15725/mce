@@ -201,7 +201,7 @@ export default definePlugin((editor, options) => {
     }
     if (elements.length) {
       addElements(elements, {
-        position: 'pointer',
+        position: 'screenCenter',
         active: true,
         regenId: true,
       })

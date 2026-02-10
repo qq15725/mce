@@ -81,7 +81,7 @@ export default definePlugin((editor) => {
 
   let context: {
     batchRotate: number
-    batchScaling: Record<number, {
+    batchResize: Record<number, {
       min: { x: number, y: number }
       max: { x: number, y: number }
       scale: { x: number, y: number }
@@ -95,13 +95,13 @@ export default definePlugin((editor) => {
   function initContext() {
     context = {
       batchRotate: 0,
-      batchScaling: {},
+      batchResize: {},
       constrainMovement: {},
     }
     const aabb = selectionAabb.value
     elementSelection.value.forEach((el) => {
       const elAabb = el.globalAabb
-      context!.batchScaling[el.instanceId] = {
+      context!.batchResize[el.instanceId] = {
         min: {
           x: (elAabb.min.x - aabb.min.x) / aabb.width,
           y: (elAabb.min.y - aabb.min.y) / aabb.height,
@@ -238,7 +238,7 @@ export default definePlugin((editor) => {
       }
       else if (type === 'resize') {
         if (isMultiple) {
-          const ctx = _context.batchScaling[el.instanceId]
+          const ctx = _context.batchResize[el.instanceId]
           if (ctx) {
             const min = {
               x: transform.left + transform.width * ctx.min.x,
