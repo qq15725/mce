@@ -4,7 +4,7 @@ import { computed, onBeforeMount, onBeforeUnmount, useTemplateRef } from 'vue'
 import { defaultResizeStrategy } from '../composables'
 import { useEditor } from '../composables/editor'
 import ForegroundCropper from './ForegroundCropper.vue'
-import TransformControls from './shared/TransformControls.vue'
+import Transform from './shared/Transform.vue'
 
 const {
   emit,
@@ -25,7 +25,7 @@ const {
   hoverElement,
 } = useEditor()
 
-const transformControls = useTemplateRef('transformControlsTpl')
+const transformControls = useTemplateRef('transformTpl')
 const resizeStrategy = computed(() => {
   if (elementSelection.value.length === 1) {
     const el = elementSelection.value[0]
@@ -195,9 +195,9 @@ defineExpose({
       </div>
     </template>
 
-    <TransformControls
+    <Transform
       v-if="transform.width && transform.height"
-      ref="transformControlsTpl"
+      ref="transformTpl"
       v-bind="config.transformControls"
       :model-value="transform"
       :movable="movable"
@@ -205,7 +205,8 @@ defineExpose({
       :rotatable="rotatable"
       :roundable="roundable"
       :resize-strategy="resizeStrategy"
-      :hide-ui="state === 'moving'"
+      :ui="state !== 'moving'"
+      :border-style="state === 'cropping' ? 'dashed' : 'solid'"
       class="mce-selection__transform"
       :tip="tip"
       :scale="[camera.zoom.x, camera.zoom.y]"
@@ -217,7 +218,7 @@ defineExpose({
       <template v-if="$slots.transform" #svg>
         <slot name="transform" />
       </template>
-    </TransformControls>
+    </Transform>
   </div>
 </template>
 

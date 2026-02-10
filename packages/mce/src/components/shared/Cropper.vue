@@ -5,7 +5,7 @@ import { useImage } from '@vueuse/core'
 import { cloneDeep, isEqual } from 'lodash-es'
 import { computed, onBeforeMount, onBeforeUnmount, ref, useTemplateRef, watch } from 'vue'
 import { boundingBoxToStyle } from '../../utils'
-import TransformControls from './TransformControls.vue'
+import Transform from './Transform.vue'
 
 /**
  * TODO 撤回无法重渲
@@ -229,14 +229,14 @@ onBeforeUnmount(() => emit('end'))
       <canvas ref="canvasRef" />
     </div>
 
-    <TransformControls
+    <Transform
       v-slot="{ props: slotProps }"
       v-model="sourceTransform"
       class="mce-cropper__transform"
       :rotatable="false"
     >
       <div class="mce-cropper__transform_rect" v-bind="slotProps" />
-    </TransformControls>
+    </Transform>
 
     <slot
       :scale="scale"

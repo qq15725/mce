@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import type { Aabb2D, Element2D } from 'modern-canvas'
-import type { TransformValue } from './shared/TransformControls.vue'
+import type { TransformValue } from './shared/Transform.vue'
 import { computed, ref, watch } from 'vue'
 import { useEditor } from '../composables'
 import { addDragListener } from '../utils'
-import TransformControls from './shared/TransformControls.vue'
+import Transform from './shared/Transform.vue'
 
 const currentElement = defineModel<Element2D>()
 
@@ -521,7 +521,7 @@ function onSpacingDrag(event: PointerEvent) {
         />
       </div>
 
-      <TransformControls
+      <Transform
         v-if="currentTransform.width && currentTransform.height"
         v-model="currentTransform"
         :handles="['resize-l', 'resize-r', 'resize-t', 'resize-b']"
