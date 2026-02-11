@@ -72,7 +72,7 @@ export default {
   'pixelGrid': '像素网格',
   'ruler': '标尺',
   'scrollbar': '滚动条',
-  'view:frameOutline': '画板轮廓',
+  'frameOutline': '画板轮廓',
   'checkerboard:grid': '网格棋盘',
   'checkerboard:dot': '点状棋盘',
   'panels': '面板',

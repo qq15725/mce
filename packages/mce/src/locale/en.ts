@@ -72,7 +72,7 @@ export default {
   'pixelGrid': 'Pixel grid',
   'ruler': 'Ruler',
   'scrollbar': 'Scrollbar',
-  'view:frameOutline': 'Frame outlines',
+  'frameOutline': 'Frame outlines',
   'checkerboard:grid': 'Grid checkerboard',
   'checkerboard:dot': 'Dot checkerboard',
   'panels': 'Panels',

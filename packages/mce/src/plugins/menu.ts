@@ -196,8 +196,11 @@ export default definePlugin((editor, options) => {
         handle: () => exec('toggleUi', 'scrollbar'),
       },
       {
-        key: 'view:frameOutline',
+        key: 'frameOutline',
         checked: config.value.canvas.frame.outline,
+        handle: () => {
+          config.value.canvas.frame.outline = !config.value.canvas.frame.outline
+        },
       },
       { type: 'divider' },
       {
