@@ -340,6 +340,7 @@ function onRingDrag(event: PointerEvent, item: any) {
   update()
 
   addDragListener(event, {
+    threshold: 3,
     start: () => {
       disableUpdate.value = true
       state.value = 'moving'
@@ -456,6 +457,7 @@ function onSpacingDrag(event: PointerEvent) {
   const { direction, items } = _info
 
   addDragListener(event, {
+    threshold: 3,
     start: () => {
       state.value = 'moving'
       dragState.value = 'spacing'

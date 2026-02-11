@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { vResizeObserver } from '@vueuse/components'
 import { useDebounceFn } from '@vueuse/core'
-import { computed, ref, useTemplateRef, watch } from 'vue'
+import { computed, ref, useTemplateRef } from 'vue'
+import { addDragListener } from '../../utils'
 
 const props = defineProps<{
   length: number
@@ -53,36 +54,24 @@ function amount(val: number) {
 
 const isActive = ref(false)
 
-watch(track, (track, oldTrack) => {
-  function onMousedown(event: MouseEvent) {
-    if (!thumb.value?.contains(event.target as Node)) {
-      return
-    }
-    isActive.value = true
-    let last = event
-    event.stopPropagation()
-    function onMousemove(event: MouseEvent) {
-      const offset = {
-        x: last.clientX - event.clientX,
-        y: last.clientY - event.clientY,
-      }
-      last = event
-      amount((props.vertical ? offset.y : offset.x) / (trackLength.value * (1 - thumbLength.value)) * contentLength.value * -1)
-    }
-
-    function onMouseup() {
-      isActive.value = false
-      window.removeEventListener('mousemove', onMousemove)
-      window.removeEventListener('mouseup', onMouseup)
-    }
-
-    window.addEventListener('mousemove', onMousemove)
-    window.addEventListener('mouseup', onMouseup)
+function onPointerdown(event: MouseEvent) {
+  if (!thumb.value?.contains(event.target as Node)) {
+    return
   }
 
-  oldTrack?.removeEventListener('mousedown', onMousedown)
-  track?.addEventListener('mousedown', onMousedown)
-})
+  addDragListener(event, {
+    threshold: 3,
+    start: () => isActive.value = true,
+    move: ({ movePoint, currentPoint }) => {
+      const offset = {
+        x: currentPoint.x - movePoint.x,
+        y: currentPoint.y - movePoint.y,
+      }
+      amount((props.vertical ? offset.y : offset.x) / (trackLength.value * (1 - thumbLength.value)) * contentLength.value * -1)
+    },
+    end: () => isActive.value = false,
+  })
+}
 </script>
 
 <template>
@@ -115,6 +104,7 @@ watch(track, (track, oldTrack) => {
           left: thumbLeft,
           right: thumbRight,
         }"
+        @pointerdown="onPointerdown"
       />
     </div>
   </div>

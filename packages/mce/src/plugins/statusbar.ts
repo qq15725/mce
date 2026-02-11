@@ -22,7 +22,7 @@ export default definePlugin((editor) => {
     registerConfig,
   } = editor
 
-  const config = registerConfig<Mce.StatusBarConfig>('ui.statusbar', {
+  registerConfig<Mce.StatusBarConfig>('ui.statusbar', {
     default: {
       enabled: false,
     },
@@ -37,7 +37,6 @@ export default definePlugin((editor) => {
         position: 'bottom',
         size: 24,
         component: Statusbar,
-        ignore: () => !config.value.enabled,
       },
     ],
   }

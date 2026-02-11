@@ -25,7 +25,7 @@ export function addDragListener(downEvent: MouseEvent | undefined, options: Drag
     start,
     move,
     end,
-    threshold = 3,
+    threshold = 0,
   } = options
 
   const startPoint = downEvent

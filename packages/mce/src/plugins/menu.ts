@@ -137,29 +137,34 @@ export default definePlugin((editor, options) => {
     }),
   }))
 
-  function setCheckerboard(value: CheckerboardStyle) {
+  function checkerboard(value?: CheckerboardStyle): any {
     const checkerboard = config.value.canvas.checkerboard
-    if (checkerboard.enabled && checkerboard.style === value) {
-      checkerboard.enabled = false
+    if (value) {
+      if (checkerboard.enabled && checkerboard.style === value) {
+        checkerboard.enabled = false
+      }
+      else {
+        checkerboard.enabled = true
+        checkerboard.style = value
+      }
     }
     else {
-      checkerboard.enabled = true
-      checkerboard.style = value
+      return checkerboard.enabled ? checkerboard.style : undefined
     }
   }
 
   const checkerboardMenu = computed(() => ({
-    key: 'view:checkerboard',
+    key: 'checkerboard',
     children: [
       {
-        key: 'checkerboardStyle:grid',
-        checked: config.value.canvas.checkerboard.enabled && config.value.canvas.checkerboard.style === 'grid',
-        handle: () => setCheckerboard('grid'),
+        key: 'checkerboard:grid',
+        checked: checkerboard() === 'grid',
+        handle: () => checkerboard('grid'),
       },
       {
-        key: 'checkerboardStyle:dot',
-        checked: config.value.canvas.checkerboard.enabled && config.value.canvas.checkerboard.style === 'dot',
-        handle: () => setCheckerboard('dot'),
+        key: 'checkerboard:dot',
+        checked: checkerboard() === 'dot',
+        handle: () => checkerboard('dot'),
       },
     ],
   }))
@@ -168,10 +173,24 @@ export default definePlugin((editor, options) => {
     key: 'view',
     children: [
       checkerboardMenu.value,
-      { key: 'view:pixelGrid', checked: config.value.canvas.pixelGrid.enabled },
-      { key: 'view:ruler', checked: config.value.ui.ruler.enabled },
-      { key: 'view:scrollbar', checked: config.value.ui.scrollbar.enabled },
-      { key: 'view:frameOutline', checked: config.value.canvas.frame.outline },
+      {
+        key: 'view:pixelGrid',
+        checked: config.value.canvas.pixelGrid.enabled,
+      },
+      {
+        key: 'ruler',
+        checked: exec('isViewEnabled', 'ruler'),
+        handle: () => exec('toggleView', 'ruler'),
+      },
+      {
+        key: 'scrollbar',
+        checked: exec('isViewEnabled', 'scrollbar'),
+        handle: () => exec('toggleView', 'scrollbar'),
+      },
+      {
+        key: 'view:frameOutline',
+        checked: config.value.canvas.frame.outline,
+      },
       { type: 'divider' },
       {
         key: 'msaa',
@@ -195,8 +214,8 @@ export default definePlugin((editor, options) => {
       },
       {
         key: 'toolbelt',
-        checked: config.value.ui.toolbelt.enabled,
-        handle: () => exec('view', 'toolbelt'),
+        checked: exec('isViewEnabled', 'toolbelt'),
+        handle: () => exec('toggleView', 'toolbelt'),
       },
       panelsMenu.value,
       { type: 'divider' },
