@@ -353,7 +353,7 @@ defineExpose({
       'mce-ruler-refline--locked': props.locked,
     }"
     :style="{
-      [props.vertical ? 'height' : 'width']: '0',
+      [props.vertical ? 'height' : 'width']: undefined,
       [props.vertical ? 'width' : 'height']: '100%',
       [props.vertical ? 'top' : 'left']: `${numToPx(item)}px`,
       [props.vertical ? 'left' : 'top']: 0,
@@ -405,20 +405,43 @@ defineExpose({
 }
 
 .mce-ruler-refline {
+  $root: &;
   position: absolute;
-  border-style: dashed;
-  border-width: 0;
-  border-color: var(--line-color);
   pointer-events: auto !important;
+  width: 10px;
+  height: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &:before {
+    content: '';
+    display: block;
+    border-style: dashed;
+    border-width: 0;
+    border-color: var(--line-color);
+    width: 100%;
+    height: 100%;
+  }
 
   &--vertical {
-    border-top-width: 1px;
+    transform: translateY(-50%);
     cursor: ns-resize;
+
+    &#{$root}:before {
+      height: 0;
+      border-top-width: 1px;
+    }
   }
 
   &--horizontal {
-    border-left-width: 1px;
+    transform: translateX(-50%);
     cursor: ew-resize;
+
+    &#{$root}:before {
+      width: 0;
+      border-left-width: 1px;
+    }
   }
 
   &--temp {

@@ -1,7 +1,6 @@
 import type { Options } from 'mce'
 
 export const options: Options = {
-  // locale: { language: 'zh-Hans' },
   locale: { locale: 'zhHans' },
   viewport: {
     camera: { enabled: true },
