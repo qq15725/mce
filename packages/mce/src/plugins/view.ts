@@ -5,7 +5,7 @@ declare global {
     type View = keyof UIConfig
 
     interface Commands {
-      view: <T extends View>(view: T) => Promise<boolean>
+      view: (view: View) => Promise<boolean>
     }
   }
 }

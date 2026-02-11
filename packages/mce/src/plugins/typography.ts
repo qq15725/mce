@@ -22,13 +22,16 @@ declare global {
       defaultFont?: FontSource
     }
 
+    interface Editor {
+      hasTextSelectionRange: Ref<boolean>
+      isTextAllSelected: Ref<boolean>
+    }
+
     interface Config {
       typography: TypographyConfig
     }
 
     interface Commands {
-      hasTextSelectionRange: Ref<boolean>
-      isTextAllSelected: Ref<boolean>
       handleTextSelection: (textSelection: IndexCharacter[], cb: (arg: Record<string, any>) => boolean) => void
       textFontSizeToFit: (element: Element2D, scale?: number) => void
       textToFit: (element: Element2D, typography?: TypographyStrategy) => void
