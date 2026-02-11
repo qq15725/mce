@@ -13,7 +13,7 @@ declare global {
     interface TransformConfig {
       handleShape: 'rect' | 'circle'
       handleStyle: '8-points' | '4-points'
-      resizeStrategy: 'lockAspectRatio' | 'lockAspectRatioDiagonal'
+      lockAspectRatioStrategy: 'all' | 'diagonal'
       rotator: boolean
     }
 
@@ -93,7 +93,7 @@ export default definePlugin((editor) => {
     default: {
       handleShape: 'rect',
       handleStyle: '4-points',
-      resizeStrategy: 'lockAspectRatio',
+      lockAspectRatioStrategy: 'all',
       rotator: true,
     },
   })

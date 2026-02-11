@@ -22,7 +22,7 @@ export const options: Options = {
     transform: {
       handleShape: 'circle',
       handleStyle: '8-points',
-      resizeStrategy: 'lockAspectRatioDiagonal',
+      lockAspectRatioStrategy: 'diagonal',
       rotator: true,
     },
   },

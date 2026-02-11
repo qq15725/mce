@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { Element2D, Obb2D } from 'modern-canvas'
 import { computed, onBeforeMount, onBeforeUnmount, useTemplateRef } from 'vue'
-import { defaultResizeStrategy } from '../composables'
 import { useEditor } from '../composables/editor'
 import ForegroundCropper from './ForegroundCropper.vue'
 import Transform from './shared/Transform.vue'
@@ -27,23 +26,23 @@ const {
 
 const transformConfig = getConfigRef<Mce.TransformConfig>('interaction.transform')
 const transform = useTemplateRef('transformTpl')
-const resizeStrategy = computed(() => {
-  let val: any
+const transformProps = computed(() => {
+  const props: Record<string, any> = { ...transformConfig.value }
   if (elementSelection.value.length === 1) {
     const el = elementSelection.value[0]
     if (el) {
       if (el.text.isValid()) {
-        val = 'lockAspectRatioDiagonal'
+        props.resizeStrategy = 'lockAspectRatio'
+        props.lockAspectRatioStrategy = 'diagonal'
       }
       else {
-        val = defaultResizeStrategy(el)
+        if (el.meta.lockAspectRatio) {
+          props.resizeStrategy = 'lockAspectRatio'
+        }
       }
     }
   }
-  if (val === 'lockAspectRatio') {
-    val = transformConfig.value.resizeStrategy
-  }
-  return val
+  return props
 })
 
 onBeforeMount(() => {
@@ -205,13 +204,12 @@ defineExpose({
     <Transform
       v-if="transformValue.width && transformValue.height"
       ref="transformTpl"
-      v-bind="transformConfig"
+      v-bind="transformProps"
       :model-value="transformValue"
       :movable="movable"
       :resizable="resizable"
       :rotatable="rotatable"
       :roundable="roundable"
-      :resize-strategy="resizeStrategy"
       :ui="state !== 'moving'"
       :border-style="state === 'cropping' ? 'dashed' : 'solid'"
       class="mce-selection__transform"

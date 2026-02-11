@@ -21,7 +21,6 @@ import {
   defaultActiveStrategy,
   defaultDoubleclickStrategy,
   defaultHoverStrategy,
-  defaultResizeStrategy,
   makeMceStrategyProps,
 } from '../composables/strategy'
 import { Editor } from '../editor'
@@ -33,7 +32,6 @@ import Main from './shared/Main.vue'
 
 const props = defineProps({
   ...makeMceStrategyProps({
-    resizeStrategy: defaultResizeStrategy, // TODO
     activeStrategy: defaultActiveStrategy,
     doubleclickStrategy: defaultDoubleclickStrategy,
     hoverStrategy: defaultHoverStrategy,

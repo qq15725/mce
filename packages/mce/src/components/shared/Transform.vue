@@ -54,7 +54,8 @@ const props = withDefaults(defineProps<{
   resizable?: boolean
   roundable?: boolean
   threshold?: number
-  resizeStrategy?: 'lockAspectRatio' | 'lockAspectRatioDiagonal'
+  resizeStrategy?: 'free' | 'lockAspectRatio'
+  lockAspectRatioStrategy?: 'all' | 'diagonal'
   handleStyle?: '8-points' | '4-points'
   handleShape?: 'rect' | 'circle'
   handles?: Handle[]
@@ -70,6 +71,8 @@ const props = withDefaults(defineProps<{
   rotatable: true,
   resizable: true,
   threshold: 0,
+  resizeStrategy: 'free',
+  lockAspectRatioStrategy: 'all',
   handleShape: 'rect',
   handles: () => [
     'move',
@@ -482,7 +485,11 @@ function onPointerDown(event?: MouseEvent, index?: number): boolean {
         const distance = Math.abs(getDistance(newRotatedCurrentPoint, rotatedSymmetricPoint))
         if (isHorizontal) {
           updated.width = distance
-          if (props.resizeStrategy === 'lockAspectRatio' && aspectRatio) {
+          if (
+            props.resizeStrategy === 'lockAspectRatio'
+            && props.lockAspectRatioStrategy === 'all'
+            && aspectRatio
+          ) {
             updated.height = distance / aspectRatio
           }
           else {
@@ -491,7 +498,11 @@ function onPointerDown(event?: MouseEvent, index?: number): boolean {
         }
         else {
           updated.height = distance
-          if (props.resizeStrategy === 'lockAspectRatio' && aspectRatio) {
+          if (
+            props.resizeStrategy === 'lockAspectRatio'
+            && props.lockAspectRatioStrategy === 'all'
+            && aspectRatio
+          ) {
             updated.width = distance * aspectRatio
           }
           else {
@@ -507,10 +518,8 @@ function onPointerDown(event?: MouseEvent, index?: number): boolean {
       else {
         let newRotatedCurrentPoint
         if (
-          (
-            props.resizeStrategy === 'lockAspectRatio'
-            || props.resizeStrategy === 'lockAspectRatioDiagonal'
-          ) && aspectRatio
+          props.resizeStrategy === 'lockAspectRatio'
+          && aspectRatio
         ) {
           const offset = rotatePoint(rotatedOffset, { x: 0, y: 0 }, -rotate)
           const dx = sign.x * offset.x
@@ -678,17 +687,10 @@ function Diagonal() {
     return undefined
   }
 
-  switch (props.resizeStrategy) {
-    case 'lockAspectRatio':
-      //
-      break
-    case 'lockAspectRatioDiagonal':
-      if (handle.split('-')[1].length === 1) {
-        return undefined
-      }
-      break
-    default:
+  if (props.lockAspectRatioStrategy === 'diagonal') {
+    if (handle.split('-')[1].length === 1) {
       return undefined
+    }
   }
 
   if (

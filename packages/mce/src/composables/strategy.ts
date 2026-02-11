@@ -20,7 +20,6 @@ export interface HoverStrategyContext extends ActiveStrategyContext {
 
 export type ResizeStrategy = (element: Element2D) =>
   | 'lockAspectRatio'
-  | 'lockAspectRatioDiagonal'
   | undefined
 
 export type ActiveStrategy = (context: ActiveStrategyContext) =>
@@ -47,13 +46,6 @@ export const makeMceStrategyProps = propsFactory({
   doubleclickStrategy: Function as PropType<DoubleclickStrategy>,
   hoverStrategy: Function as PropType<HoverStrategy>,
 }, 'makeMceStrategyProps')
-
-export const defaultResizeStrategy: ResizeStrategy = (element) => {
-  if (element.meta.lockAspectRatio) {
-    return 'lockAspectRatio'
-  }
-  return undefined
-}
 
 export const defaultActiveStrategy: ActiveStrategy = (context) => {
   const { element, editor } = context
