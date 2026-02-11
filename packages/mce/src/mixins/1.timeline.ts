@@ -93,7 +93,7 @@ export default defineMixin((editor) => {
       assets,
       on,
       off,
-      config,
+      exec,
     } = editor
 
     async function updateEndTime() {
@@ -102,7 +102,7 @@ export default defineMixin((editor) => {
         ? getTimeRange(root.value).endTime
         : 0
 
-      if (!config.value.timeline) {
+      if (!exec('isUiVisible', 'timeline')) {
         timeline.value.currentTime = timeline.value.endTime
       }
     }
