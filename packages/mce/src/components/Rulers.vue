@@ -4,11 +4,12 @@ import { useEditor } from '../composables/editor'
 import Ruler from './shared/Ruler.vue'
 
 const {
+  getConfigRef,
   camera,
   selectionAabbInDrawboard,
-  config,
 } = useEditor()
 
+const config = getConfigRef('ui.ruler')
 const hLines = ref<number[]>([])
 const vLines = ref<number[]>([])
 function clean() {
@@ -31,8 +32,8 @@ defineExpose({
       :selected="selectionAabbInDrawboard"
       axis
       :size="16"
-      :line-color="config.ruler.lineColor"
-      :locked="config.ruler.locked"
+      :line-color="config.lineColor"
+      :locked="config.locked"
     />
 
     <Ruler
@@ -44,8 +45,8 @@ defineExpose({
       axis
       vertical
       :size="16"
-      :line-color="config.ruler.lineColor"
-      :locked="config.ruler.locked"
+      :line-color="config.lineColor"
+      :locked="config.locked"
     />
 
     <div class="mce-rulers__left-top" />

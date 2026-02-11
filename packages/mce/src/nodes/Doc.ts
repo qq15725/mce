@@ -23,7 +23,7 @@ export class Doc extends Node {
 
   constructor(
     source?: Mce.DocumentSource,
-    protected readonly _localDb = false,
+    protected readonly _local = false,
   ) {
     super({
       name: 'Doc',
@@ -104,7 +104,7 @@ export class Doc extends Node {
     const source = this._source
     this._source = undefined
     await this._yDoc.load(async () => {
-      if (this._localDb) {
+      if (this._local) {
         try {
           await this._yDoc.loadIndexeddb()
         }

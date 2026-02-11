@@ -6,6 +6,16 @@ import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {
+    interface TransformConfig {
+      handleShape?: 'rect' | 'circle'
+      handleStrategy?: 'point'
+      rotator?: boolean
+    }
+
+    interface InteractionConfig {
+      transform: TransformConfig
+    }
+
     interface TransformValue {
       left: number
       top: number
@@ -64,7 +74,10 @@ export default definePlugin((editor) => {
     inEditorIs,
     resizeElement,
     state,
+    registerConfig,
   } = editor
+
+  registerConfig('interaction.transform', { default: {} })
 
   async function enter() {
     const els = elementSelection.value

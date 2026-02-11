@@ -3,8 +3,12 @@ import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {
-    interface Config {
-      timeline: boolean
+    interface TimelineConfig {
+      enabled: boolean
+    }
+
+    interface UIConfig {
+      timeline: TimelineConfig
     }
 
     interface Panels {
@@ -18,7 +22,11 @@ export default definePlugin((editor) => {
     registerConfig,
   } = editor
 
-  registerConfig('timeline', { default: false })
+  registerConfig('ui.timeline', {
+    default: {
+      enabled: false,
+    },
+  })
 
   return {
     name: 'mce:timeline',

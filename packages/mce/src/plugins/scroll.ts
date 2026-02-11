@@ -23,15 +23,18 @@ declare global {
       scrollToSelection: (options?: ScrollToOptions) => void
     }
 
-    interface Config {
-      scrollbar: boolean
+    interface ScrollbarConfig {
+      enabled?: boolean
+    }
+
+    interface UIConfig {
+      scrollbar: ScrollbarConfig
     }
   }
 }
 
 export default definePlugin((editor) => {
   const {
-    config,
     registerConfig,
     camera,
     getAabb,
@@ -42,7 +45,11 @@ export default definePlugin((editor) => {
     screenCenterOffset,
   } = editor
 
-  registerConfig('scrollbar', { default: false })
+  const config = registerConfig<Mce.ScrollbarConfig>('ui.scrollbar', {
+    default: {
+      enabled: false,
+    },
+  })
 
   const scrollTo: Mce.Commands['scrollTo'] = async (target, options = {}) => {
     const {
@@ -153,7 +160,7 @@ export default definePlugin((editor) => {
       {
         type: 'overlay',
         component: Scrollbars,
-        ignore: () => !config.value.scrollbar,
+        ignore: () => !config.value.enabled,
         order: 'after',
       },
     ],

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import bigesj, { editorOptions } from '@mce/bigesj'
+import bigesj, { options } from '@mce/bigesj'
 import gaoding from '@mce/gaoding'
 import mp4 from '@mce/mp4'
 import openxml from '@mce/openxml'
@@ -9,6 +9,27 @@ import { Editor, EditorLayers, EditorLayout, EditorLayoutItem } from 'mce'
 import gifWorkerUrl from 'modern-gif/worker?url'
 import { computed } from 'vue'
 import 'mce/styles'
+
+const editorOptions = {
+  ...options,
+  viewport: {
+    ...options.viewport,
+    screenPadding: { left: 100, top: 100, right: 100, bottom: 100 },
+  },
+  canvas: {
+    ...options.canvas,
+    watermark: {
+      url: '/example.jpg',
+      width: 100,
+      alpha: 0.05,
+      rotation: 0.5236,
+    },
+  },
+  ui: {
+    ...options.ui,
+    toolbelt: { enabled: true },
+  },
+}
 
 const editor = new Editor({
   ...editorOptions,
@@ -21,12 +42,7 @@ const editor = new Editor({
     pdf(),
     svg(),
   ],
-  watermark: '/example.jpg',
-  screenCenterOffset: { left: 100, top: 100, right: 100, bottom: 100 },
   gifWorkerUrl,
-  toolbelt: true,
-  // TODO
-  // localDb: true,
 })
 
 window.editor = editor
@@ -44,6 +60,10 @@ else if (url) {
 }
 
 const element = computed(() => editor.elementSelection.value[0])
+
+const {
+  config,
+} = editor
 </script>
 
 <template>
@@ -87,18 +107,18 @@ const element = computed(() => editor.elementSelection.value[0])
       <template #drawboard>
         <div class="bar toolbar">
           <button @click="() => editor.exec('view', 'ruler')">
-            {{ editor.config.value.ruler.visible ? '隐藏' : '显示' }}标尺
+            {{ config.ui.ruler.enabled ? '隐藏' : '显示' }}标尺
           </button>
-          <button @click="editor.config.value.ruler.locked = !editor.config.value.ruler.locked">
-            {{ editor.config.value.ruler.locked ? '解锁' : '锁定' }}标尺
+          <button @click="config.ui.ruler.locked = !config.ui.ruler.locked">
+            {{ config.ui.ruler.locked ? '解锁' : '锁定' }}标尺
           </button>
           <button @click="() => editor.exec('clearRulerLines')">
             清空标尺
           </button>
           <input
-            :value="editor.config.value.ruler.lineColor || '#000000'"
+            :value="config.ui.ruler.lineColor || '#000000'"
             type="color"
-            @input="e => editor.config.value.ruler.lineColor = e.target.value"
+            @input="e => config.ui.ruler.lineColor = e.target.value"
           >
         </div>
       </template>

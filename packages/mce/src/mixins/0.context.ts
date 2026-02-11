@@ -70,8 +70,8 @@ declare global {
 export default defineMixin((editor, options) => {
   const root = ref(
     new Doc(
-      options.localDb ? 'doc' : undefined,
-      options.localDb,
+      options.db?.local ? 'doc' : undefined,
+      options.db?.local,
     ),
   )
   const docLoading = ref(false)

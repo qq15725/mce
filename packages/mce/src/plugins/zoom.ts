@@ -5,34 +5,38 @@ import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {
-    type ZoomTarget
+    interface ZoomConfig {
+      strategy: ZoomToStrategy
+    }
+
+    interface ViewportConfig {
+      zoom: ZoomConfig
+    }
+
+    type ZoomToTarget
       = | 'root'
         | 'selection'
         | Element2D
         | Element2D[]
         | number
 
-    type ZoomToMode
-      = | 'contain'
-        | 'cover'
-        | 'width'
-        | 'height'
+    type ZoomToStrategy
+      = | 'cover'
+        | 'contain'
+        | 'containWidth'
+        | 'containHeight'
 
     interface ZoomToOptions {
       intoView?: boolean
-      mode?: ZoomToMode
+      strategy?: ZoomToStrategy
       duration?: number
       behavior?: 'smooth' | 'instant'
-    }
-
-    interface Config {
-      zoomToFit: ZoomToMode
     }
 
     interface Commands {
       zoomIn: () => void
       zoomOut: () => void
-      zoomTo: (target: ZoomTarget, options?: ZoomToOptions) => Promise<void>
+      zoomTo: (target: ZoomToTarget, options?: ZoomToOptions) => Promise<void>
       zoomTo100: () => void
       zoomToFit: () => void
       zoomToSelection: (options?: ZoomToOptions) => void
@@ -53,7 +57,6 @@ export default definePlugin((editor) => {
     registerConfig,
     camera,
     exec,
-    config,
     findFrame,
     selection,
     drawboardAabb,
@@ -64,12 +67,16 @@ export default definePlugin((editor) => {
     viewportAabb,
   } = editor
 
-  registerConfig('zoomToFit', { default: 'contain' })
+  const config = registerConfig<Mce.ZoomConfig>('viewport.zoom', {
+    default: {
+      strategy: 'contain',
+    },
+  })
 
-  async function zoomTo(target: Mce.ZoomTarget, options: Mce.ZoomToOptions = {}) {
+  async function zoomTo(target: Mce.ZoomToTarget, options: Mce.ZoomToOptions = {}) {
     const {
       intoView,
-      mode = 'contain',
+      strategy = 'contain',
       duration = 500,
       behavior,
     } = options
@@ -114,15 +121,15 @@ export default definePlugin((editor) => {
       targetZoom = target
     }
     else {
-      switch (mode) {
-        case 'width':
-          targetZoom = zw
-          break
-        case 'height':
-          targetZoom = zh
-          break
+      switch (strategy) {
         case 'cover':
           targetZoom = Math.max(zw, zh)
+          break
+        case 'containWidth':
+          targetZoom = zw
+          break
+        case 'containHeight':
+          targetZoom = zh
           break
         case 'contain':
         default:
@@ -209,7 +216,7 @@ export default definePlugin((editor) => {
       { command: 'zoomOut', handle: () => camera.value.addZoom(-0.25) },
       { command: 'zoomTo', handle: zoomTo },
       { command: 'zoomTo100', handle: () => zoomTo(1) },
-      { command: 'zoomToFit', handle: () => zoomTo('root', { mode: config.value.zoomToFit }) },
+      { command: 'zoomToFit', handle: () => zoomTo('root', { strategy: config.value.strategy }) },
       { command: 'zoomToSelection', handle: options => zoomTo('selection', options) },
       { command: 'zoomToNextFrame', handle: options => zoomToFrame('next', options) },
       { command: 'zoomToPreviousFrame', handle: options => zoomToFrame('previous', options) },

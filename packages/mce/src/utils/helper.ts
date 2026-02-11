@@ -1,4 +1,5 @@
 import type { ComponentInternalInstance, ComponentPublicInstance, InjectionKey, VNodeChild } from 'vue'
+import type { DeepMaybe } from '../types'
 import { shallowRef } from 'vue'
 
 export function noop(..._args: any): void {}
@@ -138,3 +139,31 @@ export function toKebabCase(str = '') {
   return kebab
 }
 toKebabCase.cache = new Map<string, string>()
+
+function isObject(item: any): item is Record<string, any> {
+  return item !== null && typeof item === 'object' && !Array.isArray(item)
+}
+
+export function deepMerge<T>(target: T, ...sources: DeepMaybe<T>[]): T {
+  if (!sources.length)
+    return target
+
+  const source = sources.shift()
+
+  if (isObject(target) && isObject(source)) {
+    for (const key in source) {
+      if (Object.prototype.hasOwnProperty.call(source, key)) {
+        const sourceValue = source[key]
+        const targetValue = (target as any)[key]
+        if (isObject(sourceValue) && isObject(targetValue)) {
+          (target as any)[key] = deepMerge(targetValue, sourceValue)
+        }
+        else {
+          (target as any)[key] = sourceValue
+        }
+      }
+    }
+  }
+
+  return deepMerge(target, ...sources)
+}

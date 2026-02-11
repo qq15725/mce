@@ -59,7 +59,7 @@ export default definePlugin((editor, options) => {
   const setDoc: Mce.Commands['setDoc'] = async (source) => {
     fonts.clear()
     const oldRoot = root.value
-    const _root = new Doc(source, config.value.localDb)
+    const _root = new Doc(source, config.value.db.local)
     // TODO gc
     oldRoot.findOne((node) => {
       if (node instanceof Element2D) {

@@ -3,12 +3,16 @@ import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {
-    interface Config {
-      statusbar: boolean
+    interface StatusBarConfig {
+      enabled: boolean
+    }
+
+    interface UIConfig {
+      statusbar: StatusBarConfig
     }
 
     interface Panels {
-      statusbar: []
+      statusBar: []
     }
   }
 }
@@ -18,7 +22,11 @@ export default definePlugin((editor) => {
     registerConfig,
   } = editor
 
-  registerConfig('statusbar', { default: false })
+  const config = registerConfig<Mce.StatusBarConfig>('ui.statusbar', {
+    default: {
+      enabled: false,
+    },
+  })
 
   return {
     name: 'mce:statusbar',
@@ -29,6 +37,7 @@ export default definePlugin((editor) => {
         position: 'bottom',
         size: 24,
         component: Statusbar,
+        ignore: () => !config.value.enabled,
       },
     ],
   }

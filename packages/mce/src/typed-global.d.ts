@@ -1,4 +1,5 @@
 import type { Vector2Like } from 'modern-canvas'
+import type { DeepMaybe } from './types'
 import 'modern-canvas'
 
 declare module 'modern-canvas' {
@@ -18,7 +19,6 @@ declare module 'modern-canvas' {
 declare global {
   namespace Mce {
     interface Editor {}
-    interface Options {}
     interface Slots {}
     interface Events {
       ready: []
@@ -27,6 +27,9 @@ declare global {
     interface Commands {}
     interface Exporters {}
     interface Config {}
+    interface Options extends DeepMaybe<Config> {
+      //
+    }
 
     type State
       = | 'loading'

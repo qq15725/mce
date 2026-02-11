@@ -21,11 +21,11 @@ const {
   registerCommand,
   unregisterCommand,
   isLock,
-  config,
+  getConfig,
   hoverElement,
 } = useEditor()
 
-const transformControls = useTemplateRef('transformTpl')
+const transform = useTemplateRef('transformTpl')
 const resizeStrategy = computed(() => {
   if (elementSelection.value.length === 1) {
     const el = elementSelection.value[0]
@@ -43,7 +43,7 @@ onBeforeMount(() => {
   registerCommand({
     command: 'startTransform',
     handle: (event) => {
-      Boolean(transformControls.value?.start(event))
+      Boolean(transform.value?.start(event))
     },
   })
 })
@@ -101,7 +101,7 @@ function onEnd(ctx: Mce.TransformContext) {
   emit('selectionTransformEnd', ctx)
 }
 
-const transform = computed(() => exec('getTransformValue'))
+const transformValue = computed(() => exec('getTransformValue'))
 
 const movable = computed(() => {
   return state.value !== 'typing'
@@ -151,7 +151,7 @@ function tip() {
 }
 
 defineExpose({
-  transformControls,
+  transform,
 })
 </script>
 
@@ -180,7 +180,7 @@ defineExpose({
       :style="selectionMarquee.toCssStyle()"
     />
 
-    <template v-if="transform.width && transform.height">
+    <template v-if="transformValue.width && transformValue.height">
       <div
         class="mce-selection__slot"
         :style="selectionObbInDrawboard.toCssStyle()"
@@ -196,10 +196,10 @@ defineExpose({
     </template>
 
     <Transform
-      v-if="transform.width && transform.height"
+      v-if="transformValue.width && transformValue.height"
       ref="transformTpl"
-      v-bind="config.transformControls"
-      :model-value="transform"
+      v-bind="getConfig('interaction.transform')"
+      :model-value="transformValue"
       :movable="movable"
       :resizable="resizable"
       :rotatable="rotatable"

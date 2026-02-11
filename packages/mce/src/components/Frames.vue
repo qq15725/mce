@@ -4,7 +4,10 @@ import Frame from './Frame.vue'
 
 const {
   frames,
+  getConfigRef,
 } = useEditor()
+
+const config = getConfigRef<Mce.FrameConfig>('canvas.frame')
 </script>
 
 <template>
@@ -12,7 +15,10 @@ const {
     <template
       v-for="(frame, key) in frames" :key="key"
     >
-      <Frame :model-value="frame" />
+      <Frame
+        :model-value="frame"
+        :outline="config.outline"
+      />
     </template>
   </div>
 </template>

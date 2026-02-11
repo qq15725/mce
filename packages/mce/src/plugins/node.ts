@@ -7,8 +7,12 @@ declare global {
       addSubNode: () => void
     }
 
-    interface Config {
-      nodeCreator: boolean
+    interface CreatorConfig {
+      enabled: boolean
+    }
+
+    interface UIConfig {
+      creator: CreatorConfig
     }
   }
 }
@@ -16,18 +20,26 @@ declare global {
 export default definePlugin((editor) => {
   const {
     registerConfig,
-    config,
   } = editor
 
-  registerConfig('nodeCreator', { default: false })
+  const config = registerConfig('ui.creator', {
+    default: {
+      enabled: false,
+    },
+  })
 
   return {
     name: 'mce:node',
     components: [
-      { name: 'nodeCreator', type: 'panel', position: 'float', component: NodeCreator },
+      {
+        name: 'creator',
+        type: 'panel',
+        position: 'float',
+        component: NodeCreator,
+      },
     ],
     commands: [
-      { command: 'addSubNode', handle: () => config.value.nodeCreator = true },
+      { command: 'addSubNode', handle: () => config.value.enabled = true },
     ],
   }
 })

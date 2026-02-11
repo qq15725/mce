@@ -1,7 +1,6 @@
 import type { EffectScope } from '@vue/reactivity'
-import type { RemovableRef } from '@vueuse/core'
 import type { ObservableEvents } from 'modern-idoc'
-import type { App, ComponentPublicInstance, InjectionKey } from 'vue'
+import type { App, ComponentPublicInstance, InjectionKey, Ref } from 'vue'
 import type { Mixin } from './mixin'
 import type {
   Plugin,
@@ -38,7 +37,7 @@ export class Editor extends Observable<Events> {
   static injectionKey: InjectionKey<Editor> = Symbol.for('EditorKey')
 
   debug = ref(false)
-  declare config: RemovableRef<Mce.Config>
+  declare config: Ref<Mce.Config>
   onEmit?: <K extends keyof Events & string>(event: K, ...args: Events[K]) => void
   plugins: Record<string, PluginObject> = {}
 

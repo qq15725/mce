@@ -3,8 +3,12 @@ import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {
-    interface Config {
-      toolbelt: boolean
+    interface ToolbeltConfig {
+      enabled?: boolean
+    }
+
+    interface UIConfig {
+      toolbelt: ToolbeltConfig
     }
   }
 }
@@ -14,7 +18,11 @@ export default definePlugin((editor) => {
     registerConfig,
   } = editor
 
-  const toolbelt = registerConfig('toolbelt', { default: false })
+  const config = registerConfig<Mce.ToolbeltConfig>('ui.toolbelt', {
+    default: {
+      enabled: false,
+    },
+  })
 
   return {
     name: 'mce:toolbelt',
@@ -23,7 +31,7 @@ export default definePlugin((editor) => {
         name: 'toolbelt',
         type: 'overlay',
         component: Toolbelt,
-        ignore: () => !toolbelt.value,
+        ignore: () => !config.value.enabled,
       },
     ],
   }

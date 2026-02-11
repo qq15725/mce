@@ -79,7 +79,7 @@ export default {
   'panels:layers': 'Open layers',
   'panels:timeline': 'Open timeline',
   'panels:statusbar': 'Open statusbar',
-  'panels:nodeCreator': 'Open node creator',
+  'panels:creator': 'Open node creator',
   'panels:memoryManager': 'Open memory manager',
   'nodeCreator': 'Create node',
   'memoryManager': 'Manage memory',

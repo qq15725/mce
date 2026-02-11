@@ -79,7 +79,7 @@ export default {
   'panels:layers': '打开图层',
   'panels:statusbar': '打开状态栏',
   'panels:timeline': '打开时间线',
-  'panels:nodeCreator': '打开节点创建',
+  'panels:creator': '打开节点创建',
   'panels:memoryManager': '打开内存管理',
   'nodeCreator': '创建节点',
   'memoryManager': '管理内存',

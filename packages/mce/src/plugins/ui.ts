@@ -12,9 +12,9 @@ declare global {
 
     interface Commands {
       pointerDown: (e: PointerInputEvent, options?: PointerDownOptions) => void
-      startTyping: (e?: MouseEvent | PointerEvent) => Promise<boolean>
-      startTransform: (e?: MouseEvent | PointerEvent) => boolean
-      openContextMenu: (e?: MouseEvent | PointerEvent) => boolean
+      startTyping: (e?: MouseEvent) => Promise<boolean>
+      startTransform: (e?: MouseEvent) => boolean
+      openContextMenu: (e?: MouseEvent) => boolean
       layerScrollIntoView: () => boolean
     }
 

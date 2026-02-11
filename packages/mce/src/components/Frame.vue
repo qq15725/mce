@@ -3,6 +3,10 @@ import type { Element2D } from 'modern-canvas'
 import { nextTick, ref, useTemplateRef } from 'vue'
 import { useEditor } from '../composables'
 
+defineProps<{
+  outline?: boolean
+}>()
+
 const frame = defineModel<Element2D>({ required: true })
 const input = useTemplateRef('inputTpl')
 
@@ -11,7 +15,6 @@ const {
   hoverElement,
   selection,
   state,
-  config,
   exec,
   renderEngine,
   drawboardDom,
@@ -49,7 +52,7 @@ async function onPointerdown(event: PointerEvent) {
     :style="getObb(frame, 'drawboard').toCssStyle()"
     class="mce-frame"
     :class="[
-      config.frameOutline && 'mce-frame--outline',
+      outline && 'mce-frame--outline',
       hoverElement?.equal(frame) && 'mce-frame--hover',
       selection.some(v => v.equal(frame)) && 'mce-frame--selected',
       isLock(frame) && 'mce-frame--lock',

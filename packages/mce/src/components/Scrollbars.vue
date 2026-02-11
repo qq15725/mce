@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useEditor } from '../composables/editor'
-import Scrollbar from './shared/Scrollbar.vue'
+import ScrollBar from './shared/ScrollBar.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -21,14 +21,14 @@ const {
 
 <template>
   <div class="mce-scrollbars">
-    <Scrollbar
+    <ScrollBar
       v-bind="props"
       v-model="camera.position.y"
       vertical
       :length="rootAabb.height * camera.zoom.y"
     />
 
-    <Scrollbar
+    <ScrollBar
       v-bind="props"
       v-model="camera.position.x"
       :length="rootAabb.width * camera.zoom.x"

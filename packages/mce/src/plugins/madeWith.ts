@@ -3,19 +3,26 @@ import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {
-    interface Config {
-      madeWith: boolean
+    interface MadeWithConfig {
+      enabled: boolean
+    }
+
+    interface UIConfig {
+      madeWith: MadeWithConfig
     }
   }
 }
 
 export default definePlugin((editor) => {
   const {
-    config,
     registerConfig,
   } = editor
 
-  registerConfig('madeWith', { default: false })
+  const config = registerConfig('ui.madeWith', {
+    default: {
+      enabled: false,
+    },
+  })
 
   return {
     name: 'mce:madeWith',
@@ -23,7 +30,7 @@ export default definePlugin((editor) => {
       {
         type: 'overlay',
         component: MadeWith,
-        ignore: () => !config.value.madeWith,
+        ignore: () => !config.value.enabled,
       },
     ],
   }

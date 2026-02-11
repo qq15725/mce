@@ -4,9 +4,20 @@ import { defineMixin } from '../mixin'
 
 declare global {
   namespace Mce {
+    interface ScreenPadding {
+      left: number
+      top: number
+      right: number
+      bottom: number
+    }
+
+    interface ViewportConfig {
+      screenPadding: ScreenPadding
+    }
+
     interface Editor {
-      screenControlsOffset: ComputedRef<Required<ScreenOffset>>
-      screenCenterOffset: ComputedRef<Required<ScreenOffset>>
+      screenControlsOffset: ComputedRef<Required<ScreenPadding>>
+      screenCenterOffset: ComputedRef<Required<ScreenPadding>>
       screenCenter: ComputedRef<{ x: number, y: number }>
     }
   }
@@ -16,7 +27,12 @@ export default defineMixin((editor) => {
   const {
     config,
     drawboardAabb,
+    registerConfig,
   } = editor
+
+  const screenPadding = registerConfig('viewport.screenPadding', {
+    default: { left: 0, top: 0, bottom: 0, right: 0 },
+  })
 
   const screenControlsOffset = computed(() => {
     const offset = {
@@ -25,11 +41,11 @@ export default defineMixin((editor) => {
       bottom: 0,
       right: 0,
     }
-    if (config.value.ruler) {
+    if (config.value.ui.ruler.enabled) {
       offset.left += 16
       offset.top += 16
     }
-    if (config.value.scrollbar) {
+    if (config.value.ui.scrollbar.enabled) {
       offset.right += 8
       offset.bottom += 8
     }
@@ -38,13 +54,7 @@ export default defineMixin((editor) => {
 
   const screenCenterOffset = computed(() => {
     const _screenControlsOffset = screenControlsOffset.value
-    const offset = {
-      left: 0,
-      top: 0,
-      bottom: 0,
-      right: 0,
-      ...config.value.screenCenterOffset,
-    }
+    const offset = { ...screenPadding.value }
     offset.left += _screenControlsOffset.left
     offset.top += _screenControlsOffset.top
     offset.right += _screenControlsOffset.right

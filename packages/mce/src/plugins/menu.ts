@@ -39,6 +39,7 @@ export default definePlugin((editor, options) => {
     exporters,
     components,
     isElement,
+    exec,
   } = editor
 
   const {
@@ -137,12 +138,13 @@ export default definePlugin((editor, options) => {
   }))
 
   function setCheckerboard(value: CheckerboardStyle) {
-    if (config.value.checkerboard && config.value.checkerboardStyle === value) {
-      config.value.checkerboard = false
+    const checkerboard = config.value.canvas.checkerboard
+    if (checkerboard.enabled && checkerboard.style === value) {
+      checkerboard.enabled = false
     }
     else {
-      config.value.checkerboard = true
-      config.value.checkerboardStyle = value
+      checkerboard.enabled = true
+      checkerboard.style = value
     }
   }
 
@@ -151,12 +153,12 @@ export default definePlugin((editor, options) => {
     children: [
       {
         key: 'checkerboardStyle:grid',
-        checked: config.value.checkerboard && config.value.checkerboardStyle === 'grid',
+        checked: config.value.canvas.checkerboard.enabled && config.value.canvas.checkerboard.style === 'grid',
         handle: () => setCheckerboard('grid'),
       },
       {
         key: 'checkerboardStyle:dot',
-        checked: config.value.checkerboard && config.value.checkerboardStyle === 'dot',
+        checked: config.value.canvas.checkerboard.enabled && config.value.canvas.checkerboard.style === 'dot',
         handle: () => setCheckerboard('dot'),
       },
     ],
@@ -166,35 +168,35 @@ export default definePlugin((editor, options) => {
     key: 'view',
     children: [
       checkerboardMenu.value,
-      { key: 'view:pixelGrid', checked: config.value.pixelGrid },
-      { key: 'view:ruler', checked: config.value.ruler },
-      { key: 'view:scrollbar', checked: config.value.scrollbar },
-      { key: 'view:frameOutline', checked: config.value.frameOutline },
+      { key: 'view:pixelGrid', checked: config.value.canvas.pixelGrid.enabled },
+      { key: 'view:ruler', checked: config.value.ui.ruler.enabled },
+      { key: 'view:scrollbar', checked: config.value.ui.scrollbar.enabled },
+      { key: 'view:frameOutline', checked: config.value.canvas.frame.outline },
       { type: 'divider' },
       {
         key: 'msaa',
-        checked: config.value.msaa,
+        checked: config.value.canvas.msaa.enabled,
         handle: () => {
-          config.value.msaa = !config.value.msaa
-          if (config.value.msaa) {
-            config.value.pixelate = false
+          config.value.canvas.msaa.enabled = !config.value.canvas.msaa.enabled
+          if (config.value.canvas.msaa.enabled) {
+            config.value.canvas.pixelate.enabled = false
           }
         },
       },
       {
         key: 'pixelate',
-        checked: config.value.pixelate,
+        checked: config.value.canvas.pixelate.enabled,
         handle: () => {
-          config.value.pixelate = !config.value.pixelate
-          if (config.value.pixelate) {
-            config.value.msaa = false
+          config.value.canvas.pixelate.enabled = !config.value.canvas.pixelate.enabled
+          if (config.value.canvas.pixelate.enabled) {
+            config.value.canvas.msaa.enabled = false
           }
         },
       },
       {
         key: 'toolbelt',
-        checked: config.value.toolbelt,
-        handle: () => config.value.toolbelt = !config.value.toolbelt,
+        checked: config.value.ui.toolbelt.enabled,
+        handle: () => exec('view', 'toolbelt'),
       },
       panelsMenu.value,
       { type: 'divider' },

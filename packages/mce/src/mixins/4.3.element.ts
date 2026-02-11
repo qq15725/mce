@@ -59,9 +59,7 @@ export default defineMixin((editor) => {
     value: Element | Element[],
     options: Mce.AddElementOptions = {},
   ): Element2D | Element2D[] {
-    const {
-      frameGap,
-    } = config.value
+    const frameGap = config.value.canvas.frame.gap
 
     const {
       parent,

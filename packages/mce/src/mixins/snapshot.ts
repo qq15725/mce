@@ -1,16 +1,10 @@
-import type { Element2D, Node } from 'modern-canvas'
+import type { Element2D } from 'modern-canvas'
 import type { Element } from 'modern-idoc'
-import type { Doc } from '../nodes'
 import { render } from 'modern-canvas'
-import { onBeforeMount, onScopeDispose } from 'vue'
 import { defineMixin } from '../mixin'
 
 declare global {
   namespace Mce {
-    interface Config {
-      frameScreenshot: boolean
-    }
-
     interface Editor {
       snapshot: () => void
       captureElementScreenshot: (element: Element | Element2D) => Promise<HTMLCanvasElement>
@@ -26,10 +20,7 @@ export default defineMixin((editor) => {
     frameThumbs,
     log,
     fonts,
-    registerConfig,
   } = editor
-
-  registerConfig('frameScreenshot', { default: false })
 
   async function snapshot(): Promise<void> {
     frameThumbs.value = frames.value.map(() => ({
@@ -82,52 +73,4 @@ export default defineMixin((editor) => {
     captureElementScreenshot,
     captureFrameScreenshot,
   })
-
-  return () => {
-    const {
-      on,
-      off,
-      config,
-      inEditorIs,
-    } = editor
-
-    function onSetDoc(doc: Doc) {
-      if (config.value.frameScreenshot) {
-        snapshot()
-      }
-
-      function onAddChild(node: Node, _newIndex: number): void {
-        if (config.value.frameScreenshot && inEditorIs(node, 'Frame')) {
-          const index = frames.value.findIndex(f => f.equal(node))
-          frameThumbs.value.splice(index, 0, {
-            instanceId: -1,
-            width: 0,
-            height: 0,
-            url: '',
-          })
-          captureFrameScreenshot(index)
-        }
-      }
-
-      function onRemoveChild(node: Node, _oldIndex: number): void {
-        if (config.value.frameScreenshot && inEditorIs(node, 'Frame')) {
-          frameThumbs.value.splice(
-            frameThumbs.value.findIndex(v => v.instanceId === node.instanceId),
-            1,
-          )
-        }
-      }
-
-      doc.on('addChild', onAddChild)
-      doc.on('removeChild', onRemoveChild)
-    }
-
-    onBeforeMount(() => {
-      on('setDoc', onSetDoc)
-    })
-
-    onScopeDispose(() => {
-      off('setDoc', onSetDoc)
-    })
-  }
 })
