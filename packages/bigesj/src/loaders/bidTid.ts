@@ -53,7 +53,7 @@ export function bidTidLoader(editor: Editor, api: Record<string, any>): Mce.Load
             doc.children.push(element)
           }
         })
-        left += width + config.value.frameGap
+        left += width + config.value.canvas.frame.gap
       })
       return doc
     },
