@@ -11,9 +11,10 @@ declare global {
     }
 
     interface TransformConfig {
-      handleShape?: 'rect' | 'circle'
-      handleStrategy?: 'point'
-      rotator?: boolean
+      handleShape: 'rect' | 'circle'
+      handleStyle: '8-points' | '4-points'
+      resizeStrategy: 'lockAspectRatio' | 'lockAspectRatioDiagonal'
+      rotator: boolean
     }
 
     interface TransformValue {
@@ -88,7 +89,14 @@ export default definePlugin((editor) => {
     registerConfig,
   } = editor
 
-  registerConfig('interaction.transform', { default: {} })
+  registerConfig<Mce.TransformConfig>('interaction.transform', {
+    default: {
+      handleShape: 'rect',
+      handleStyle: '4-points',
+      resizeStrategy: 'lockAspectRatio',
+      rotator: true,
+    },
+  })
 
   async function enter() {
     const els = elementSelection.value
@@ -285,7 +293,9 @@ export default definePlugin((editor) => {
             newStyle.top = center.y - newStyle.height / 2
           }
         }
+
         const scale = newStyle.rotate ? 100 : 1
+
         resizeElement(
           el,
           Math.max(1, Math.round(newStyle.width * scale) / scale),
@@ -298,13 +308,12 @@ export default definePlugin((editor) => {
                 ? { deep: true, textFontSizeToFit: true }
                 : { deep: true, textToFit: true },
         )
+
         newStyle.width = el.style.width
         newStyle.height = el.style.height
       }
 
       Object.assign(style, newStyle)
-
-      el.updateGlobalTransform()
     })
   }
 

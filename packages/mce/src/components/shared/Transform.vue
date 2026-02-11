@@ -55,7 +55,7 @@ const props = withDefaults(defineProps<{
   roundable?: boolean
   threshold?: number
   resizeStrategy?: 'lockAspectRatio' | 'lockAspectRatioDiagonal'
-  handleStrategy?: 'point'
+  handleStyle?: '8-points' | '4-points'
   handleShape?: 'rect' | 'circle'
   handles?: Handle[]
   scale?: [number, number]
@@ -302,7 +302,7 @@ const computedHandles = computed<HandleObject[]>(() => {
     : []
 
   let handles
-  if (props.handleStrategy === 'point') {
+  if (props.handleStyle === '8-points') {
     handles = [
       // move
       ...lineHandles.map(item => ({ ...item, type: 'move' })),
@@ -683,7 +683,7 @@ function Diagonal() {
       //
       break
     case 'lockAspectRatioDiagonal':
-      if (handle.split('-').length === 2) {
+      if (handle.split('-')[1].length === 1) {
         return undefined
       }
       break

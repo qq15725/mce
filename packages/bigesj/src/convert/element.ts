@@ -108,7 +108,7 @@ export async function convertElement(
         meta.rawForegroundImage = el.url
       }
 
-      if (el.maskUrl) {
+      if (el.maskUrl && el.maskUrl !== el.url) {
         style.maskImage = el.maskUrl
       }
 

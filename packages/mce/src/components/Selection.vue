@@ -21,22 +21,29 @@ const {
   registerCommand,
   unregisterCommand,
   isLock,
-  getConfig,
+  getConfigRef,
   hoverElement,
 } = useEditor()
 
+const transformConfig = getConfigRef<Mce.TransformConfig>('interaction.transform')
 const transform = useTemplateRef('transformTpl')
 const resizeStrategy = computed(() => {
+  let val: any
   if (elementSelection.value.length === 1) {
     const el = elementSelection.value[0]
     if (el) {
       if (el.text.isValid()) {
-        return 'lockAspectRatioDiagonal'
+        val = 'lockAspectRatioDiagonal'
       }
-      return defaultResizeStrategy(el)
+      else {
+        val = defaultResizeStrategy(el)
+      }
     }
   }
-  return undefined
+  if (val === 'lockAspectRatio') {
+    val = transformConfig.value.resizeStrategy
+  }
+  return val
 })
 
 onBeforeMount(() => {
@@ -198,7 +205,7 @@ defineExpose({
     <Transform
       v-if="transformValue.width && transformValue.height"
       ref="transformTpl"
-      v-bind="getConfig('interaction.transform')"
+      v-bind="transformConfig"
       :model-value="transformValue"
       :movable="movable"
       :resizable="resizable"

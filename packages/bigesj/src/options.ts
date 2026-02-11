@@ -21,7 +21,8 @@ export const options: Options = {
   interaction: {
     transform: {
       handleShape: 'circle',
-      handleStrategy: 'point',
+      handleStyle: '8-points',
+      resizeStrategy: 'lockAspectRatioDiagonal',
       rotator: true,
     },
   },
