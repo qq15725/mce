@@ -1,17 +1,18 @@
+import { computed } from 'vue'
 import Rulers from '../components/Rulers.vue'
 import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {
+    interface UIConfig {
+      ruler: RulerConfig
+    }
+
     interface RulerConfig {
-      enabled: boolean
+      visible: boolean
       adsorbed: boolean
       lineColor?: string
       locked: boolean
-    }
-
-    interface UIConfig {
-      ruler: RulerConfig
     }
 
     interface Commands {
@@ -28,7 +29,7 @@ export default definePlugin((editor) => {
 
   const config = registerConfig('ui.ruler', {
     default: {
-      enabled: false,
+      visible: false,
       adsorbed: false,
       locked: false,
     },
@@ -37,7 +38,7 @@ export default definePlugin((editor) => {
   const name = 'mce:ruler'
 
   function clearRulerLines() {
-    componentRefs.value[name].forEach((com: any) => com?.clean())
+    componentRefs[name].forEach((com: any) => com?.clean())
   }
 
   return {
@@ -49,8 +50,11 @@ export default definePlugin((editor) => {
       {
         type: 'overlay',
         component: Rulers,
-        ignore: () => !config.value.enabled,
         order: 'after',
+        visible: computed({
+          get: () => config.value.visible,
+          set: val => config.value.visible = val,
+        }),
       },
     ],
   }

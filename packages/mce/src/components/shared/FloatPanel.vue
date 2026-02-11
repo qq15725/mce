@@ -27,6 +27,7 @@ const defaultSlotProps = {
 
 <template>
   <Transform
+    v-if="isActive"
     v-slot="{ props: slotProps }"
     v-model="transform"
     class="mce-float-panel"

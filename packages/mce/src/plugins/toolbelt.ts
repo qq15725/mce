@@ -1,14 +1,15 @@
+import { computed } from 'vue'
 import Toolbelt from '../components/Toolbelt.vue'
 import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {
-    interface ToolbeltConfig {
-      enabled?: boolean
-    }
-
     interface UIConfig {
       toolbelt: ToolbeltConfig
+    }
+
+    interface ToolbeltConfig {
+      visible: boolean
     }
   }
 }
@@ -20,7 +21,7 @@ export default definePlugin((editor) => {
 
   const config = registerConfig<Mce.ToolbeltConfig>('ui.toolbelt', {
     default: {
-      enabled: false,
+      visible: false,
     },
   })
 
@@ -31,7 +32,10 @@ export default definePlugin((editor) => {
         name: 'toolbelt',
         type: 'overlay',
         component: Toolbelt,
-        ignore: () => !config.value.enabled,
+        visible: computed({
+          get: () => config.value.visible,
+          set: val => config.value.visible = val,
+        }),
       },
     ],
   }

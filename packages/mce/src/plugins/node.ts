@@ -1,18 +1,19 @@
+import { computed } from 'vue'
 import Creator from '../components/Creator.vue'
 import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {
-    interface Commands {
-      addSubNode: () => void
+    interface UIConfig {
+      creator: CreatorConfig
     }
 
     interface CreatorConfig {
-      enabled: boolean
+      visible: boolean
     }
 
-    interface UIConfig {
-      creator: CreatorConfig
+    interface Commands {
+      addSubNode: () => void
     }
   }
 }
@@ -22,9 +23,9 @@ export default definePlugin((editor) => {
     registerConfig,
   } = editor
 
-  const config = registerConfig('ui.creator', {
+  const config = registerConfig<Mce.CreatorConfig>('ui.creator', {
     default: {
-      enabled: false,
+      visible: false,
     },
   })
 
@@ -36,10 +37,14 @@ export default definePlugin((editor) => {
         type: 'panel',
         position: 'float',
         component: Creator,
+        visible: computed({
+          get: () => config.value.visible,
+          set: val => config.value.visible = val,
+        }),
       },
     ],
     commands: [
-      { command: 'addSubNode', handle: () => config.value.enabled = true },
+      { command: 'addSubNode', handle: () => config.value.visible = true },
     ],
   }
 })

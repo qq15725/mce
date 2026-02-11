@@ -63,11 +63,10 @@ editor.setup()
 provide(IconsSymbol, createIcons())
 
 const {
-  components,
+  sortedComponents,
   componentRefs,
   isElement,
   isFrameNode,
-  config,
   drawboardDom,
   renderEngine,
   camera,
@@ -82,8 +81,6 @@ const {
   selectionMarquee,
   elementSelection,
   drawboardAabb,
-  drawboardPointer,
-  drawboardContextMenuPointer,
   screenCenterOffset,
   activeTool,
 } = editor
@@ -469,10 +466,10 @@ async function onDoubleclick(event: MouseEvent) {
 }
 
 function setComponentRef(ref: any, item: EditorComponent) {
-  if (!componentRefs.value[item.plugin]) {
-    componentRefs.value[item.plugin] = []
+  if (!componentRefs[item.plugin]) {
+    componentRefs[item.plugin] = []
   }
-  componentRefs.value[item.plugin][item.indexInPlugin] = ref
+  componentRefs[item.plugin][item.indexInPlugin] = ref
 }
 
 function RenderComponent(props: Record<string, any> & { item: EditorComponent }) {
@@ -550,15 +547,17 @@ const slotProps = {
     <slot v-bind="slotProps" />
 
     <template
-      v-for="(item, key) in components"
+      v-for="(item, key) in sortedComponents"
       :key="key"
     >
       <template v-if="item.type === 'overlay'">
         <Teleport
-          v-if="drawboardDom"
+          v-if="drawboardDom && item.visible.value"
           :to="drawboardDom"
         >
-          <RenderComponent :item="item" />
+          <RenderComponent
+            :item="item"
+          />
         </Teleport>
       </template>
 
@@ -567,14 +566,14 @@ const slotProps = {
           v-if="item.position === 'float'"
         >
           <FloatPanel
-            v-if="(config as any)[item.name]"
-            v-model="(config as any)[item.name]"
+            v-if="drawboardAabb.height && item.visible.value"
+            v-model="item.visible.value"
             :title="t(item.name)"
             :default-transform="{
               width: item.size || 240,
               height: drawboardAabb.height * .7,
-              left: drawboardAabb.left + (drawboardPointer?.x ?? drawboardContextMenuPointer?.x ?? (screenCenterOffset.left + 24)),
-              top: drawboardAabb.top + (drawboardPointer?.y ?? drawboardContextMenuPointer?.y ?? (screenCenterOffset.top + 24)),
+              left: drawboardAabb.left + (screenCenterOffset.left + 24),
+              top: drawboardAabb.top + (screenCenterOffset.top + 24),
             }"
           >
             <template #default="{ isActive }">
@@ -588,8 +587,8 @@ const slotProps = {
 
         <template v-else>
           <LayoutItem
-            v-if="(config as any)[item.name]"
-            v-model="(config as any)[item.name]"
+            v-if="item.visible.value"
+            v-model="item.visible.value"
             :position="item.position as any"
             :size="item.size || 200"
             :order="item.order || 0"

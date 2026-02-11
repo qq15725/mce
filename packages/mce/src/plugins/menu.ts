@@ -137,7 +137,11 @@ export default definePlugin((editor, options) => {
   const panelsMenu = computed(() => ({
     key: 'panels',
     children: components.value.filter(c => c.type === 'panel').map((c) => {
-      return { key: `panels:${c.name}`, checked: (config.value as any)[c.name] }
+      return {
+        key: c.name,
+        checked: c.visible.value,
+        handle: () => c.visible.value = !c.visible.value,
+      }
     }),
   }))
 
@@ -178,18 +182,18 @@ export default definePlugin((editor, options) => {
     children: [
       checkerboardMenu.value,
       {
-        key: 'view:pixelGrid',
+        key: 'pixelGrid',
         checked: config.value.canvas.pixelGrid.enabled,
       },
       {
         key: 'ruler',
-        checked: exec('isViewEnabled', 'ruler'),
-        handle: () => exec('toggleView', 'ruler'),
+        checked: exec('isUiVisible', 'ruler'),
+        handle: () => exec('toggleUi', 'ruler'),
       },
       {
         key: 'scrollbar',
-        checked: exec('isViewEnabled', 'scrollbar'),
-        handle: () => exec('toggleView', 'scrollbar'),
+        checked: exec('isUiVisible', 'scrollbar'),
+        handle: () => exec('toggleUi', 'scrollbar'),
       },
       {
         key: 'view:frameOutline',
@@ -218,8 +222,8 @@ export default definePlugin((editor, options) => {
       },
       {
         key: 'toolbelt',
-        checked: exec('isViewEnabled', 'toolbelt'),
-        handle: () => exec('toggleView', 'toolbelt'),
+        checked: exec('isUiVisible', 'toolbelt'),
+        handle: () => exec('toggleUi', 'toolbelt'),
       },
       panelsMenu.value,
       { type: 'divider' },

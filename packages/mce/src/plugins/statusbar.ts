@@ -1,18 +1,15 @@
+import { computed } from 'vue'
 import Statusbar from '../components/Statusbar.vue'
 import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {
-    interface StatusBarConfig {
-      enabled: boolean
-    }
-
     interface UIConfig {
-      statusbar: StatusBarConfig
+      statusbar: StatusbarConfig
     }
 
-    interface Panels {
-      statusBar: []
+    interface StatusbarConfig {
+      visible: boolean
     }
   }
 }
@@ -22,9 +19,9 @@ export default definePlugin((editor) => {
     registerConfig,
   } = editor
 
-  registerConfig<Mce.StatusBarConfig>('ui.statusbar', {
+  const config = registerConfig<Mce.StatusbarConfig>('ui.statusbar', {
     default: {
-      enabled: false,
+      visible: false,
     },
   })
 
@@ -37,6 +34,10 @@ export default definePlugin((editor) => {
         position: 'bottom',
         size: 24,
         component: Statusbar,
+        visible: computed({
+          get: () => config.value.visible,
+          set: val => config.value.visible = val,
+        }),
       },
     ],
   }

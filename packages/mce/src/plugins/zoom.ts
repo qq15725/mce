@@ -5,12 +5,12 @@ import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {
-    interface ZoomConfig {
-      strategy: ZoomToStrategy
-    }
-
     interface ViewportConfig {
       zoom: ZoomConfig
+    }
+
+    interface ZoomConfig {
+      strategy: ZoomToStrategy
     }
 
     type ZoomToTarget

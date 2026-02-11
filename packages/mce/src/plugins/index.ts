@@ -23,7 +23,6 @@ import _menu from './menu'
 import _new from './new'
 import _node from './node'
 import _open from './open'
-import _panels from './panels'
 import _pen from './pen'
 import _rotate from './rotate'
 import _ruler from './ruler'
@@ -42,7 +41,6 @@ import _tool from './tool'
 import _toolbelt from './toolbelt'
 import _transform from './transform'
 import _typography from './typography'
-import _ui from './ui'
 import _url from './url'
 import _view from './view'
 import _zoom from './zoom'
@@ -69,7 +67,6 @@ export const plugins = [
   _new,
   _node,
   _open,
-  _panels,
   _pen,
   _rotate,
   _ruler,
@@ -88,7 +85,6 @@ export const plugins = [
   _toolbelt,
   _transform,
   _typography,
-  _ui,
   _url,
   _view,
   _zoom,

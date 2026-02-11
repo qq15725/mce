@@ -13,24 +13,24 @@ import { TextEditor } from '../web-components'
 
 declare global {
   namespace Mce {
-    type TypographyStrategy
-      = | 'autoHeight'
-        | 'autoWidth'
-        | 'fixedWidthHeight'
-        | 'autoFontSize'
+    interface Config {
+      typography: TypographyConfig
+    }
 
     interface TypographyConfig {
       strategy: TypographyStrategy
       defaultFont?: FontSource
     }
 
+    type TypographyStrategy
+      = | 'autoHeight'
+        | 'autoWidth'
+        | 'fixedWidthHeight'
+        | 'autoFontSize'
+
     interface Editor {
       hasTextSelectionRange: Ref<boolean>
       isTextAllSelected: Ref<boolean>
-    }
-
-    interface Config {
-      typography: TypographyConfig
     }
 
     interface addTextElementOptions extends AddElementOptions {
@@ -63,7 +63,6 @@ export default definePlugin((editor) => {
     elementSelection,
     textSelection,
     fonts,
-    getConfig,
     registerConfig,
     t,
     addElement,
@@ -563,7 +562,7 @@ export default definePlugin((editor) => {
         TextEditor.register()
       })
 
-      const defaultFont = getConfig('typography.defaultFont')
+      const defaultFont = config.value.defaultFont
 
       if (defaultFont) {
         await setDefaultFont(defaultFont)

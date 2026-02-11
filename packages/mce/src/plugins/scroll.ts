@@ -1,9 +1,18 @@
 import type { Element2D } from 'modern-canvas'
+import { computed } from 'vue'
 import Scrollbars from '../components/Scrollbars.vue'
 import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {
+    interface UIConfig {
+      scrollbar: ScrollbarConfig
+    }
+
+    interface ScrollbarConfig {
+      visible: boolean
+    }
+
     type ScrollTarget
       = | 'root'
         | 'selection'
@@ -22,14 +31,6 @@ declare global {
       scrollTo: (target: ScrollTarget, options?: ScrollToOptions) => Promise<void>
       scrollToSelection: (options?: ScrollToOptions) => void
     }
-
-    interface ScrollbarConfig {
-      enabled?: boolean
-    }
-
-    interface UIConfig {
-      scrollbar: ScrollbarConfig
-    }
   }
 }
 
@@ -47,7 +48,7 @@ export default definePlugin((editor) => {
 
   const config = registerConfig<Mce.ScrollbarConfig>('ui.scrollbar', {
     default: {
-      enabled: false,
+      visible: false,
     },
   })
 
@@ -160,8 +161,11 @@ export default definePlugin((editor) => {
       {
         type: 'overlay',
         component: Scrollbars,
-        ignore: () => !config.value.enabled,
         order: 'after',
+        visible: computed({
+          get: () => config.value.visible,
+          set: val => config.value.visible = val,
+        }),
       },
     ],
     // setup: () => {

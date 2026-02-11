@@ -9,7 +9,7 @@ import type {
 } from './plugin'
 import { useLocalStorage } from '@vueuse/core'
 import { Observable } from 'modern-idoc'
-import { computed, effectScope, ref } from 'vue'
+import { computed, effectScope, reactive, ref, shallowRef } from 'vue'
 import { mixins as presetMixins } from './mixins'
 import { plugins as presetPlugins } from './plugins'
 
@@ -31,7 +31,11 @@ export interface Slots extends Mce.Slots {
   //
 }
 
-export type EditorComponent = PluginComponent & { plugin: string, indexInPlugin: number }
+export type EditorComponent = PluginComponent & {
+  visible: Ref<boolean>
+  plugin: string
+  indexInPlugin: number
+}
 
 export class Editor extends Observable<Events> {
   static injectionKey: InjectionKey<Editor> = Symbol.for('EditorKey')
@@ -39,31 +43,17 @@ export class Editor extends Observable<Events> {
   debug = ref(false)
   declare config: Ref<Mce.Config>
   onEmit?: <K extends keyof Events & string>(event: K, ...args: Events[K]) => void
-  plugins: Record<string, PluginObject> = {}
 
   protected _pluginComponentTypes = ['panel', 'overlay', 'dialog']
-
-  components = computed(() => {
+  components = shallowRef<EditorComponent[]>([])
+  sortedComponents = computed(() => {
     const groups: Record<string, EditorComponent[]> = {}
-    const keys = Object.keys(this.plugins)
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i]
-      const p = this.plugins[key]
-      p.components?.forEach((c, index) => {
-        if (c.ignore?.() === true) {
-          return
-        }
-        if (!groups[c.type]) {
-          groups[c.type] = []
-        }
-        groups[c.type].push({
-          ...c,
-          plugin: p.name,
-          indexInPlugin: index,
-        })
-      })
-    }
-
+    this.components.value.forEach((c) => {
+      if (!groups[c.type]) {
+        groups[c.type] = []
+      }
+      groups[c.type].push(c)
+    })
     const components = [] as EditorComponent[]
     this._pluginComponentTypes.forEach((type) => {
       const items = (groups[type] ?? []) as EditorComponent[]
@@ -88,8 +78,9 @@ export class Editor extends Observable<Events> {
     return components
   })
 
-  componentRefs = ref<Record<string, (HTMLElement | ComponentPublicInstance | null)[]>>({})
+  componentRefs = reactive<Record<string, (HTMLElement | ComponentPublicInstance | null)[]>>({})
 
+  setups: (() => void | Promise<void>)[] = []
   protected _setups: (() => void | Promise<void>)[] = []
 
   constructor(options: Options = {}) {
@@ -194,15 +185,16 @@ export class Editor extends Observable<Events> {
         result = plugin
       }
 
-      this.plugins[result.name] = result
-
       const {
+        name,
         events,
         commands = [],
         hotkeys = [],
         loaders = [],
         exporters = [],
         tools = [],
+        components = [],
+        setup,
       } = result
 
       this.registerCommand(commands)
@@ -210,6 +202,11 @@ export class Editor extends Observable<Events> {
       this.registerLoader(loaders)
       this.registerExporter(exporters)
       this.registerTool(tools)
+      this.registerComponent(name, components)
+
+      if (setup) {
+        this.setups.push(setup)
+      }
 
       if (events) {
         for (const k in events) {
@@ -217,6 +214,29 @@ export class Editor extends Observable<Events> {
         }
       }
     }
+  }
+
+  registerComponent(name: string, components: PluginComponent[]) {
+    components.forEach((c, index) => {
+      let visible = c.visible
+      if (!visible) {
+        switch (c.type) {
+          case 'overlay':
+            visible = ref(true)
+            break
+          case 'panel':
+          default:
+            visible = ref(false)
+            break
+        }
+      }
+      this.components.value.push({
+        ...c,
+        visible,
+        plugin: name,
+        indexInPlugin: index,
+      })
+    })
   }
 
   protected _effectScope?: EffectScope
@@ -234,12 +254,12 @@ export class Editor extends Observable<Events> {
             console.error(`Failed to setup mixin`, err)
           }
         }),
-        ...Object.values(this.plugins).map(async (p) => {
+        ...Object.values(this.setups).map(async (setup) => {
           try {
-            await p.setup?.()
+            await setup()
           }
           catch (err: any) {
-            console.error(`Failed to setup ${p.name} plugin`, err)
+            console.error(`Failed to setup plugin`, err)
           }
         }),
       ])

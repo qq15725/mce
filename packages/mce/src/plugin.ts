@@ -1,9 +1,9 @@
-import type { Component } from 'vue'
+import type { Component, Ref } from 'vue'
 import type { Editor, Events, Options } from './editor'
 
 export interface PluginBaseComponent {
   component: Component
-  ignore?: () => boolean
+  visible?: Ref<boolean>
   order?: 'before' | number | 'after'
   slot?: string
 }

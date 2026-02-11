@@ -3,10 +3,6 @@ import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {
-    interface Panels {
-      layers: []
-    }
-
     interface Commands {
       layerScrollIntoView: () => boolean
     }
@@ -23,6 +19,9 @@ export default definePlugin(() => {
         position: 'float',
         component: Layers,
       },
+    ],
+    hotkeys: [
+      { command: 'togglePanel:layers', key: 'Alt+1' },
     ],
   }
 })

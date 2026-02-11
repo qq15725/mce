@@ -14,9 +14,9 @@ export const options: Options = {
     frame: { outline: false },
   },
   ui: {
-    ruler: { enabled: true },
-    scrollbar: { enabled: true },
-    statusbar: { enabled: true },
+    ruler: { visible: true },
+    scrollbar: { visible: true },
+    statusbar: { visible: true },
   },
   interaction: {
     transform: {

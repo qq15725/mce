@@ -1,14 +1,15 @@
+import { computed } from 'vue'
 import MadeWith from '../components/MadeWith.vue'
 import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {
-    interface MadeWithConfig {
-      enabled: boolean
-    }
-
     interface UIConfig {
       madeWith: MadeWithConfig
+    }
+
+    interface MadeWithConfig {
+      visible: boolean
     }
   }
 }
@@ -18,9 +19,9 @@ export default definePlugin((editor) => {
     registerConfig,
   } = editor
 
-  const config = registerConfig('ui.madeWith', {
+  const config = registerConfig<Mce.MadeWithConfig>('ui.madeWith', {
     default: {
-      enabled: false,
+      visible: false,
     },
   })
 
@@ -30,7 +31,10 @@ export default definePlugin((editor) => {
       {
         type: 'overlay',
         component: MadeWith,
-        ignore: () => !config.value.enabled,
+        visible: computed({
+          get: () => config.value.visible,
+          set: val => config.value.visible = val,
+        }),
       },
     ],
   }

@@ -4,15 +4,15 @@ import { defineMixin } from '../mixin'
 
 declare global {
   namespace Mce {
+    interface ViewportConfig {
+      screenPadding: ScreenPadding
+    }
+
     interface ScreenPadding {
       left: number
       top: number
       right: number
       bottom: number
-    }
-
-    interface ViewportConfig {
-      screenPadding: ScreenPadding
     }
 
     interface Editor {
@@ -41,11 +41,11 @@ export default defineMixin((editor) => {
       bottom: 0,
       right: 0,
     }
-    if (config.value.ui.ruler.enabled) {
+    if (config.value.ui.ruler.visible) {
       offset.left += 16
       offset.top += 16
     }
-    if (config.value.ui.scrollbar.enabled) {
+    if (config.value.ui.scrollbar.visible) {
       offset.right += 8
       offset.bottom += 8
     }

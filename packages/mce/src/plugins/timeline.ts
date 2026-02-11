@@ -1,18 +1,15 @@
+import { computed } from 'vue'
 import Timeline from '../components/timeline/Timeline.vue'
 import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {
-    interface TimelineConfig {
-      enabled: boolean
-    }
-
     interface UIConfig {
       timeline: TimelineConfig
     }
 
-    interface Panels {
-      timeline: []
+    interface TimelineConfig {
+      visible: boolean
     }
   }
 }
@@ -22,9 +19,9 @@ export default definePlugin((editor) => {
     registerConfig,
   } = editor
 
-  registerConfig('ui.timeline', {
+  const config = registerConfig('ui.timeline', {
     default: {
-      enabled: false,
+      visible: false,
     },
   })
 
@@ -37,10 +34,14 @@ export default definePlugin((editor) => {
         position: 'bottom',
         size: 160,
         component: Timeline,
+        visible: computed({
+          get: () => config.value.visible,
+          set: val => config.value.visible = val,
+        }),
       },
     ],
     hotkeys: [
-      { command: 'panels:timeline', key: 'Alt+2' },
+      { command: 'togglePanel:timeline', key: 'Alt+2' },
     ],
   }
 })

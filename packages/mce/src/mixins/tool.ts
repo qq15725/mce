@@ -20,9 +20,9 @@ declare global {
     }
 
     interface Editor {
-      tools: Reactive<Map<string, Mce.Tool>>
-      activeTool: Ref<Mce.Tool>
-      registerTool: (tool: Mce.Tool | Mce.Tool[]) => void
+      tools: Reactive<Map<string, Tool>>
+      activeTool: Ref<Tool>
+      registerTool: (tool: Tool | Tool[]) => void
       unregisterTool: (tool: string) => void
       activateTool: (tool: string | keyof Tools | undefined) => void
     }

@@ -27,7 +27,7 @@ const editorOptions = {
   },
   ui: {
     ...options.ui,
-    toolbelt: { enabled: true },
+    toolbelt: { visible: true },
   },
 }
 
@@ -106,8 +106,8 @@ const {
       </template>
       <template #drawboard>
         <div class="bar toolbar">
-          <button @click="() => editor.exec('view', 'ruler')">
-            {{ config.ui.ruler.enabled ? '隐藏' : '显示' }}标尺
+          <button @click="() => editor.exec('toggleUi', 'ruler')">
+            {{ editor.exec('isUiVisible', 'ruler') ? '隐藏' : '显示' }}标尺
           </button>
           <button @click="config.ui.ruler.locked = !config.ui.ruler.locked">
             {{ config.ui.ruler.locked ? '解锁' : '锁定' }}标尺
