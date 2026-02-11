@@ -300,6 +300,16 @@ function onReflineDblclick(index: number) {
   savedLines.value.splice(index, 1)
 }
 
+function updateTip(e: MouseEvent, item: any) {
+  tipText.value = `${item}`
+  if (props.vertical) {
+    tipPos.value.y = e.clientY
+  }
+  else {
+    tipPos.value.x = e.clientX
+  }
+}
+
 function onReflineMousedown(e: MouseEvent, index: number) {
   if (props.locked) {
     return
@@ -307,7 +317,9 @@ function onReflineMousedown(e: MouseEvent, index: number) {
   e.stopPropagation()
   e.preventDefault()
   const move = (e: MouseEvent) => {
-    savedLines.value[index] = getTick(e)
+    const val = getTick(e)
+    savedLines.value[index] = val
+    updateTip(e, val)
   }
   const up = () => {
     window.removeEventListener('mousemove', move)
@@ -361,7 +373,7 @@ defineExpose({
     }"
     @dblclick="onReflineDblclick(index)"
     @mousedown="onReflineMousedown($event, index)"
-    @mousemove="() => tipText = `${item}`"
+    @mousemove="e => updateTip(e, item)"
     @mouseleave="onLeave"
   />
 
@@ -369,6 +381,7 @@ defineExpose({
     :model-value="!!tipText"
     :target="tipPos"
     :offset="24"
+    :location="props.vertical ? 'bottom' : 'right'"
   >
     <div style="font-size: 0.75rem; text-wrap: nowrap">
       {{ tipText }}
