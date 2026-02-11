@@ -16,7 +16,7 @@ declare global {
   }
 }
 
-export default defineMixin((editor, options) => {
+export default defineMixin((editor) => {
   const {
     emit,
     fonts,

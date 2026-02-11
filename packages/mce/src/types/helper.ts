@@ -1,3 +1,4 @@
+// eslint-disable-next-line ts/no-unsafe-function-type
 export type DeepMaybe<T> = T extends Function
   ? T
   : T extends Array<infer U>
