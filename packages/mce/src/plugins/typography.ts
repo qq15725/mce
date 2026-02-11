@@ -6,7 +6,9 @@ import type { IndexCharacter } from '../web-components'
 import { isEqualObject, normalizeCRLF } from 'modern-idoc'
 import { measureText } from 'modern-text'
 import { computed, onBeforeMount } from 'vue'
+import VueTextEditor from '../components/TextEditor.vue'
 import { definePlugin } from '../plugin'
+import { createTextElement } from '../utils'
 import { TextEditor } from '../web-components'
 
 declare global {
@@ -31,7 +33,14 @@ declare global {
       typography: TypographyConfig
     }
 
+    interface addTextElementOptions extends AddElementOptions {
+      content?: string
+      style?: Record<string, any>
+    }
+
     interface Commands {
+      startTyping: (event?: MouseEvent) => Promise<boolean>
+      addTextElement: (options?: addTextElementOptions) => Element2D
       handleTextSelection: (textSelection: IndexCharacter[], cb: (arg: Record<string, any>) => boolean) => void
       textFontSizeToFit: (element: Element2D, scale?: number) => void
       textToFit: (element: Element2D, typography?: TypographyStrategy) => void
@@ -40,6 +49,10 @@ declare global {
       getTextFill: () => NormalizedFill | undefined
       setTextFill: (value: NormalizedFill | undefined) => void
       setTextContentByEachFragment: (handler: (fragment: NormalizedFragment) => void) => void
+    }
+
+    interface Tools {
+      text: [options?: addTextElementOptions]
     }
   }
 }
@@ -52,9 +65,12 @@ export default definePlugin((editor) => {
     fonts,
     getConfig,
     registerConfig,
+    t,
+    addElement,
+    activateTool,
   } = editor
 
-  registerConfig<Mce.Options['typography']>('typography', {
+  const config = registerConfig<Mce.TypographyConfig>('typography', {
     default: {
       strategy: 'autoHeight',
     },
@@ -148,8 +164,10 @@ export default definePlugin((editor) => {
     })
   }
 
-  function textToFit(element: Element2D, typography?: Mce.TypographyStrategy): void {
-    const strategy = typography ?? getConfig('typography.strategy')
+  function textToFit(
+    element: Element2D,
+    strategy = config.value.strategy,
+  ): void {
     if (strategy === 'fixedWidthHeight') {
       return
     }
@@ -461,6 +479,26 @@ export default definePlugin((editor) => {
     }
   }
 
+  const addTextElement: Mce.Commands['addTextElement'] = (options = {}) => {
+    const {
+      content = t('doubleClickEditText'),
+      style,
+      ...restOptions
+    } = options
+
+    return addElement(
+      createTextElement(content, {
+        fontSize: 64,
+        ...style,
+      }),
+      {
+        sizeToFit: true,
+        active: true,
+        ...restOptions,
+      },
+    )
+  }
+
   Object.assign(editor, {
     hasTextSelectionRange,
     isTextAllSelected,
@@ -469,6 +507,7 @@ export default definePlugin((editor) => {
   return {
     name: 'mce:typography',
     commands: [
+      { command: 'addTextElement', handle: addTextElement },
       { command: 'handleTextSelection', handle: handleTextSelection },
       { command: 'textFontSizeToFit', handle: textFontSizeToFit },
       { command: 'textToFit', handle: textToFit },
@@ -477,6 +516,43 @@ export default definePlugin((editor) => {
       { command: 'getTextFill', handle: getTextFill },
       { command: 'setTextFill', handle: setTextFill },
       { command: 'setTextContentByEachFragment', handle: setTextContentByEachFragment },
+    ],
+    hotkeys: [
+      { command: 'activateTool:text', key: 'T' },
+    ],
+    loaders: [
+      {
+        name: 'txt',
+        accept: '.txt',
+        test: (source) => {
+          if (source instanceof Blob) {
+            if (source.type.startsWith('text/plain')) {
+              return true
+            }
+          }
+          if (source instanceof File) {
+            if (/\.txt$/i.test(source.name)) {
+              return true
+            }
+          }
+          return false
+        },
+        load: async (source: File | Blob) => {
+          return createTextElement(await source.text())
+        },
+      },
+    ],
+    tools: [
+      {
+        name: 'text',
+        handle: (position) => {
+          addTextElement({ position })
+          activateTool(undefined)
+        },
+      },
+    ],
+    components: [
+      { type: 'overlay', component: VueTextEditor },
     ],
     setup: async () => {
       const {
