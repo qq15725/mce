@@ -58,11 +58,11 @@ declare global {
     }
 
     interface Config {
-      viewport: ViewportConfig
-      canvas: CanvasConfig
-      ui: UIConfig
-      interaction: InteractionConfig
       db: DBConfig
+      ui: UIConfig
+      canvas: CanvasConfig
+      viewport: ViewportConfig
+      interaction: InteractionConfig
     }
   }
 }
@@ -73,21 +73,15 @@ export default defineMixin((editor, options) => {
     config,
   } = editor
 
-  registerConfig('viewport', { default: {} })
-  registerConfig('canvas', { default: {} })
-  registerConfig('ui', { default: {} })
-  registerConfig('interaction', { default: {} })
   registerConfig('db', {
     default: {
       local: false,
     },
   })
-
-  const cameraConfig = registerConfig<Mce.CameraConfig>('viewport.camera', {
-    default: {
-      enabled: false,
-    },
-  })
+  registerConfig('ui', { default: {} })
+  registerConfig('canvas', { default: {} })
+  registerConfig('viewport', { default: {} })
+  registerConfig('interaction', { default: {} })
 
   const watermarkConfig = registerConfig<Mce.WatermarkConfig>('canvas.watermark', {
     default: {
@@ -118,6 +112,12 @@ export default defineMixin((editor, options) => {
   })
 
   const msaaConfig = registerConfig<Mce.MsaaConfig>('canvas.msaa', {
+    default: {
+      enabled: false,
+    },
+  })
+
+  const cameraConfig = registerConfig<Mce.CameraConfig>('viewport.camera', {
     default: {
       enabled: false,
     },
