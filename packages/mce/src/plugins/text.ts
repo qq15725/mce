@@ -15,7 +15,7 @@ declare global {
       addTextElement: (options?: addTextElementOptions) => Element2D
     }
 
-    interface DrawingTools {
+    interface Tools {
       text: [options?: addTextElementOptions]
     }
   }
@@ -25,7 +25,7 @@ export default definePlugin((editor) => {
   const {
     t,
     addElement,
-    setActiveDrawingTool,
+    activateTool,
   } = editor
 
   const addTextElement: Mce.Commands['addTextElement'] = (options = {}) => {
@@ -77,19 +77,19 @@ export default definePlugin((editor) => {
         },
       },
     ],
-    drawingTools: [
+    tools: [
       {
         name: 'text',
         handle: (position) => {
           addTextElement({
             position,
           })
-          setActiveDrawingTool(undefined)
+          activateTool(undefined)
         },
       },
     ],
     hotkeys: [
-      { command: 'setActiveDrawingTool:text', key: 'T' },
+      { command: 'activateTool:text', key: 'T' },
     ],
     components: [
       { type: 'overlay', component: TextEditor },

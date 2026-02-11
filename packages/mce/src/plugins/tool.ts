@@ -4,20 +4,20 @@ import { definePlugin } from '../plugin'
 declare global {
   namespace Mce {
     interface Commands {
-      setActiveDrawingTool: (tool: string | keyof DrawingTools | undefined) => void
+      activateTool: (tool: string | keyof Tools | undefined) => void
     }
   }
 }
 
 export default definePlugin((editor) => {
   const {
-    setActiveDrawingTool,
+    activateTool,
   } = editor
 
   return {
-    name: 'mce:drawingTool',
+    name: 'mce:tool',
     commands: [
-      { command: 'setActiveDrawingTool', handle: val => setActiveDrawingTool(val) },
+      { command: 'activateTool', handle: val => activateTool(val) },
     ],
     components: [
       { name: 'drawing', type: 'overlay', component: Drawing },

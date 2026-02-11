@@ -19,7 +19,7 @@ declare global {
       webp: Promise<Blob>
     }
 
-    interface DrawingTools {
+    interface Tools {
       image: []
     }
   }
@@ -113,12 +113,12 @@ export default definePlugin((editor) => {
         },
       },
     ],
-    drawingTools: [
+    tools: [
       { name: 'image', handle: position => exec('import', { position }) },
     ],
     hotkeys: [
       { command: 'copyAs:png', key: 'Shift+CmdOrCtrl+C' },
-      { command: 'setActiveDrawingTool:image', key: 'Shift+CmdOrCtrl+K' },
+      { command: 'activateTool:image', key: 'Shift+CmdOrCtrl+K' },
     ],
   }
 })

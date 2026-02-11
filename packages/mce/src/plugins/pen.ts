@@ -6,7 +6,7 @@ import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {
-    interface DrawingTools {
+    interface Tools {
       pen: []
       pencil: []
     }
@@ -17,7 +17,7 @@ export default definePlugin((editor) => {
   const {
     addElement,
     renderEngine,
-    activeDrawingTool,
+    activeTool,
     getGlobalPointer,
     state,
   } = editor
@@ -41,7 +41,7 @@ export default definePlugin((editor) => {
 
   return {
     name: 'mce:pen',
-    drawingTools: [
+    tools: [
       {
         name: 'pen',
         handle: (start) => {
@@ -92,7 +92,7 @@ export default definePlugin((editor) => {
             }
 
             renderEngine.value.on('pointermove', onMove)
-            const stop = watch([state, activeDrawingTool], () => {
+            const stop = watch([state, activeTool], () => {
               renderEngine.value.off('pointermove', onMove)
               stop()
               el = undefined
@@ -153,8 +153,8 @@ export default definePlugin((editor) => {
       },
     ],
     hotkeys: [
-      { command: 'setActiveDrawingTool:pen', key: 'P' },
-      { command: 'setActiveDrawingTool:pencil', key: 'Shift+P' },
+      { command: 'activateTool:pen', key: 'P' },
+      { command: 'activateTool:pencil', key: 'Shift+P' },
     ],
   }
 })

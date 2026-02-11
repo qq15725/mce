@@ -202,14 +202,14 @@ export class Editor extends Observable<Events> {
         hotkeys = [],
         loaders = [],
         exporters = [],
-        drawingTools = [],
+        tools = [],
       } = result
 
       this.registerCommand(commands)
       this.registerHotkey(hotkeys)
       this.registerLoader(loaders)
       this.registerExporter(exporters)
-      this.registerDrawingTool(drawingTools)
+      this.registerTool(tools)
 
       if (events) {
         for (const k in events) {

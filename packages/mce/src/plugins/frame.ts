@@ -6,21 +6,21 @@ import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {
+    interface CanvasConfig {
+      frame: FrameConfig
+    }
+
     interface FrameConfig {
       gap: number
       outline: boolean
       thumbnail: boolean
-    }
-
-    interface CanvasConfig {
-      frame: FrameConfig
     }
   }
 }
 
 export default definePlugin((editor) => {
   const {
-    setActiveDrawingTool,
+    activateTool,
     addElement,
     t,
     registerConfig,
@@ -36,7 +36,7 @@ export default definePlugin((editor) => {
 
   return {
     name: 'mce:frame',
-    drawingTools: [
+    tools: [
       {
         name: 'frame',
         handle: (start) => {
@@ -70,14 +70,14 @@ export default definePlugin((editor) => {
               el.style.height = Math.max(1, maxY - minY)
             },
             end: () => {
-              setActiveDrawingTool(undefined)
+              activateTool(undefined)
             },
           }
         },
       },
     ],
     hotkeys: [
-      { command: 'setActiveDrawingTool:frame', key: 'F' },
+      { command: 'activateTool:frame', key: 'F' },
     ],
     components: [
       {

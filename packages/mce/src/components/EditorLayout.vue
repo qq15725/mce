@@ -85,7 +85,7 @@ const {
   drawboardPointer,
   drawboardContextMenuPointer,
   screenCenterOffset,
-  activeDrawingTool,
+  activeTool,
 } = editor
 
 const overlayContainer = useTemplateRef('overlayContainerTpl')
@@ -227,7 +227,7 @@ function onEnginePointerDown(
 
   let drawingTool: any
   if (drawing) {
-    drawingTool = activeDrawingTool.value?.handle?.(
+    drawingTool = activeTool.value?.handle?.(
       camera.value.toGlobal({
         x: current.x - drawboardAabb.value.left,
         y: current.y - drawboardAabb.value.top,
@@ -504,7 +504,7 @@ const slotProps = {
     class="mce-editor"
     :class="[
       state && `mce-editor--${state}`,
-      activeDrawingTool && `mce-editor--drawing-tool-${activeDrawingTool.name}`,
+      activeTool && `mce-editor--drawing-tool-${activeTool.name}`,
       grabbing && `mce-editor--grabbing`,
     ]"
   >

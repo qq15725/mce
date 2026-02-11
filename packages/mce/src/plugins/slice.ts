@@ -4,7 +4,7 @@ import { definePlugin } from '../plugin'
 
 export default definePlugin((editor) => {
   const {
-    setActiveDrawingTool,
+    activateTool,
     addElement,
     t,
     elementSelection,
@@ -59,7 +59,7 @@ export default definePlugin((editor) => {
 
   return {
     name: 'mce:slice',
-    drawingTools: [
+    tools: [
       {
         name: 'slice',
         handle: (start) => {
@@ -93,7 +93,7 @@ export default definePlugin((editor) => {
               el.style.height = Math.max(1, maxY - minY)
             },
             end: () => {
-              setActiveDrawingTool(undefined)
+              activateTool(undefined)
             },
           }
         },
@@ -103,7 +103,7 @@ export default definePlugin((editor) => {
       { command: 'exportSlice', handle: exportSlice },
     ],
     hotkeys: [
-      { command: 'setActiveDrawingTool:slice', key: 'S' },
+      { command: 'activateTool:slice', key: 'S' },
     ],
   }
 })

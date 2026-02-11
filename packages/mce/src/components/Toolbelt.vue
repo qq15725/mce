@@ -9,8 +9,8 @@ import Tooltip from './shared/Tooltip.vue'
 const {
   state,
   t,
-  setActiveDrawingTool,
-  activeDrawingTool,
+  activateTool,
+  activeTool,
   hotkeys,
   getKbd,
 } = useEditor()
@@ -34,15 +34,15 @@ const shapeItems = computed(() => {
         key,
         handle: () => {
           activeShape.value = index
-          setActiveDrawingTool(key)
+          activateTool(key)
         },
-        checked: activeDrawingTool.value?.name === key,
+        checked: activeTool.value?.name === key,
       }
     }),
     {
       key: 'image',
-      handle: () => setActiveDrawingTool('image'),
-      checked: activeDrawingTool.value?.name === 'image',
+      handle: () => activateTool('image'),
+      checked: activeTool.value?.name === 'image',
     },
   ]
 })
@@ -59,9 +59,9 @@ const penItems = computed(() => {
         key,
         handle: () => {
           activePen.value = index
-          setActiveDrawingTool(key)
+          activateTool(key)
         },
-        checked: activeDrawingTool.value?.name === key,
+        checked: activeTool.value?.name === key,
       }
     }),
   ]
@@ -77,21 +77,21 @@ const items = computed(() => {
           //
         }
         else {
-          setActiveDrawingTool(undefined)
+          activateTool(undefined)
         }
       },
       children: [
-        { key: 'move', handle: () => setActiveDrawingTool(undefined) },
+        { key: 'move', handle: () => activateTool(undefined) },
         { key: 'hand', handle: () => state.value = 'hand' },
       ],
     },
     {
-      key: activeDrawingTool.value?.name === 'slice' ? 'slice' : 'frame',
-      active: ['frame', 'slice'].includes(activeDrawingTool.value?.name),
-      handle: () => setActiveDrawingTool('frame'),
+      key: activeTool.value?.name === 'slice' ? 'slice' : 'frame',
+      active: ['frame', 'slice'].includes(activeTool.value?.name),
+      handle: () => activateTool('frame'),
       children: [
-        { key: 'frame', handle: () => setActiveDrawingTool('frame') },
-        { key: 'slice', handle: () => setActiveDrawingTool('slice') },
+        { key: 'frame', handle: () => activateTool('frame') },
+        { key: 'slice', handle: () => activateTool('slice') },
       ],
     },
     {
@@ -100,8 +100,8 @@ const items = computed(() => {
     },
     {
       key: 'text',
-      active: activeDrawingTool.value?.name === 'text',
-      handle: () => setActiveDrawingTool('text'),
+      active: activeTool.value?.name === 'text',
+      handle: () => activateTool('text'),
     },
     {
       ...(penItems.value.find(v => v.checked) ?? penItems.value[activePen.value]),
@@ -142,8 +142,8 @@ const items = computed(() => {
             <template v-if="hotkeys.has(`setState:${tool.key}`)">
               <span>{{ getKbd(`setState:${tool.key}`) }}</span>
             </template>
-            <template v-else-if="hotkeys.has(`setActiveDrawingTool:${tool.key}`)">
-              <span>{{ getKbd(`setActiveDrawingTool:${tool.key}`) }}</span>
+            <template v-else-if="hotkeys.has(`activateTool:${tool.key}`)">
+              <span>{{ getKbd(`activateTool:${tool.key}`) }}</span>
             </template>
           </template>
         </Tooltip>
@@ -168,8 +168,8 @@ const items = computed(() => {
               <template v-if="hotkeys.has(`setState:${item.key}`)">
                 {{ getKbd(`setState:${item.key}`) }}
               </template>
-              <template v-else-if="hotkeys.has(`setActiveDrawingTool:${item.key}`)">
-                {{ getKbd(`setActiveDrawingTool:${item.key}`) }}
+              <template v-else-if="hotkeys.has(`activateTool:${item.key}`)">
+                {{ getKbd(`activateTool:${item.key}`) }}
               </template>
             </template>
 

@@ -20,9 +20,9 @@ import _3_view from './3.view'
 import _4_0_node from './4.0.node'
 import _4_2_frame from './4.2.frame'
 import _4_3_element from './4.3.element'
-import _drawingTool from './drawingTool'
 import _http from './http'
 import _snapshot from './snapshot'
+import _tool from './tool'
 
 export const mixins = [
   _0_command,
@@ -43,7 +43,7 @@ export const mixins = [
   _4_0_node,
   _4_2_frame,
   _4_3_element,
-  _drawingTool,
   _http,
   _snapshot,
+  _tool,
 ]

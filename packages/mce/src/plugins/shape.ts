@@ -5,7 +5,7 @@ import { createShapeElement } from '../utils'
 
 declare global {
   namespace Mce {
-    interface DrawingTools {
+    interface Tools {
       rectangle: []
       line: []
       arrow: []
@@ -94,10 +94,10 @@ export function getArrowPath(
 export default definePlugin((editor) => {
   const {
     addElement,
-    setActiveDrawingTool,
+    activateTool,
   } = editor
 
-  function createHandle(shape: Shape): Mce.DrawingToolHandle {
+  function createHandle(shape: Shape): Mce.ToolHandle {
     return (start) => {
       const el = addElement(createShapeElement(shape, '#d9d9d9'), {
         position: start,
@@ -117,7 +117,7 @@ export default definePlugin((editor) => {
           el.style.height = Math.max(1, maxY - minY)
         },
         end: () => {
-          setActiveDrawingTool(undefined)
+          activateTool(undefined)
         },
       }
     }
@@ -125,7 +125,7 @@ export default definePlugin((editor) => {
 
   return {
     name: 'mce:shape',
-    drawingTools: [
+    tools: [
       {
         name: 'rectangle',
         handle: createHandle([{ data: 'M4 6v13h16V6z' }]),
@@ -162,7 +162,7 @@ export default definePlugin((editor) => {
               el.style.height = box.height
             },
             end: () => {
-              setActiveDrawingTool(undefined)
+              activateTool(undefined)
             },
           }
         },
@@ -196,7 +196,7 @@ export default definePlugin((editor) => {
               el.style.height = box.height
             },
             end: () => {
-              setActiveDrawingTool(undefined)
+              activateTool(undefined)
             },
           }
         },
@@ -215,10 +215,10 @@ export default definePlugin((editor) => {
       },
     ],
     hotkeys: [
-      { command: 'setActiveDrawingTool:rectangle', key: 'R' },
-      { command: 'setActiveDrawingTool:line', key: 'L' },
-      { command: 'setActiveDrawingTool:arrow', key: 'Shift+L' },
-      { command: 'setActiveDrawingTool:ellipse', key: 'O' },
+      { command: 'activateTool:rectangle', key: 'R' },
+      { command: 'activateTool:line', key: 'L' },
+      { command: 'activateTool:arrow', key: 'Shift+L' },
+      { command: 'activateTool:ellipse', key: 'O' },
     ],
   }
 })

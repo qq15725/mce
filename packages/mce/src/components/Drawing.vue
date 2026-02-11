@@ -4,7 +4,7 @@ import { useEditor } from '../composables/editor'
 const {
   drawboardPointer,
   state,
-  activeDrawingTool,
+  activeTool,
   t,
 } = useEditor()
 </script>
@@ -18,8 +18,8 @@ const {
       top: `${drawboardPointer.y}px`,
     }"
   >
-    <div v-if="activeDrawingTool?.name" class="mce-drawing__tip">
-      {{ t(activeDrawingTool.name) }}
+    <div v-if="activeTool?.name" class="mce-drawing__tip">
+      {{ t(activeTool.name) }}
     </div>
   </div>
 </template>

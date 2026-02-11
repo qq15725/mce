@@ -6,7 +6,6 @@ import _arrange from './arrange'
 import _autoNest from './autoNest'
 import _copyAs from './copyAs'
 import _doc from './doc'
-import _drawingTool from './drawingTool'
 import _edit from './edit'
 import _formatPaint from './formatPaint'
 import _frame from './frame'
@@ -40,6 +39,7 @@ import _statusbar from './statusbar'
 import _test from './test'
 import _text from './text'
 import _timeline from './timeline'
+import _tool from './tool'
 import _toolbelt from './toolbelt'
 import _transform from './transform'
 import _typography from './typography'
@@ -53,7 +53,6 @@ export const plugins = [
   _autoNest,
   _copyAs,
   _doc,
-  _drawingTool,
   _edit,
   _formatPaint,
   _frame,
@@ -87,6 +86,7 @@ export const plugins = [
   _test,
   _text,
   _timeline,
+  _tool,
   _toolbelt,
   _transform,
   _typography,
