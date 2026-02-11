@@ -4,7 +4,7 @@ declare global {
   namespace Mce {
     interface Commands {
       getState: () => State
-      setState: (val: State) => void
+      setState: (value: State) => void
     }
   }
 }

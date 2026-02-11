@@ -11,6 +11,7 @@ declare global {
     }
 
     interface Commands {
+      startTyping: (event?: MouseEvent) => Promise<boolean>
       addTextElement: (options?: addTextElementOptions) => Element2D
     }
 

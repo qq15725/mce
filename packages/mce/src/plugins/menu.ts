@@ -19,6 +19,10 @@ declare global {
       contextMenu: ComputedRef<MenuItem[]>
     }
 
+    interface Commands {
+      openContextMenu: (event?: MouseEvent) => boolean
+    }
+
     interface Options {
       customContextMenu?: (
         defaultMenu: MenuItem[],

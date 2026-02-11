@@ -14,7 +14,6 @@ declare global {
     }
 
     interface Editor {
-      configDeclarations: Map<string, ConfigDeclaration>
       getConfig: (path: keyof Config | string, defaultValue?: any) => any
       setConfig: (path: keyof Config | string, value: any) => void
       getConfigRef: <T = any>(path: string) => WritableComputedRef<T>
@@ -105,7 +104,6 @@ export default defineMixin((editor) => {
   }
 
   Object.assign(editor, {
-    configDeclarations,
     getConfig,
     setConfig,
     getConfigRef,

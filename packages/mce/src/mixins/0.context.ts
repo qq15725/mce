@@ -1,7 +1,8 @@
-import type { Assets, Cursor, Vector2, Vector2Like } from 'modern-canvas'
+import type { Assets, Cursor, Vector2Like } from 'modern-canvas'
 import type { IndexCharacter as _IndexCharacter } from 'modern-text/web-components'
 import type { Ref } from 'vue'
-import { Aabb2D, assets, Camera2D, DrawboardEffect, Element2D, Engine, Node, Timeline } from 'modern-canvas'
+import { useResizeObserver } from '@vueuse/core'
+import { Aabb2D, assets, Camera2D, DrawboardEffect, Element2D, Engine, Node, Timeline, Vector2 } from 'modern-canvas'
 import { Fonts } from 'modern-font'
 import { computed, markRaw, onBeforeMount, onScopeDispose, reactive, ref, watch } from 'vue'
 import { defineMixin } from '../mixin'
@@ -225,6 +226,9 @@ export default defineMixin((editor, options) => {
       off,
       root,
       state,
+      drawboardDom,
+      drawboardAabb,
+      drawboardPointer,
     } = editor
 
     function updateNodes(value?: Node) {
@@ -258,15 +262,30 @@ export default defineMixin((editor, options) => {
       hoverElement.value = undefined
     })
 
+    useResizeObserver(drawboardDom, (entries) => {
+      const { left: _left, top: _top, width, height } = entries[0].contentRect
+      const { left = _left, top = _top } = drawboardDom.value?.getBoundingClientRect() ?? {}
+      drawboardAabb.value = new Aabb2D(left, top, width, height)
+    })
+
+    function onMouseMove(event: MouseEvent) {
+      drawboardPointer.value = new Vector2(
+        event.clientX - drawboardAabb.value.left,
+        event.clientY - drawboardAabb.value.top,
+      )
+    }
+
     onBeforeMount(() => {
       on('setDoc', onSetDoc)
       renderEngine.value.start()
       root.value.load()
+      document.addEventListener('mousemove', onMouseMove)
     })
 
     onScopeDispose(() => {
       off('setDoc', onSetDoc)
       renderEngine.value.stop()
+      document.removeEventListener('mousemove', onMouseMove)
     })
   }
 })

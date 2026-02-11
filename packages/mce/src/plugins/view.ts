@@ -6,7 +6,7 @@ declare global {
 
     interface Commands {
       getView: <T extends View>(view: T) => UIConfig[T]
-      setViewEnabled: (view: View, enabled?: boolean) => void
+      enableView: (view: View, enabled?: boolean) => void
       isViewEnabled: (view: View) => boolean
       toggleView: (view: View) => void
       hideView: (view: View) => void
@@ -24,7 +24,7 @@ export default definePlugin((editor) => {
     return config.value.ui[view]
   }
 
-  const setViewEnabled: Mce.Commands['setViewEnabled'] = (view, enabled) => {
+  const enableView: Mce.Commands['enableView'] = (view, enabled) => {
     const obj = getView(view)
     if (obj && 'enabled' in obj) {
       if (enabled === undefined) {
@@ -40,11 +40,11 @@ export default definePlugin((editor) => {
     name: 'mce:view',
     commands: [
       { command: 'getView', handle: getView },
-      { command: 'setViewEnabled', handle: setViewEnabled },
+      { command: 'enableView', handle: enableView },
       { command: 'isViewEnabled', handle: view => Boolean(getView(view).enabled) },
-      { command: 'toggleView', handle: view => setViewEnabled(view) },
-      { command: 'hideView', handle: view => setViewEnabled(view, false) },
-      { command: 'showView', handle: view => setViewEnabled(view, true) },
+      { command: 'toggleView', handle: view => enableView(view) },
+      { command: 'hideView', handle: view => enableView(view, false) },
+      { command: 'showView', handle: view => enableView(view, true) },
     ],
     hotkeys: [
       { command: 'toggleView:pixelGrid', key: 'Shift+"' },

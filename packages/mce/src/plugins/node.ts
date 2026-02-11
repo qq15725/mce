@@ -1,4 +1,4 @@
-import NodeCreator from '../components/NodeCreator.vue'
+import Creator from '../components/Creator.vue'
 import { definePlugin } from '../plugin'
 
 declare global {
@@ -35,7 +35,7 @@ export default definePlugin((editor) => {
         name: 'creator',
         type: 'panel',
         position: 'float',
-        component: NodeCreator,
+        component: Creator,
       },
     ],
     commands: [

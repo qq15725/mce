@@ -6,14 +6,14 @@ import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {
+    interface InteractionConfig {
+      transform: TransformConfig
+    }
+
     interface TransformConfig {
       handleShape?: 'rect' | 'circle'
       handleStrategy?: 'point'
       rotator?: boolean
-    }
-
-    interface InteractionConfig {
-      transform: TransformConfig
     }
 
     interface TransformValue {
@@ -42,23 +42,34 @@ declare global {
       oldValue: TransformValue
     }
 
-    type FlipType = 'horizontal' | 'vertical'
+    type MoveDirection = 'left' | 'top' | 'right' | 'bottom'
+    type FlipDirection = 'horizontal' | 'vertical'
+    type TransformType = 'move' | 'resize' | 'rotate' | 'round'
+    interface TransformOptions {
+      event?: MouseEvent
+      isCorner?: boolean
+    }
 
     interface Commands {
       enter: () => void
-      getTransformValue: () => TransformValue
-      transform: (
-        handle: Mce.TransformHandle,
-        value: Partial<TransformValue>,
-        event?: MouseEvent,
-      ) => void
-      flip: (type: Mce.FlipType) => void
+      getTransform: () => TransformValue
+      setTransform: (type: TransformType, value: Partial<TransformValue>, options?: TransformOptions) => void
+      move: (direction: MoveDirection, distance?: number) => void
+      moveLeft: (distance?: number) => void
+      moveTop: (distance?: number) => void
+      moveRight: (distance?: number) => void
+      moveBottom: (distance?: number) => void
+      flip: (direction: FlipDirection) => void
       flipHorizontal: () => void
       flipVertical: () => void
     }
 
     interface Hotkeys {
       enter: [event: KeyboardEvent]
+      moveLeft: [event: KeyboardEvent]
+      moveTop: [event: KeyboardEvent]
+      moveRight: [event: KeyboardEvent]
+      moveBottom: [event: KeyboardEvent]
       flipHorizontal: [event: KeyboardEvent]
       flipVertical: [event: KeyboardEvent]
     }
@@ -131,7 +142,15 @@ export default definePlugin((editor) => {
     })
   }
 
-  const transformValue = computed(() => {
+  function onSelectionTransformStart(): void {
+    initContext()
+  }
+
+  function onSelectionTransformEnd(): void {
+    context = undefined
+  }
+
+  const transform = computed(() => {
     const { left, top, width, height, rotationDegrees } = selectionObb.value
     return {
       left,
@@ -143,31 +162,23 @@ export default definePlugin((editor) => {
     }
   })
 
-  function onSelectionTransformStart(): void {
-    initContext()
+  function getTransform() {
+    return transform.value
   }
 
-  function onSelectionTransformEnd(): void {
-    context = undefined
-  }
+  const setTransform: Mce.Commands['setTransform'] = (type, value, options = {}) => {
+    const { event, isCorner } = options
 
-  function transform(
-    handle: Mce.TransformHandle,
-    value: Partial<Mce.TransformValue>,
-    event?: MouseEvent,
-  ): void {
     if (!context) {
       initContext()
     }
     const _context = context!
 
-    const oldTransform = transformValue.value
+    const oldTransform = getTransform()
     const transform = {
       ...oldTransform,
       ...value,
     }
-    const [type, direction = ''] = handle.split('-')
-    const isCorner = direction.length > 1
     const els = elementSelection.value
     const isMultiple = els.length > 1
 
@@ -297,8 +308,28 @@ export default definePlugin((editor) => {
     })
   }
 
-  function flip(type: Mce.FlipType) {
-    switch (type) {
+  const move: Mce.Commands['move'] = (direction, distance = 1) => {
+    let prop: 'left' | 'top'
+    switch (direction) {
+      case 'left':
+      case 'top':
+        prop = direction
+        distance = -distance
+        break
+      case 'bottom':
+        prop = 'top'
+        break
+      case 'right':
+        prop = 'left'
+        break
+    }
+    elementSelection.value.forEach((element) => {
+      element.style[prop] += distance
+    })
+  }
+
+  const flip: Mce.Commands['flip'] = (direction) => {
+    switch (direction) {
       case 'horizontal':
         elementSelection.value.forEach((el) => {
           el.style.scaleX = -el.style.scaleX
@@ -316,20 +347,37 @@ export default definePlugin((editor) => {
     name: 'mce:transform',
     commands: [
       { command: 'enter', handle: enter },
-      { command: 'getTransformValue', handle: () => transformValue.value },
-      { command: 'transform', handle: transform },
+      { command: 'getTransform', handle: getTransform },
+      { command: 'setTransform', handle: setTransform },
+      { command: 'move', handle: move },
+      { command: 'moveLeft', handle: (distance?: number) => move('left', distance) },
+      { command: 'moveTop', handle: (distance?: number) => move('top', distance) },
+      { command: 'moveRight', handle: (distance?: number) => move('right', distance) },
+      { command: 'moveBottom', handle: (distance?: number) => move('bottom', distance) },
       { command: 'flip', handle: flip },
       { command: 'flipHorizontal', handle: () => flip('horizontal') },
       { command: 'flipVertical', handle: () => flip('vertical') },
     ],
     hotkeys: [
-      { command: 'enter', key: ['Enter'], when: () => elementSelection.value.length > 0 },
+      { command: 'enter', key: 'Enter', when: () => elementSelection.value.length > 0 },
+      { command: 'moveLeft', key: 'ArrowLeft', editable: false, when: () => elementSelection.value.length > 0 },
+      { command: 'moveTop', key: 'ArrowUp', editable: false, when: () => elementSelection.value.length > 0 },
+      { command: 'moveRight', key: 'ArrowRight', editable: false, when: () => elementSelection.value.length > 0 },
+      { command: 'moveBottom', key: 'ArrowDown', editable: false, when: () => elementSelection.value.length > 0 },
       { command: 'flipHorizontal', key: 'Shift+H' },
       { command: 'flipVertical', key: 'Shift+V' },
     ],
     events: {
       selectionTransformStart: onSelectionTransformStart,
-      selectionTransform: ctx => transform(ctx.handle, ctx.value, ctx.event),
+      selectionTransform: (ctx) => {
+        const { handle, value, event } = ctx
+        const [type, direction = ''] = handle.split('-')
+        const isCorner = direction.length > 1
+        setTransform(type as Mce.TransformType, value, {
+          event,
+          isCorner,
+        })
+      },
       selectionTransformEnd: onSelectionTransformEnd,
     },
   }

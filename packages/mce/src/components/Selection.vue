@@ -101,7 +101,7 @@ function onEnd(ctx: Mce.TransformContext) {
   emit('selectionTransformEnd', ctx)
 }
 
-const transformValue = computed(() => exec('getTransformValue'))
+const transformValue = computed(() => exec('getTransform'))
 
 const movable = computed(() => {
   return state.value !== 'typing'

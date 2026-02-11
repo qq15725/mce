@@ -6,6 +6,10 @@ declare global {
     interface Panels {
       layers: []
     }
+
+    interface Commands {
+      layerScrollIntoView: () => boolean
+    }
   }
 }
 
@@ -13,7 +17,12 @@ export default definePlugin(() => {
   return {
     name: 'mce:layers',
     components: [
-      { name: 'layers', type: 'panel', position: 'float', component: Layers },
+      {
+        name: 'layers',
+        type: 'panel',
+        position: 'float',
+        component: Layers,
+      },
     ],
   }
 })

@@ -17,6 +17,7 @@ declare global {
         | Node[]
 
     interface Commands {
+      startTransform: (event?: MouseEvent) => boolean
       select: (target: SelectTarget) => void
       marqueeSelect: (marquee?: Aabb2D) => void
       selectAll: () => void

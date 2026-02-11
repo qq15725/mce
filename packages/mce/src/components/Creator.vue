@@ -80,8 +80,8 @@ function CreatorNode(props: any = {}): any {
   return [
     h('div', {
       class: [
-        'mce-node-creator__node',
-        activeNodeName.value === node.name && 'mce-node-creator__node--active',
+        'mce-creator__node',
+        activeNodeName.value === node.name && 'mce-creator__node--active',
       ],
       style: {
         '--indent-padding': `${indent * 16}px`,
@@ -96,14 +96,14 @@ function CreatorNode(props: any = {}): any {
 </script>
 
 <template>
-  <div class="mce-node-creator">
-    <div class="mce-node-creator__tree">
+  <div class="mce-creator">
+    <div class="mce-creator__tree">
       <template v-for="(node, index) in tree" :key="index">
         <CreatorNode :node="node" />
       </template>
     </div>
 
-    <div class="mce-node-creator__actions">
+    <div class="mce-creator__actions">
       <Btn @click="cancel">
         {{ t('cancel') }}
       </Btn>
@@ -115,7 +115,7 @@ function CreatorNode(props: any = {}): any {
 </template>
 
 <style lang="scss">
-  .mce-node-creator {
+  .mce-creator {
     position: relative;
     width: 100%;
     height: 100%;
