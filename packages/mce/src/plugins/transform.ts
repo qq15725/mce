@@ -57,6 +57,8 @@ declare global {
       moveTop: (distance?: number) => void
       moveRight: (distance?: number) => void
       moveBottom: (distance?: number) => void
+      rotate: (deg: number) => void
+      rotate90: () => void
       flip: (direction: FlipDirection) => void
       flipHorizontal: () => void
       flipVertical: () => void
@@ -334,6 +336,12 @@ export default definePlugin((editor) => {
     })
   }
 
+  const rotate: Mce.Commands['rotate'] = (deg) => {
+    elementSelection.value.forEach((el) => {
+      el.style.rotate = (el.style.rotate + deg) % 360
+    })
+  }
+
   const flip: Mce.Commands['flip'] = (direction) => {
     switch (direction) {
       case 'horizontal':
@@ -360,6 +368,8 @@ export default definePlugin((editor) => {
       { command: 'moveTop', handle: (distance?: number) => move('top', distance) },
       { command: 'moveRight', handle: (distance?: number) => move('right', distance) },
       { command: 'moveBottom', handle: (distance?: number) => move('bottom', distance) },
+      { command: 'rotate', handle: rotate },
+      { command: 'rotate90', handle: () => rotate(90) },
       { command: 'flip', handle: flip },
       { command: 'flipHorizontal', handle: () => flip('horizontal') },
       { command: 'flipVertical', handle: () => flip('vertical') },

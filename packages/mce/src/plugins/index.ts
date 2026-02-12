@@ -24,7 +24,6 @@ import _new from './new'
 import _node from './node'
 import _open from './open'
 import _pen from './pen'
-import _rotate from './rotate'
 import _ruler from './ruler'
 import _saveAs from './saveAs'
 import _scroll from './scroll'
@@ -68,7 +67,6 @@ export const plugins = [
   _node,
   _open,
   _pen,
-  _rotate,
   _ruler,
   _saveAs,
   _scroll,
