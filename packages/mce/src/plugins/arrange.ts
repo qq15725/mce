@@ -160,61 +160,41 @@ export default definePlugin((editor) => {
       return
     }
 
-    const items = els.map((el) => {
-      return {
-        el,
-        aabb: el.globalAabb,
-      }
-    })
-    const count = items.length
+    const count = els.length
 
+    let lt: 'left' | 'top'
+    let wh: 'width' | 'height'
     switch (direction) {
-      case 'vertical': {
-        const sorted = [...items].sort((a, b) => a.aabb.y - b.aabb.y)
-        const start = sorted[0]
-        const end = sorted[count - 1]
-        const startEdge = start.aabb.y
-        const endEdge = end.aabb.y + end.aabb.height
-        const totalSize = sorted.reduce((sum, node) => sum + node.aabb.height, 0)
-        const totalSpacing = (endEdge - startEdge) - totalSize
-        const gapSize = totalSpacing / (count - 1)
-        let current = start.aabb.y + start.aabb.height
-        for (let i = 1; i < count - 1; i++) {
-          const item = sorted[i]
-          current += gapSize
-          let top = current
-          const parentAabb = item.el.getParent<Element2D>()?.globalAabb
-          if (parentAabb) {
-            top = top - parentAabb.top
-          }
-          item.el.style.top = top
-          current += item.aabb.height
-        }
+      case 'horizontal':
+        lt = 'left'
+        wh = 'width'
         break
-      }
-      case 'horizontal': {
-        const sorted = [...items].sort((a, b) => a.aabb.x - b.aabb.x)
-        const start = sorted[0]
-        const end = sorted[count - 1]
-        const startEdge = start.aabb.x
-        const endEdge = end.aabb.x + end.aabb.width
-        const totalSize = sorted.reduce((sum, node) => sum + node.aabb.width, 0)
-        const totalSpacing = (endEdge - startEdge) - totalSize
-        const gapSize = totalSpacing / (count - 1)
-        let current = start.aabb.x + start.aabb.width
-        for (let i = 1; i < count - 1; i++) {
-          const item = sorted[i]
-          current += gapSize
-          let left = current
-          const parentAabb = item.el.getParent<Element2D>()?.globalAabb
-          if (parentAabb) {
-            left = left - parentAabb.left
-          }
-          item.el.style.left = left
-          current += item.aabb.width
-        }
+      case 'vertical':
+        lt = 'top'
+        wh = 'height'
         break
+    }
+
+    const sorted = [...els].sort((a, b) => a.globalAabb[lt] - b.globalAabb[lt])
+    const startEl = sorted[0]
+    const endEl = sorted[count - 1]
+    const start = startEl.globalAabb[lt]
+    const end = endEl.globalAabb[lt] + endEl.globalAabb[wh]
+    const totalSize = sorted.reduce((sum, node) => sum + node.globalAabb[wh], 0)
+    const totalSpacing = (end - start) - totalSize
+    const spacing = totalSpacing / (count - 1)
+    let current = startEl.globalAabb[lt] + startEl.globalAabb[wh]
+    for (let i = 1; i < count - 1; i++) {
+      const el = sorted[i]
+      current += spacing
+      const xyCenter = current + el.globalAabb[wh] / 2
+      let xy = xyCenter - el.style[wh] / 2
+      const parentAabb = el.getParent<Element2D>()?.globalAabb
+      if (parentAabb) {
+        xy = xy - parentAabb[lt]
       }
+      el.style[lt] = xy
+      current += el.globalAabb[wh]
     }
   }
 
