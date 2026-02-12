@@ -198,13 +198,18 @@ const transformProps = {
     }
   },
   onMove: (ctx: Mce.TransformContext) => {
+    const el = currentElement.value!
     const { value, data } = ctx
     const { sx, sy } = data
     const center = {
       x: value.left + value.width / 2,
       y: value.top + value.height / 2,
     }
-    const el = currentElement.value!
+    const parentAabb = el.getParent<Element2D>()?.globalAabb
+    if (parentAabb) {
+      center.x -= parentAabb.left
+      center.y -= parentAabb.top
+    }
     const newStyle: Record<string, any> = {}
     newStyle.width = value.width * sx
     newStyle.height = value.height * sy
@@ -242,7 +247,6 @@ const transformProps = {
     switch (direction) {
       case 'horizontal':
         items.forEach((item) => {
-          // TODO 旋转
           if (item.equal(el)) {
             after = true
           }
@@ -256,7 +260,6 @@ const transformProps = {
         break
       case 'vertical':
         items.forEach((item) => {
-          // TODO 旋转
           if (item.equal(el)) {
             after = true
           }
@@ -298,13 +301,13 @@ function onRingDrag(event: PointerEvent, item: any) {
     const elAabb = globalAabb.value
     if (!elAabb)
       return
-    const key = direction === 'horizontal' ? 'x' : 'y'
+    const lt = direction === 'horizontal' ? 'left' : 'top'
     sorted = [...elementSelection.value].sort((a, b) => {
       if (a.equal(el))
-        return elAabb[key] - b.globalAabb[key]
+        return elAabb[lt] - b.globalAabb[lt]
       if (b.equal(el))
-        return a.globalAabb[key] - elAabb[key]
-      return a.globalAabb[key] - b.globalAabb[key]
+        return a.globalAabb[lt] - elAabb[lt]
+      return a.globalAabb[lt] - b.globalAabb[lt]
     })
     const index = sorted.findIndex(v => v.equal(el))
     prev = sorted[index - 1]
