@@ -683,14 +683,14 @@ defineExpose({
 function Diagonal() {
   const handle = activeHandle.value
 
-  if (!handle || !handle.startsWith('resize')) {
+  if (
+    props.resizeStrategy !== 'lockAspectRatio'
+    || props.lockAspectRatioStrategy !== 'diagonal'
+    || !handle
+    || !handle.startsWith('resize')
+    || handle.split('-')[1].length === 1
+  ) {
     return undefined
-  }
-
-  if (props.lockAspectRatioStrategy === 'diagonal') {
-    if (handle.split('-')[1].length === 1) {
-      return undefined
-    }
   }
 
   if (
