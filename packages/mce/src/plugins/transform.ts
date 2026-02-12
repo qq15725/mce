@@ -149,14 +149,6 @@ export default definePlugin((editor) => {
     })
   }
 
-  function onSelectionTransformStart(): void {
-    initContext()
-  }
-
-  function onSelectionTransformEnd(): void {
-    context = undefined
-  }
-
   const transform = computed(() => {
     const { left, top, width, height, rotationDegrees } = selectionObb.value
     return {
@@ -384,7 +376,9 @@ export default definePlugin((editor) => {
       { command: 'flipVertical', key: 'Shift+V' },
     ],
     events: {
-      selectionTransformStart: onSelectionTransformStart,
+      selectionTransformStart: () => {
+        initContext()
+      },
       selectionTransform: (ctx) => {
         const { handle, value, event } = ctx
         const [type, direction = ''] = handle.split('-')
@@ -394,7 +388,9 @@ export default definePlugin((editor) => {
           isCorner,
         })
       },
-      selectionTransformEnd: onSelectionTransformEnd,
+      selectionTransformEnd: () => {
+        context = undefined
+      },
     },
   }
 })
