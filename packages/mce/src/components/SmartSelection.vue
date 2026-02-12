@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Aabb2D, Element2D } from 'modern-canvas'
-import type { TransformValue } from './shared/Transform.vue'
 import { computed, ref, watch } from 'vue'
 import { useEditor } from '../composables'
 import { addDragListener } from '../utils'
@@ -11,7 +10,7 @@ const currentElement = defineModel<Element2D>()
 const {
   isPointerInSelection,
   elementSelection,
-  getObb,
+  getAabb,
   state,
   camera,
   resizeElement,
@@ -123,7 +122,7 @@ const boxes = computed(() => {
   return elementSelection.value.map((el) => {
     return {
       el,
-      style: getObb(el, 'drawboard').toCssStyle(),
+      style: getAabb(el, 'drawboard').toCssStyle(),
     }
   })
 })
@@ -160,24 +159,12 @@ const spacingHandles = computed(() => {
     let size
     switch (direction) {
       case 'horizontal':
-        pos = {
-          x: cur.globalAabb.x + cur.globalAabb.width,
-          y: min,
-        }
-        size = {
-          x: spacing,
-          y: max - min,
-        }
+        pos = { x: cur.globalAabb.x + cur.globalAabb.width, y: min }
+        size = { x: spacing, y: max - min }
         break
       case 'vertical':
-        pos = {
-          x: min,
-          y: cur.globalAabb.y + cur.globalAabb.height,
-        }
-        size = {
-          x: max - min,
-          y: spacing,
-        }
+        pos = { x: min, y: cur.globalAabb.y + cur.globalAabb.height }
+        size = { x: max - min, y: spacing }
         break
     }
     toScreen(pos)
@@ -196,39 +183,41 @@ const spacingHandles = computed(() => {
   return handles
 })
 
-const currentTransform = computed({
-  get: () => {
-    const { left, top, width, height, rotationDegrees: rotate } = getObb(currentElement.value)
-    return { left, top, width, height, rotate }
-  },
-  set: (val: TransformValue) => {
-    const oldTransform = currentTransform.value
-    const offsetStyle = {
-      left: val.left - oldTransform.left,
-      top: val.top - oldTransform.top,
-      width: val.width - oldTransform.width,
-      height: val.height - oldTransform.height,
-      rotate: val.rotate - oldTransform.rotate,
-    }
+const currentTransform = computed(() => {
+  const { left, top, width, height } = getAabb(currentElement.value)
+  return { left, top, width, height }
+})
 
+const transformProps = {
+  onStart: (ctx: Mce.TransformContext) => {
+    const { value } = ctx
     const el = currentElement.value!
-    const style = el.style
-    const newStyle = {
-      left: style.left + offsetStyle.left,
-      top: style.top + offsetStyle.top,
-      width: style.width + offsetStyle.width,
-      height: style.height + offsetStyle.height,
-      rotate: (style.rotate + offsetStyle.rotate + 360) % 360,
+    ctx.data = {
+      sx: el.style.width / value.width,
+      sy: el.style.height / value.height,
     }
+  },
+  onMove: (ctx: Mce.TransformContext) => {
+    const { value, data } = ctx
+    const { sx, sy } = data
+    const center = {
+      x: value.left + value.width / 2,
+      y: value.top + value.height / 2,
+    }
+    const el = currentElement.value!
+    const newStyle: Record<string, any> = {}
+    newStyle.width = value.width * sx
+    newStyle.height = value.height * sy
+    newStyle.left = center.x - newStyle.width / 2
+    newStyle.top = center.y - newStyle.height / 2
     const { left, top, right, bottom } = el.globalAabb
-    const shape = el.shape
     resizeElement(
       el,
       newStyle.width,
       newStyle.height,
       inEditorIs(el, 'Frame')
         ? undefined
-        : shape.isValid()
+        : el.shape.isValid()
           ? { deep: true }
           : { deep: true, textToFit: true },
     )
@@ -236,6 +225,12 @@ const currentTransform = computed({
     newStyle.height = el.style.height
     Object.assign(el.style, newStyle)
     el.updateGlobalTransform()
+
+    const _info = info.value
+    if (!_info) {
+      return
+    }
+    const { direction, items } = _info
     const aabb = el.globalAabb
     const offset = {
       left: aabb.left - left,
@@ -243,12 +238,6 @@ const currentTransform = computed({
       right: aabb.right - right,
       bottom: aabb.bottom - bottom,
     }
-
-    const _info = info.value
-    if (!_info) {
-      return
-    }
-    const { direction, items } = _info
     let after = false
     switch (direction) {
       case 'horizontal':
@@ -281,7 +270,7 @@ const currentTransform = computed({
         break
     }
   },
-})
+}
 
 const globalAabb = ref<Aabb2D>()
 const _globalAabb = computed(() => {
@@ -298,8 +287,6 @@ function onRingDrag(event: PointerEvent, item: any) {
   }
 
   const { direction } = _info
-  globalAabb.value = el.globalAabb.clone()
-  const elAabb = globalAabb.value
 
   let sorted: Element2D[] = []
   let min = Number.MIN_SAFE_INTEGER
@@ -308,6 +295,9 @@ function onRingDrag(event: PointerEvent, item: any) {
   let next: Element2D | undefined
 
   function update() {
+    const elAabb = globalAabb.value
+    if (!elAabb)
+      return
     const key = direction === 'horizontal' ? 'x' : 'y'
     sorted = [...elementSelection.value].sort((a, b) => {
       if (a.equal(el))
@@ -337,19 +327,23 @@ function onRingDrag(event: PointerEvent, item: any) {
     }
   }
 
-  update()
-
   addDragListener(event, {
     threshold: 3,
     start: () => {
       disableUpdate.value = true
+      globalAabb.value = el.globalAabb.clone()
+      update()
       state.value = 'moving'
       dragState.value = 'ring'
     },
-    move: ({ movePoint, currentPoint }) => {
+    move: ({ movePoint, lastPoint }) => {
+      const elAabb = globalAabb.value!
+      if (!elAabb) {
+        return
+      }
       const offset = {
-        x: movePoint.x - currentPoint.x,
-        y: movePoint.y - currentPoint.y,
+        x: movePoint.x - lastPoint.x,
+        y: movePoint.y - lastPoint.y,
       }
       const { zoom } = camera.value
       el.position.set(
@@ -426,18 +420,21 @@ function onRingDrag(event: PointerEvent, item: any) {
     },
     end: () => {
       // TODO 旋转
-      let x = elAabb.x
-      let y = elAabb.y
-      const parentAabb = el.getParent<Element2D>()?.globalAabb
-      if (parentAabb) {
-        x -= parentAabb.x
-        y -= parentAabb.y
+      const elAabb = globalAabb.value
+      if (elAabb) {
+        let x = elAabb.x
+        let y = elAabb.y
+        const parentAabb = el.getParent<Element2D>()?.globalAabb
+        if (parentAabb) {
+          x -= parentAabb.x
+          y -= parentAabb.y
+        }
+        el.style.left = x
+        el.style.top = y
+        el.position.x = x
+        el.position.y = y
+        el.updateGlobalTransform()
       }
-      el.style.left = x
-      el.style.top = y
-      el.position.x = x
-      el.position.y = y
-      el.updateGlobalTransform()
       globalAabb.value = undefined
       state.value = undefined
       dragState.value = undefined
@@ -462,10 +459,10 @@ function onSpacingDrag(event: PointerEvent) {
       state.value = 'moving'
       dragState.value = 'spacing'
     },
-    move: ({ movePoint, currentPoint }) => {
+    move: ({ movePoint, lastPoint }) => {
       const offset = {
-        x: movePoint.x - currentPoint.x,
-        y: movePoint.y - currentPoint.y,
+        x: movePoint.x - lastPoint.x,
+        y: movePoint.y - lastPoint.y,
       }
 
       const { zoom } = camera.value
@@ -475,13 +472,11 @@ function onSpacingDrag(event: PointerEvent) {
       switch (direction) {
         case 'horizontal':
           items.forEach((item, index) => {
-            // TODO 旋转
             item.style.left += index * offset.x
           })
           break
         case 'vertical':
           items.forEach((item, index) => {
-            // TODO 旋转
             item.style.top += index * offset.y
           })
           break
@@ -525,7 +520,8 @@ function onSpacingDrag(event: PointerEvent) {
 
       <Transform
         v-if="currentTransform.width && currentTransform.height"
-        v-model="currentTransform"
+        :model-value="currentTransform"
+        v-bind="transformProps"
         :handles="['resize-l', 'resize-r', 'resize-t', 'resize-b']"
         class="mce-smart-selection__transform"
         color="#FF24BD"
@@ -633,7 +629,7 @@ function onSpacingDrag(event: PointerEvent) {
 
     &--vertical {
       #{$root}__spacing-line {
-        height: 4px;
+        height: 6px;
         cursor: row-resize;
       }
 
@@ -644,7 +640,7 @@ function onSpacingDrag(event: PointerEvent) {
 
     &--horizontal {
       #{$root}__spacing-line {
-        width: 4px;
+        width: 6px;
         cursor: col-resize;
       }
 

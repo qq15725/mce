@@ -37,9 +37,6 @@ declare global {
     interface TransformContext extends DragContext {
       handle: TransformHandle
       value: TransformValue
-    }
-
-    interface TransformMoveContext extends TransformContext {
       oldValue: TransformValue
     }
 

@@ -2,15 +2,6 @@
 import { computed, getCurrentInstance, h, nextTick, onMounted, ref } from 'vue'
 import { addDragListener } from '../../utils'
 
-export interface TransformValue {
-  left: number
-  top: number
-  width: number
-  height: number
-  rotate: number
-  borderRadius: number
-}
-
 interface Point {
   x: number
   y: number
@@ -102,15 +93,15 @@ const props = withDefaults(defineProps<{
 
 const emit = defineEmits<{
   start: [context: Mce.TransformContext]
-  move: [context: Mce.TransformMoveContext]
+  move: [context: Mce.TransformContext]
   end: [context: Mce.TransformContext]
 }>()
 
 const _model = defineModel<
-  Partial<TransformValue>,
+  Partial<Mce.TransformValue>,
   string,
-  TransformValue,
-  TransformValue
+  Mce.TransformValue,
+  Mce.TransformValue
 >()
 
 const cursors: Record<string, any> = {
@@ -128,7 +119,7 @@ const cursors: Record<string, any> = {
   'resize-bl': (angle: number) => createCursor('resizeBevel', 180 + angle),
 }
 
-function getRawModel(): TransformValue {
+function getRawModel(): Mce.TransformValue {
   let {
     left = 0,
     top = 0,
@@ -178,7 +169,7 @@ function modelGetter() {
   }
 }
 
-function modelSetter(value: TransformValue): TransformValue {
+function modelSetter(value: Mce.TransformValue): Mce.TransformValue {
   const scale = props.scale
   const offset = props.offset
 
@@ -434,11 +425,13 @@ function onPointerDown(event?: MouseEvent, index?: number): boolean {
     rotatedStartPoint.x - centerPoint.x,
   ) / DEG_TO_RAD
 
-  addDragListener(event, {
+  addDragListener<Mce.TransformContext>(event, {
     threshold: props.threshold,
     start: (ctx) => {
       transforming.value = true
-      emit('start', { ...ctx, handle, value: getRawModel() })
+      ctx.handle = handle
+      ctx.value = ctx.oldValue = getRawModel()
+      emit('start', ctx)
     },
     move: (ctx) => {
       const rotatedOffset = {
@@ -446,7 +439,7 @@ function onPointerDown(event?: MouseEvent, index?: number): boolean {
         y: ctx.movePoint.y - ctx.startPoint.y,
       }
 
-      const updated = {} as TransformValue
+      const updated = {} as Mce.TransformValue
 
       const rotatedCurrentPoint = {
         x: rotatedStartPoint.x + rotatedOffset.x,
@@ -582,12 +575,15 @@ function onPointerDown(event?: MouseEvent, index?: number): boolean {
       const oldValue = getRawModel()
       const value = modelSetter({ ...model.value, ...updated })
       _model.value = value
-      emit('move', { ...ctx, handle, value, oldValue })
+      ctx.value = value
+      ctx.oldValue = oldValue
+      emit('move', ctx)
     },
     end: (ctx) => {
       transforming.value = false
       activeHandle.value = undefined
-      emit('end', { ...ctx, handle, value: getRawModel() })
+      ctx.value = ctx.oldValue = getRawModel()
+      emit('end', ctx)
     },
   })
 

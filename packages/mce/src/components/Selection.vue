@@ -27,8 +27,9 @@ const {
 const transformConfig = getConfigRef<Mce.TransformConfig>('interaction.transform')
 const transform = useTemplateRef('transformTpl')
 const transformProps = computed(() => {
+  const els = elementSelection.value
   const props: Record<string, any> = { ...transformConfig.value }
-  if (elementSelection.value.length === 1) {
+  if (els.length === 1) {
     const el = elementSelection.value[0]
     if (el) {
       if (el.text.isValid()) {
@@ -41,6 +42,10 @@ const transformProps = computed(() => {
         }
       }
     }
+  }
+  else if (els.length > 1) {
+    props.resizeStrategy = 'lockAspectRatio'
+    props.lockAspectRatioStrategy = 'diagonal'
   }
   return props
 })
@@ -93,7 +98,7 @@ function onStart(ctx: Mce.TransformContext): void {
   emit('selectionTransformStart', ctx)
 }
 
-function onMove(ctx: Mce.TransformMoveContext) {
+function onMove(ctx: Mce.TransformContext) {
   if (!state.value) {
     state.value = ctx.handle === 'move' ? 'moving' : 'transforming'
   }

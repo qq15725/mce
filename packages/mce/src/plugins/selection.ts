@@ -57,7 +57,7 @@ declare global {
 
     interface Events {
       selectionTransformStart: [context: TransformContext]
-      selectionTransform: [context: TransformMoveContext]
+      selectionTransform: [context: TransformContext]
       selectionTransformEnd: [context: TransformContext]
     }
   }

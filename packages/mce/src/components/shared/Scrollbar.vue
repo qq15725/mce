@@ -62,10 +62,10 @@ function onPointerdown(event: MouseEvent) {
   addDragListener(event, {
     threshold: 3,
     start: () => isActive.value = true,
-    move: ({ movePoint, currentPoint }) => {
+    move: ({ movePoint, lastPoint }) => {
       const offset = {
-        x: currentPoint.x - movePoint.x,
-        y: currentPoint.y - movePoint.y,
+        x: lastPoint.x - movePoint.x,
+        y: lastPoint.y - movePoint.y,
       }
       amount((props.vertical ? offset.y : offset.x) / (trackLength.value * (1 - thumbLength.value)) * contentLength.value * -1)
     },

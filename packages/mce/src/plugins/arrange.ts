@@ -187,13 +187,13 @@ export default definePlugin((editor) => {
     for (let i = 1; i < count - 1; i++) {
       const el = sorted[i]
       current += spacing
-      const xyCenter = current + el.globalAabb[wh] / 2
-      let xy = xyCenter - el.style[wh] / 2
+      const center = current + el.globalAabb[wh] / 2
+      let value = center - el.style[wh] / 2
       const parentAabb = el.getParent<Element2D>()?.globalAabb
       if (parentAabb) {
-        xy = xy - parentAabb[lt]
+        value = value - parentAabb[lt]
       }
-      el.style[lt] = xy
+      el.style[lt] = value
       current += el.globalAabb[wh]
     }
   }
