@@ -1,3 +1,49 @@
+# [0.17.0](https://github.com/qq15725/mce/compare/v0.16.7...v0.17.0) (2026-02-25)
+
+
+### Bug Fixes
+
+* bug ([b04c875](https://github.com/qq15725/mce/commit/b04c87506ce66d8cd45da5507ab31ee884621aa6))
+* bug ([8010f61](https://github.com/qq15725/mce/commit/8010f61edcc0355d9a98c4dfdeac3f261a98cfc7))
+* bug ([62ad9b9](https://github.com/qq15725/mce/commit/62ad9b902558204925a14820b9b6bfc65591d321))
+* constrainMovement ([84a92bb](https://github.com/qq15725/mce/commit/84a92bbcd550df4c622f50dd50a5da66ae9b603d))
+* distributeSpacing ([2e4c0dd](https://github.com/qq15725/mce/commit/2e4c0dd15b8a36941206addc3d1732bccb0f0a5a))
+* frameOutline ([5ee79aa](https://github.com/qq15725/mce/commit/5ee79aa463617b758a4f66a0adb871bb1a29652b))
+* getAabb ([2c5c280](https://github.com/qq15725/mce/commit/2c5c2800ee918330231bfae26398bf4dcbcbf3d9))
+* paste ([b6c3dc7](https://github.com/qq15725/mce/commit/b6c3dc7fb54e2a6fd065790fd9522d745bd229ca))
+* smart selection ([ae94230](https://github.com/qq15725/mce/commit/ae9423058d57884ee185f85622ef092ecf05fc07))
+* smart selection ([a77cc1b](https://github.com/qq15725/mce/commit/a77cc1b0f673614666cc3314742329522843a8cc))
+* smartGuides ([37bf5fa](https://github.com/qq15725/mce/commit/37bf5fa6eb72e6ac7aa056c9f8eae7166daa0f48))
+* text thumbnail name ([98b1d82](https://github.com/qq15725/mce/commit/98b1d825432958c1d65e381d4b064ca7297ed144))
+* thumbnailName ([70b5cb5](https://github.com/qq15725/mce/commit/70b5cb58212963a2cf149f36122054cdbe7446b4))
+* transform diagonal ([9fe5ab7](https://github.com/qq15725/mce/commit/9fe5ab7cac96d45a6d3ac4fc08176f357629fba2))
+* waitUntilFontLoad ([b47eaf6](https://github.com/qq15725/mce/commit/b47eaf624bf88695cb0eda0e09a53b465f4a6d73))
+
+
+### Features
+
+* getTransform / setTransform ([b92415b](https://github.com/qq15725/mce/commit/b92415b7e3d75507151bd0916f74a9ee7d4ff3d9))
+* lockAspectRatioDiagonal ([5b09563](https://github.com/qq15725/mce/commit/5b095631d749520e0ab2ca604ab59da9f38940cb))
+* lockAspectRatioStrategy ([94c0497](https://github.com/qq15725/mce/commit/94c04978c1c1325e620785b615bab6c511d5b6f3))
+* merge rotate plugin to transform plugin ([0bfe649](https://github.com/qq15725/mce/commit/0bfe649d1c5a45b646745d1e0f62616279d29cc3))
+* opz ruler ([9cbf106](https://github.com/qq15725/mce/commit/9cbf1067d3d0c9a2ec19a8a2762e267878a65417))
+* opz ruler ([b4a2bd0](https://github.com/qq15725/mce/commit/b4a2bd01415a821132f594f5af7461d147bcd28e))
+* rename DrawingTool to Tool ([ce7e816](https://github.com/qq15725/mce/commit/ce7e816794904c802b756ddf75eddf222d54afae))
+* rename TransformControls to Transform ([0b6de31](https://github.com/qq15725/mce/commit/0b6de31f4da311bbdd85465950c9a0cebd7d1684))
+* smart selection ([18f780a](https://github.com/qq15725/mce/commit/18f780a07870c649afe4987adab87eb803102526))
+* smart selection ([e3de507](https://github.com/qq15725/mce/commit/e3de507c9a59dcefc221fd99dc14951636cf50bb))
+* smart selection ([0f2b48b](https://github.com/qq15725/mce/commit/0f2b48bd10ffc04121ccb51df606f489c89ac63f))
+* snap ([49921df](https://github.com/qq15725/mce/commit/49921df080572291018862cc3a4111b6e58691c6))
+* typography ([cefb165](https://github.com/qq15725/mce/commit/cefb16504edd1cf038417997367f2fcadb5e20b1))
+* typography config ([992d233](https://github.com/qq15725/mce/commit/992d233c6f2ce9c2f8fe7364c9d9037481ec275c))
+* typography defaultFont ([7ab3dd8](https://github.com/qq15725/mce/commit/7ab3dd87afe18fbb04c83cd3fdd609c1059e70df))
+* typography plugin ([8a1739e](https://github.com/qq15725/mce/commit/8a1739e4dacff20ecfb29a9ae3ed246f07ef21ae))
+* update config system ([f6d2dd7](https://github.com/qq15725/mce/commit/f6d2dd7eb58f2817bd216da02cb30145d7437854))
+* view ([63bb875](https://github.com/qq15725/mce/commit/63bb875faf1fd3b15d159f41752239814978c133))
+* view plugin ([baf8a87](https://github.com/qq15725/mce/commit/baf8a87e07283447e584bd17e9d6e1084b39d5db))
+
+
+
 ## [0.16.7](https://github.com/qq15725/mce/compare/v0.16.6...v0.16.7) (2026-02-06)
 
 
