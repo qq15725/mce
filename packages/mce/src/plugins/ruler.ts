@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed, h, ref } from 'vue'
 import Rulers from '../components/Rulers.vue'
 import { definePlugin } from '../plugin'
 
@@ -24,8 +24,22 @@ declare global {
 export default definePlugin((editor) => {
   const {
     registerConfig,
-    componentRefs,
+    registerSnapper,
   } = editor
+
+  const refLines = ref({
+    x: [] as number[],
+    y: [] as number[],
+  })
+
+  registerSnapper('ruler', {
+    get: () => {
+      return {
+        xLines: refLines.value.x,
+        yLines: refLines.value.y,
+      }
+    },
+  })
 
   const config = registerConfig('ui.ruler', {
     default: {
@@ -35,21 +49,22 @@ export default definePlugin((editor) => {
     },
   })
 
-  const name = 'mce:ruler'
-
   function clearRulerLines() {
-    componentRefs[name].forEach((com: any) => com?.clean())
+    refLines.value.x.length = 0
+    refLines.value.y.length = 0
   }
 
   return {
-    name,
+    name: 'mce:ruler',
     commands: [
       { command: 'clearRulerLines', handle: clearRulerLines },
     ],
     components: [
       {
         type: 'overlay',
-        component: Rulers,
+        component: () => h(Rulers as any, {
+          refLines: refLines.value,
+        }),
         order: 'after',
         visible: computed({
           get: () => config.value.visible,

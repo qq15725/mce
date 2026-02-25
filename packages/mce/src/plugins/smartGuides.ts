@@ -5,14 +5,6 @@ import SmartGuides from '../components/SmartGuides.vue'
 import { definePlugin } from '../plugin'
 import { BSTree } from '../utils/BSTree'
 
-declare global {
-  namespace Mce {
-    interface Commands {
-      snap: (axis: 'x' | 'y', position: number) => number
-    }
-  }
-}
-
 type LineType = 'vt' | 'vm' | 'vb' | 'hl' | 'hm' | 'hr'
 
 interface Line {
@@ -61,6 +53,7 @@ export default definePlugin((editor) => {
     root,
     camera,
     viewportAabb,
+    registerSnapper,
   } = editor
 
   const snapThreshold = computed(() => Math.max(1, 5 / camera.value.zoom.x))
@@ -462,32 +455,18 @@ export default definePlugin((editor) => {
     return { x, y }
   }
 
-  function snap(axis: 'x' | 'y', position: number): number {
-    const points = getSnapPoints()
-    let closest: undefined | number
-    let minDist = Infinity
-
-    for (const pt of points[axis]) {
-      const dist = pt - position
-      const absDist = Math.abs(dist)
-      if (absDist < minDist) {
-        minDist = absDist
-        closest = pt
+  registerSnapper('smartGuides', {
+    get: () => {
+      const lines = getSnapPoints()
+      return {
+        xLines: lines.x,
+        yLines: lines.y,
       }
-    }
-
-    if (minDist < snapThreshold.value) {
-      position = closest ?? position
-    }
-
-    return position
-  }
+    },
+  })
 
   return {
     name: 'mce:smartGuides',
-    commands: [
-      { command: 'snap', handle: snap },
-    ],
     events: {
       selectionTransform: ({ handle }) => {
         if (

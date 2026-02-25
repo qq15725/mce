@@ -86,6 +86,7 @@ export default definePlugin((editor) => {
     resizeElement,
     state,
     registerConfig,
+    snap,
   } = editor
 
   registerConfig<Mce.TransformConfig>('interaction.transform', {
@@ -207,8 +208,7 @@ export default definePlugin((editor) => {
       }
 
       if (!transform.rotate) {
-        transform.left = exec('snap', 'x', transform.left)
-        transform.top = exec('snap', 'y', transform.top)
+        snap(transform)
       }
     }
 

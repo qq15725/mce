@@ -65,7 +65,7 @@ const colors = reactive({
 })
 const borderColor = computed(() => props.borderColor ?? colors.border)
 const textColor = computed(() => props.textColor ?? colors.text)
-const lineColor = computed(() => props.lineColor ?? 'rgb(var(--mce-theme-primary))')
+const lineColor = computed(() => props.lineColor ?? 'rgb(var(--mce-theme-secondary))')
 
 function drawSelected() {
   if (!props.selected?.width || !props.selected?.height)
@@ -398,15 +398,14 @@ defineExpose({
   height: 100%;
   --text-color: rgba(var(--mce-theme-on-background), var(--mce-low-emphasis-opacity));
   --border-color: rgba(var(--mce-border-color), var(--mce-border-opacity));
+  cursor: pointer;
 
   &--vertical {
     width: var(--size);
-    cursor: ew-resize;
   }
 
   &--horizontal {
     height: var(--size);
-    cursor: ns-resize;
   }
 
   &__canvas {

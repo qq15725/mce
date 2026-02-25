@@ -21,6 +21,7 @@ import _4_0_node from './4.0.node'
 import _4_2_frame from './4.2.frame'
 import _4_3_element from './4.3.element'
 import _http from './http'
+import _snap from './snap'
 import _snapshot from './snapshot'
 import _tool from './tool'
 
@@ -44,6 +45,7 @@ export const mixins = [
   _4_2_frame,
   _4_3_element,
   _http,
+  _snap,
   _snapshot,
   _tool,
 ]

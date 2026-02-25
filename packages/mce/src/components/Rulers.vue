@@ -1,7 +1,13 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import { useEditor } from '../composables/editor'
 import Ruler from './shared/Ruler.vue'
+
+const refLines = defineModel<{
+  x: number[]
+  y: number[]
+}>('refLines', {
+  required: true,
+})
 
 const {
   getConfigRef,
@@ -10,22 +16,12 @@ const {
 } = useEditor()
 
 const config = getConfigRef('ui.ruler')
-const hLines = ref<number[]>([])
-const vLines = ref<number[]>([])
-function clean() {
-  hLines.value = []
-  vLines.value = []
-}
-
-defineExpose({
-  clean,
-})
 </script>
 
 <template>
   <div class="mce-rulers">
     <Ruler
-      v-model="hLines"
+      v-model="refLines.x"
       refline
       :zoom="camera.zoom.x"
       :position="camera.position.x"
@@ -37,7 +33,7 @@ defineExpose({
     />
 
     <Ruler
-      v-model="vLines"
+      v-model="refLines.y"
       refline
       :zoom="camera.zoom.y"
       :position="camera.position.y"

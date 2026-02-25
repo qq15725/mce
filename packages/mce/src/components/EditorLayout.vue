@@ -608,6 +608,8 @@ const slotProps = {
 .mce-editor {
   --mce-theme-primary: 69, 151, 248;
   --mce-theme-on-primary: 255, 255, 255;
+  --mce-theme-secondary: 244, 36, 253;
+  --mce-theme-on-secondary: 255, 255, 255;
   --mce-theme-surface: 255, 255, 255;
   --mce-theme-on-surface: 30, 30, 30;
   --mce-theme-surface-variant: 35, 37, 41;
