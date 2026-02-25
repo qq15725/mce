@@ -58,6 +58,7 @@ export default definePlugin((editor, options) => {
 
   const setDoc: Mce.Commands['setDoc'] = async (source) => {
     fonts.clear()
+    await waitUntilFontLoad()
     const oldRoot = root.value
     const _root = new Doc(source, config.value.db.local)
     // TODO gc
@@ -92,7 +93,6 @@ export default definePlugin((editor, options) => {
     docLoading.value = true
     emit('docLoading', source)
     try {
-      await waitUntilFontLoad()
       const _doc = await setDoc(await load(source))
       emit('docLoaded', source, _doc)
       docLoading.value = false
