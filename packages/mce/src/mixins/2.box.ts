@@ -193,8 +193,8 @@ export default defineMixin((editor) => {
     else if (isElement(node)) {
       // for vue reactive
       const style = node.style
-      noop([style.left, style.top, style.width, style.height, style.rotate])
-      aabb = node.globalAabb
+      noop(style.left, style.top, style.width, style.height, style.rotate)
+      aabb = node.globalAabb.clone()
     }
     else {
       aabb = new Aabb2D()
@@ -256,12 +256,7 @@ export default defineMixin((editor) => {
     const _camera = camera.value
     const { position, zoom } = _camera
     // for vue reactive
-    noop(
-      position.x,
-      position.y,
-      zoom.x,
-      zoom.y,
-    )
+    noop(position.x, position.y, zoom.x, zoom.y)
     const { left, top, right, bottom } = screenControlsOffset.value
     const { width, height } = drawboardAabb.value
     const p1 = _camera.toGlobal({ x: left, y: top })
