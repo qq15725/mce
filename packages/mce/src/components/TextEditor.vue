@@ -44,6 +44,7 @@ function onUpdate(): void {
   if (!element.shape.isValid()) {
     exec('textToFit', element)
   }
+  ;(element as any)._textContent = element.text.getStringContent()
 }
 
 function onSubmit(): void {

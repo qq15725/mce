@@ -434,7 +434,9 @@ export class YDoc extends Observable {
           }
           this._proxyProps((node as any)[key], yMap)
         })
-        ;(node as any)._text = markRaw((node as any)._text)
+        const base = markRaw((node as any).text.base)
+        base.setPropertyAccessor((node as any).text)
+        ;(node as any).text.base = base
         node.text.update()
         node.requestRender()
       }

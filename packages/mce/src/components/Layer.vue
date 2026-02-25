@@ -91,7 +91,7 @@ const thumbnailIcon = computed(() => {
 const thumbnailName = computed(() => {
   const node = props.node
   let value = node.name
-  if (!value || value.startsWith('Element2D:')) {
+  if (!value || value[0] === '@') {
     if (inEditorIs(node, 'Frame')) {
       return t('frame')
     }
@@ -109,7 +109,10 @@ const thumbnailName = computed(() => {
         value = t('image')
       }
       else if (node.text.isValid()) {
-        value = node.text.textContent
+        value = (node as any)._textContent || node.text.getStringContent()
+      }
+      else {
+        value = t('shape')
       }
     }
   }

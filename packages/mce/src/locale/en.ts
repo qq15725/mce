@@ -21,6 +21,7 @@ export default {
   'slice': 'Slice',
   'group': 'Group',
   'text': 'Text',
+  'shape': 'Shape',
   'doubleClickEditText': 'DoubleClickEditText',
   'rectangle': 'Rectangle',
   'line': 'Line',

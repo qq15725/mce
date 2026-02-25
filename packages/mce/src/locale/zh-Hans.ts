@@ -21,6 +21,7 @@ export default {
   'slice': '切片',
   'group': '组合',
   'text': '文字',
+  'shape': '形状',
   'doubleClickEditText': '双击编辑文字',
   'rectangle': '矩形',
   'line': '直线',
