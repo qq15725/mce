@@ -48,7 +48,6 @@ export default definePlugin((editor) => {
         assets,
         on,
         off,
-        exec,
         renderEngine,
         timeline,
         getTimeRange,
