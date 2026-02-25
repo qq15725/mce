@@ -527,7 +527,7 @@ function onSpacingDrag(event: PointerEvent) {
         v-bind="transformProps"
         :handles="['resize-l', 'resize-r', 'resize-t', 'resize-b']"
         class="mce-smart-selection__transform"
-        color="#FF24BD"
+        color="rgb(var(--mce-theme-secondary))"
         :scale="[camera.zoom.x, camera.zoom.y]"
         :offset="[-camera.position.x, -camera.position.y]"
       />
@@ -570,7 +570,7 @@ function onSpacingDrag(event: PointerEvent) {
       justify-content: center;
 
       &--active #{$root}__ring {
-        background: #FF24BD;
+        background: rgb(var(--mce-theme-primary));
       }
     }
 
@@ -583,12 +583,12 @@ function onSpacingDrag(event: PointerEvent) {
       width: 1px;
       height: 1px;
       border-radius: 100%;
-      border: 1px solid #FF24BD;
-      outline: 1px solid #FFFFFF;
+      border: 1px solid rgb(var(--mce-theme-secondary));
+      outline: 1px solid rgb(var(--mce-theme-on-secondary));
       pointer-events: auto;
 
       &:hover {
-        background: #FF24BD;
+        background: rgb(var(--mce-theme-secondary));
       }
     }
 
@@ -614,7 +614,7 @@ function onSpacingDrag(event: PointerEvent) {
           display: block;
           width: 100%;
           height: 100%;
-          background-color: #FF24BD;
+          background-color: rgb(var(--mce-theme-secondary));
         }
       }
     }
@@ -661,7 +661,7 @@ function onSpacingDrag(event: PointerEvent) {
     &--spacing {
       #{$root}__spacing {
         visibility: visible;
-        background-color: #FF24BD;
+        background-color: rgb(var(--mce-theme-secondary));
         opacity: .3;
       }
 

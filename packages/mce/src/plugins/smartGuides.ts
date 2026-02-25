@@ -404,37 +404,18 @@ export default definePlugin((editor) => {
     })
   })
 
-  function getSnapPoints(resizing = false): { x: number[], y: number[] } {
+  function getSnapPoints(): { x: number[], y: number[] } {
     const x: number[] = []
     const y: number[] = []
     for (const linePair of linePairs.value) {
-      const { target, source, type } = linePair
+      const { target, type } = linePair
       const boxTarget = target.box!
-      const boxSource = source.box!
       if (type === 'alignment') {
-        const width = boxSource.hr.pos - boxSource.hl.pos
-        const height = boxSource.vb.pos - boxSource.vt.pos
-        let value = boxTarget[target.type].pos
+        const value = boxTarget[target.type].pos
         if (['vt', 'vm', 'vb'].includes(target.type)) {
-          if (!resizing) {
-            if (source.type === 'vm') {
-              value -= height / 2
-            }
-            else if (source.type === 'vb') {
-              value -= height
-            }
-          }
           y.push(value)
         }
         else {
-          if (!resizing) {
-            if (source.type === 'hm') {
-              value -= width / 2
-            }
-            else if (source.type === 'hr') {
-              value -= width
-            }
-          }
           x.push(value)
         }
       }
