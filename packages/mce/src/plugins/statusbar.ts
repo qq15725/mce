@@ -21,7 +21,7 @@ export default definePlugin((editor) => {
 
   const config = registerConfig<Mce.StatusbarConfig>('ui.statusbar', {
     default: {
-      visible: false,
+      visible: true,
     },
   })
 

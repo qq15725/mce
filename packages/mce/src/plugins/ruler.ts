@@ -43,7 +43,7 @@ export default definePlugin((editor) => {
 
   const config = registerConfig('ui.ruler', {
     default: {
-      visible: false,
+      visible: true,
       adsorbed: false,
       locked: false,
     },

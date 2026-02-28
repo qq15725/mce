@@ -38,9 +38,9 @@ const editor = new Editor({
     bigesj({ font: true }),
     gaoding(),
     mp4(),
-    openxml(),
-    pdf(),
     svg(),
+    pdf(),
+    openxml(),
   ],
   gifWorkerUrl,
 })

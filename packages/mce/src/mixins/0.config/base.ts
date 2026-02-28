@@ -94,14 +94,14 @@ export default defineMixin((editor, options) => {
 
   const checkerboardConfig = registerConfig<Mce.CheckerboardConfig>('canvas.checkerboard', {
     default: {
-      enabled: false,
+      enabled: true,
       style: 'grid',
     },
   })
 
   const pixelGridConfig = registerConfig<Mce.PixelGridConfig>('canvas.pixelGrid', {
     default: {
-      enabled: false,
+      enabled: true,
     },
   })
 
@@ -119,7 +119,7 @@ export default defineMixin((editor, options) => {
 
   const cameraConfig = registerConfig<Mce.CameraConfig>('viewport.camera', {
     default: {
-      enabled: false,
+      enabled: true,
     },
   })
 

@@ -21,7 +21,7 @@ export default definePlugin((editor) => {
 
   const config = registerConfig<Mce.ToolbeltConfig>('ui.toolbelt', {
     default: {
-      visible: false,
+      visible: true,
     },
   })
 

@@ -48,7 +48,7 @@ export default definePlugin((editor) => {
 
   const config = registerConfig<Mce.ScrollbarConfig>('ui.scrollbar', {
     default: {
-      visible: false,
+      visible: true,
     },
   })
 
