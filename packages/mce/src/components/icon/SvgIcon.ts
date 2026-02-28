@@ -10,7 +10,7 @@ export const SvgIcon = defineComponent({
       return createVNode(props.tag as any, mergeProps(attrs, { style: null }), {
         default: () => [
           createElementVNode('svg', {
-            'class': 'mce-icon__svg',
+            'class': 'm-icon__svg',
             'xmlns': 'http://www.w3.org/2000/svg',
             'viewBox': '0 0 24 24',
             'role': 'img',

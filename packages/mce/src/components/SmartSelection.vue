@@ -496,11 +496,11 @@ function onSpacingDrag(event: PointerEvent) {
 <template>
   <div
     v-if="info"
-    class="mce-smart-selection"
+    class="m-smart-selection"
     :class="{
-      'mce-smart-selection--hover': !state && isPointerInSelection,
-      [`mce-smart-selection--${info.direction}`]: true,
-      [`mce-smart-selection--${dragState}`]: dragState !== undefined,
+      'm-smart-selection--hover': !state && isPointerInSelection,
+      [`m-smart-selection--${info.direction}`]: true,
+      [`m-smart-selection--${dragState}`]: dragState !== undefined,
     }"
   >
     <template
@@ -509,14 +509,14 @@ function onSpacingDrag(event: PointerEvent) {
       <div
         v-for="(item, index) in boxes"
         :key="index"
-        class="mce-smart-selection__node"
+        class="m-smart-selection__node"
         :class="{
-          'mce-smart-selection__node--active': item.el.equal(currentElement),
+          'm-smart-selection__node--active': item.el.equal(currentElement),
         }"
         :style="item.style"
       >
         <div
-          class="mce-smart-selection__ring"
+          class="m-smart-selection__ring"
           @pointerdown="onRingDrag($event, item)"
         />
       </div>
@@ -526,8 +526,8 @@ function onSpacingDrag(event: PointerEvent) {
         :model-value="currentTransform"
         v-bind="transformProps"
         :handles="['resize-l', 'resize-r', 'resize-t', 'resize-b']"
-        class="mce-smart-selection__transform"
-        color="rgb(var(--mce-theme-secondary))"
+        class="m-smart-selection__transform"
+        color="rgb(var(--m-theme-secondary))"
         :scale="[camera.zoom.x, camera.zoom.y]"
         :offset="[-camera.position.x, -camera.position.y]"
       />
@@ -536,25 +536,25 @@ function onSpacingDrag(event: PointerEvent) {
     <div
       v-for="(item, index) in spacingHandles"
       :key="index"
-      class="mce-smart-selection__spacing"
+      class="m-smart-selection__spacing"
       :style="item.style"
     >
       <div
-        class="mce-smart-selection__spacing-line"
+        class="m-smart-selection__spacing-line"
         @pointerdown="onSpacingDrag($event)"
       />
     </div>
 
     <div
       v-if="_globalAabb"
-      class="mce-smart-selection__ghost"
+      class="m-smart-selection__ghost"
       :style="_globalAabb.toCssStyle()"
     />
   </div>
 </template>
 
 <style lang="scss">
-  .mce-smart-selection {
+  .m-smart-selection {
     $root: &;
     position: absolute;
     overflow: hidden;
@@ -570,25 +570,25 @@ function onSpacingDrag(event: PointerEvent) {
       justify-content: center;
 
       &--active #{$root}__ring {
-        background: rgb(var(--mce-theme-primary));
+        background: rgb(var(--m-theme-primary));
       }
     }
 
     &__ghost {
       position: absolute;
-      border: 1px solid rgb(var(--mce-theme-primary));
+      border: 1px solid rgb(var(--m-theme-primary));
     }
 
     &__ring {
       width: 1px;
       height: 1px;
       border-radius: 100%;
-      border: 1px solid rgb(var(--mce-theme-secondary));
-      outline: 1px solid rgb(var(--mce-theme-on-secondary));
+      border: 1px solid rgb(var(--m-theme-secondary));
+      outline: 1px solid rgb(var(--m-theme-on-secondary));
       pointer-events: auto;
 
       &:hover {
-        background: rgb(var(--mce-theme-secondary));
+        background: rgb(var(--m-theme-secondary));
       }
     }
 
@@ -614,7 +614,7 @@ function onSpacingDrag(event: PointerEvent) {
           display: block;
           width: 100%;
           height: 100%;
-          background-color: rgb(var(--mce-theme-secondary));
+          background-color: rgb(var(--m-theme-secondary));
         }
       }
     }
@@ -661,7 +661,7 @@ function onSpacingDrag(event: PointerEvent) {
     &--spacing {
       #{$root}__spacing {
         visibility: visible;
-        background-color: rgb(var(--mce-theme-secondary));
+        background-color: rgb(var(--m-theme-secondary));
         opacity: .3;
       }
 

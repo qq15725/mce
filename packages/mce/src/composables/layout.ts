@@ -67,8 +67,8 @@ interface LayoutProvide {
   rootZIndex: Ref<number>
 }
 
-export const MceLayoutKey: InjectionKey<LayoutProvide> = Symbol.for('mce:layout')
-export const MceLayoutItemKey: InjectionKey<{ id: string }> = Symbol.for('mce:layout-item')
+export const LayoutKey: InjectionKey<LayoutProvide> = Symbol.for('layout')
+export const LayoutItemKey: InjectionKey<{ id: string }> = Symbol.for('layout-item')
 
 const ROOT_ZINDEX = 500
 
@@ -95,7 +95,7 @@ export function makeLayoutItemProps() {
 }
 
 export function useLayout() {
-  const layout = inject(MceLayoutKey)
+  const layout = inject(LayoutKey)
 
   if (!layout)
     throw new Error('[mce] Could not find injected layout')
@@ -116,7 +116,7 @@ export function useLayoutItem(options: {
   active: Ref<boolean>
   disableTransitions?: Ref<boolean>
 }) {
-  const layout = inject(MceLayoutKey)
+  const layout = inject(LayoutKey)
 
   if (!layout)
     throw new Error('[mce] Could not find injected layout')
@@ -125,7 +125,7 @@ export function useLayoutItem(options: {
 
   const vm = getCurrentInstance()!
 
-  provide(MceLayoutItemKey, { id })
+  provide(LayoutItemKey, { id })
 
   const isKeptAlive = shallowRef(false)
   onDeactivated(() => isKeptAlive.value = true)
@@ -173,7 +173,7 @@ function generateLayers(layout: string[], positions: Map<string, Ref<Position>>,
 }
 
 export function createLayout(props: { overlaps?: string[], fullHeight?: boolean }) {
-  const parentLayout = inject(MceLayoutKey, null)
+  const parentLayout = inject(LayoutKey, null)
   const rootZIndex = computed(() => parentLayout ? parentLayout.rootZIndex.value - 100 : ROOT_ZINDEX)
   const registered = ref<string[]>([])
   const positions = reactive(new Map<string, Ref<Position>>())
@@ -226,10 +226,10 @@ export function createLayout(props: { overlaps?: string[], fullHeight?: boolean 
 
   const mainStyles = toRef(() => {
     return {
-      '--mce-layout-left': convertToUnit(mainRect.value.left),
-      '--mce-layout-right': convertToUnit(mainRect.value.right),
-      '--mce-layout-top': convertToUnit(mainRect.value.top),
-      '--mce-layout-bottom': convertToUnit(mainRect.value.bottom),
+      '--m-layout-left': convertToUnit(mainRect.value.left),
+      '--m-layout-right': convertToUnit(mainRect.value.right),
+      '--m-layout-top': convertToUnit(mainRect.value.top),
+      '--m-layout-bottom': convertToUnit(mainRect.value.bottom),
       ...(transitionsEnabled.value ? undefined : { transition: 'none' }),
     } satisfies CSSProperties
   })
@@ -260,7 +260,7 @@ export function createLayout(props: { overlaps?: string[], fullHeight?: boolean 
     isMounted.value = true
   })
 
-  provide(MceLayoutKey, {
+  provide(LayoutKey, {
     register: (
       vm: ComponentInternalInstance,
       {
@@ -279,7 +279,7 @@ export function createLayout(props: { overlaps?: string[], fullHeight?: boolean 
       activeItems.set(id, active)
       disableTransitions && disabledTransitions.set(id, disableTransitions)
 
-      const instances = findChildrenWithProvide(MceLayoutItemKey, rootVm?.vnode)
+      const instances = findChildrenWithProvide(LayoutItemKey, rootVm?.vnode)
       const instanceIndex = instances.indexOf(vm)
 
       if (instanceIndex > -1)
@@ -359,8 +359,8 @@ export function createLayout(props: { overlaps?: string[], fullHeight?: boolean 
   })
 
   const layoutClasses = toRef(() => [
-    'mce-layout',
-    { 'mce-layout--full-height': props.fullHeight },
+    'm-layout',
+    { 'm-layout--full-height': props.fullHeight },
   ])
 
   const layoutStyles = toRef(() => ({

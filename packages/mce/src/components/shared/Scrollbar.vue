@@ -77,10 +77,10 @@ function onPointerdown(event: MouseEvent) {
 <template>
   <div
     v-resize-observer="resize"
-    class="mce-scrollbar"
+    class="m-scrollbar"
     :class="{
-      'mce-scrollbar--vertical': props.vertical,
-      'mce-scrollbar--horizontal': !props.vertical,
+      'm-scrollbar--vertical': props.vertical,
+      'm-scrollbar--horizontal': !props.vertical,
     }"
     :style="{
       [props.vertical ? 'height' : 'width']: `calc(100% - ${props.size + props.offset}px)`,
@@ -90,13 +90,13 @@ function onPointerdown(event: MouseEvent) {
   >
     <div
       ref="trackTplRef"
-      class="mce-scrollbar__track"
+      class="m-scrollbar__track"
     >
       <div
         ref="thumbTplRef"
-        class="mce-scrollbar__thumb"
+        class="m-scrollbar__thumb"
         :class="{
-          'mce-scrollbar__thumb--active': isActive,
+          'm-scrollbar__thumb--active': isActive,
         }"
         :style="{
           top: thumbTop,
@@ -111,7 +111,7 @@ function onPointerdown(event: MouseEvent) {
 </template>
 
 <style lang="scss">
-.mce-scrollbar {
+.m-scrollbar {
   position: absolute;
   display: flex;
   pointer-events: auto !important;
@@ -132,12 +132,12 @@ function onPointerdown(event: MouseEvent) {
   &__thumb {
     position: absolute;
     border-radius: calc(infinity * 1px);
-    background-color: rgba(var(--mce-theme-on-background), var(--mce-low-emphasis-opacity));
-    backdrop-filter: blur(var(--mce-blur));
+    background-color: rgba(var(--m-theme-on-background), var(--m-low-emphasis-opacity));
+    backdrop-filter: blur(var(--m-blur));
 
     &--active,
     &:hover {
-      background-color: rgba(var(--mce-theme-on-background), var(--mce-medium-emphasis-opacity));
+      background-color: rgba(var(--m-theme-on-background), var(--m-medium-emphasis-opacity));
     }
   }
 }

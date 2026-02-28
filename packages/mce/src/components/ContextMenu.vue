@@ -95,7 +95,7 @@ defineExpose({
   <Menu
     ref="menuTplRef"
     v-model="isActive"
-    class="mce-context-menu"
+    class="m-context-menu"
     :offset="10"
     :target="target"
     location="right-start"
@@ -119,14 +119,14 @@ defineExpose({
 </template>
 
 <style lang="scss">
-.mce-context-menu {
+.m-context-menu {
   pointer-events: auto;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
 
-  .mce-overlay-content {
+  .m-overlay-content {
     max-height: var(--max-height);
   }
 }

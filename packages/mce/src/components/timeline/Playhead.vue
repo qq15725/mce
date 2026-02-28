@@ -4,21 +4,21 @@
 
 <template>
   <div
-    class="mce-payhead"
+    class="m-payhead"
   >
-    <header class="mce-payhead__header" />
-    <main class="mce-payhead__main" />
+    <header class="m-payhead__header" />
+    <main class="m-payhead__main" />
   </div>
 </template>
 
 <style lang="scss">
-  .mce-payhead {
+  .m-payhead {
     bottom: 0;
     left: -5px;
     position: absolute;
     top: 0;
     width: 10px;
-    color: rgb(var(--mce-theme-on-surface));
+    color: rgb(var(--m-theme-on-surface));
     cursor: col-resize;
 
     &__header {

@@ -88,22 +88,22 @@ defineExpose({
 <template>
   <div
     v-show="elementSelection[0] && state === 'typing'"
-    class="mce-text-editor"
+    class="m-text-editor"
     :style="{
       ...mainStyleWithScale,
     }"
   >
     <div
-      class="mce-text-editor__wrapper"
+      class="m-text-editor__wrapper"
       :style="{
         ...textEditorStyle,
       }"
     >
       <text-editor
         ref="textEditor"
-        class="mce-text-editor__editor"
+        class="m-text-editor__editor"
         :style="{
-          '--color': 'var(--mce-theme-primary)',
+          '--color': 'var(--m-theme-primary)',
         }"
         data-pointerdown_to_drawboard
         @selected="onUpdateTextSelection"
@@ -115,7 +115,7 @@ defineExpose({
 </template>
 
 <style lang="scss">
-.mce-text-editor {
+.m-text-editor {
   position: absolute;
   width: 0;
   height: 0;

@@ -65,7 +65,7 @@ const colors = reactive({
 })
 const borderColor = computed(() => props.borderColor ?? colors.border)
 const textColor = computed(() => props.textColor ?? colors.text)
-const lineColor = computed(() => props.lineColor ?? 'rgb(var(--mce-theme-secondary))')
+const lineColor = computed(() => props.lineColor ?? 'rgb(var(--m-theme-secondary))')
 
 function drawSelected() {
   if (!props.selected?.width || !props.selected?.height)
@@ -337,9 +337,9 @@ defineExpose({
 <template>
   <div
     v-resize-observer="resize"
-    class="mce-ruler"
+    class="m-ruler"
     :class="[
-      `mce-ruler--${props.vertical ? 'vertical' : 'horizontal'}`,
+      `m-ruler--${props.vertical ? 'vertical' : 'horizontal'}`,
     ]"
     :style="{ '--size': `${props.size}px` }"
     v-bind="attrs"
@@ -349,7 +349,7 @@ defineExpose({
   >
     <canvas
       ref="canvasTpl"
-      class="mce-ruler__canvas"
+      class="m-ruler__canvas"
       :width="props.size"
       :height="props.size"
     />
@@ -357,12 +357,12 @@ defineExpose({
 
   <div
     v-for="(item, index) in lines" :key="index"
-    class="mce-ruler-refline"
+    class="m-ruler-refline"
     :class="{
-      'mce-ruler-refline--vertical': props.vertical,
-      'mce-ruler-refline--horizontal': !props.vertical,
-      'mce-ruler-refline--temp': item === tempLine,
-      'mce-ruler-refline--locked': props.locked,
+      'm-ruler-refline--vertical': props.vertical,
+      'm-ruler-refline--horizontal': !props.vertical,
+      'm-ruler-refline--temp': item === tempLine,
+      'm-ruler-refline--locked': props.locked,
     }"
     :style="{
       [props.vertical ? 'height' : 'width']: undefined,
@@ -390,14 +390,14 @@ defineExpose({
 </template>
 
 <style lang="scss">
-.mce-ruler {
+.m-ruler {
   position: absolute;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
-  --text-color: rgba(var(--mce-theme-on-background), var(--mce-low-emphasis-opacity));
-  --border-color: rgba(var(--mce-border-color), var(--mce-border-opacity));
+  --text-color: rgba(var(--m-theme-on-background), var(--m-low-emphasis-opacity));
+  --border-color: rgba(var(--m-border-color), var(--m-border-opacity));
   cursor: pointer;
 
   &--vertical {
@@ -411,12 +411,12 @@ defineExpose({
   &__canvas {
     display: block;
     pointer-events: auto;
-    background-color: rgb(var(--mce-theme-surface));
-    backdrop-filter: blur(var(--mce-blur));
+    background-color: rgb(var(--m-theme-surface));
+    backdrop-filter: blur(var(--m-blur));
   }
 }
 
-.mce-ruler-refline {
+.m-ruler-refline {
   $root: &;
   position: absolute;
   pointer-events: auto !important;
@@ -457,7 +457,7 @@ defineExpose({
   }
 
   &--temp {
-    opacity: var(--mce-low-emphasis-opacity);
+    opacity: var(--m-low-emphasis-opacity);
     pointer-events: none !important;
   }
 

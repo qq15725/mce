@@ -13,13 +13,13 @@ const {
 <template>
   <div
     v-if="state === 'transforming' || state === 'moving'"
-    class="mce-smart-guides"
+    class="m-smart-guides"
   >
     <template
       v-for="(item, key) in snapLines" :key="key"
     >
       <div
-        :class="item.class.map((v: string) => `mce-smart-guides__${v}`)"
+        :class="item.class.map((v: string) => `m-smart-guides__${v}`)"
         :style="{
           left: `${item.style.left}px`,
           top: `${item.style.top}px`,
@@ -32,7 +32,7 @@ const {
 </template>
 
 <style lang="scss">
-  .mce-smart-guides {
+  .m-smart-guides {
     position: absolute;
     overflow: hidden;
     left: 0;
@@ -42,7 +42,7 @@ const {
 
     &__alignment {
       position: absolute;
-      background-color: rgb(var(--mce-theme-secondary));
+      background-color: rgb(var(--m-theme-secondary));
       height: 1px;
       width: 1px;
     }
@@ -52,11 +52,11 @@ const {
       display: flex;
       align-items: center;
       justify-content: center;
-      background-color: rgba(var(--mce-theme-secondary), .2);
+      background-color: rgba(var(--m-theme-secondary), .2);
 
       &:before {
         content: '';
-        background: rgb(var(--mce-theme-primary));
+        background: rgb(var(--m-theme-primary));
         height: 1px;
         width: 100%;
       }
@@ -66,8 +66,8 @@ const {
         content: '';
         height: 5px;
         width: 100%;
-        border-left: 1px solid rgb(var(--mce-theme-primary));
-        border-right: 1px solid rgb(var(--mce-theme-primary));
+        border-left: 1px solid rgb(var(--m-theme-primary));
+        border-right: 1px solid rgb(var(--m-theme-primary));
       }
 
       &--vertical:before {
@@ -80,8 +80,8 @@ const {
         width: 5px;
         border-left: none;
         border-right: none;
-        border-top: 1px solid rgb(var(--mce-theme-primary));
-        border-bottom: 1px solid rgb(var(--mce-theme-primary));
+        border-top: 1px solid rgb(var(--m-theme-primary));
+        border-bottom: 1px solid rgb(var(--m-theme-primary));
       }
     }
   }

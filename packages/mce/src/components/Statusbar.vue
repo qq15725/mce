@@ -15,18 +15,18 @@ const {
 </script>
 
 <template>
-  <div class="mce-statusbar">
-    <div class="mce-statusbar__main">
+  <div class="m-statusbar">
+    <div class="m-statusbar__main">
       <template
         v-if="state === 'typing'"
       >
-        <div class="mce-statusbar__item">
-          <span class="mce-statusbar__kbd">{{ getKbd('Command') }}</span>
-          <span class="mce-statusbar__kbd">{{ getKbd('Enter') }}</span>
+        <div class="m-statusbar__item">
+          <span class="m-statusbar__kbd">{{ getKbd('Command') }}</span>
+          <span class="m-statusbar__kbd">{{ getKbd('Enter') }}</span>
         </div>
         <span>/</span>
-        <div class="mce-statusbar__item">
-          <span class="mce-statusbar__kbd">{{ getKbd('Escape') }}</span>
+        <div class="m-statusbar__item">
+          <span class="m-statusbar__kbd">{{ getKbd('Escape') }}</span>
           <span>{{ t('commitChanges') }}</span>
         </div>
       </template>
@@ -34,20 +34,20 @@ const {
       <template
         v-else-if="state === 'transforming' || state === 'moving'"
       >
-        <div class="mce-statusbar__item">
+        <div class="m-statusbar__item">
           <Icon icon="$mouseRightClick" />
         </div>
         <span>&nbsp;/&nbsp;</span>
-        <div class="mce-statusbar__item">
-          <span class="mce-statusbar__kbd">{{ getKbd('Escape') }}</span>
+        <div class="m-statusbar__item">
+          <span class="m-statusbar__kbd">{{ getKbd('Escape') }}</span>
           <span>{{ t('cancel') }}</span>
         </div>
 
         <template v-if="state === 'moving'">
-          <div class="mce-statusbar__divider" />
+          <div class="m-statusbar__divider" />
 
-          <div class="mce-statusbar__item">
-            <span class="mce-statusbar__kbd">{{ getKbd('Shift') }}</span>
+          <div class="m-statusbar__item">
+            <span class="m-statusbar__kbd">{{ getKbd('Shift') }}</span>
             <span>{{ t('constrainMovement') }}</span>
           </div>
         </template>
@@ -58,35 +58,35 @@ const {
       <template
         v-else
       >
-        <div class="mce-statusbar__item">
+        <div class="m-statusbar__item">
           <Icon icon="$mouseLeftClick" />
           <span>{{ t('selectObject') }}</span>
         </div>
 
         <span>&nbsp;+&nbsp;</span>
 
-        <div class="mce-statusbar__item">
-          <span class="mce-statusbar__kbd">{{ getKbd('Shift') }}</span>
+        <div class="m-statusbar__item">
+          <span class="m-statusbar__kbd">{{ getKbd('Shift') }}</span>
           <span>{{ t('extend') }}</span>
         </div>
 
-        <div class="mce-statusbar__divider" />
+        <div class="m-statusbar__divider" />
 
-        <div class="mce-statusbar__item">
+        <div class="m-statusbar__item">
           <Icon icon="$mouseLeftClick" />
           <span>{{ t('selectArea') }}</span>
         </div>
 
         <span>&nbsp;+&nbsp;</span>
 
-        <div class="mce-statusbar__item">
-          <span class="mce-statusbar__kbd">{{ getKbd('Shift') }}</span>
+        <div class="m-statusbar__item">
+          <span class="m-statusbar__kbd">{{ getKbd('Shift') }}</span>
           <span>{{ t('extend') }}</span>
         </div>
 
-        <div class="mce-statusbar__divider" />
+        <div class="m-statusbar__divider" />
 
-        <div class="mce-statusbar__item">
+        <div class="m-statusbar__item">
           <Icon icon="$mouseLeftClick" />
           <span>{{ t('dragSelected') }}</span>
         </div>
@@ -94,9 +94,9 @@ const {
         <template
           v-if="selection.length === 1 && isElement(selection[0]) && selection[0].text.isValid()"
         >
-          <div class="mce-statusbar__divider" />
+          <div class="m-statusbar__divider" />
 
-          <div class="mce-statusbar__item">
+          <div class="m-statusbar__item">
             <span>{{ getKbd('Enter') }}</span>
             <span>{{ t('startTyping') }}</span>
           </div>
@@ -104,7 +104,7 @@ const {
       </template>
     </div>
 
-    <div class="mce-statusbar__progress">
+    <div class="m-statusbar__progress">
       <ProgressIndicator
         v-if="exporting"
         v-model="exportProgress"
@@ -115,7 +115,7 @@ const {
 </template>
 
 <style lang="scss" scoped>
-.mce-statusbar {
+.m-statusbar {
   user-select: none;
   position: relative;
   display: flex;
@@ -126,8 +126,8 @@ const {
   width: 100%;
   height: 100%;
   padding: 0 8px;
-  background-color: rgba(var(--mce-theme-surface), 1);
-  color: rgba(var(--mce-theme-on-surface), 1);
+  background-color: rgba(var(--m-theme-surface), 1);
+  color: rgba(var(--m-theme-on-surface), 1);
   font-weight: bold;
   white-space: nowrap;
   overflow-x: auto;
@@ -154,12 +154,12 @@ const {
   &__divider {
     width: 0;
     height: 60%;
-    border-right: 1px solid rgba(var(--mce-theme-on-surface), .1);
+    border-right: 1px solid rgba(var(--m-theme-on-surface), .1);
     margin: 0 8px;
   }
 
   &__kbd {
-    outline: 1px solid rgba(var(--mce-theme-on-surface), .1);
+    outline: 1px solid rgba(var(--m-theme-on-surface), .1);
     border-radius: 4px;
     display: flex;
     align-items: center;

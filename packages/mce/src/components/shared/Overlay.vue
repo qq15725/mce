@@ -141,14 +141,14 @@ defineExpose({
   >
     <div
       v-if="isActive"
-      class="mce-overlay"
+      class="m-overlay"
       :style="style"
       v-bind="$attrs"
     >
       <div
         ref="contentElTpl"
         :style="contentStyle"
-        class="mce-overlay-content"
+        class="m-overlay-content"
         :class="props.contentClass"
       >
         <slot name="default" />
@@ -158,7 +158,7 @@ defineExpose({
 </template>
 
 <style lang="scss">
-.mce-overlay {
+.m-overlay {
   position: absolute;
   display: flex;
   inset: 0;

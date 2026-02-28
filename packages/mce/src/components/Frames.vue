@@ -11,7 +11,7 @@ const config = getConfigRef<Mce.FrameConfig>('canvas.frame')
 </script>
 
 <template>
-  <div class="mce-frames">
+  <div class="m-frames">
     <template
       v-for="(frame, key) in frames" :key="key"
     >
@@ -24,7 +24,7 @@ const config = getConfigRef<Mce.FrameConfig>('canvas.frame')
 </template>
 
 <style lang="scss">
-  .mce-frames {
+  .m-frames {
     position: absolute;
     left: 0;
     top: 0;

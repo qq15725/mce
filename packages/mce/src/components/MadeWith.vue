@@ -2,14 +2,14 @@
 </script>
 
 <template>
-  <a class="mce-made-with" href="https://github.com/qq15725/mce" target="_blank">
+  <a class="m-made-with" href="https://github.com/qq15725/mce" target="_blank">
     <div>MADE WITH</div>
     <div>MCE</div>
   </a>
 </template>
 
 <style lang="scss">
-  .mce-made-with {
+  .m-made-with {
     pointer-events: auto !important;
     position: absolute;
     right: 18px;

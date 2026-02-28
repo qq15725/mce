@@ -133,7 +133,7 @@ defineExpose({
     :offset="props.offset"
     :target="props.target"
     :attach="props.attach"
-    class="mce-menu"
+    class="m-menu"
     @click:outside="onClickOutside"
   >
     <template #activator="slotProps">
@@ -149,7 +149,7 @@ defineExpose({
 
     <div
       v-if="items?.length"
-      class="mce-list"
+      class="m-list"
       @mouseleave="onMouseleave"
     >
       <template
@@ -158,36 +158,36 @@ defineExpose({
         <template v-if="item.type === 'divider'">
           <div
             :ref="el => menuItemRefs[index] = (el ?? undefined) as any"
-            class="mce-list__divider"
+            class="m-list__divider"
           />
         </template>
 
         <template v-else>
           <div
             :ref="el => menuItemRefs[index] = (el ?? undefined) as any"
-            class="mce-list__item"
+            class="m-list__item"
             @mouseenter="onMouseenter(item, index)"
           >
             <div
-              class="mce-list-item"
+              class="m-list-item"
               :class="[
-                item.disabled && 'mce-list-item--disabled',
-                opened === index && 'mce-list-item--opened',
+                item.disabled && 'm-list-item--disabled',
+                opened === index && 'm-list-item--opened',
               ]"
               @click="e => onClickItem(item, index, e)"
             >
-              <div v-if="hasPrepend" class="mce-list-item__checked">
+              <div v-if="hasPrepend" class="m-list-item__checked">
                 <Icon
                   v-if="item.checked"
                   icon="$check"
                 />
               </div>
 
-              <div v-if="$slots.prepend" class="mce-list-item__prepend">
+              <div v-if="$slots.prepend" class="m-list-item__prepend">
                 <slot name="prepend" :item="item" />
               </div>
 
-              <div class="mce-list-item__title">
+              <div class="m-list-item__title">
                 <slot name="title" :item="item">
                   {{ item.key }}
                 </slot>
@@ -195,14 +195,14 @@ defineExpose({
 
               <div
                 v-if="$slots.kbd"
-                class="mce-list-item__kbd"
+                class="m-list-item__kbd"
               >
                 <slot name="kbd" :item="item" />
               </div>
 
               <div
                 v-if="item.children?.length || $slots.append"
-                class="mce-list-item__append"
+                class="m-list-item__append"
               >
                 <slot name="append" :item="item" />
 
@@ -246,16 +246,16 @@ defineExpose({
 </template>
 
 <style lang="scss">
-.mce-menu {
+.m-menu {
   user-select: none;
 }
 
-.mce-list {
+.m-list {
   display: flex;
   flex-direction: column;
-  background-color: rgb(var(--mce-theme-on-surface));
-  color: rgb(var(--mce-theme-surface));
-  box-shadow: var(--mce-shadow);
+  background-color: rgb(var(--m-theme-on-surface));
+  color: rgb(var(--m-theme-surface));
+  box-shadow: var(--m-shadow);
   padding: 8px;
   border-radius: 8px;
   gap: 2px;
@@ -263,11 +263,11 @@ defineExpose({
   overflow-y: auto;
 
   &__divider {
-    border-bottom: 1px solid rgba(var(--mce-theme-surface), .12);
+    border-bottom: 1px solid rgba(var(--m-theme-surface), .12);
   }
 }
 
-.mce-list-item {
+.m-list-item {
   display: flex;
   width: 100%;
   padding: 4px 8px;
@@ -278,8 +278,8 @@ defineExpose({
 
   &--opened,
   &:hover {
-    background-color: rgba(var(--mce-theme-primary), 1);
-    color: rgba(var(--mce-theme-on-primary), 1);
+    background-color: rgba(var(--m-theme-primary), 1);
+    color: rgba(var(--m-theme-on-primary), 1);
   }
 
   &--disabled {

@@ -30,15 +30,15 @@ const defaultSlotProps = {
     v-if="isActive"
     v-slot="{ props: slotProps }"
     v-model="transform"
-    class="mce-float-panel"
+    class="m-float-panel"
     :ui="false"
     @wheel.stop
   >
     <div
-      class="mce-float-panel__card"
+      class="m-float-panel__card"
       v-bind="slotProps"
     >
-      <div v-if="title" class="mce-float-panel__title">
+      <div v-if="title" class="m-float-panel__title">
         <div>{{ title }}</div>
         <Btn icon @click="isActive = false">
           <Icon icon="$close" />
@@ -46,7 +46,7 @@ const defaultSlotProps = {
       </div>
 
       <div
-        class="mce-float-panel__content"
+        class="m-float-panel__content"
         @pointerdown.stop
       >
         <slot v-bind="defaultSlotProps" />
@@ -56,7 +56,7 @@ const defaultSlotProps = {
 </template>
 
 <style lang="scss">
-  .mce-float-panel {
+  .m-float-panel {
     position: absolute;
     pointer-events: auto !important;
     z-index: 2000;
@@ -67,8 +67,8 @@ const defaultSlotProps = {
       width: 100%;
       height: 100%;
       border-radius: 12px;
-      background-color: rgb(var(--mce-theme-surface));
-      box-shadow: var(--mce-shadow);
+      background-color: rgb(var(--m-theme-surface));
+      box-shadow: var(--m-shadow);
       overflow: hidden;
     }
 
@@ -79,7 +79,7 @@ const defaultSlotProps = {
       padding: 8px;
       font-size: 0.75rem;
       font-weight: bold;
-      border-bottom: 1px solid rgba(var(--mce-border-color), var(--mce-border-opacity));
+      border-bottom: 1px solid rgba(var(--m-border-color), var(--m-border-opacity));
     }
 
     &__content {

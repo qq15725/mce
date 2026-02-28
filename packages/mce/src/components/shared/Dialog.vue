@@ -35,7 +35,7 @@ defineExpose({
     :offset="props.offset"
     :target="props.target"
     :attach="props.attach"
-    class="mce-dialog"
+    class="m-dialog"
   >
     <template #activator="slotProps">
       <slot
@@ -50,9 +50,9 @@ defineExpose({
 </template>
 
 <style lang="scss">
-.mce-dialog {
+.m-dialog {
   > * {
-    box-shadow: var(--mce-shadow);
+    box-shadow: var(--m-shadow);
   }
 }
 </style>

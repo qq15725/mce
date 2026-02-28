@@ -3,16 +3,16 @@
 </script>
 
 <template>
-  <div class="mce-track">
+  <div class="m-track">
     <slot />
   </div>
 </template>
 
 <style lang="scss">
-  .mce-track {
+  .m-track {
     position: relative;
     display: flex;
     height: 22px;
-    background-color: rgb(var(--mce-theme-background));
+    background-color: rgb(var(--m-theme-background));
   }
 </style>

@@ -167,10 +167,10 @@ defineExpose({
 </script>
 
 <template>
-  <div class="mce-selection">
+  <div class="m-selection">
     <div
       v-for="(style, index) in parentObbStyles" :key="index"
-      class="mce-selection__parent"
+      class="m-selection__parent"
       :style="style"
     />
 
@@ -180,20 +180,20 @@ defineExpose({
       <div
         v-for="(style, index) in selectionObbStyles"
         :key="index"
-        class="mce-selection__node"
+        class="m-selection__node"
         :style="style"
       />
     </template>
 
     <div
       v-if="state === 'selecting' || state === 'painting'"
-      class="mce-selection__marquee"
+      class="m-selection__marquee"
       :style="selectionMarquee.toCssStyle()"
     />
 
     <template v-if="transformValue.width && transformValue.height">
       <div
-        class="mce-selection__slot"
+        class="m-selection__slot"
         :style="selectionObbInDrawboard.toCssStyle()"
       >
         <ForegroundCropper>
@@ -217,7 +217,7 @@ defineExpose({
       :roundable="roundable"
       :ui="state !== 'moving'"
       :border-style="state === 'cropping' ? 'dashed' : 'solid'"
-      class="mce-selection__transform"
+      class="m-selection__transform"
       :tip="tip"
       :scale="[camera.zoom.x, camera.zoom.y]"
       :offset="[-camera.position.x, -camera.position.y]"
@@ -233,7 +233,7 @@ defineExpose({
 </template>
 
 <style lang="scss">
-  .mce-selection {
+  .m-selection {
     position: absolute;
     left: 0;
     right: 0;
@@ -249,7 +249,7 @@ defineExpose({
       pointer-events: none;
       border-width: 1px;
       border-style: dashed;
-      color: rgba(var(--mce-theme-primary), 1);
+      color: rgba(var(--m-theme-primary), 1);
       opacity: .5;
       border-color: currentColor;
     }
@@ -258,21 +258,21 @@ defineExpose({
       position: absolute;
       border-width: 1px;
       border-style: solid;
-      color: rgba(var(--mce-theme-primary), 1);
-      background-color: rgba(var(--mce-theme-primary), .1);
+      color: rgba(var(--m-theme-primary), 1);
+      background-color: rgba(var(--m-theme-primary), .1);
       border-color: currentcolor;
     }
 
     &__transform {
       position: absolute;
-      color: rgba(var(--mce-theme-primary), 1);
+      color: rgba(var(--m-theme-primary), 1);
     }
 
     &__node {
       position: absolute;
       border-width: 1px;
       border-style: solid;
-      color: rgba(var(--mce-theme-primary), 1);
+      color: rgba(var(--m-theme-primary), 1);
       border-color: currentcolor;
     }
   }

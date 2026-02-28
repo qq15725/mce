@@ -118,24 +118,24 @@ onBeforeUnmount(pause)
 
 <template>
   <div
-    class="mce-timeline"
+    class="m-timeline"
     @wheel.prevent
   >
-    <div class="mce-timeline__toolbar">
+    <div class="m-timeline__toolbar">
       <div
-        class="mce-timeline__play"
+        class="m-timeline__play"
         @click="toggle"
       >
         <Icon :icon="paused ? '$play' : '$pause'" />
       </div>
     </div>
 
-    <div class="mce-timeline__main">
+    <div class="m-timeline__main">
       <div
-        class="mce-timeline__left"
+        class="m-timeline__left"
         @wheel="onWheel"
       >
-        <div class="mce-timeline__left-wrapper">
+        <div class="m-timeline__left-wrapper">
           <div
             :style="{
               transform: `translateY(${offset[1]}px)`,
@@ -150,12 +150,12 @@ onBeforeUnmount(pause)
       </div>
 
       <div
-        class="mce-timeline__right"
+        class="m-timeline__right"
         @wheel="onWheel"
         @mousedown="onMousedown"
       >
-        <div class="mce-timeline__right-wrapper">
-          <div class="mce-timeline__ruler">
+        <div class="m-timeline__right-wrapper">
+          <div class="m-timeline__ruler">
             <Ruler
               ref="rulerTpl"
               :zoom="1 / msPerPx * fps"
@@ -167,7 +167,7 @@ onBeforeUnmount(pause)
             />
           </div>
 
-          <div class="mce-timeline__track">
+          <div class="m-timeline__track">
             <div
               :style="{
                 width: `${endTime / msPerPx}px`,
@@ -199,10 +199,10 @@ onBeforeUnmount(pause)
 </template>
 
 <style lang="scss">
-  .mce-timeline {
+  .m-timeline {
     position: relative;
-    color: rgb(var(--mce-theme-on-surface));
-    background-color: rgb(var(--mce-theme-surface));
+    color: rgb(var(--m-theme-on-surface));
+    background-color: rgb(var(--m-theme-surface));
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -212,7 +212,7 @@ onBeforeUnmount(pause)
       display: flex;
       align-items: center;
       height: 24px;
-      border-bottom: 1px solid rgba(var(--mce-border-color), var(--mce-border-opacity));
+      border-bottom: 1px solid rgba(var(--m-border-color), var(--m-border-opacity));
     }
 
     &__play {
@@ -253,7 +253,7 @@ onBeforeUnmount(pause)
       flex: 1;
       overflow: hidden;
       flex-direction: column;
-      border-left: 1px solid rgba(var(--mce-border-color), var(--mce-border-opacity));
+      border-left: 1px solid rgba(var(--m-border-color), var(--m-border-opacity));
       padding-left: 48px;
 
       &-wrapper {

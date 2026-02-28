@@ -20,7 +20,7 @@ const isActive = computed(() => {
 <template>
   <div
     v-if="isActive"
-    class="mce-scroll-to-selection"
+    class="m-scroll-to-selection"
     @click.prevent="exec('scrollToSelection', { behavior: 'smooth' })"
   >
     <Icon icon="$gps" />
@@ -29,7 +29,7 @@ const isActive = computed(() => {
 </template>
 
 <style lang="scss">
-  .mce-scroll-to-selection {
+  .m-scroll-to-selection {
     pointer-events: auto !important;
     position: absolute;
     left: 50%;
@@ -38,10 +38,10 @@ const isActive = computed(() => {
     display: flex;
     align-items: center;
     gap: 4px;
-    color: rgba(var(--mce-theme-surface), 1);
-    background-color: rgba(var(--mce-theme-on-background), var(--mce-medium-emphasis-opacity));
+    color: rgba(var(--m-theme-surface), 1);
+    background-color: rgba(var(--m-theme-on-background), var(--m-medium-emphasis-opacity));
     transform: translateX(-50%);
-    backdrop-filter: blur(var(--mce-blur));
+    backdrop-filter: blur(var(--m-blur));
     border-radius: 8px;
     font-size: 0.875rem;
     cursor: pointer;

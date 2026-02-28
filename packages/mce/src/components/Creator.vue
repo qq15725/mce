@@ -80,8 +80,8 @@ function CreatorNode(props: any = {}): any {
   return [
     h('div', {
       class: [
-        'mce-creator__node',
-        activeNodeName.value === node.name && 'mce-creator__node--active',
+        'm-creator__node',
+        activeNodeName.value === node.name && 'm-creator__node--active',
       ],
       style: {
         '--indent-padding': `${indent * 16}px`,
@@ -96,14 +96,14 @@ function CreatorNode(props: any = {}): any {
 </script>
 
 <template>
-  <div class="mce-creator">
-    <div class="mce-creator__tree">
+  <div class="m-creator">
+    <div class="m-creator__tree">
       <template v-for="(node, index) in tree" :key="index">
         <CreatorNode :node="node" />
       </template>
     </div>
 
-    <div class="mce-creator__actions">
+    <div class="m-creator__actions">
       <Btn @click="cancel">
         {{ t('cancel') }}
       </Btn>
@@ -115,7 +115,7 @@ function CreatorNode(props: any = {}): any {
 </template>
 
 <style lang="scss">
-  .mce-creator {
+  .m-creator {
     position: relative;
     width: 100%;
     height: 100%;
@@ -167,15 +167,15 @@ function CreatorNode(props: any = {}): any {
       }
 
       &:hover {
-        --overlay-color: rgba(var(--mce-theme-on-background), var(--mce-hover-opacity));
+        --overlay-color: rgba(var(--m-theme-on-background), var(--m-hover-opacity));
       }
 
       &--active {
-        --underlay-color: rgba(var(--mce-theme-primary), calc(var(--mce-activated-opacity) * 3));
+        --underlay-color: rgba(var(--m-theme-primary), calc(var(--m-activated-opacity) * 3));
       }
 
       &--active:hover {
-        --overlay-color: rgba(var(--mce-theme-primary), var(--mce-hover-opacity));
+        --overlay-color: rgba(var(--m-theme-primary), var(--m-hover-opacity));
       }
     }
 
@@ -186,7 +186,7 @@ function CreatorNode(props: any = {}): any {
       height: 24px;
       padding: 8px;
       flex-basis: max-content;
-      border-top: 1px solid rgba(var(--mce-border-color), var(--mce-border-opacity));
+      border-top: 1px solid rgba(var(--m-border-color), var(--m-border-opacity));
     }
   }
 </style>

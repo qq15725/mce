@@ -67,7 +67,7 @@ defineExpose({
   <Overlay
     ref="overlayTpl"
     :content-style="style"
-    class="mce-floatbar"
+    class="m-floatbar"
     :location="props.location"
     :middlewares="props.middlewares"
     :offset="offset"
@@ -82,8 +82,8 @@ defineExpose({
 </template>
 
 <style lang="scss">
-  .mce-floatbar {
-    .mce-overlay-content {
+  .m-floatbar {
+    .m-overlay-content {
       overflow: visible;
     }
   }

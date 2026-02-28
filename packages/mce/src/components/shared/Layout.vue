@@ -36,13 +36,13 @@ defineExpose({
 </template>
 
 <style lang="scss">
-  .mce-layout {
-    --mce-scrollbar-offset: 0px;
+  .m-layout {
+    --m-scrollbar-offset: 0px;
     display: flex;
     flex: 1 1 auto;
 
     &--full-height {
-      --mce-scrollbar-offset: inherit;
+      --m-scrollbar-offset: inherit;
       height: 100%;
     }
   }

@@ -37,8 +37,8 @@ const { layoutItemStyles } = useLayoutItem({
 <template>
   <div
     :class="normalizeClass([
-      'mce-layout-item',
-      `mce-layout-item--${props.position}`,
+      'm-layout-item',
+      `m-layout-item--${props.position}`,
       props.class,
     ])"
     :style="normalizeStyle([layoutItemStyles, props.style])"
@@ -48,7 +48,7 @@ const { layoutItemStyles } = useLayoutItem({
 </template>
 
 <style lang="scss">
-  .mce-layout-item {
+  .m-layout-item {
     position: absolute;
 
     &--absolute {
@@ -56,19 +56,19 @@ const { layoutItemStyles } = useLayoutItem({
     }
 
     &--left {
-      border-right: 1px solid rgba(var(--mce-border-color), var(--mce-border-opacity));
+      border-right: 1px solid rgba(var(--m-border-color), var(--m-border-opacity));
     }
 
     &--top {
-      border-bottom: 1px solid rgba(var(--mce-border-color), var(--mce-border-opacity));
+      border-bottom: 1px solid rgba(var(--m-border-color), var(--m-border-opacity));
     }
 
     &--right {
-      border-left: 1px solid rgba(var(--mce-border-color), var(--mce-border-opacity));
+      border-left: 1px solid rgba(var(--m-border-color), var(--m-border-opacity));
     }
 
     &--bottom {
-      border-top: 1px solid rgba(var(--mce-border-color), var(--mce-border-opacity));
+      border-top: 1px solid rgba(var(--m-border-color), var(--m-border-opacity));
     }
   }
 </style>

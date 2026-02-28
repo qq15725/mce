@@ -220,10 +220,10 @@ onBeforeUnmount(() => emit('end'))
 <template>
   <div
     v-resize-observer="onResizeObserver"
-    class="mce-cropper"
+    class="m-cropper"
   >
     <div
-      class="mce-cropper__source"
+      class="m-cropper__source"
       :style="boundingBoxToStyle(sourceTransform)"
     >
       <canvas ref="canvasRef" />
@@ -232,10 +232,10 @@ onBeforeUnmount(() => emit('end'))
     <Transform
       v-slot="{ props: slotProps }"
       v-model="sourceTransform"
-      class="mce-cropper__transform"
+      class="m-cropper__transform"
       :rotatable="false"
     >
-      <div class="mce-cropper__transform_rect" v-bind="slotProps" />
+      <div class="m-cropper__transform_rect" v-bind="slotProps" />
     </Transform>
 
     <slot
@@ -249,7 +249,7 @@ onBeforeUnmount(() => emit('end'))
 </template>
 
 <style lang="scss">
-  .mce-cropper {
+  .m-cropper {
     pointer-events: auto;
     position: absolute;
     left: 0;
@@ -272,7 +272,7 @@ onBeforeUnmount(() => emit('end'))
 
     &__transform {
       position: absolute;
-      color: rgba(var(--mce-theme-primary), 1);
+      color: rgba(var(--m-theme-primary), 1);
       opacity: .5;
     }
 

@@ -12,20 +12,20 @@ const {
 <template>
   <div
     v-if="state === 'drawing' && drawboardPointer"
-    class="mce-drawing"
+    class="m-drawing"
     :style="{
       left: `${drawboardPointer.x}px`,
       top: `${drawboardPointer.y}px`,
     }"
   >
-    <div v-if="activeTool?.name" class="mce-drawing__tip">
+    <div v-if="activeTool?.name" class="m-drawing__tip">
       {{ t(activeTool.name) }}
     </div>
   </div>
 </template>
 
 <style lang="scss">
-.mce-drawing {
+.m-drawing {
   position: absolute;
 
   &__tip {
@@ -39,7 +39,7 @@ const {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    background-color: rgba(var(--mce-theme-surface), 1);
+    background-color: rgba(var(--m-theme-surface), 1);
   }
 }
 </style>

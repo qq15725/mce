@@ -10,13 +10,13 @@ const { mainStyles } = useLayout()
 
 <template>
   <main
-    class="mce-main"
+    class="m-main"
     :class="[
-      { 'mce-main--scrollable': props.scrollable },
+      { 'm-main--scrollable': props.scrollable },
     ]"
     :style="[mainStyles]"
   >
-    <div v-if="props.scrollable" class="mce-main__scroller">
+    <div v-if="props.scrollable" class="m-main__scroller">
       <slot />
     </div>
 
@@ -25,13 +25,13 @@ const { mainStyles } = useLayout()
 </template>
 
 <style lang="scss">
-  .mce-main {
+  .m-main {
     flex: 1 0 auto;
     max-width: 100%;
-    padding-left: var(--mce-layout-left);
-    padding-right: var(--mce-layout-right);
-    padding-top: var(--mce-layout-top);
-    padding-bottom: var(--mce-layout-bottom);
+    padding-left: var(--m-layout-left);
+    padding-right: var(--m-layout-right);
+    padding-top: var(--m-layout-top);
+    padding-bottom: var(--m-layout-bottom);
 
     &__scroller {
       max-width: 100%;

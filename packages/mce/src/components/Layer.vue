@@ -232,14 +232,14 @@ function onInputBlur() {
 <template>
   <div
     ref="dom"
-    class="mce-layer"
+    class="m-layer"
     :class="[
-      props.root && 'mce-layer--root',
-      (active || selected) && 'mce-layer--active',
-      selected && 'mce-layer--selected',
-      opened && 'mce-layer--open',
-      isHoverElement && 'mce-layer--hover',
-      dropping && 'mce-layer--dropping',
+      props.root && 'm-layer--root',
+      (active || selected) && 'm-layer--active',
+      selected && 'm-layer--selected',
+      opened && 'm-layer--open',
+      isHoverElement && 'm-layer--hover',
+      dropping && 'm-layer--dropping',
     ]"
     :style=" {
       '--indent-padding': `${props.indent * 16}px`,
@@ -250,16 +250,16 @@ function onInputBlur() {
     @mouseleave="onMouseleave"
     @contextmenu="onContextmenu"
   >
-    <span class="mce-layer__underlay" />
-    <span class="mce-layer__overlay" />
+    <span class="m-layer__underlay" />
+    <span class="m-layer__overlay" />
 
     <div
-      class="mce-layer__content"
+      class="m-layer__content"
     >
-      <div class="mce-layer__prepend">
+      <div class="m-layer__prepend">
         <Icon
           v-if="childrenLength"
-          class="mce-layer__arrow"
+          class="m-layer__arrow"
           icon="$arrowRight"
           @click="onClickExpand"
           @mousedown.stop
@@ -267,14 +267,14 @@ function onInputBlur() {
       </div>
 
       <div
-        class="mce-layer__thumbnail"
+        class="m-layer__thumbnail"
         @dblclick="onDblclickThumbnail"
       >
         <Icon :icon="thumbnailIcon" />
       </div>
 
       <div
-        class="mce-layer__name"
+        class="m-layer__name"
         @dblclick="onDblclickName"
       >
         <input
@@ -283,7 +283,7 @@ function onInputBlur() {
           v-model="editValue"
           name="layer-name"
           type="text"
-          class="mce-layer__input"
+          class="m-layer__input"
           spellcheck="false"
           autocapitalize="off"
           autocorrect="off"
@@ -298,17 +298,17 @@ function onInputBlur() {
       </div>
 
       <div
-        class="mce-layer__action"
+        class="m-layer__action"
         :class="{
-          'mce-layer__action--hover': hovering,
-          'mce-layer__action--show': hovering || isLock(props.node) || !isVisible(props.node),
+          'm-layer__action--hover': hovering,
+          'm-layer__action--show': hovering || isLock(props.node) || !isVisible(props.node),
         }"
       >
         <template v-if="props.root">
           <Btn
             v-if="Array.from(openedItems.values()).filter(v => v.value).length > 1"
             icon
-            class="mce-layer__btn mce-layer__btn--show"
+            class="m-layer__btn m-layer__btn--show"
             @mousedown.prevent.stop="openedItems.forEach((item, _id) => {
               if (_id !== id) {
                 item.value = false
@@ -322,9 +322,9 @@ function onInputBlur() {
         <template v-else>
           <Btn
             icon
-            class="mce-layer__btn"
+            class="m-layer__btn"
             :class="{
-              'mce-layer__btn--show': isLock(props.node),
+              'm-layer__btn--show': isLock(props.node),
             }"
             @click.prevent.stop="setLock(props.node, !isLock(props.node))"
           >
@@ -333,9 +333,9 @@ function onInputBlur() {
 
           <Btn
             icon
-            class="mce-layer__btn"
+            class="m-layer__btn"
             :class="{
-              'mce-layer__btn--show': !isVisible(props.node),
+              'm-layer__btn--show': !isVisible(props.node),
             }"
             @click.prevent.stop="setVisible(props.node, !isVisible(props.node))"
           >
@@ -357,7 +357,7 @@ function onInputBlur() {
 </template>
 
 <style lang="scss">
-  .mce-layer {
+  .m-layer {
     $root: &;
     position: relative;
     flex: none;
@@ -397,14 +397,14 @@ function onInputBlur() {
     }
 
     &--hover {
-      --overlay-color: rgba(var(--mce-theme-on-background), var(--mce-hover-opacity));
+      --overlay-color: rgba(var(--m-theme-on-background), var(--m-hover-opacity));
     }
 
     &--active {
-      --underlay-color: rgba(var(--mce-theme-primary), calc(var(--mce-activated-opacity) * 2));
+      --underlay-color: rgba(var(--m-theme-primary), calc(var(--m-activated-opacity) * 2));
 
       &:hover {
-        --overlay-color: rgba(var(--mce-theme-primary), calc(var(--mce-hover-opacity) * 2));
+        --overlay-color: rgba(var(--m-theme-primary), calc(var(--m-hover-opacity) * 2));
       }
 
       #{$root}__underlay {
@@ -431,11 +431,11 @@ function onInputBlur() {
     }
 
     &--selected {
-      --underlay-color: rgba(var(--mce-theme-primary), calc(var(--mce-activated-opacity) * 3));
+      --underlay-color: rgba(var(--m-theme-primary), calc(var(--m-activated-opacity) * 3));
     }
 
     &--open {
-      #{$root}__prepend .mce-icon {
+      #{$root}__prepend .m-icon {
         transform: rotate(90deg);
       }
     }
@@ -461,7 +461,7 @@ function onInputBlur() {
         right: 0;
         bottom: 0;
         height: 2px;
-        background-color: rgb(var(--mce-theme-on-background));
+        background-color: rgb(var(--m-theme-on-background));
         pointer-events: none;
         border-radius: inherit;
       }
@@ -499,7 +499,7 @@ function onInputBlur() {
       width: 100%;
       height: 100%;
       border: none;
-      outline: 1px solid rgb(var(--mce-theme-primary));
+      outline: 1px solid rgb(var(--m-theme-primary));
       font-size: inherit;
       font-weight: inherit;
       border-radius: 2px;
@@ -536,7 +536,7 @@ function onInputBlur() {
         opacity: 1 !important;
       }
 
-      + .mce-layer__btn {
+      + .m-layer__btn {
         margin-left: -4px;
       }
     }

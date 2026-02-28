@@ -17,8 +17,8 @@ const overlay = useTemplateRef('overlayTpl')
 const contentClass = computed(() => {
   const [side, align = 'center'] = props.location.split('-')
   return [
-    `mce-tooltip--side-${side}`,
-    `mce-tooltip--align-${align}`,
+    `m-tooltip--side-${side}`,
+    `m-tooltip--align-${align}`,
   ]
 })
 
@@ -35,7 +35,7 @@ defineExpose({
   <Overlay
     ref="overlayTpl"
     v-model="isActive"
-    class="mce-tooltip"
+    class="m-tooltip"
     :content-class="contentClass"
     :location="props.location"
     :offset="props.offset"
@@ -60,12 +60,12 @@ defineExpose({
     <template
       v-if="isActive"
     >
-      <div v-if="showArrow" class="mce-tooltip__arrow" />
+      <div v-if="showArrow" class="m-tooltip__arrow" />
 
-      <div class="mce-tooltip__content">
+      <div class="m-tooltip__content">
         <slot />
 
-        <div v-if="$slots.kbd" class="mce-tooltip__kbd">
+        <div v-if="$slots.kbd" class="m-tooltip__kbd">
           <slot name="kbd" />
         </div>
       </div>
@@ -74,12 +74,12 @@ defineExpose({
 </template>
 
 <style lang="scss">
-.mce-tooltip {
+.m-tooltip {
   $root: &;
 
-  .mce-overlay-content {
-    background: rgb(var(--mce-theme-surface-variant));
-    color: rgb(var(--mce-theme-on-surface-variant));
+  .m-overlay-content {
+    background: rgb(var(--m-theme-surface-variant));
+    color: rgb(var(--m-theme-on-surface-variant));
     border-radius: 4px;
     font-size: 0.75rem;
     line-height: 1;
@@ -90,7 +90,7 @@ defineExpose({
     opacity: 1;
     transition-property: opacity, transform;
     overflow-wrap: break-word;
-    box-shadow: var(--mce-shadow);
+    box-shadow: var(--m-shadow);
   }
 
   &__content {
@@ -113,7 +113,7 @@ defineExpose({
     top: 50%;
     transform: translate(100%, -50%);
     border-right: none;
-    border-left-color: rgb(var(--mce-theme-surface-variant));
+    border-left-color: rgb(var(--m-theme-surface-variant));
   }
 
   &--side-left#{$root}--align-start #{$root}__arrow {
@@ -129,7 +129,7 @@ defineExpose({
     bottom: 0;
     transform: translate(-50%, 100%);
     border-bottom: none;
-    border-top-color: rgb(var(--mce-theme-surface-variant));
+    border-top-color: rgb(var(--m-theme-surface-variant));
   }
 
   &--side-top#{$root}--align-start #{$root}__arrow {
@@ -145,7 +145,7 @@ defineExpose({
     top: 50%;
     transform: translate(-100%, -50%);
     border-left: none;
-    border-right-color: rgb(var(--mce-theme-surface-variant));
+    border-right-color: rgb(var(--m-theme-surface-variant));
   }
 
   &--side-right#{$root}--align-start #{$root}__arrow {
@@ -161,7 +161,7 @@ defineExpose({
     top: 0;
     transform: translate(-50%, -100%);
     border-top: none;
-    border-bottom-color: rgb(var(--mce-theme-surface-variant));
+    border-bottom-color: rgb(var(--m-theme-surface-variant));
   }
 
   &--side-bottom#{$root}--align-start #{$root}__arrow {

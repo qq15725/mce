@@ -17,7 +17,7 @@ const hoverElementObb = computed(() => getObb(hoverElement.value, 'drawboard'))
 <template>
   <div
     v-if="hoverElement && !selection.some(node => node.equal(hoverElement))"
-    class="mce-hover"
+    class="m-hover"
     :data-name="hoverElement.name"
     :style="{
       borderColor: 'currentcolor',
@@ -28,10 +28,10 @@ const hoverElementObb = computed(() => getObb(hoverElement.value, 'drawboard'))
 </template>
 
 <style lang="scss">
-.mce-hover {
+.m-hover {
   position: absolute;
   border-style: solid;
   border-width: 2px;
-  color: rgba(var(--mce-theme-primary), 1);
+  color: rgba(var(--m-theme-primary), 1);
 }
 </style>

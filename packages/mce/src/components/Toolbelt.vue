@@ -112,11 +112,11 @@ const items = computed(() => {
 </script>
 
 <template>
-  <div class="mce-toolbelt">
+  <div class="m-toolbelt">
     <template
       v-for="(tool, key) in items" :key="key"
     >
-      <div class="mce-toolbelt__group">
+      <div class="m-toolbelt__group">
         <Tooltip
           location="top"
           :offset="12"
@@ -125,7 +125,7 @@ const items = computed(() => {
           <template #activator="{ props: slotProps }">
             <Btn
               icon
-              class="mce-toolbelt__btn"
+              class="m-toolbelt__btn"
               :active="tool.active || (tool as any).checked || false"
               v-bind="slotProps"
               @click="tool.handle"
@@ -155,7 +155,7 @@ const items = computed(() => {
             location="top-start"
           >
             <template #activator="{ props }">
-              <Btn icon class="mce-toolbelt__arrow" v-bind="props">
+              <Btn icon class="m-toolbelt__arrow" v-bind="props">
                 <Icon icon="$arrowDown" />
               </Btn>
             </template>
@@ -174,7 +174,7 @@ const items = computed(() => {
             </template>
 
             <template #prepend="{ item }">
-              <Icon class="mce-toolbelt__icon" :icon="`$${item.key}`" />
+              <Icon class="m-toolbelt__icon" :icon="`$${item.key}`" />
             </template>
           </Menu>
         </template>
@@ -184,7 +184,7 @@ const items = computed(() => {
 </template>
 
 <style lang="scss">
-  .mce-toolbelt {
+  .m-toolbelt {
     pointer-events: auto !important;
     position: absolute;
     left: 50%;
@@ -193,8 +193,8 @@ const items = computed(() => {
     display: flex;
     align-items: center;
     gap: 12px;
-    box-shadow: var(--mce-shadow);
-    background: rgb(var(--mce-theme-surface));
+    box-shadow: var(--m-shadow);
+    background: rgb(var(--m-theme-surface));
     padding: 8px;
     border-radius: 12px;
     height: 48px;

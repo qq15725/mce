@@ -20,7 +20,7 @@ const {
 </script>
 
 <template>
-  <div class="mce-scrollbars">
+  <div class="m-scrollbars">
     <Scrollbar
       v-bind="props"
       v-model="camera.position.y"
@@ -37,7 +37,7 @@ const {
 </template>
 
 <style lang="scss">
-  .mce-scrollbars {
+  .m-scrollbars {
     position: absolute;
     left: 0;
     top: 0;

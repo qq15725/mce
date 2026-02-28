@@ -50,16 +50,16 @@ async function onPointerdown(event: PointerEvent) {
   <div
     v-show="frame.visible"
     :style="getObb(frame, 'drawboard').toCssStyle()"
-    class="mce-frame"
+    class="m-frame"
     :class="[
-      outline && 'mce-frame--outline',
-      hoverElement?.equal(frame) && 'mce-frame--hover',
-      selection.some(v => v.equal(frame)) && 'mce-frame--selected',
-      isLock(frame) && 'mce-frame--lock',
+      outline && 'm-frame--outline',
+      hoverElement?.equal(frame) && 'm-frame--hover',
+      selection.some(v => v.equal(frame)) && 'm-frame--selected',
+      isLock(frame) && 'm-frame--lock',
     ]"
   >
     <div
-      class="mce-frame__name"
+      class="m-frame__name"
       @dblclick.prevent.stop="onDblclick"
       @pointerdown="onPointerdown"
       @pointerenter="!state && !isLock(frame) && (hoverElement = frame)"
@@ -78,7 +78,7 @@ async function onPointerdown(event: PointerEvent) {
 </template>
 
 <style lang="scss">
-.mce-frame {
+.m-frame {
   $root: &;
   position: absolute;
 
@@ -115,7 +115,7 @@ async function onPointerdown(event: PointerEvent) {
       position: relative;
       min-width: 28px;
       box-sizing: content-box;
-      color: rgb(var(--mce-theme-on-surface));
+      color: rgb(var(--m-theme-on-surface));
       opacity: .5;
       max-width: 100%;
       white-space: nowrap;
@@ -131,7 +131,7 @@ async function onPointerdown(event: PointerEvent) {
       width: 100%;
       height: 100%;
       border: none;
-      outline: 1px solid rgb(var(--mce-theme-primary));
+      outline: 1px solid rgb(var(--m-theme-primary));
       cursor: default;
       font-size: inherit;
       font-weight: inherit;

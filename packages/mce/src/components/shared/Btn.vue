@@ -7,10 +7,10 @@ defineProps<{
 
 <template>
   <div
-    class="mce-btn"
+    class="m-btn"
     :class="{
-      'mce-btn--active': active,
-      'mce-btn--icon': icon,
+      'm-btn--active': active,
+      'm-btn--icon': icon,
     }"
   >
     <slot />
@@ -18,7 +18,7 @@ defineProps<{
 </template>
 
 <style lang="scss">
-  .mce-btn {
+  .m-btn {
     $root: &;
     padding: 4px;
     border-radius: 4px;
@@ -29,8 +29,8 @@ defineProps<{
     cursor: pointer;
 
     &:hover {
-      color: rgb(var(--mce-theme-on-background));
-      background: rgb(var(--mce-theme-background));
+      color: rgb(var(--m-theme-on-background));
+      background: rgb(var(--m-theme-background));
     }
 
     &--icon {
@@ -39,8 +39,8 @@ defineProps<{
     }
 
     &#{$root}--active {
-      color: rgb(var(--mce-theme-on-primary));
-      background: rgb(var(--mce-theme-primary));
+      color: rgb(var(--m-theme-on-primary));
+      background: rgb(var(--m-theme-primary));
     }
   }
 </style>

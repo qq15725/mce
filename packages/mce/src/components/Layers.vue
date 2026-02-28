@@ -52,8 +52,8 @@ watch(selection, () => {
 </script>
 
 <template>
-  <div class="mce-layers">
-    <div class="mce-layers__wrapper">
+  <div class="m-layers">
+    <div class="m-layers__wrapper">
       <Layer
         :root="true"
         :node="root"
@@ -64,13 +64,13 @@ watch(selection, () => {
 </template>
 
 <style lang="scss">
-  .mce-layers {
+  .m-layers {
     position: relative;
     width: 100%;
     height: 100%;
     min-width: auto;
     overflow: auto;
-    background-color: rgb(var(--mce-theme-surface));
+    background-color: rgb(var(--m-theme-surface));
     padding-right: 8px;
 
     &__wrapper {
@@ -78,23 +78,23 @@ watch(selection, () => {
       min-width: 100%;
     }
 
-    .mce-layer__prepend {
+    .m-layer__prepend {
       opacity: 0;
     }
 
-    .mce-layer--root:hover {
-      .mce-layer__prepend {
+    .m-layer--root:hover {
+      .m-layer__prepend {
         opacity: 1;
       }
     }
 
-    &:hover .mce-layer:not(.mce-layer--root) {
-      .mce-layer__prepend {
+    &:hover .m-layer:not(.m-layer--root) {
+      .m-layer__prepend {
         opacity: 1;
       }
     }
 
-    .mce-layer {
+    .m-layer {
       scroll-margin: 8px;
     }
   }

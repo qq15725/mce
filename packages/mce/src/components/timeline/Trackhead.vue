@@ -8,7 +8,7 @@ defineProps<{
 
 <template>
   <div
-    class="mce-trackhead"
+    class="m-trackhead"
     :style="{
       height: `var(--timeline-track-height__${node.meta.inEditorIs}, 22px)`,
     }"
@@ -18,12 +18,12 @@ defineProps<{
 </template>
 
 <style lang="scss">
-  .mce-trackhead {
+  .m-trackhead {
     display: flex;
     height: 22px;
     min-height: 22px;
     align-items: center;
-    color: rgba(var(--mce-theme-on-surface), .6);
+    color: rgba(var(--m-theme-on-surface), .6);
     font-size: 0.75rem;
     width: 100%;
     white-space: nowrap;

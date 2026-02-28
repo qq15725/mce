@@ -17,9 +17,9 @@ const hasClick = !!(attrs.onClick || attrs.onClickOnce)
     :is="iconData.component"
     :icon="iconData.icon"
     :tag="props.tag"
-    class="mce-icon"
+    class="m-icon"
     :class="{
-      'mce-icon--disabled': props.disabled,
+      'm-icon--disabled': props.disabled,
     }"
     :role="hasClick ? 'button' : undefined"
     :aria-hidden="!hasClick"
@@ -28,7 +28,7 @@ const hasClick = !!(attrs.onClick || attrs.onClickOnce)
 </template>
 
 <style lang="scss">
-  .mce-icon {
+  .m-icon {
     align-items: center;
     display: inline-flex;
     font-feature-settings: "liga";
@@ -37,7 +37,7 @@ const hasClick = !!(attrs.onClick || attrs.onClickOnce)
     letter-spacing: normal;
     line-height: 1;
     position: relative;
-    opacity: var(--mce-icon-opacity, 1);
+    opacity: var(--m-icon-opacity, 1);
     text-indent: 0;
     text-align: center;
     -webkit-user-select: none;

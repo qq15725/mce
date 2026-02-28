@@ -70,30 +70,30 @@ const style = computed(() => {
 
 <template>
   <div
-    class="mce-segment"
+    class="m-segment"
     :class="[
-      `mce-segment--${(node.meta.inEditorIs ?? 'none').toLowerCase()}`,
-      active && `mce-segment--active`,
+      `m-segment--${(node.meta.inEditorIs ?? 'none').toLowerCase()}`,
+      active && `m-segment--active`,
     ]"
     :style="style"
   >
     <div
       v-for="(block, index) in blocks"
       :key="index"
-      class="mce-segment__block"
+      class="m-segment__block"
       :style="block.style"
     />
 
-    <div v-if="active" class="mce-segment__edge mce-segment__edge--front" />
+    <div v-if="active" class="m-segment__edge m-segment__edge--front" />
 
-    <span class="mce-segment__node" style="overflow: hidden;">{{ props.node.name }}</span>
+    <span class="m-segment__node" style="overflow: hidden;">{{ props.node.name }}</span>
 
-    <div v-if="active" class="mce-segment__edge mce-segment__edge--end" />
+    <div v-if="active" class="m-segment__edge m-segment__edge--end" />
   </div>
 </template>
 
 <style lang="scss">
-  .mce-segment {
+  .m-segment {
     display: flex;
     font-size: 0.75rem;
     align-items: center;
@@ -107,7 +107,7 @@ const style = computed(() => {
     background-color: #cc9641;
 
     &--active {
-      outline: 1px solid rgb(var(--mce-theme-on-surface));
+      outline: 1px solid rgb(var(--m-theme-on-surface));
     }
 
     &__animation {
@@ -188,7 +188,7 @@ const style = computed(() => {
 
     &__edge {
       align-items: center;
-      background-color: rgb(var(--mce-theme-on-surface));
+      background-color: rgb(var(--m-theme-on-surface));
       bottom: 0;
       content: "";
       display: flex;
@@ -200,7 +200,7 @@ const style = computed(() => {
       cursor: col-resize;
 
       &:before {
-        background-color: rgb(var(--mce-theme-surface));
+        background-color: rgb(var(--m-theme-surface));
         content: "";
         display: block;
         height: 10px;
@@ -236,7 +236,7 @@ const style = computed(() => {
       padding: 0 8px;
       text-wrap: nowrap;
       overflow: visible;
-      border-bottom: 1px solid rgb(var(--mce-theme-surface));
+      border-bottom: 1px solid rgb(var(--m-theme-surface));
     }
   }
 </style>

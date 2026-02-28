@@ -496,17 +496,17 @@ const slotProps = {
 
 <template>
   <Layout
-    class="mce-editor"
+    class="m-editor"
     :class="[
-      state && `mce-editor--${state}`,
-      activeTool && `mce-editor--drawing-tool-${activeTool.name}`,
-      grabbing && `mce-editor--grabbing`,
+      state && `m-editor--${state}`,
+      activeTool && `m-editor--drawing-tool-${activeTool.name}`,
+      grabbing && `m-editor--grabbing`,
     ]"
   >
     <Main>
       <div
         ref="drawboardDom"
-        class="mce-editor__drawboard"
+        class="m-editor__drawboard"
         :data-pixel-ratio="renderEngine.pixelRatio"
         @dblclick="onDoubleclick($event)"
         @scroll="onScroll"
@@ -514,7 +514,7 @@ const slotProps = {
       >
         <canvas
           ref="canvasTpl"
-          class="mce-editor__canvas"
+          class="m-editor__canvas"
         />
 
         <Floatbar
@@ -599,39 +599,39 @@ const slotProps = {
 
     <div
       ref="overlayContainerTpl"
-      class="mce-overlay-container"
+      class="m-overlay-container"
     />
   </Layout>
 </template>
 
 <style lang="scss">
-.mce-editor {
-  --mce-theme-primary: 69, 151, 248;
-  --mce-theme-on-primary: 255, 255, 255;
-  --mce-theme-secondary: 244, 36, 253;
-  --mce-theme-on-secondary: 255, 255, 255;
-  --mce-theme-surface: 255, 255, 255;
-  --mce-theme-on-surface: 30, 30, 30;
-  --mce-theme-surface-variant: 35, 37, 41;
-  --mce-theme-on-surface-variant: 255, 255, 255;
-  --mce-theme-background: 240, 242, 245;
-  --mce-theme-on-background: 56, 56, 56;
-  --mce-border-color: 0, 0, 0;
-  --mce-border-opacity: .08;
-  --mce-high-emphasis-opacity: 1;
-  --mce-medium-emphasis-opacity: 0.5;
-  --mce-low-emphasis-opacity: 0.3;
-  --mce-hover-opacity: 0.04;
-  --mce-activated-opacity: 0.06;
-  --mce-shadow: 0 8px 32px 2px rgba(0, 0, 0, 0.08), 0 0 1px rgba(0, 0, 0, 0.2);
-  --mce-blur: 8px;
+.m-editor {
+  --m-theme-primary: 69, 151, 248;
+  --m-theme-on-primary: 255, 255, 255;
+  --m-theme-secondary: 244, 36, 253;
+  --m-theme-on-secondary: 255, 255, 255;
+  --m-theme-surface: 255, 255, 255;
+  --m-theme-on-surface: 30, 30, 30;
+  --m-theme-surface-variant: 35, 37, 41;
+  --m-theme-on-surface-variant: 255, 255, 255;
+  --m-theme-background: 240, 242, 245;
+  --m-theme-on-background: 56, 56, 56;
+  --m-border-color: 0, 0, 0;
+  --m-border-opacity: .08;
+  --m-high-emphasis-opacity: 1;
+  --m-medium-emphasis-opacity: 0.5;
+  --m-low-emphasis-opacity: 0.3;
+  --m-hover-opacity: 0.04;
+  --m-activated-opacity: 0.06;
+  --m-shadow: 0 8px 32px 2px rgba(0, 0, 0, 0.08), 0 0 1px rgba(0, 0, 0, 0.2);
+  --m-blur: 8px;
 
   position: relative;
   width: 100%;
   height: 100%;
   flex-direction: column;
-  background-color: rgb(var(--mce-theme-surface));
-  color: rgb(var(--mce-theme-on-surface));
+  background-color: rgb(var(--m-theme-surface));
+  color: rgb(var(--m-theme-on-surface));
   overflow: hidden;
   user-select: none;
   cursor: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMzJweCIgaGVpZ2h0PSIzMnB4Ij48aW1hZ2UgeGxpbms6aHJlZj0iZGF0YTppbWFnZS9wbmc7YmFzZTY0LGlWQk9SdzBLR2dvQUFBQU5TVWhFVWdBQUFFQUFBQUJBQ0FZQUFBQ3FhWEhlQUFBR0JVbEVRVlI0QWV5WXowOGtSUlRIZXhhRlVTRUVRamlRRUFnbitBK01ISmlERi84SkU0OWNTRkQ1RlRETUhFQVE5S3pSZytGSE5pSGVKRkZqQW5PQnJLekdZRlRRRzRSQUVHRloxdDBaRk1YdnAzZHIwcGxNTTkzTDdzeDAwNlJlcXZyVnE2cjMvYjczdW91NVpkM3d2NGlBRzU0QWxsc0d4RVFNYzA1QmgyZ3FQQTJBVGpRQVJGY2w1WXVTYWttTmhCNTVRV1Btc05NdytBMndCZ1dnZUFaNHpkblpXZkx5OGpLVHpXYS9QVGs1U1oyZW5xWmsrSkxFRUFJWjJMTk82bUEyQUJqUEFRS282dVBqNC9HNnVycGhKbXBxYXJvYkdob0c2K3ZyaDBUSS9hT2pJNGg0UlhPR0RBZ2pLOWlMUFRRVm5JYlRlSXZqakNFZzN0allPSUF5bFVwWnNWak1vdWNaYVdwcWVsZEVIR2N5bWE5RlZFcTZseVdRRWNnU0FiVDh0eHRSSkpweHBmOWROT2wwbXM1S0pwTTVJZ3daOFhqOE5ZZ1NHZmNPRHcrVGxJbU1JU091M3BEQi9wQXJWV1UySE1Rem5FUWdvZnJpNHNMV0p4SUo1bklDRVVnczlqZ3JEQm5OemMzdlVDWWk0MVFsa3RTQ3dKU0lEVlFPMHlBQXViVzB0UFE1aXA2ZUhycUNBaEZJTFBhWURHTVV0Qkp4RW5CcFFQVDI5djU0Y0hEd014bUFHTDFiN3lUQ1pJV1BFbkhidGlSNlF3RGdrZjkwNnIrU2kxZ3N4ck0xUGo2dVIyOE5JaEN0dFYrY2hvd0NKVkxvWGVIdGtHZHM1U1FBOEJmYS94L0orY0xDd3J4Nnkwc0dZSmN2RUlFWU1zejhreEk1MFZma202MnRyZGVsNTRYSnU4ZjRJbFhwbXZOUUNDRDZmK3Y0ODRHQmdZMzkvZjFmTkg1cUVsaUxPSWt3V1VHSmRIWjJmcm01dVZsV0V2SUp5R1dBSE0vT3pjMHRxdmRWQnRpN0NVUWd6cXpvNk9nWWtUMmZUajdCdklUMStQeGEvczVPQXFoNU1zQXVBUmxtUjBaRzdQc0FaWUJJOTh4YU9wMjI5NnF0clgxVkE2N1hYTUx3cDZRa2NLRE96elhLZ0N5Z0RMTFNadmthcUw5MkdaZzlJSEoxZGRWQzBHMXZiMytpbnVpWDVUMlFUNEF6Q3lBZ016OC92eUFIcmF2dUJNd1hFc0FpZ0hVS091eDFhZHJzNnVyNlZPT1NSbDNuNVpvYkFTWUx6b2VHaHU3eU1zUnBKTGZTWllDTkV5eGpkQWhMZG5kM2Z4c2RIWDEvWW1MaVBYMGUrNldqNUNnOXNvOEFTRlc2bGs4QUorT0lJY0RPQXIyMGJNZUszUW1TeWFTZDJvQkYyR3huWitmM3djSEJENGVIaHovUVBtKzJ0YldOVDA1TzNoa2JHMXZYL0FOSlJuSXVLUXNKaFFnQUxNNUFBbzVsRnhjWDUrU2c1L2ZBOHZMeVYvcU1maVRBYjdXM3Q2ZG1abWJ1VEU5UHIybVBJNGNjYTN3cStVdkNPV1FDNU91eGRLMFFBWnlPSXhDQVU5d0o3REpnSXBGSTBCVVVreUZyYTJzL3pjN09ic2pvUkFMb1EvVk9RY2ZjZmVrZlNpQUEwaUZmajZWcnhRZ3dYNE9Nbnp2QjFOU1VFL3dmZ29NQStrK05UZVRQTkFZOFpRYlJGVVVBa2NBaEhDTTZSZThFMUw4QVdTc3JLMStvcDdidnFTZktBS1luM1lrNGM2UzlxWDB5amJNNFUwdEsyOXd5QUM5TUdaZ3M4SFFuaU1mamtBWkloQ2pUQTVob0E1cUlReXAyQU9jY3ppdUxYRVVBRWNGQkhNWHBLKzhFcHY0M05qYStGNUpIRWdEVEF4ckFFTWxlN01uZWlNeksyN3dRUUlyaXZLYzdRWDkvUDlkbkFDT3NZejFScmdqQStYUmZSUUMyT0E0QWdOaFpvRStiRGNSRUhDTlQvK3ZyNjdmMWpDMlJaaDNyRWFrcnN4VWpBTENrTEdDSTZKVjNncXFxS213TkFZd3JHandoS1VZQU5vQ0FBS0thMVFVbjl6c0JrZWRlWUxKQjlmK0RGb1NXQUlCUkJvL01yMFVBNTY0djBCYnAzOWZYOTUzR1pBcUVrUUZra0ZUbGE4Vk85cElCZ0FDTW5RSGE4S0grUVJMZTlkdDdlM3UvNnRuaVgrYnU3dTdQTk9hdER3SFlzb2Jza2JweW14Y0M4QjRnZ0FJY0lCOEk4TWV0cmExdjY2WDRSa3RMUzUrTStPYno2U05Mc0dXTjFKWGR2Qkpnc2dBQ0FNbU5qcHNlVjF1RW14NDY1ckNoQkVKSkFKSGxZc1B0RGdLNDVpS015UUN5ZzNjRjZROXBsUjErZWVjMUEyUnFFVkVpQzBDQVFnS2dpVHc5MFNmOXNjR1dOUlV2ZmdnQURNQUFDQWxrQXFBaGc3RkovY0JFSDBCK0NXQ05JWUZ5Z0FpQTAwTk1vTUFENW1rSVlCMUNqZWNMK2tESmRRZ0lGRkEzWnlNQzNKaTVLZm9vQTI1S3BOMXdSaG5neHN4TjBZY3VBL3dHTGlMQUwyTmhzNDh5SUd3UjlZc255Z0MvaklYTlBzcUFzRVhVTDU0b0Evd3lGamI3S0FQQ0ZsRy9lS0lNOE10WTJPeWpEQWg2Uksvci8vOEFBQUQvLzltR1FIRUFBQUFHU1VSQlZBTUFFTFdobi9KQ0EzY0FBQUFBU1VWT1JLNUNZSUk9IiB3aWR0aD0iMzIiIGhlaWdodD0iMzIiLz48L3N2Zz4=) 4 4,auto;
@@ -681,7 +681,7 @@ const slotProps = {
   }
 }
 
-.mce-overlay-container {
+.m-overlay-container {
   position: absolute;
   left: 0;
   top: 0;

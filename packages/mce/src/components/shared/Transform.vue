@@ -696,7 +696,7 @@ function Diagonal() {
     || handle === 'resize-bl'
   ) {
     return h('line', {
-      class: 'mce-transform__diagonal',
+      class: 'm-transform__diagonal',
       x1: '100%',
       y1: '0',
       x2: '0',
@@ -710,7 +710,7 @@ function Diagonal() {
     || handle === 'resize-br'
   ) {
     return h('line', {
-      class: 'mce-transform__diagonal',
+      class: 'm-transform__diagonal',
       x1: '0',
       y1: '0',
       x2: '100%',
@@ -724,16 +724,16 @@ function Diagonal() {
 <template>
   <Component
     :is="tag"
-    class="mce-transform"
+    class="m-transform"
     :class="[
-      !props.ui && 'mce-transform--ui-hide',
-      transforming && 'mce-transform--transforming',
-      resizeStrategy && `mce-transform--${resizeStrategy}`,
-      activeHandle && `mce-transform--${activeHandle}`,
-      activeHandle === 'move' && 'mce-transform--moving',
-      activeHandle?.startsWith('resize') && 'mce-transform--resizing',
-      activeHandle?.startsWith('rotate') && 'mce-transform--rotateing',
-      props.borderStyle && `mce-transform--${props.borderStyle}`,
+      !props.ui && 'm-transform--ui-hide',
+      transforming && 'm-transform--transforming',
+      resizeStrategy && `m-transform--${resizeStrategy}`,
+      activeHandle && `m-transform--${activeHandle}`,
+      activeHandle === 'move' && 'm-transform--moving',
+      activeHandle?.startsWith('resize') && 'm-transform--resizing',
+      activeHandle?.startsWith('rotate') && 'm-transform--rotateing',
+      props.borderStyle && `m-transform--${props.borderStyle}`,
     ]"
     :style="style"
   >
@@ -746,13 +746,13 @@ function Diagonal() {
     />
 
     <svg
-      class="mce-transform__svg"
+      class="m-transform__svg"
       :style="{ color }"
     >
-      <rect width="100%" height="100%" fill="none" class="mce-transform__rect" />
+      <rect width="100%" height="100%" fill="none" class="m-transform__rect" />
 
       <rect
-        class="mce-transform__rect"
+        class="m-transform__rect"
         width="100%"
         height="100%"
         fill="none"
@@ -777,7 +777,7 @@ function Diagonal() {
               :width="handle.width"
               :height="handle.height"
               :aria-label="handle.type"
-              class="mce-transform__handle"
+              class="m-transform__handle"
             />
 
             <circle
@@ -786,7 +786,7 @@ function Diagonal() {
               :cy="handle.y + handle.width / 2"
               :r="handle.width / 2"
               :aria-label="handle.type"
-              class="mce-transform__handle"
+              class="m-transform__handle"
             />
 
             <rect
@@ -798,7 +798,7 @@ function Diagonal() {
               :aria-label="handle.type"
               :rx="handle.width / 4"
               :ry="handle.height / 4"
-              class="mce-transform__handle"
+              class="m-transform__handle"
             />
           </template>
         </template>
@@ -806,7 +806,7 @@ function Diagonal() {
         <g
           v-if="rotator"
           :transform="`matrix(1, 0, 0, 1, -32, ${model.height}) rotate(270 16 16)`"
-          class="mce-transform__rotator"
+          class="m-transform__rotator"
         >
           <path
             d="M22.4789 9.45728L25.9935 12.9942L22.4789 16.5283V14.1032C18.126 14.1502 14.6071 17.6737 14.5675 22.0283H17.05L13.513 25.543L9.97889 22.0283H12.5674C12.6071 16.5691 17.0214 12.1503 22.4789 12.1031L22.4789 9.45728Z"
@@ -826,7 +826,7 @@ function Diagonal() {
             :width="handle.width"
             :height="handle.height"
             :aria-label="handle.type"
-            class="mce-transform__handle-rect"
+            class="m-transform__handle-rect"
             :cursor="transforming ? 'auto' : getCursor(handle.type)"
             @pointerdown="(event: PointerEvent) => onPointerDown(event, index)"
           />
@@ -835,20 +835,20 @@ function Diagonal() {
 
       <g
         pointer-events="all"
-        class="mce-transform__svg-slot"
+        class="m-transform__svg-slot"
       >
         <slot name="svg" :box="model" />
       </g>
     </svg>
 
-    <div v-if="tip" class="mce-transform__tip">
+    <div v-if="tip" class="m-transform__tip">
       {{ tip }}
     </div>
   </Component>
 </template>
 
 <style lang="scss">
-.mce-transform {
+.m-transform {
   $root: &;
   left: 0;
   top: 0;
@@ -861,7 +861,7 @@ function Diagonal() {
     height: 100%;
     overflow: visible;
     pointer-events: none;
-    color: rgb(var(--mce-theme-primary));
+    color: rgb(var(--m-theme-primary));
     stroke: currentColor;
   }
 
@@ -897,8 +897,8 @@ function Diagonal() {
     bottom: 0;
     left: 50%;
     transform: translate(-50%, calc(100% + 8px));
-    background-color: rgb(var(--mce-theme-primary));
-    color: rgb(var(--mce-theme-on-primary));
+    background-color: rgb(var(--m-theme-primary));
+    color: rgb(var(--m-theme-on-primary));
     font-size: 0.75rem;
     padding: 2px 4px;
     border-radius: 3px;

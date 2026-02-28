@@ -19,7 +19,7 @@ const config = getConfigRef('ui.ruler')
 </script>
 
 <template>
-  <div class="mce-rulers">
+  <div class="m-rulers">
     <Ruler
       v-model="refLines.x"
       refline
@@ -45,12 +45,12 @@ const config = getConfigRef('ui.ruler')
       :locked="config.locked"
     />
 
-    <div class="mce-rulers__left-top" />
+    <div class="m-rulers__left-top" />
   </div>
 </template>
 
 <style lang="scss">
-  .mce-rulers {
+  .m-rulers {
     position: absolute;
     left: 0;
     top: 0;
@@ -63,10 +63,10 @@ const config = getConfigRef('ui.ruler')
       top: 0;
       width: 16px;
       height: 16px;
-      border: 1px solid rgba(var(--mce-border-color), var(--mce-border-opacity));
+      border: 1px solid rgba(var(--m-border-color), var(--m-border-opacity));
       border-top-width: 0;
       border-left-width: 0;
-      background-color: rgb(var(--mce-theme-surface));
+      background-color: rgb(var(--m-theme-surface));
     }
   }
 </style>

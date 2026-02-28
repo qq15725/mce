@@ -36,8 +36,8 @@ export interface LayerProvide {
   droppingItemId: Ref<string | undefined>
 }
 
-export const MceLayerKey: InjectionKey<LayerProvide> = Symbol.for('mce:layer')
-export const MceLayerItemKey: InjectionKey<{ id: string }> = Symbol.for('mce:layer-item')
+export const LayerKey: InjectionKey<LayerProvide> = Symbol.for('layer')
+export const LayerItemKey: InjectionKey<{ id: string }> = Symbol.for('layer-item')
 
 export function createLayer() {
   const registered = ref<string[]>([])
@@ -59,7 +59,7 @@ export function createLayer() {
     return id
   }
 
-  provide(MceLayerKey, {
+  provide(LayerKey, {
     selecting,
     openedItems,
     dragging,
@@ -75,7 +75,7 @@ export function createLayer() {
       openedItems.set(id, opened)
       domItems.set(id, dom)
       registered.value.push(id)
-      const instances = findChildrenWithProvide(MceLayerItemKey, rootVm?.vnode)
+      const instances = findChildrenWithProvide(LayerItemKey, rootVm?.vnode)
       const instanceIndex = instances.indexOf(vm)
       if (instanceIndex > -1) {
         registered.value.splice(instanceIndex, 0, id)
@@ -110,7 +110,7 @@ export function createLayer() {
           const targets = e.composedPath()
           const layer = targets.find((target) => {
             return target instanceof HTMLElement
-              && target.classList.contains('mce-layer')
+              && target.classList.contains('m-layer')
           })
           const id = (layer as HTMLElement)?.dataset?.id
           if (id) {
@@ -159,7 +159,7 @@ export function createLayer() {
 }
 
 export function useLayerItem(options: Omit<LayerItem, 'id'>) {
-  const root = inject(MceLayerKey)
+  const root = inject(LayerKey)
 
   if (!root)
     throw new Error('[mce] Could not find injected layer root')
@@ -173,7 +173,7 @@ export function useLayerItem(options: Omit<LayerItem, 'id'>) {
 
   const vm = getCurrentInstance()!
 
-  provide(MceLayerItemKey, { id })
+  provide(LayerItemKey, { id })
 
   root.register(vm, item)
 

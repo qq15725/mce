@@ -40,14 +40,14 @@ onBeforeUnmount(() => timer && clearInterval(timer))
 </script>
 
 <template>
-  <div class="mce-manage-memory">
+  <div class="m-manage-memory">
     <div>Total memory used</div>
     <div>{{ humanBytes(used) }}</div>
   </div>
 </template>
 
 <style lang="scss">
-  .mce-manage-memory {
+  .m-manage-memory {
     padding: 12px;
     font-size: 12px;
     display: flex;
