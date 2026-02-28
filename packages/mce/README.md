@@ -46,10 +46,10 @@ npm i mce
       openxml(),
     ],
     gifWorkerUrl,
-    locale: { locale: 'zhHans' },
+    locale: { locale: 'en' },
     viewport: {
       camera: { enabled: true },
-      zoom: { strategy: 'containWidth' },
+      zoom: { strategy: 'contain' },
       screenPadding: { left: 0, top: 0, right: 0, bottom: 0 },
     },
     canvas: {
@@ -68,7 +68,7 @@ npm i mce
       scrollbar: { visible: true },
       statusbar: { visible: true },
       toolbelt: { visible: true },
-      madeWith: { visible: true },
+      madeWith: { visible: false },
     },
     typography: {
       strategy: 'autoHeight',
