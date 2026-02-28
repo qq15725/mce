@@ -23,7 +23,6 @@ export class Doc extends Node {
 
   constructor(
     source?: Mce.DocumentSource,
-    protected readonly _local = false,
   ) {
     super({
       name: 'Doc',
@@ -61,6 +60,7 @@ export class Doc extends Node {
     )
     _doc.on('history', um => this.emit('history', um))
     _doc._proxyRoot(this)
+    _doc.load()
 
     this._yDoc = _doc
     this._source = _source
@@ -100,18 +100,15 @@ export class Doc extends Node {
     return this
   }
 
-  load = async (): Promise<void> => {
+  loadIndexeddb = async (): Promise<void> => {
+    console.log(this._yDoc.id)
+    await this._yDoc.loadIndexeddb()
+  }
+
+  init = (): this => {
     const source = this._source
     this._source = undefined
-    await this._yDoc.load(async () => {
-      if (this._local) {
-        try {
-          await this._yDoc.loadIndexeddb()
-        }
-        catch (e) {
-          console.error(e)
-        }
-      }
+    this.transact(() => {
       if (source && typeof source !== 'string') {
         if (Array.isArray(source)) {
           this.set({ children: source })
@@ -120,7 +117,9 @@ export class Doc extends Node {
           this.set(source)
         }
       }
-    })
+    }, false)
+    this.clearHistory()
+    return this
   }
 
   destroy = () => {

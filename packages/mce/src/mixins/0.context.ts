@@ -70,10 +70,7 @@ declare global {
 
 export default defineMixin((editor, options) => {
   const root = ref(
-    new Doc(
-      options.db?.local ? 'doc' : undefined,
-      options.db?.local,
-    ),
+    new Doc(options.db?.local ? 'doc' : undefined),
   )
   const docLoading = ref(false)
   const fonts = markRaw(new Fonts()) as Fonts
@@ -278,7 +275,6 @@ export default defineMixin((editor, options) => {
     onBeforeMount(() => {
       on('setDoc', onSetDoc)
       renderEngine.value.start()
-      root.value.load()
       document.addEventListener('mousemove', onMouseMove)
     })
 

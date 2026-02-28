@@ -46,7 +46,6 @@ export class YDoc extends Observable {
   _nodeMap = new Map<string, Node>()
   indexeddb?: IndexeddbProvider
   declare undoManager: Y.UndoManager
-  protected _ready = false
 
   constructor(
     public id = idGenerator(),
@@ -97,6 +96,10 @@ export class YDoc extends Observable {
     console.info('loaded data from indexed db')
   }
 
+  load(): void {
+    this._yDoc.load()
+  }
+
   transact<T>(fn: () => T, should: boolean = true): T {
     if (this._transacting !== undefined) {
       return fn()
@@ -118,19 +121,6 @@ export class YDoc extends Observable {
     )
     this._transacting = undefined
     return result!
-  }
-
-  async load(initFn?: () => void | Promise<void>): Promise<this> {
-    if (this._ready) {
-      return this
-    }
-    this._ready = true
-    await this.transact(async () => {
-      this._yDoc.load()
-      await initFn?.()
-    }, false)
-    this.undoManager.clear()
-    return this
   }
 
   protected _debug(..._args: any[]) {

@@ -18,13 +18,14 @@ declare global {
     }
 
     type DocumentSource
-      = | InternalDocument
+      = | Doc
+        | InternalDocument
         | Element[]
         | string
 
     interface Editor {
       getDoc: () => JsonData
-      setDoc: (doc: DocumentSource) => Promise<Doc>
+      setDoc: (doc: DocumentSource) => Doc
       loadDoc: (source: any) => Promise<Doc>
       clearDoc: () => void
       newDoc: () => void
@@ -33,7 +34,7 @@ declare global {
 
     interface Commands {
       getDoc: () => JsonData
-      setDoc: (doc: DocumentSource) => Promise<Doc>
+      setDoc: (doc: DocumentSource) => Doc
       loadDoc: (source: any) => Promise<Doc>
       clearDoc: () => void
       newDoc: () => void
@@ -46,7 +47,7 @@ declare global {
     }
 
     interface Events {
-      setDoc: [root: Doc, oldRoot: Doc]
+      setDoc: [doc: Doc, oldDoc: Doc]
       docLoading: [source: any]
       docLoaded: [source: any, root: Doc | Error]
       clearDoc: []
@@ -73,13 +74,12 @@ export default definePlugin((editor, options) => {
     return to('json')
   }
 
-  const setDoc: Mce.Editor['setDoc'] = async (source) => {
+  const setDoc: Mce.Editor['setDoc'] = (source) => {
     fonts.clear()
-    await waitUntilFontLoad()
-    const oldRoot = root.value
-    const _root = new Doc(source, config.value.db.local)
+    const oldDoc = root.value
+    const doc = source instanceof Doc ? source : new Doc(source)
     // TODO gc
-    oldRoot.findOne((node) => {
+    oldDoc.findOne((node) => {
       if (node instanceof Element2D) {
         node.foreground.texture?.destroy()
         node.foreground.animatedTexture?.destroy()
@@ -97,23 +97,29 @@ export default definePlugin((editor, options) => {
       }
       return false
     })
-    root.value = _root
-    oldRoot.remove()
-    await _root.load()
-    renderEngine.value.root.append(_root)
-    emit('setDoc', _root, oldRoot)
-    oldRoot.destroy()
-    return _root
+    doc.init()
+    root.value = doc
+    oldDoc.remove()
+    renderEngine.value.root.append(doc)
+    emit('setDoc', doc, oldDoc)
+    oldDoc.destroy()
+    return doc
   }
 
   const loadDoc: Mce.Editor['loadDoc'] = async (source) => {
     docLoading.value = true
     emit('docLoading', source)
     try {
-      const _doc = await setDoc(await load(source))
-      emit('docLoaded', source, _doc)
+      await waitUntilFontLoad()
+      const data = await load(source)
+      const doc = new Doc(data)
+      if (config.value.db.local) {
+        await doc.loadIndexeddb()
+      }
+      setDoc(doc)
+      emit('docLoaded', source, doc)
       docLoading.value = false
-      return _doc
+      return doc
     }
     catch (err: any) {
       emit('docLoaded', source, err)
@@ -167,6 +173,11 @@ export default definePlugin((editor, options) => {
 
       if (source) {
         await setDoc(source)
+      }
+      else {
+        if (options.db?.local) {
+          await root.value.loadIndexeddb()
+        }
       }
     },
   }
