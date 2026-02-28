@@ -50,7 +50,7 @@ npm i mce
     viewport: {
       camera: { enabled: true },
       zoom: { strategy: 'containWidth' },
-      screenPadding: props.screenPadding ?? { left: 20, top: 20, right: 20, bottom: 20 },
+      screenPadding: { left: 0, top: 0, right: 0, bottom: 0 },
     },
     canvas: {
       checkerboard: { enabled: true, style: 'grid' },
