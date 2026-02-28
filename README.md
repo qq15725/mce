@@ -36,36 +36,49 @@ npm i mce
   import openxml from '@mce/openxml'
   import pdf from '@mce/pdf'
   import svg from '@mce/svg'
+  import gifWorkerUrl from 'modern-gif/worker?url'
 
   const editor = new Editor({
     plugins: [
       mp4(),
-      openxml(),
-      pdf(),
       svg(),
+      pdf(),
+      openxml(),
     ],
-    theme: 'system',
-    watermark: '/example.jpg',
-    checkerboard: true,
-    checkerboardStyle: 'grid',
-    pixelGrid: true,
-    pixelate: true,
-    camera: true,
-    ruler: true,
-    scrollbar: true,
-    toolbelt: true,
-    statusbar: true,
-    frameGap: 48,
-    typographyStrategy: 'autoHeight',
-    handleShape: 'rect',
-    screenCenterOffset: { left: 0, top: 0, right: 0, bottom: 0 },
-    localDb: false,
+    gifWorkerUrl,
+    locale: { locale: 'zhHans' },
+    viewport: {
+      camera: { enabled: true },
+      zoom: { strategy: 'containWidth' },
+      screenPadding: props.screenPadding ?? { left: 20, top: 20, right: 20, bottom: 20 },
+    },
+    canvas: {
+      checkerboard: { enabled: true, style: 'grid' },
+      pixelGrid: { enabled: true },
+      frame: { outline: false },
+      watermark: {
+        url: '/example.jpg',
+        width: 100,
+        alpha: 0.05,
+        rotation: 0.5236,
+      },
+    },
+    ui: {
+      ruler: { visible: true },
+      scrollbar: { visible: true },
+      statusbar: { visible: true },
+      toolbelt: { visible: true },
+      madeWith: { visible: true },
+    },
+    typography: {
+      strategy: 'autoHeight',
+      defaultFont: {
+        family: 'SourceHanSansCN-Normal',
+        src: '/fonts/SourceHanSansCN-Normal.woff',
+      },
+    },
     customUpload: async (blob) => URL.createObjectURL(blob),
     customContextMenu: (menu) => menu,
-    locale: {
-      locale: 'zhHans', // default 'en'
-    },
-    defaultFont: { family: 'SourceHanSansCN-Normal', src: '/SourceHanSansCN-Normal.woff' },
     doc: {
       children: [
         { foreground: '/example.png', style: { rotate: 60, left: 200, top: 10, width: 50, height: 50 } },
