@@ -80,16 +80,12 @@
   },
   "peerDependencies": {
     "lottie-web": "^5",
-    "modern-gif": "^2",
     "typescript": ">=4.7",
     "vue": "^3.5.0",
     "yoga-layout": "^3"
   },
   "peerDependenciesMeta": {
     "lottie-web": {
-      "optional": true
-    },
-    "modern-gif": {
       "optional": true
     },
     "typescript": {
@@ -104,7 +100,6 @@
     "@types/lodash-es": "^4.17.12",
     "@vitejs/plugin-vue": "^6.0.4",
     "jiti": "^2.6.1",
-    "modern-gif": "^2.0.4",
     "sass-embedded": "^1.97.3",
     "typedoc": "^0.28.17",
     "typedoc-plugin-markdown": "^4.10.0"

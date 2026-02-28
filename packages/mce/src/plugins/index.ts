@@ -8,7 +8,6 @@ import _doc from './doc'
 import _edit from './edit'
 import _formatPaint from './formatPaint'
 import _frame from './frame'
-import _gif from './gif'
 import _history from './history'
 import _hover from './hover'
 import _html from './html'
@@ -48,7 +47,6 @@ export const plugins = [
   _edit,
   _formatPaint,
   _frame,
-  _gif,
   _history,
   _hover,
   _html,

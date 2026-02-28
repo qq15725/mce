@@ -58,6 +58,16 @@ importers:
         specifier: workspace:*
         version: link:../mce
 
+  packages/gif:
+    dependencies:
+      modern-gif:
+        specifier: ^2.0.4
+        version: 2.0.4
+    devDependencies:
+      mce:
+        specifier: workspace:*
+        version: link:../mce
+
   packages/mce:
     dependencies:
       '@floating-ui/vue':
@@ -118,9 +128,6 @@ importers:
       jiti:
         specifier: ^2.6.1
         version: 2.6.1
-      modern-gif:
-        specifier: ^2.0.4
-        version: 2.0.4
       sass-embedded:
         specifier: ^1.97.3
         version: 1.97.3
@@ -182,6 +189,12 @@ importers:
       '@mce/gaoding':
         specifier: workspace:*
         version: link:../packages/gaoding
+      '@mce/gif':
+        specifier: workspace:*
+        version: link:../packages/gif
+      '@mce/mp4':
+        specifier: workspace:*
+        version: link:../packages/mp4
       '@mce/openxml':
         specifier: workspace:*
         version: link:../packages/openxml

@@ -18,6 +18,8 @@
     "@mce/openxml": "workspace:*",
     "@mce/pdf": "workspace:*",
     "@mce/svg": "workspace:*",
+    "@mce/mp4": "workspace:*",
+    "@mce/gif": "workspace:*",
     "@tsconfig/node22": "^22.0.5",
     "@vitejs/plugin-vue": "^6.0.4",
     "@vue/tsconfig": "^0.8.1",

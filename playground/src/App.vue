@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import bigesj, { options } from '@mce/bigesj'
 import gaoding from '@mce/gaoding'
+import gif from '@mce/gif'
 import mp4 from '@mce/mp4'
 import openxml from '@mce/openxml'
 import pdf from '@mce/pdf'
@@ -37,10 +38,11 @@ const editor = new Editor({
   plugins: [
     bigesj({ font: true }),
     gaoding(),
-    mp4(),
-    svg(),
-    pdf(),
     openxml(),
+    pdf(),
+    svg(),
+    mp4(),
+    gif(),
   ],
   gifWorkerUrl,
 })
