@@ -27,6 +27,8 @@ declare global {
       setDoc: (doc: DocumentSource) => Promise<Doc>
       loadDoc: (source: any) => Promise<Doc>
       clearDoc: () => void
+      newDoc: () => void
+      openDoc: () => Promise<void>
     }
 
     interface Commands {
@@ -34,6 +36,13 @@ declare global {
       setDoc: (doc: DocumentSource) => Promise<Doc>
       loadDoc: (source: any) => Promise<Doc>
       clearDoc: () => void
+      newDoc: () => void
+      openDoc: () => Promise<void>
+    }
+
+    interface Hotkeys {
+      newDoc: [event: KeyboardEvent]
+      openDoc: [event: KeyboardEvent]
     }
 
     interface Events {
@@ -57,13 +66,14 @@ export default definePlugin((editor, options) => {
     to,
     waitUntilFontLoad,
     fonts,
+    openFileDialog,
   } = editor
 
-  const getDoc: Mce.Commands['getDoc'] = () => {
+  const getDoc: Mce.Editor['getDoc'] = () => {
     return to('json')
   }
 
-  const setDoc: Mce.Commands['setDoc'] = async (source) => {
+  const setDoc: Mce.Editor['setDoc'] = async (source) => {
     fonts.clear()
     await waitUntilFontLoad()
     const oldRoot = root.value
@@ -96,7 +106,7 @@ export default definePlugin((editor, options) => {
     return _root
   }
 
-  const loadDoc: Mce.Commands['loadDoc'] = async (source) => {
+  const loadDoc: Mce.Editor['loadDoc'] = async (source) => {
     docLoading.value = true
     emit('docLoading', source)
     try {
@@ -112,8 +122,19 @@ export default definePlugin((editor, options) => {
     }
   }
 
-  const clearDoc: Mce.Commands['clearDoc'] = async () => {
+  const clearDoc: Mce.Editor['clearDoc'] = async () => {
     setDoc([])
+  }
+
+  const newDoc: Mce.Editor['newDoc'] = async () => {
+    setDoc([])
+  }
+
+  const openDoc: Mce.Editor['openDoc'] = async () => {
+    const [file] = await openFileDialog()
+    if (file) {
+      await loadDoc(file)
+    }
   }
 
   Object.assign(editor, {
@@ -121,6 +142,8 @@ export default definePlugin((editor, options) => {
     setDoc,
     loadDoc,
     clearDoc,
+    newDoc,
+    openDoc,
   })
 
   return {
@@ -130,6 +153,12 @@ export default definePlugin((editor, options) => {
       { command: 'setDoc', handle: setDoc },
       { command: 'loadDoc', handle: loadDoc },
       { command: 'clearDoc', handle: clearDoc },
+      { command: 'newDoc', handle: clearDoc },
+      { command: 'openDoc', handle: openDoc },
+    ],
+    hotkeys: [
+      { command: 'newDoc', key: 'Alt+CmdOrCtrl+Dead' },
+      { command: 'openDoc', key: 'CmdOrCtrl+O' },
     ],
     setup: async () => {
       const {

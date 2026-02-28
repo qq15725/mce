@@ -62,8 +62,8 @@ export default definePlugin((editor, options) => {
   const fileMenu = computed(() => ({
     key: 'file',
     children: [
-      { key: 'new' },
-      { key: 'open' },
+      { key: 'newDoc' },
+      { key: 'openDoc' },
       { type: 'divider' },
       { key: 'import' },
       exportMenu.value.children.length && exportMenu.value,
