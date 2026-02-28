@@ -12,10 +12,15 @@ declare global {
     type CopySource = string | Blob | Blob[] | Record<string, any>[]
     type PasteSource = DataTransfer | ClipboardItem[]
 
+    interface CopyAsOptions extends ExportOptions {
+      //
+    }
+
     interface Commands {
       cancel: () => void
       delete: () => void
       copy: (source?: CopySource) => Promise<void>
+      copyAs: (type: keyof Exporters, options?: CopyAsOptions) => Promise<void>
       cut: () => Promise<void>
       paste: (source?: PasteSource) => Promise<void>
       duplicate: () => void
@@ -49,6 +54,8 @@ export default definePlugin((editor, options) => {
     load,
     addElements,
     hoverElement,
+    to,
+    exporters,
   } = editor
 
   const copiedData = ref<any>()
@@ -161,6 +168,20 @@ export default definePlugin((editor, options) => {
         }
       }
     }
+  }
+
+  const copyAs: Mce.Commands['copyAs'] = async (key, options = {}) => {
+    let res: any = await to(key, {
+      selected: true,
+      ...options,
+    })
+
+    const exporter = exporters.get(key)
+    if (exporter && typeof exporter.copyAs === 'function') {
+      res = exporter.copyAs(res)
+    }
+
+    exec('copy', res)
   }
 
   const cut: Mce.Commands['cut'] = async () => {
@@ -307,6 +328,7 @@ export default definePlugin((editor, options) => {
       { command: 'cancel', handle: cancel },
       { command: 'delete', handle: _delete },
       { command: 'copy', handle: copy },
+      { command: 'copyAs', handle: copyAs },
       { command: 'cut', handle: cut },
       { command: 'paste', handle: paste },
       { command: 'duplicate', handle: duplicate },

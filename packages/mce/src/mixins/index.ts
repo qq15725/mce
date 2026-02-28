@@ -9,18 +9,18 @@ import _0_context from './0.context'
 import _0_font from './0.font'
 import _0_locale from './0.locale'
 import _1_frame from './1.frame'
-import _1_hotkey from './1.hotkey'
 import _1_screen from './1.screen'
 import _1_timeline from './1.timeline'
 import _1_upload from './1.upload'
 import _2_box from './2.box'
-import _2_export from './2.export'
-import _2_load from './2.load'
 import _4_0_node from './4.0.node'
 import _4_2_frame from './4.2.frame'
 import _4_3_element from './4.3.element'
+import _exporter from './exporter'
+import _hotkey from './hotkey'
 import _http from './http'
-import _snap from './snap'
+import _loader from './loader'
+import _snapper from './snapper'
 import _snapshot from './snapshot'
 import _tool from './tool'
 
@@ -32,18 +32,18 @@ export const mixins = [
   _0_font,
   _0_locale,
   _1_frame,
-  _1_hotkey,
   _1_screen,
   _1_timeline,
   _1_upload,
   _2_box,
-  _2_export,
-  _2_load,
   _4_0_node,
   _4_2_frame,
   _4_3_element,
+  _exporter,
+  _hotkey,
   _http,
-  _snap,
+  _loader,
+  _snapper,
   _snapshot,
   _tool,
 ]
