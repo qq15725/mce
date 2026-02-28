@@ -22,6 +22,13 @@ declare global {
         | Element[]
         | string
 
+    interface Editor {
+      getDoc: () => JsonData
+      setDoc: (doc: DocumentSource) => Promise<Doc>
+      loadDoc: (source: any) => Promise<Doc>
+      clearDoc: () => void
+    }
+
     interface Commands {
       getDoc: () => JsonData
       setDoc: (doc: DocumentSource) => Promise<Doc>
@@ -108,6 +115,13 @@ export default definePlugin((editor, options) => {
   const clearDoc: Mce.Commands['clearDoc'] = async () => {
     setDoc([])
   }
+
+  Object.assign(editor, {
+    getDoc,
+    setDoc,
+    loadDoc,
+    clearDoc,
+  })
 
   return {
     name: 'mce:doc',
