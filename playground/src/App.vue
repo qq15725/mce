@@ -73,6 +73,7 @@ const {
     <EditorLayout :editor="editor">
       <template #selection />
       <template #selection.transform />
+
       <template #selection.foreground-cropper="{ scale, setScale, setAspectRatio, ok, cancel }">
         <div class="bar cropbar">
           <button @click="() => setAspectRatio(0)">
@@ -93,7 +94,8 @@ const {
           </button>
         </div>
       </template>
-      <template #floatbar>
+
+      <template #floatbar-top>
         <div class="bar floatbar">
           <template v-if="element?.foreground.isValid()">
             <button @click="() => editor.state.value = editor.state.value === 'cropping' ? undefined : 'cropping'">
@@ -106,6 +108,7 @@ const {
           <span v-else>FLOATBAR-TOP</span>
         </div>
       </template>
+
       <template #drawboard>
         <div class="bar toolbar">
           <button @click="() => editor.exec('toggleUi', 'ruler')">

@@ -1,3 +1,22 @@
+## [0.17.1](https://github.com/qq15725/mce/compare/v0.17.0...v0.17.1) (2026-02-28)
+
+
+### Bug Fixes
+
+* setDoc ([e094020](https://github.com/qq15725/mce/commit/e0940202d37efc00e60221bae3c64a3a4aed7599))
+
+
+### Features
+
+* @mce/gif pkg ([3533fb7](https://github.com/qq15725/mce/commit/3533fb7c1a2a1c8fd99db392ea9d492270bbfc92))
+* doc plugin ([ce53f8c](https://github.com/qq15725/mce/commit/ce53f8c4d92997767efe88f28200936da78d00e7))
+* export editor doc api ([624b38a](https://github.com/qq15725/mce/commit/624b38a42b459e6584020f4ad56faeef4828e3b9))
+* rename mixins name ([723edd4](https://github.com/qq15725/mce/commit/723edd4679b1d871f36aa8dbad91c88f30865fda))
+* replace class prefiex mce- to m- ([106df2c](https://github.com/qq15725/mce/commit/106df2c80f997e53483040be6896f098518a2a59))
+* update default options ([ffae100](https://github.com/qq15725/mce/commit/ffae100f290e53ca939737939628ef5d64a8df38))
+
+
+
 # [0.17.0](https://github.com/qq15725/mce/compare/v0.16.7...v0.17.0) (2026-02-25)
 
 
