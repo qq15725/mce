@@ -32,6 +32,7 @@ npm i mce
 <script setup lang="ts">
   import { Editor, EditorLayout, EditorLayoutItem } from 'mce'
   import 'mce/styles'
+  import gif from '@mce/gif'
   import mp4 from '@mce/mp4'
   import openxml from '@mce/openxml'
   import pdf from '@mce/pdf'
@@ -40,6 +41,7 @@ npm i mce
 
   const editor = new Editor({
     plugins: [
+      gif(),
       mp4(),
       svg(),
       pdf(),
