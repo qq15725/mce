@@ -10,12 +10,14 @@ export const options: Options = {
   canvas: {
     checkerboard: { enabled: true, style: 'grid' },
     pixelGrid: { enabled: true },
-    frame: { outline: false },
+    frame: { gap: 48, outline: false, thumbnail: false },
   },
   ui: {
     ruler: { visible: true },
     scrollbar: { visible: true },
     statusbar: { visible: true },
+    toolbelt: { visible: false },
+    madeWith: { visible: false },
   },
   interaction: {
     transform: {
