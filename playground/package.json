@@ -15,16 +15,16 @@
   "devDependencies": {
     "@mce/bigesj": "workspace:*",
     "@mce/gaoding": "workspace:*",
+    "@mce/gif": "workspace:*",
+    "@mce/mp4": "workspace:*",
     "@mce/openxml": "workspace:*",
     "@mce/pdf": "workspace:*",
     "@mce/svg": "workspace:*",
-    "@mce/mp4": "workspace:*",
-    "@mce/gif": "workspace:*",
     "@tsconfig/node22": "^22.0.5",
     "@vitejs/plugin-vue": "^6.0.4",
-    "@vue/tsconfig": "^0.8.1",
+    "@vue/tsconfig": "^0.9.0",
     "mce": "workspace:*",
     "npm-run-all2": "^8.0.4",
-    "vite-plugin-vue-devtools": "^8.0.6"
+    "vite-plugin-vue-devtools": "^8.0.7"
   }
 }

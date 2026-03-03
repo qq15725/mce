@@ -66,13 +66,13 @@
     "typecheck": "vue-tsc --noEmit"
   },
   "dependencies": {
-    "@floating-ui/vue": "^1.1.10",
+    "@floating-ui/vue": "^1.1.11",
     "@vueuse/components": "^14.2.1",
     "@vueuse/core": "^14.2.1",
     "diff": "^8.0.3",
     "file-saver": "^2.0.5",
     "lodash-es": "^4.17.23",
-    "modern-canvas": "^0.15.6",
+    "modern-canvas": "^0.15.7",
     "modern-font": "^0.4.4",
     "modern-idoc": "^0.10.21",
     "modern-text": "^1.10.15",
