@@ -212,8 +212,8 @@ export default definePlugin((editor) => {
   return {
     name: 'mce:zoom',
     commands: [
-      { command: 'zoomIn', handle: () => camera.value.addZoom(0.25) },
-      { command: 'zoomOut', handle: () => camera.value.addZoom(-0.25) },
+      { command: 'zoomIn', handle: () => camera.value.zoomIn() },
+      { command: 'zoomOut', handle: () => camera.value.zoomOut() },
       { command: 'zoomTo', handle: zoomTo },
       { command: 'zoomTo100', handle: () => zoomTo(1) },
       { command: 'zoomToFit', handle: () => zoomTo('root', { strategy: config.value.strategy }) },
