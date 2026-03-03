@@ -1,3 +1,10 @@
+## [0.17.3](https://github.com/qq15725/mce/compare/v0.17.2...v0.17.3) (2026-03-03)
+
+
+### Bug Fixes
+
+* msaa ([4c36d24](https://github.com/qq15725/mce/commit/4c36d245dcb19e5209b3bba231ccb00e4292c02a))
+* zoom at screen center ([db11f78](https://github.com/qq15725/mce/commit/db11f78db05768b2146d18e3bbf959fc51e269e3))
 ## [0.17.2](https://github.com/qq15725/mce/compare/v0.17.1...v0.17.2) (2026-02-28)
 
 
