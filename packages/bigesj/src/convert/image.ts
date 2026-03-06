@@ -2,6 +2,7 @@ import { assets } from 'modern-canvas'
 
 export async function convertImageElementToUrl(el: Record<string, any>): Promise<string> {
   const {
+    cropping = {},
     transform = {},
     style = {},
     maskUrl,
@@ -66,9 +67,9 @@ export async function convertImageElementToUrl(el: Record<string, any>): Promise
   // maskUrl
   if (maskUrl) {
     const mask = await assets.fetchImageBitmap(maskUrl)
-    ctx.drawImage(mask, 0, 0, mask.width, mask.height, 0, 0, width, height)
-    mask.close()
+    ctx.drawImage(mask, 0, 0, cropping?.maskWidth ?? width, cropping?.maskHeight ?? height)
     ctx.globalCompositeOperation = 'source-in'
+    mask.close()
   }
 
   // draw

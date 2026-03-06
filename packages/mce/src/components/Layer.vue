@@ -274,6 +274,14 @@ function onInputBlur() {
       </div>
 
       <div
+        v-if="props.root"
+        class="m-layer__name"
+      >
+        {{ t('layers') }}
+      </div>
+
+      <div
+        v-else
         class="m-layer__name"
         @dblclick="onDblclickName"
       >
