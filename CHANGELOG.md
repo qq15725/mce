@@ -1,3 +1,16 @@
+## [0.17.4](https://github.com/qq15725/mce/compare/v0.17.3...v0.17.4) (2026-03-06)
+
+
+### Bug Fixes
+
+* obbToFit ([1071e02](https://github.com/qq15725/mce/commit/1071e021d8cb8670577f74b54eb33ea3583931cb))
+
+
+### Features
+
+* change root layer name ([8af2b3d](https://github.com/qq15725/mce/commit/8af2b3d9f3df0db51b52480f98196504e6dc68ab))
+* third party clipboard ([b23b785](https://github.com/qq15725/mce/commit/b23b7855b5a6b637c84744c93ddc3088cd0ef0e6))
+* third party clipboard ([c401de1](https://github.com/qq15725/mce/commit/c401de151f4e394acd14805923c4a0c38469fb67))
 ## [0.17.3](https://github.com/qq15725/mce/compare/v0.17.2...v0.17.3) (2026-03-03)
 
 
