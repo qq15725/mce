@@ -3,7 +3,7 @@ import type { Node } from 'modern-canvas'
 import { definePlugin } from 'mce'
 import { onBeforeMount, onScopeDispose } from 'vue'
 import { useFonts } from './composables'
-import { bidTidLoader, bigeLoader } from './loaders'
+import { bidTidLoader, bigeLoader, clipboardLoader } from './loaders'
 
 export interface PluginOptions {
   font?: boolean
@@ -33,6 +33,7 @@ export function plugin(options: PluginOptions = {}) {
       loaders: [
         bigeLoader(),
         bidTidLoader(editor, _api),
+        clipboardLoader(),
       ],
       setup: async () => {
         if (font) {

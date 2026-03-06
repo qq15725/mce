@@ -14,7 +14,7 @@ import {
   ref,
   useId,
 } from 'vue'
-import { findChildrenWithProvide } from '../utils'
+import { addDragListener, findChildrenWithProvide } from '../utils'
 
 export interface LayerItem {
   id: string
@@ -91,24 +91,15 @@ export function createLayer() {
       registered.value = registered.value.filter(v => v !== id)
     },
     onMousedown: (e, id) => {
-      const start = { x: e.clientX, y: e.clientY }
+      const from = nodeItems.get(id)?.value
 
-      function onMove(e: MouseEvent) {
-        const current = { x: e.clientX, y: e.clientY }
-
-        if (
-          !dragging.value
-          && (
-            Math.abs(current.x - start.x) >= 3
-            || Math.abs(current.y - start.y) >= 3
-          )
-        ) {
+      addDragListener(e, {
+        threshold: 10,
+        start: () => {
           dragging.value = true
-        }
-
-        if (dragging.value) {
-          const targets = e.composedPath()
-          const layer = targets.find((target) => {
+        },
+        move: ({ event }) => {
+          const layer = event.composedPath().find((target) => {
             return target instanceof HTMLElement
               && target.classList.contains('m-layer')
           })
@@ -116,37 +107,35 @@ export function createLayer() {
           if (id) {
             droppingItemId.value = id
           }
-        }
-      }
+        },
+        end: () => {
+          if (droppingItemId.value) {
+            const to = nodeItems.get(droppingItemId.value)?.value
 
-      function onUp() {
-        if (droppingItemId.value) {
-          const from = nodeItems.get(id)?.value
-          const to = nodeItems.get(droppingItemId.value)?.value
-
-          if (to && from && !from.equal(to)) {
-            let toIndex = to.getIndex() + 1
             if (
-              to.parent
-              && from.parent
-              && to.parent.equal(from.parent)
+              to
+              && from
+              && !from.equal(to)
             ) {
-              toIndex--
+              let toIndex = to.getIndex() + 1
+              if (
+                to.parent
+                && from.parent
+                && to.parent.equal(from.parent)
+              ) {
+                toIndex--
+              }
+              to.parent?.moveChild(
+                from,
+                toIndex,
+              )
             }
-            to.parent?.moveChild(
-              from,
-              toIndex,
-            )
           }
-        }
-        dragging.value = false
-        droppingItemId.value = undefined
-        document.removeEventListener('mousemove', onMove)
-        document.removeEventListener('mouseup', onUp)
-      }
-
-      document.addEventListener('mousemove', onMove)
-      document.addEventListener('mouseup', onUp)
+          dragging.value = false
+          droppingItemId.value = undefined
+          dragging.value = false
+        },
+      })
     },
   })
 

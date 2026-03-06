@@ -1,6 +1,10 @@
 import { definePlugin } from '../plugin'
 
-export default definePlugin(() => {
+export default definePlugin((editor) => {
+  const {
+    load,
+  } = editor
+
   const RE = /\.html$/i
 
   return {
@@ -24,11 +28,13 @@ export default definePlugin(() => {
         },
         load: async (source: Blob | File) => {
           const dom = new DOMParser().parseFromString(await source.text(), 'text/html')
-          const mce = dom.querySelector('mce-clipboard')
-          if (mce) {
-            return JSON.parse(mce.textContent) as any[]
+          try {
+            return load(dom)
           }
-          return []
+          // eslint-disable-next-line unused-imports/no-unused-vars
+          catch (_err: any) {
+            return []
+          }
         },
       },
     ],
