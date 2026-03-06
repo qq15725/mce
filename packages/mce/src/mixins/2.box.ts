@@ -67,7 +67,7 @@ export default defineMixin((editor) => {
       const aabbs: Record<number, any> = {}
       element.children.forEach((child, index) => {
         if (isElement(child)) {
-          aabbs[index] = child.globalAabb
+          aabbs[index] = getAabb(child)
         }
       })
 
