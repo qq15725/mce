@@ -29,10 +29,11 @@ export default definePlugin((editor) => {
         load: async (source: Blob | File) => {
           const dom = new DOMParser().parseFromString(await source.text(), 'text/html')
           try {
-            return load(dom)
+            return await load(dom)
           }
           // eslint-disable-next-line unused-imports/no-unused-vars
           catch (_err: any) {
+            console.log(dom)
             return []
           }
         },

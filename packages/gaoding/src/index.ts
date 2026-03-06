@@ -1,6 +1,6 @@
 import { plugin } from './plugin'
 
-export * from './clipboard'
+export * from './loaders'
 export * from './plugin'
 
 export default plugin
