@@ -6,7 +6,7 @@ import { Aabb2D, assets, Camera2D, DrawboardEffect, Element2D, Engine, Node, Tim
 import { Fonts } from 'modern-font'
 import { computed, markRaw, onBeforeMount, onScopeDispose, reactive, ref, watch } from 'vue'
 import { defineMixin } from '../mixin'
-import { Doc } from '../nodes'
+import { Doc } from '../scene'
 
 declare global {
   namespace Mce {

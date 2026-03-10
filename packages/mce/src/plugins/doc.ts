@@ -1,7 +1,7 @@
 import type { Element } from 'modern-idoc'
 import { Element2D } from 'modern-canvas'
-import { Doc } from '../nodes'
 import { definePlugin } from '../plugin'
+import { Doc } from '../scene'
 
 declare global {
   namespace Mce {

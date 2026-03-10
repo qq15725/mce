@@ -1,5 +1,5 @@
 import type { Node } from 'modern-canvas'
-import type { Doc } from '../nodes'
+import type { Doc } from '../scene'
 import { onBeforeMount, onScopeDispose } from 'vue'
 import Frames from '../components/Frames.vue'
 import { definePlugin } from '../plugin'
