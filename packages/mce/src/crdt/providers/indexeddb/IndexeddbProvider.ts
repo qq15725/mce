@@ -13,18 +13,27 @@ export function fetchUpdates(
   beforeApplyUpdatesCallback?: ((arg0: IDBObjectStore) => void) | undefined,
   afterApplyUpdatesCallback?: ((arg0: IDBObjectStore) => void) | undefined,
 ): Promise<IDBObjectStore> {
-  const [updatesStore] = idb.transact(
+  const [
+    updatesStore,
+  ] = idb.transact(
     idbPersistence.db!,
     [updatesStoreName],
   )
-  const range = idb.createIDBKeyRangeLowerBound(idbPersistence._dbref, false)
-  return idb.getAll(updatesStore, range)
+  return idb.getAll(
+    updatesStore,
+    idb.createIDBKeyRangeLowerBound(idbPersistence._dbref, false),
+  )
     .then((updates) => {
       if (!idbPersistence._destroyed) {
         beforeApplyUpdatesCallback?.(updatesStore)
-        Y.transact(idbPersistence.doc, () => {
-          updates.forEach(val => Y.applyUpdate(idbPersistence.doc, val))
-        }, idbPersistence, false)
+        Y.transact(
+          idbPersistence.doc,
+          () => {
+            updates.forEach(val => Y.applyUpdate(idbPersistence.doc, val))
+          },
+          idbPersistence,
+          false,
+        )
         afterApplyUpdatesCallback?.(updatesStore)
       }
     })
@@ -123,9 +132,10 @@ export class IndexeddbProvider extends Observable<IndexeddbProviderEvents> {
         }
       }
     }
-    doc.on('update', this._storeUpdate)
 
     this.destroy = this.destroy.bind(this)
+
+    doc.on('update', this._storeUpdate)
     doc.on('destroy', this.destroy)
   }
 

@@ -5,7 +5,7 @@ import { Element2D, Node } from 'modern-canvas'
 import { idGenerator, Observable } from 'modern-idoc'
 import { isReactive, markRaw, reactive } from 'vue'
 import * as Y from 'yjs'
-import { IndexeddbProvider } from '../indexeddb'
+import { IndexeddbProvider } from './providers'
 
 export type YNode = Y.Map<unknown> & {
   get:
@@ -91,8 +91,7 @@ export class YDoc extends Observable {
   }
 
   async loadIndexeddb(): Promise<void> {
-    const indexeddb = new IndexeddbProvider(this._yDoc.guid, this._yDoc)
-    this.indexeddb = await indexeddb.whenSynced
+    this.indexeddb = await new IndexeddbProvider(this._yDoc.guid, this._yDoc).whenSynced
     console.info('loaded data from indexed db')
   }
 
