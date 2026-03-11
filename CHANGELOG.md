@@ -1,3 +1,14 @@
+## [0.17.5](https://github.com/qq15725/mce/compare/v0.17.4...v0.17.5) (2026-03-11)
+
+
+### Bug Fixes
+
+* text reactive ([5b233ef](https://github.com/qq15725/mce/commit/5b233efe71a0aa3a1ddef380fcf91a8fdc089ae9))
+
+
+### Features
+
+* up deps ([816fc7c](https://github.com/qq15725/mce/commit/816fc7c5761ba1bac3f662395f089ea7cd524ba8))
 ## [0.17.4](https://github.com/qq15725/mce/compare/v0.17.3...v0.17.4) (2026-03-06)
 
 
