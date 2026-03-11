@@ -73,9 +73,10 @@
     "file-saver": "^2.0.5",
     "lodash-es": "^4.17.23",
     "modern-canvas": "^0.15.8",
-    "modern-font": "^0.4.4",
+    "modern-font": "^0.5.0",
     "modern-idoc": "^0.10.21",
-    "modern-text": "^1.10.15",
+    "modern-text": "^1.10.16",
+    "y-protocols": "^1.0.7",
     "yjs": "^13.6.29"
   },
   "peerDependencies": {
@@ -100,7 +101,7 @@
     "@types/lodash-es": "^4.17.12",
     "@vitejs/plugin-vue": "^6.0.4",
     "jiti": "^2.6.1",
-    "sass-embedded": "^1.97.3",
+    "sass-embedded": "^1.98.0",
     "typedoc": "^0.28.17",
     "typedoc-plugin-markdown": "^4.10.0"
   }

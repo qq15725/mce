@@ -66,25 +66,11 @@ export class Doc extends Node {
     this._source = _source
   }
 
-  transact = <T>(fn: () => T, should = true): T => {
-    return this._yDoc.transact(fn, should)
-  }
-
-  undo = (): void => {
-    this._yDoc.undoManager.undo()
-  }
-
-  redo = (): void => {
-    this._yDoc.undoManager.redo()
-  }
-
-  stopCapturing = (): void => {
-    this._yDoc.undoManager.stopCapturing()
-  }
-
-  clearHistory = (): void => {
-    this._yDoc.undoManager.clear()
-  }
+  transact = <T>(fn: () => T, should = true): T => this._yDoc.transact(fn, should)
+  undo = (): any | null => this._yDoc.undoManager.undo()
+  redo = (): any | null => this._yDoc.undoManager.redo()
+  stopCapturing = (): void => this._yDoc.undoManager.stopCapturing()
+  clearHistory = (): void => this._yDoc.undoManager.clear()
 
   set = (source: Document): this => {
     const { children = [], ...props } = source
@@ -101,7 +87,6 @@ export class Doc extends Node {
   }
 
   loadIndexeddb = async (): Promise<void> => {
-    console.log(this._yDoc.id)
     await this._yDoc.loadIndexeddb()
   }
 

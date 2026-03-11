@@ -361,9 +361,9 @@ export class YDoc extends Observable {
     childrenIds.observe(observeFn)
   }
 
-  protected _proxyNode(node: Node, yNode?: YNode, yChildrenIds?: Y.Array<string>): void {
+  protected _proxyNode(node: Node, yNode?: YNode, yChildrenIds?: Y.Array<string>): Node {
     if (node.internalMode !== 'default') {
-      return
+      return node
     }
 
     const id = node.id
@@ -381,8 +381,28 @@ export class YDoc extends Observable {
       this.undoManager.addToScope(yNode)
     }
 
-    if (!this._nodeMap.has(id)) {
+    const _node = this._nodeMap.get(id)
+
+    if (_node) {
+      node = _node
+    }
+    else {
       if (!isReactive(node)) {
+        const handle = (node: Node) => {
+          if (node instanceof Element2D) {
+            if (!(node.text.base as any).__markRaw__) {
+              const base = markRaw(node.text.base)
+              ;(base as any).__markRaw__ = true
+              base.setPropertyAccessor(node.text)
+              ;(node.text.base as any) = base
+            }
+          }
+        }
+        handle(node)
+        node.findOne((child) => {
+          handle(child)
+          return false
+        })
         node = reactive(node) as any
         if (node.parent) {
           node.parent.children[node.getIndex()] = node
@@ -423,9 +443,6 @@ export class YDoc extends Observable {
           }
           this._proxyProps((node as any)[key], yMap)
         })
-        const base = markRaw((node as any).text.base)
-        base.setPropertyAccessor((node as any).text)
-        ;(node as any).text.base = base
         node.text.update()
         node.requestRender()
       }
@@ -442,6 +459,8 @@ export class YDoc extends Observable {
 
       this._proxyChildren(node, yChildrenIds)
     }
+
+    return node
   }
 
   protected _initYNode(yNode: YNode): Node {
@@ -449,14 +468,12 @@ export class YDoc extends Observable {
     let node = this._nodeMap.get(id)
     if (!node) {
       this.undoManager.addToScope(yNode)
-      node = reactive(
-        Node.parse({
-          meta: {
-            inCanvasIs: yNode.get('meta')?.get('inCanvasIs') as string | undefined,
-          },
-        }),
-      ) as Node
-      this._proxyNode(node, yNode)
+      node = Node.parse({
+        meta: {
+          inCanvasIs: yNode.get('meta')?.get('inCanvasIs') as string | undefined,
+        },
+      }) as Node
+      node = this._proxyNode(node, yNode)
       this._nodeMap.set(id, node)
     }
     return node
