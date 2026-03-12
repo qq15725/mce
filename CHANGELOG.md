@@ -1,3 +1,9 @@
+## [0.17.6](https://github.com/qq15725/mce/compare/v0.17.5...v0.17.6) (2026-03-12)
+
+
+### Bug Fixes
+
+* text reactive ([c6f24ea](https://github.com/qq15725/mce/commit/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1))
 ## [0.17.5](https://github.com/qq15725/mce/compare/v0.17.4...v0.17.5) (2026-03-11)
 
 
