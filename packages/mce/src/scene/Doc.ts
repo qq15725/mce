@@ -71,6 +71,7 @@ export class Doc extends Node {
   redo = (): any | null => this._yDoc.undoManager.redo()
   stopCapturing = (): void => this._yDoc.undoManager.stopCapturing()
   clearHistory = (): void => this._yDoc.undoManager.clear()
+  proxyNode = (node: Node): Node => this._yDoc._proxyNode(node)
 
   set = (source: Document): this => {
     const { children = [], ...props } = source

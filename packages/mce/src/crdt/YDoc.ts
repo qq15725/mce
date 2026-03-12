@@ -361,7 +361,7 @@ export class YDoc extends Observable {
     childrenIds.observe(observeFn)
   }
 
-  protected _proxyNode(node: Node, yNode?: YNode, yChildrenIds?: Y.Array<string>): Node {
+  _proxyNode(node: Node, yNode?: YNode, yChildrenIds?: Y.Array<string>): Node {
     if (node.internalMode !== 'default') {
       return node
     }

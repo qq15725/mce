@@ -1,7 +1,6 @@
 import type { Element2D, Vector2Like } from 'modern-canvas'
 import type { Element } from 'modern-idoc'
 import { Node } from 'modern-canvas'
-import { reactive } from 'vue'
 import { defineMixin } from '../mixin'
 
 declare global {
@@ -96,7 +95,7 @@ export default defineMixin((editor) => {
         if (regenId) {
           delete value.id
         }
-        const el = reactive(Node.parse(value)) as Element2D
+        const el = root.value.proxyNode(Node.parse(value)) as Element2D
         if (index === undefined) {
           _parent.appendChild(el)
         }
