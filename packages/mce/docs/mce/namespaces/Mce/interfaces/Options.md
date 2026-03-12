@@ -6,47 +6,91 @@
 
 # Interface: Options
 
-Defined in: [packages/mce/src/mixins/0.config/base.ts:7](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L7)
+Defined in: [packages/mce/src/mixins/0.locale.ts:25](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.locale.ts#L25)
 
 ## Extends
 
-- `Partial`\<[`Config`](Config.md)\>
+- `DeepMaybe`\<[`Config`](Config.md)\>
 
 ## Properties
 
-### camera?
+### canvas?
 
-> `optional` **camera**: `boolean`
+> `optional` **canvas**: `object`
 
-Defined in: [packages/mce/src/mixins/0.config/base.ts:35](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L35)
+Defined in: [packages/mce/src/mixins/0.config/base.ts:63](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.config/base.ts#L63)
 
-#### Inherited from
+#### checkerboard?
 
-[`Config`](Config.md).[`camera`](Config.md#camera)
+> `optional` **checkerboard**: `object`
 
-***
+##### checkerboard.enabled?
 
-### checkerboard?
+> `optional` **enabled**: `boolean`
 
-> `optional` **checkerboard**: `boolean`
+##### checkerboard.style?
 
-Defined in: [packages/mce/src/mixins/0.config/base.ts:31](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L31)
+> `optional` **style**: `"grid"` \| `"gridDark"` \| `"dot"`
 
-#### Inherited from
+#### frame?
 
-[`Config`](Config.md).[`checkerboard`](Config.md#checkerboard)
+> `optional` **frame**: `object`
 
-***
+##### frame.gap?
 
-### checkerboardStyle?
+> `optional` **gap**: `number`
 
-> `optional` **checkerboardStyle**: `CheckerboardStyle`
+##### frame.outline?
 
-Defined in: [packages/mce/src/mixins/0.config/base.ts:32](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L32)
+> `optional` **outline**: `boolean`
 
-#### Inherited from
+##### frame.thumbnail?
 
-[`Config`](Config.md).[`checkerboardStyle`](Config.md#checkerboardstyle)
+> `optional` **thumbnail**: `boolean`
+
+#### msaa?
+
+> `optional` **msaa**: `object`
+
+##### msaa.enabled?
+
+> `optional` **enabled**: `boolean`
+
+#### pixelate?
+
+> `optional` **pixelate**: `object`
+
+##### pixelate.enabled?
+
+> `optional` **enabled**: `boolean`
+
+#### pixelGrid?
+
+> `optional` **pixelGrid**: `object`
+
+##### pixelGrid.enabled?
+
+> `optional` **enabled**: `boolean`
+
+#### watermark?
+
+> `optional` **watermark**: `object`
+
+##### watermark.alpha?
+
+> `optional` **alpha**: `number`
+
+##### watermark.rotation?
+
+> `optional` **rotation**: `number`
+
+##### watermark.url?
+
+> `optional` **url**: `string`
+
+##### watermark.width?
+
+> `optional` **width**: `number`
 
 ***
 
@@ -54,7 +98,7 @@ Defined in: [packages/mce/src/mixins/0.config/base.ts:32](https://github.com/qq1
 
 > `optional` **clipboard**: `boolean`
 
-Defined in: [packages/mce/src/plugins/edit.ts:38](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/edit.ts#L38)
+Defined in: [packages/mce/src/plugins/edit.ts:43](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/edit.ts#L43)
 
 ***
 
@@ -62,7 +106,7 @@ Defined in: [packages/mce/src/plugins/edit.ts:38](https://github.com/qq15725/mce
 
 > `optional` **customContextMenu**: (`defaultMenu`, `editor`) => [`MenuItem`](MenuItem.md)[]
 
-Defined in: [packages/mce/src/plugins/menu.ts:23](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/menu.ts#L23)
+Defined in: [packages/mce/src/plugins/menu.ts:27](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/menu.ts#L27)
 
 #### Parameters
 
@@ -84,15 +128,19 @@ Defined in: [packages/mce/src/plugins/menu.ts:23](https://github.com/qq15725/mce
 
 > `optional` **customUpload**: [`Upload`](../type-aliases/Upload.md)
 
-Defined in: [packages/mce/src/mixins/1.upload.ts:12](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.upload.ts#L12)
+Defined in: [packages/mce/src/mixins/1.upload.ts:12](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/1.upload.ts#L12)
 
 ***
 
-### defaultFont?
+### db?
 
-> `optional` **defaultFont**: `FontSource`
+> `optional` **db**: `object`
 
-Defined in: [packages/mce/src/mixins/0.font.ts:14](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.font.ts#L14)
+Defined in: [packages/mce/src/mixins/0.config/base.ts:61](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.config/base.ts#L61)
+
+#### local?
+
+> `optional` **local**: `boolean`
 
 ***
 
@@ -100,63 +148,39 @@ Defined in: [packages/mce/src/mixins/0.font.ts:14](https://github.com/qq15725/mc
 
 > `optional` **doc**: [`DocumentSource`](../type-aliases/DocumentSource.md)
 
-Defined in: [packages/mce/src/plugins/doc.ts:8](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/doc.ts#L8)
-
-***
-
-### frameGap?
-
-> `optional` **frameGap**: `number`
-
-Defined in: [packages/mce/src/mixins/0.config/base.ts:37](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L37)
-
-#### Inherited from
-
-[`Config`](Config.md).[`frameGap`](Config.md#framegap)
-
-***
-
-### frameOutline?
-
-> `optional` **frameOutline**: `boolean`
-
-Defined in: [packages/mce/src/mixins/0.config/base.ts:36](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L36)
-
-#### Inherited from
-
-[`Config`](Config.md).[`frameOutline`](Config.md#frameoutline)
-
-***
-
-### frameScreenshot?
-
-> `optional` **frameScreenshot**: `boolean`
-
-Defined in: [packages/mce/src/mixins/snapshot.ts:11](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/snapshot.ts#L11)
-
-#### Inherited from
-
-[`Config`](Config.md).[`frameScreenshot`](Config.md#framescreenshot)
-
-***
-
-### gifWorkerUrl?
-
-> `optional` **gifWorkerUrl**: `string`
-
-Defined in: [packages/mce/src/plugins/gif.ts:7](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/gif.ts#L7)
+Defined in: [packages/mce/src/plugins/doc.ts:9](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/doc.ts#L9)
 
 ***
 
 ### hotkeys?
 
-> `optional` **hotkeys**: [`HotkeyData`](HotkeyData.md)[]
+> `optional` **hotkeys**: `object`[]
 
-Defined in: [packages/mce/src/mixins/1.hotkey.ts:22](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.hotkey.ts#L22)
+Defined in: [packages/mce/src/mixins/hotkey.ts:22](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/hotkey.ts#L22)
 
-#### Inherited from
+#### command?
 
-[`Config`](Config.md).[`hotkeys`](Config.md#hotkeys)
+> `optional` **command**: `string`
+
+#### editable?
+
+> `optional` **editable**: `boolean`
+
+#### enabled?
+
+> `optional` **enabled**: `boolean`
+
+#### key?
+
+> `optional` **key**: `string` \| (`string` \| `undefined`)[]
+
+#### preventDefault?
+
+> `optional` **preventDefault**: `boolean`
+
+#### system?
+
+> `optional` **system**: `boolean`
 
 ***
 
@@ -164,29 +188,35 @@ Defined in: [packages/mce/src/mixins/1.hotkey.ts:22](https://github.com/qq15725/
 
 > `optional` **http**: [`Http`](Http.md)
 
-Defined in: [packages/mce/src/mixins/http.ts:38](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/http.ts#L38)
+Defined in: [packages/mce/src/mixins/http.ts:38](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/http.ts#L38)
 
 ***
 
-### layers?
+### interaction?
 
-> `optional` **layers**: `boolean`
+> `optional` **interaction**: `object`
 
-#### Inherited from
+Defined in: [packages/mce/src/mixins/0.config/base.ts:65](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.config/base.ts#L65)
 
-`Options`.[`layers`](#layers)
+#### transform?
 
-***
+> `optional` **transform**: `object`
 
-### localDb?
+##### transform.handleShape?
 
-> `optional` **localDb**: `boolean`
+> `optional` **handleShape**: `"rect"` \| `"circle"`
 
-Defined in: [packages/mce/src/mixins/0.config/base.ts:40](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L40)
+##### transform.handleStyle?
 
-#### Inherited from
+> `optional` **handleStyle**: `"8-points"` \| `"4-points"`
 
-[`Config`](Config.md).[`localDb`](Config.md#localdb)
+##### transform.lockAspectRatioStrategy?
+
+> `optional` **lockAspectRatioStrategy**: `"all"` \| `"diagonal"`
+
+##### transform.rotator?
+
+> `optional` **rotator**: `boolean`
 
 ***
 
@@ -194,115 +224,7 @@ Defined in: [packages/mce/src/mixins/0.config/base.ts:40](https://github.com/qq1
 
 > `optional` **locale**: [`Locale`](Locale.md)
 
-Defined in: [packages/mce/src/mixins/0.locale.ts:27](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.locale.ts#L27)
-
-***
-
-### madeWith?
-
-> `optional` **madeWith**: `boolean`
-
-Defined in: [packages/mce/src/plugins/madeWith.ts:7](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/madeWith.ts#L7)
-
-#### Inherited from
-
-[`Config`](Config.md).[`madeWith`](Config.md#madewith)
-
-***
-
-### msaa?
-
-> `optional` **msaa**: `boolean`
-
-Defined in: [packages/mce/src/mixins/0.config/base.ts:30](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L30)
-
-#### Inherited from
-
-[`Config`](Config.md).[`msaa`](Config.md#msaa)
-
-***
-
-### nodeCreator?
-
-> `optional` **nodeCreator**: `boolean`
-
-Defined in: [packages/mce/src/plugins/node.ts:11](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/node.ts#L11)
-
-#### Inherited from
-
-[`Config`](Config.md).[`nodeCreator`](Config.md#nodecreator)
-
-***
-
-### pixelate?
-
-> `optional` **pixelate**: `boolean`
-
-Defined in: [packages/mce/src/mixins/0.config/base.ts:34](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L34)
-
-#### Inherited from
-
-[`Config`](Config.md).[`pixelate`](Config.md#pixelate)
-
-***
-
-### pixelGrid?
-
-> `optional` **pixelGrid**: `boolean`
-
-Defined in: [packages/mce/src/mixins/0.config/base.ts:33](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L33)
-
-#### Inherited from
-
-[`Config`](Config.md).[`pixelGrid`](Config.md#pixelgrid)
-
-***
-
-### ruler?
-
-> `optional` **ruler**: `boolean`
-
-Defined in: [packages/mce/src/plugins/ruler.ts:7](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/ruler.ts#L7)
-
-#### Inherited from
-
-[`Config`](Config.md).[`ruler`](Config.md#ruler)
-
-***
-
-### screenCenterOffset?
-
-> `optional` **screenCenterOffset**: [`ScreenOffset`](ScreenOffset.md)
-
-Defined in: [packages/mce/src/mixins/0.config/base.ts:41](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L41)
-
-#### Inherited from
-
-[`Config`](Config.md).[`screenCenterOffset`](Config.md#screencenteroffset)
-
-***
-
-### scrollbar?
-
-> `optional` **scrollbar**: `boolean`
-
-Defined in: [packages/mce/src/plugins/scroll.ts:27](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/scroll.ts#L27)
-
-#### Inherited from
-
-[`Config`](Config.md).[`scrollbar`](Config.md#scrollbar)
-
-***
-
-### statusbar?
-
-> `optional` **statusbar**: `boolean`
-
-Defined in: [packages/mce/src/plugins/statusbar.ts:7](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/statusbar.ts#L7)
-
-#### Inherited from
-
-[`Config`](Config.md).[`statusbar`](Config.md#statusbar)
+Defined in: [packages/mce/src/mixins/0.locale.ts:27](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.locale.ts#L27)
 
 ***
 
@@ -310,88 +232,140 @@ Defined in: [packages/mce/src/plugins/statusbar.ts:7](https://github.com/qq15725
 
 > `optional` **t**: [`Translation`](../type-aliases/Translation.md)
 
-Defined in: [packages/mce/src/mixins/0.locale.ts:26](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.locale.ts#L26)
+Defined in: [packages/mce/src/mixins/0.locale.ts:26](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.locale.ts#L26)
 
 ***
 
-### theme?
+### typography?
 
-> `optional` **theme**: [`Theme`](../type-aliases/Theme.md)
+> `optional` **typography**: `object`
 
-Defined in: [packages/mce/src/mixins/0.config/base.ts:28](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L28)
+Defined in: [packages/mce/src/plugins/typography.ts:17](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/typography.ts#L17)
 
-#### Inherited from
+#### defaultFont?
 
-[`Config`](Config.md).[`theme`](Config.md#theme)
+> `optional` **defaultFont**: `string` \| \{ `family?`: `string` \| (`string` \| `undefined`)[]; `src?`: `string`; \}
 
-***
+#### strategy?
 
-### timeline?
-
-> `optional` **timeline**: `boolean`
-
-Defined in: [packages/mce/src/plugins/timeline.ts:7](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/timeline.ts#L7)
-
-#### Inherited from
-
-[`Config`](Config.md).[`timeline`](Config.md#timeline)
+> `optional` **strategy**: `"autoHeight"` \| `"autoWidth"` \| `"fixedWidthHeight"` \| `"autoFontSize"`
 
 ***
 
-### toolbelt?
+### ui?
 
-> `optional` **toolbelt**: `boolean`
+> `optional` **ui**: `object`
 
-Defined in: [packages/mce/src/plugins/toolbelt.ts:7](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/toolbelt.ts#L7)
+Defined in: [packages/mce/src/mixins/0.config/base.ts:62](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.config/base.ts#L62)
 
-#### Inherited from
+#### creator?
 
-[`Config`](Config.md).[`toolbelt`](Config.md#toolbelt)
+> `optional` **creator**: `object`
+
+##### creator.visible?
+
+> `optional` **visible**: `boolean`
+
+#### madeWith?
+
+> `optional` **madeWith**: `object`
+
+##### madeWith.visible?
+
+> `optional` **visible**: `boolean`
+
+#### ruler?
+
+> `optional` **ruler**: `object`
+
+##### ruler.adsorbed?
+
+> `optional` **adsorbed**: `boolean`
+
+##### ruler.lineColor?
+
+> `optional` **lineColor**: `string`
+
+##### ruler.locked?
+
+> `optional` **locked**: `boolean`
+
+##### ruler.visible?
+
+> `optional` **visible**: `boolean`
+
+#### scrollbar?
+
+> `optional` **scrollbar**: `object`
+
+##### scrollbar.visible?
+
+> `optional` **visible**: `boolean`
+
+#### statusbar?
+
+> `optional` **statusbar**: `object`
+
+##### statusbar.visible?
+
+> `optional` **visible**: `boolean`
+
+#### timeline?
+
+> `optional` **timeline**: `object`
+
+##### timeline.visible?
+
+> `optional` **visible**: `boolean`
+
+#### toolbelt?
+
+> `optional` **toolbelt**: `object`
+
+##### toolbelt.visible?
+
+> `optional` **visible**: `boolean`
 
 ***
 
-### transformControls?
+### viewport?
 
-> `optional` **transformControls**: [`TransformControlsConfig`](TransformControlsConfig.md)
+> `optional` **viewport**: `object`
 
-Defined in: [packages/mce/src/mixins/0.config/base.ts:39](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L39)
+Defined in: [packages/mce/src/mixins/0.config/base.ts:64](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.config/base.ts#L64)
 
-#### Inherited from
+#### camera?
 
-[`Config`](Config.md).[`transformControls`](Config.md#transformcontrols)
+> `optional` **camera**: `object`
 
-***
+##### camera.enabled?
 
-### typographyStrategy?
+> `optional` **enabled**: `boolean`
 
-> `optional` **typographyStrategy**: [`TypographyStrategy`](../type-aliases/TypographyStrategy.md)
+#### screenPadding?
 
-Defined in: [packages/mce/src/mixins/0.config/base.ts:38](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L38)
+> `optional` **screenPadding**: `object`
 
-#### Inherited from
+##### screenPadding.bottom?
 
-[`Config`](Config.md).[`typographyStrategy`](Config.md#typographystrategy)
+> `optional` **bottom**: `number`
 
-***
+##### screenPadding.left?
 
-### watermark?
+> `optional` **left**: `number`
 
-> `optional` **watermark**: `string`
+##### screenPadding.right?
 
-Defined in: [packages/mce/src/mixins/0.config/base.ts:29](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L29)
+> `optional` **right**: `number`
 
-#### Inherited from
+##### screenPadding.top?
 
-[`Config`](Config.md).[`watermark`](Config.md#watermark)
+> `optional` **top**: `number`
 
-***
+#### zoom?
 
-### zoomToFit?
+> `optional` **zoom**: `object`
 
-> `optional` **zoomToFit**: [`ZoomToMode`](../type-aliases/ZoomToMode.md)
+##### zoom.strategy?
 
-Defined in: [packages/mce/src/plugins/zoom.ts:29](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/zoom.ts#L29)
-
-#### Inherited from
-
-[`Config`](Config.md).[`zoomToFit`](Config.md#zoomtofit)
+> `optional` **strategy**: `"cover"` \| `"contain"` \| `"containWidth"` \| `"containHeight"`

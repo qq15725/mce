@@ -6,6 +6,6 @@
 
 # Type Alias: DocumentSource
 
-> **DocumentSource** = [`InternalDocument`](../interfaces/InternalDocument.md) \| `Element`[] \| `string`
+> **DocumentSource** = `Doc` \| [`InternalDocument`](../interfaces/InternalDocument.md) \| `Element`[] \| `string`
 
-Defined in: [packages/mce/src/plugins/doc.ts:19](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/doc.ts#L19)
+Defined in: [packages/mce/src/plugins/doc.ts:20](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/doc.ts#L20)

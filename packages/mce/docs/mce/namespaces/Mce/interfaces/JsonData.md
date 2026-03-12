@@ -6,7 +6,7 @@
 
 # Interface: JsonData
 
-Defined in: [packages/mce/src/plugins/json.ts:8](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/json.ts#L8)
+Defined in: [packages/mce/src/plugins/json.ts:8](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/json.ts#L8)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: [packages/mce/src/plugins/json.ts:8](https://github.com/qq15725/mce/
 
 > **children**: `NormalizedElement`\<`Meta`\>[]
 
-Defined in: [packages/mce/src/plugins/json.ts:16](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/json.ts#L16)
+Defined in: [packages/mce/src/plugins/json.ts:16](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/json.ts#L16)
 
 ***
 
@@ -22,7 +22,7 @@ Defined in: [packages/mce/src/plugins/json.ts:16](https://github.com/qq15725/mce
 
 > **id**: `string`
 
-Defined in: [packages/mce/src/plugins/json.ts:9](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/json.ts#L9)
+Defined in: [packages/mce/src/plugins/json.ts:9](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/json.ts#L9)
 
 ***
 
@@ -30,7 +30,7 @@ Defined in: [packages/mce/src/plugins/json.ts:9](https://github.com/qq15725/mce/
 
 > **meta**: `object`
 
-Defined in: [packages/mce/src/plugins/json.ts:17](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/json.ts#L17)
+Defined in: [packages/mce/src/plugins/json.ts:17](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/json.ts#L17)
 
 #### endTime
 
@@ -58,7 +58,7 @@ Defined in: [packages/mce/src/plugins/json.ts:17](https://github.com/qq15725/mce
 
 > **style**: `object`
 
-Defined in: [packages/mce/src/plugins/json.ts:10](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/json.ts#L10)
+Defined in: [packages/mce/src/plugins/json.ts:10](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/json.ts#L10)
 
 #### height
 

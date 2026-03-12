@@ -6,7 +6,7 @@
 
 # Interface: DrawingContext
 
-Defined in: [packages/mce/src/typed-global.d.ts:44](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/typed-global.d.ts#L44)
+Defined in: [packages/mce/src/typed-global.d.ts:48](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/typed-global.d.ts#L48)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: [packages/mce/src/typed-global.d.ts:44](https://github.com/qq15725/m
 
 > `optional` **end**: (`position`) => `void`
 
-Defined in: [packages/mce/src/typed-global.d.ts:48](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/typed-global.d.ts#L48)
+Defined in: [packages/mce/src/typed-global.d.ts:52](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/typed-global.d.ts#L52)
 
 #### Parameters
 
@@ -32,7 +32,7 @@ Defined in: [packages/mce/src/typed-global.d.ts:48](https://github.com/qq15725/m
 
 > `optional` **move**: (`position`) => `void`
 
-Defined in: [packages/mce/src/typed-global.d.ts:47](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/typed-global.d.ts#L47)
+Defined in: [packages/mce/src/typed-global.d.ts:51](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/typed-global.d.ts#L51)
 
 #### Parameters
 
@@ -50,7 +50,7 @@ Defined in: [packages/mce/src/typed-global.d.ts:47](https://github.com/qq15725/m
 
 > `optional` **start**: (`position`) => `void`
 
-Defined in: [packages/mce/src/typed-global.d.ts:46](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/typed-global.d.ts#L46)
+Defined in: [packages/mce/src/typed-global.d.ts:50](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/typed-global.d.ts#L50)
 
 #### Parameters
 
@@ -68,4 +68,4 @@ Defined in: [packages/mce/src/typed-global.d.ts:46](https://github.com/qq15725/m
 
 > `optional` **tip**: `string`
 
-Defined in: [packages/mce/src/typed-global.d.ts:45](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/typed-global.d.ts#L45)
+Defined in: [packages/mce/src/typed-global.d.ts:49](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/typed-global.d.ts#L49)

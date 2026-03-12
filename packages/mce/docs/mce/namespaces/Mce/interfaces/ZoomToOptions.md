@@ -6,7 +6,7 @@
 
 # Interface: ZoomToOptions
 
-Defined in: [packages/mce/src/plugins/zoom.ts:21](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/zoom.ts#L21)
+Defined in: [packages/mce/src/plugins/zoom.ts:29](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/zoom.ts#L29)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: [packages/mce/src/plugins/zoom.ts:21](https://github.com/qq15725/mce
 
 > `optional` **behavior**: `"smooth"` \| `"instant"`
 
-Defined in: [packages/mce/src/plugins/zoom.ts:25](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/zoom.ts#L25)
+Defined in: [packages/mce/src/plugins/zoom.ts:33](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/zoom.ts#L33)
 
 ***
 
@@ -22,7 +22,7 @@ Defined in: [packages/mce/src/plugins/zoom.ts:25](https://github.com/qq15725/mce
 
 > `optional` **duration**: `number`
 
-Defined in: [packages/mce/src/plugins/zoom.ts:24](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/zoom.ts#L24)
+Defined in: [packages/mce/src/plugins/zoom.ts:32](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/zoom.ts#L32)
 
 ***
 
@@ -30,12 +30,12 @@ Defined in: [packages/mce/src/plugins/zoom.ts:24](https://github.com/qq15725/mce
 
 > `optional` **intoView**: `boolean`
 
-Defined in: [packages/mce/src/plugins/zoom.ts:22](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/zoom.ts#L22)
+Defined in: [packages/mce/src/plugins/zoom.ts:30](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/zoom.ts#L30)
 
 ***
 
-### mode?
+### strategy?
 
-> `optional` **mode**: [`ZoomToMode`](../type-aliases/ZoomToMode.md)
+> `optional` **strategy**: [`ZoomToStrategy`](../type-aliases/ZoomToStrategy.md)
 
-Defined in: [packages/mce/src/plugins/zoom.ts:23](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/zoom.ts#L23)
+Defined in: [packages/mce/src/plugins/zoom.ts:31](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/zoom.ts#L31)

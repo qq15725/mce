@@ -6,7 +6,7 @@
 
 # Interface: InternalDocument
 
-Defined in: [packages/mce/src/plugins/doc.ts:11](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/doc.ts#L11)
+Defined in: [packages/mce/src/plugins/doc.ts:12](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/doc.ts#L12)
 
 ## Extends
 
@@ -828,7 +828,7 @@ The **`Document.hidden`** read-only property returns a Boolean value indicating 
 
 > **id**: `string`
 
-Defined in: [packages/mce/src/plugins/doc.ts:12](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/doc.ts#L12)
+Defined in: [packages/mce/src/plugins/doc.ts:13](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/doc.ts#L13)
 
 ***
 
@@ -984,7 +984,7 @@ The **`links`** read-only property of the Document interface returns a collectio
 
 > **meta**: `object`
 
-Defined in: [packages/mce/src/plugins/doc.ts:13](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/doc.ts#L13)
+Defined in: [packages/mce/src/plugins/doc.ts:14](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/doc.ts#L14)
 
 #### Index Signature
 

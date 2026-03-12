@@ -6,7 +6,7 @@
 
 # Interface: Slots
 
-Defined in: [packages/mce/src/plugins/selection.ts:51](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L51)
+Defined in: [packages/mce/src/plugins/selection.ts:52](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/selection.ts#L52)
 
 ## Properties
 
@@ -14,7 +14,43 @@ Defined in: [packages/mce/src/plugins/selection.ts:51](https://github.com/qq1572
 
 > `optional` **selection**: () => `void`
 
-Defined in: [packages/mce/src/plugins/selection.ts:52](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L52)
+Defined in: [packages/mce/src/plugins/selection.ts:53](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/selection.ts#L53)
+
+#### Returns
+
+`void`
+
+***
+
+### selection.foreground-cropper()?
+
+> `optional` **selection.foreground-cropper**: (`props`) => `void`
+
+Defined in: [packages/mce/src/plugins/selection.ts:55](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/selection.ts#L55)
+
+#### Parameters
+
+##### props
+
+###### cancel
+
+() => `void`
+
+###### ok
+
+() => `void`
+
+###### scale
+
+`number`
+
+###### setAspectRatio
+
+(`aspectRatio`) => `void`
+
+###### setScale
+
+(`scale`) => `void`
 
 #### Returns
 
@@ -26,7 +62,7 @@ Defined in: [packages/mce/src/plugins/selection.ts:52](https://github.com/qq1572
 
 > `optional` **selection.transform**: () => `void`
 
-Defined in: [packages/mce/src/plugins/selection.ts:53](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L53)
+Defined in: [packages/mce/src/plugins/selection.ts:54](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/selection.ts#L54)
 
 #### Returns
 

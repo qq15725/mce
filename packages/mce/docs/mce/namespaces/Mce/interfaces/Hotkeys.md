@@ -6,7 +6,7 @@
 
 # Interface: Hotkeys
 
-Defined in: [packages/mce/src/mixins/1.hotkey.ts:9](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.hotkey.ts#L9)
+Defined in: [packages/mce/src/mixins/hotkey.ts:9](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/hotkey.ts#L9)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: [packages/mce/src/mixins/1.hotkey.ts:9](https://github.com/qq15725/m
 
 > **alignBottom**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/arrange.ts:52](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/arrange.ts#L52)
+Defined in: [packages/mce/src/plugins/arrange.ts:52](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/arrange.ts#L52)
 
 ***
 
@@ -22,7 +22,7 @@ Defined in: [packages/mce/src/plugins/arrange.ts:52](https://github.com/qq15725/
 
 > **alignHorizontalCenter**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/arrange.ts:53](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/arrange.ts#L53)
+Defined in: [packages/mce/src/plugins/arrange.ts:53](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/arrange.ts#L53)
 
 ***
 
@@ -30,7 +30,7 @@ Defined in: [packages/mce/src/plugins/arrange.ts:53](https://github.com/qq15725/
 
 > **alignLeft**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/arrange.ts:49](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/arrange.ts#L49)
+Defined in: [packages/mce/src/plugins/arrange.ts:49](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/arrange.ts#L49)
 
 ***
 
@@ -38,7 +38,7 @@ Defined in: [packages/mce/src/plugins/arrange.ts:49](https://github.com/qq15725/
 
 > **alignRight**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/arrange.ts:50](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/arrange.ts#L50)
+Defined in: [packages/mce/src/plugins/arrange.ts:50](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/arrange.ts#L50)
 
 ***
 
@@ -46,7 +46,7 @@ Defined in: [packages/mce/src/plugins/arrange.ts:50](https://github.com/qq15725/
 
 > **alignTop**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/arrange.ts:51](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/arrange.ts#L51)
+Defined in: [packages/mce/src/plugins/arrange.ts:51](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/arrange.ts#L51)
 
 ***
 
@@ -54,7 +54,7 @@ Defined in: [packages/mce/src/plugins/arrange.ts:51](https://github.com/qq15725/
 
 > **alignVerticalCenter**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/arrange.ts:54](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/arrange.ts#L54)
+Defined in: [packages/mce/src/plugins/arrange.ts:54](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/arrange.ts#L54)
 
 ***
 
@@ -62,7 +62,7 @@ Defined in: [packages/mce/src/plugins/arrange.ts:54](https://github.com/qq15725/
 
 > **bringForward**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/arrange.ts:45](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/arrange.ts#L45)
+Defined in: [packages/mce/src/plugins/arrange.ts:45](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/arrange.ts#L45)
 
 ***
 
@@ -70,7 +70,7 @@ Defined in: [packages/mce/src/plugins/arrange.ts:45](https://github.com/qq15725/
 
 > **bringToFront**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/arrange.ts:47](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/arrange.ts#L47)
+Defined in: [packages/mce/src/plugins/arrange.ts:47](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/arrange.ts#L47)
 
 ***
 
@@ -78,7 +78,7 @@ Defined in: [packages/mce/src/plugins/arrange.ts:47](https://github.com/qq15725/
 
 > **cancel**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/mixins/1.hotkey.ts:10](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.hotkey.ts#L10)
+Defined in: [packages/mce/src/mixins/hotkey.ts:10](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/hotkey.ts#L10)
 
 ***
 
@@ -86,7 +86,7 @@ Defined in: [packages/mce/src/mixins/1.hotkey.ts:10](https://github.com/qq15725/
 
 > **copy**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/edit.ts:27](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/edit.ts#L27)
+Defined in: [packages/mce/src/plugins/edit.ts:32](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/edit.ts#L32)
 
 ***
 
@@ -94,7 +94,7 @@ Defined in: [packages/mce/src/plugins/edit.ts:27](https://github.com/qq15725/mce
 
 > **cut**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/edit.ts:28](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/edit.ts#L28)
+Defined in: [packages/mce/src/plugins/edit.ts:33](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/edit.ts#L33)
 
 ***
 
@@ -102,7 +102,7 @@ Defined in: [packages/mce/src/plugins/edit.ts:28](https://github.com/qq15725/mce
 
 > **delete**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/edit.ts:26](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/edit.ts#L26)
+Defined in: [packages/mce/src/plugins/edit.ts:31](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/edit.ts#L31)
 
 ***
 
@@ -110,7 +110,7 @@ Defined in: [packages/mce/src/plugins/edit.ts:26](https://github.com/qq15725/mce
 
 > **distributeHorizontalSpacing**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/arrange.ts:55](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/arrange.ts#L55)
+Defined in: [packages/mce/src/plugins/arrange.ts:55](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/arrange.ts#L55)
 
 ***
 
@@ -118,7 +118,7 @@ Defined in: [packages/mce/src/plugins/arrange.ts:55](https://github.com/qq15725/
 
 > **distributeVerticalSpacing**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/arrange.ts:56](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/arrange.ts#L56)
+Defined in: [packages/mce/src/plugins/arrange.ts:56](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/arrange.ts#L56)
 
 ***
 
@@ -126,7 +126,7 @@ Defined in: [packages/mce/src/plugins/arrange.ts:56](https://github.com/qq15725/
 
 > **duplicate**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/edit.ts:30](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/edit.ts#L30)
+Defined in: [packages/mce/src/plugins/edit.ts:35](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/edit.ts#L35)
 
 ***
 
@@ -134,7 +134,7 @@ Defined in: [packages/mce/src/plugins/edit.ts:30](https://github.com/qq15725/mce
 
 > **enter**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/transform.ts:17](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/transform.ts#L17)
+Defined in: [packages/mce/src/plugins/transform.ts:68](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/transform.ts#L68)
 
 ***
 
@@ -142,7 +142,7 @@ Defined in: [packages/mce/src/plugins/transform.ts:17](https://github.com/qq1572
 
 > **flipHorizontal**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/transform.ts:18](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/transform.ts#L18)
+Defined in: [packages/mce/src/plugins/transform.ts:73](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/transform.ts#L73)
 
 ***
 
@@ -150,7 +150,7 @@ Defined in: [packages/mce/src/plugins/transform.ts:18](https://github.com/qq1572
 
 > **flipVertical**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/transform.ts:19](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/transform.ts#L19)
+Defined in: [packages/mce/src/plugins/transform.ts:74](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/transform.ts#L74)
 
 ***
 
@@ -158,7 +158,7 @@ Defined in: [packages/mce/src/plugins/transform.ts:19](https://github.com/qq1572
 
 > **frameSelection**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/selection.ts:46](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L46)
+Defined in: [packages/mce/src/plugins/selection.ts:47](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/selection.ts#L47)
 
 ***
 
@@ -166,7 +166,7 @@ Defined in: [packages/mce/src/plugins/selection.ts:46](https://github.com/qq1572
 
 > **groupSelection**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/selection.ts:44](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L44)
+Defined in: [packages/mce/src/plugins/selection.ts:45](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/selection.ts#L45)
 
 ***
 
@@ -174,7 +174,7 @@ Defined in: [packages/mce/src/plugins/selection.ts:44](https://github.com/qq1572
 
 > **import**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/import.ts:17](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/import.ts#L17)
+Defined in: [packages/mce/src/plugins/import.ts:17](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/import.ts#L17)
 
 ***
 
@@ -182,7 +182,7 @@ Defined in: [packages/mce/src/plugins/import.ts:17](https://github.com/qq15725/m
 
 > **lockOrUnlockSelection**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/selection.ts:48](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L48)
+Defined in: [packages/mce/src/plugins/selection.ts:49](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/selection.ts#L49)
 
 ***
 
@@ -190,7 +190,7 @@ Defined in: [packages/mce/src/plugins/selection.ts:48](https://github.com/qq1572
 
 > **moveBottom**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/move.ts:19](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/move.ts#L19)
+Defined in: [packages/mce/src/plugins/transform.ts:72](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/transform.ts#L72)
 
 ***
 
@@ -198,7 +198,7 @@ Defined in: [packages/mce/src/plugins/move.ts:19](https://github.com/qq15725/mce
 
 > **moveLeft**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/move.ts:16](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/move.ts#L16)
+Defined in: [packages/mce/src/plugins/transform.ts:69](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/transform.ts#L69)
 
 ***
 
@@ -206,7 +206,7 @@ Defined in: [packages/mce/src/plugins/move.ts:16](https://github.com/qq15725/mce
 
 > **moveRight**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/move.ts:18](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/move.ts#L18)
+Defined in: [packages/mce/src/plugins/transform.ts:71](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/transform.ts#L71)
 
 ***
 
@@ -214,23 +214,23 @@ Defined in: [packages/mce/src/plugins/move.ts:18](https://github.com/qq15725/mce
 
 > **moveTop**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/move.ts:17](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/move.ts#L17)
+Defined in: [packages/mce/src/plugins/transform.ts:70](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/transform.ts#L70)
 
 ***
 
-### new
+### newDoc
 
-> **new**: \[`KeyboardEvent`\]
+> **newDoc**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/new.ts:10](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/new.ts#L10)
+Defined in: [packages/mce/src/plugins/doc.ts:45](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/doc.ts#L45)
 
 ***
 
-### open
+### openDoc
 
-> **open**: \[`KeyboardEvent`\]
+> **openDoc**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/open.ts:10](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/open.ts#L10)
+Defined in: [packages/mce/src/plugins/doc.ts:46](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/doc.ts#L46)
 
 ***
 
@@ -238,7 +238,7 @@ Defined in: [packages/mce/src/plugins/open.ts:10](https://github.com/qq15725/mce
 
 > **paste**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/edit.ts:29](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/edit.ts#L29)
+Defined in: [packages/mce/src/plugins/edit.ts:34](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/edit.ts#L34)
 
 ***
 
@@ -246,7 +246,7 @@ Defined in: [packages/mce/src/plugins/edit.ts:29](https://github.com/qq15725/mce
 
 > **redo**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/history.ts:17](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/history.ts#L17)
+Defined in: [packages/mce/src/plugins/history.ts:17](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/history.ts#L17)
 
 ***
 
@@ -254,7 +254,7 @@ Defined in: [packages/mce/src/plugins/history.ts:17](https://github.com/qq15725/
 
 > **selectAll**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/selection.ts:37](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L37)
+Defined in: [packages/mce/src/plugins/selection.ts:38](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/selection.ts#L38)
 
 ***
 
@@ -262,7 +262,7 @@ Defined in: [packages/mce/src/plugins/selection.ts:37](https://github.com/qq1572
 
 > **selectChildren**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/selection.ts:40](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L40)
+Defined in: [packages/mce/src/plugins/selection.ts:41](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/selection.ts#L41)
 
 ***
 
@@ -270,7 +270,7 @@ Defined in: [packages/mce/src/plugins/selection.ts:40](https://github.com/qq1572
 
 > **selectInverse**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/selection.ts:38](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L38)
+Defined in: [packages/mce/src/plugins/selection.ts:39](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/selection.ts#L39)
 
 ***
 
@@ -278,7 +278,7 @@ Defined in: [packages/mce/src/plugins/selection.ts:38](https://github.com/qq1572
 
 > **selectNextSibling**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/selection.ts:43](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L43)
+Defined in: [packages/mce/src/plugins/selection.ts:44](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/selection.ts#L44)
 
 ***
 
@@ -286,7 +286,7 @@ Defined in: [packages/mce/src/plugins/selection.ts:43](https://github.com/qq1572
 
 > **selectNone**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/selection.ts:39](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L39)
+Defined in: [packages/mce/src/plugins/selection.ts:40](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/selection.ts#L40)
 
 ***
 
@@ -294,7 +294,7 @@ Defined in: [packages/mce/src/plugins/selection.ts:39](https://github.com/qq1572
 
 > **selectParent**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/selection.ts:41](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L41)
+Defined in: [packages/mce/src/plugins/selection.ts:42](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/selection.ts#L42)
 
 ***
 
@@ -302,7 +302,7 @@ Defined in: [packages/mce/src/plugins/selection.ts:41](https://github.com/qq1572
 
 > **selectPreviousSibling**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/selection.ts:42](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L42)
+Defined in: [packages/mce/src/plugins/selection.ts:43](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/selection.ts#L43)
 
 ***
 
@@ -310,7 +310,7 @@ Defined in: [packages/mce/src/plugins/selection.ts:42](https://github.com/qq1572
 
 > **sendBackward**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/arrange.ts:46](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/arrange.ts#L46)
+Defined in: [packages/mce/src/plugins/arrange.ts:46](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/arrange.ts#L46)
 
 ***
 
@@ -318,7 +318,7 @@ Defined in: [packages/mce/src/plugins/arrange.ts:46](https://github.com/qq15725/
 
 > **sendToBack**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/arrange.ts:48](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/arrange.ts#L48)
+Defined in: [packages/mce/src/plugins/arrange.ts:48](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/arrange.ts#L48)
 
 ***
 
@@ -326,7 +326,7 @@ Defined in: [packages/mce/src/plugins/arrange.ts:48](https://github.com/qq15725/
 
 > **showOrHideSelection**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/selection.ts:47](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L47)
+Defined in: [packages/mce/src/plugins/selection.ts:48](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/selection.ts#L48)
 
 ***
 
@@ -334,7 +334,7 @@ Defined in: [packages/mce/src/plugins/selection.ts:47](https://github.com/qq1572
 
 > **tidyUp**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/arrange.ts:57](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/arrange.ts#L57)
+Defined in: [packages/mce/src/plugins/arrange.ts:57](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/arrange.ts#L57)
 
 ***
 
@@ -342,7 +342,7 @@ Defined in: [packages/mce/src/plugins/arrange.ts:57](https://github.com/qq15725/
 
 > **undo**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/history.ts:16](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/history.ts#L16)
+Defined in: [packages/mce/src/plugins/history.ts:16](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/history.ts#L16)
 
 ***
 
@@ -350,7 +350,7 @@ Defined in: [packages/mce/src/plugins/history.ts:16](https://github.com/qq15725/
 
 > **ungroupSelection**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/selection.ts:45](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L45)
+Defined in: [packages/mce/src/plugins/selection.ts:46](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/selection.ts#L46)
 
 ***
 
@@ -358,7 +358,7 @@ Defined in: [packages/mce/src/plugins/selection.ts:45](https://github.com/qq1572
 
 > **zoomIn**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/zoom.ts:42](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/zoom.ts#L42)
+Defined in: [packages/mce/src/plugins/zoom.ts:46](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/zoom.ts#L46)
 
 ***
 
@@ -366,7 +366,7 @@ Defined in: [packages/mce/src/plugins/zoom.ts:42](https://github.com/qq15725/mce
 
 > **zoomOut**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/zoom.ts:43](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/zoom.ts#L43)
+Defined in: [packages/mce/src/plugins/zoom.ts:47](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/zoom.ts#L47)
 
 ***
 
@@ -374,7 +374,7 @@ Defined in: [packages/mce/src/plugins/zoom.ts:43](https://github.com/qq15725/mce
 
 > **zoomTo100**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/zoom.ts:44](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/zoom.ts#L44)
+Defined in: [packages/mce/src/plugins/zoom.ts:48](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/zoom.ts#L48)
 
 ***
 
@@ -382,7 +382,7 @@ Defined in: [packages/mce/src/plugins/zoom.ts:44](https://github.com/qq15725/mce
 
 > **zoomToFit**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/zoom.ts:45](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/zoom.ts#L45)
+Defined in: [packages/mce/src/plugins/zoom.ts:49](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/zoom.ts#L49)
 
 ***
 
@@ -390,4 +390,4 @@ Defined in: [packages/mce/src/plugins/zoom.ts:45](https://github.com/qq15725/mce
 
 > **zoomToSelection**: \[`KeyboardEvent`\]
 
-Defined in: [packages/mce/src/plugins/zoom.ts:46](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/zoom.ts#L46)
+Defined in: [packages/mce/src/plugins/zoom.ts:50](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/zoom.ts#L50)

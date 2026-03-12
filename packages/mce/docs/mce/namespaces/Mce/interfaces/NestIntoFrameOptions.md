@@ -6,7 +6,7 @@
 
 # Interface: NestIntoFrameOptions
 
-Defined in: [packages/mce/src/plugins/autoNest.ts:6](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/autoNest.ts#L6)
+Defined in: [packages/mce/src/plugins/autoNest.ts:6](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/autoNest.ts#L6)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: [packages/mce/src/plugins/autoNest.ts:6](https://github.com/qq15725/
 
 > **excluded**: `Set`\<`number`\>
 
-Defined in: [packages/mce/src/plugins/autoNest.ts:10](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/autoNest.ts#L10)
+Defined in: [packages/mce/src/plugins/autoNest.ts:10](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/autoNest.ts#L10)
 
 ***
 
@@ -22,7 +22,7 @@ Defined in: [packages/mce/src/plugins/autoNest.ts:10](https://github.com/qq15725
 
 > **index**: `number`
 
-Defined in: [packages/mce/src/plugins/autoNest.ts:9](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/autoNest.ts#L9)
+Defined in: [packages/mce/src/plugins/autoNest.ts:9](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/autoNest.ts#L9)
 
 ***
 
@@ -30,7 +30,7 @@ Defined in: [packages/mce/src/plugins/autoNest.ts:9](https://github.com/qq15725/
 
 > **parent**: `Element2D`
 
-Defined in: [packages/mce/src/plugins/autoNest.ts:8](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/autoNest.ts#L8)
+Defined in: [packages/mce/src/plugins/autoNest.ts:8](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/autoNest.ts#L8)
 
 ***
 
@@ -38,4 +38,4 @@ Defined in: [packages/mce/src/plugins/autoNest.ts:8](https://github.com/qq15725/
 
 > **pointer**: `Vector2Like`
 
-Defined in: [packages/mce/src/plugins/autoNest.ts:7](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/autoNest.ts#L7)
+Defined in: [packages/mce/src/plugins/autoNest.ts:7](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/autoNest.ts#L7)

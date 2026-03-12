@@ -6,7 +6,7 @@
 
 # Interface: PointerDownOptions
 
-Defined in: [packages/mce/src/plugins/ui.ts:9](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/ui.ts#L9)
+Defined in: [packages/mce/src/plugins/view.ts:8](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/view.ts#L8)
 
 ## Properties
 
@@ -14,4 +14,4 @@ Defined in: [packages/mce/src/plugins/ui.ts:9](https://github.com/qq15725/mce/bl
 
 > `optional` **allowTopFrame**: `boolean`
 
-Defined in: [packages/mce/src/plugins/ui.ts:10](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/ui.ts#L10)
+Defined in: [packages/mce/src/plugins/view.ts:9](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/view.ts#L9)

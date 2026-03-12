@@ -6,7 +6,7 @@
 
 # Interface: Editor
 
-Defined in: [packages/mce/src/mixins/0.command.ts:22](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.command.ts#L22)
+Defined in: [packages/mce/src/mixins/0.command.ts:22](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.command.ts#L22)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: [packages/mce/src/mixins/0.command.ts:22](https://github.com/qq15725
 
 > **aabbToDrawboardAabb**: (`aabb`) => `Aabb2D`
 
-Defined in: [packages/mce/src/mixins/2.box.ts:15](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/2.box.ts#L15)
+Defined in: [packages/mce/src/mixins/2.box.ts:15](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/2.box.ts#L15)
 
 #### Parameters
 
@@ -28,11 +28,29 @@ Defined in: [packages/mce/src/mixins/2.box.ts:15](https://github.com/qq15725/mce
 
 ***
 
-### activeDrawingTool
+### activateTool()
 
-> **activeDrawingTool**: `Ref`\<[`DrawingTool`](DrawingTool.md)\>
+> **activateTool**: (`tool`) => `void`
 
-Defined in: [packages/mce/src/mixins/drawingTool.ts:24](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/drawingTool.ts#L24)
+Defined in: [packages/mce/src/mixins/tool.ts:27](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/tool.ts#L27)
+
+#### Parameters
+
+##### tool
+
+`string` | `undefined`
+
+#### Returns
+
+`void`
+
+***
+
+### activeTool
+
+> **activeTool**: `Ref`\<[`Tool`](Tool.md)\>
+
+Defined in: [packages/mce/src/mixins/tool.ts:24](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/tool.ts#L24)
 
 ***
 
@@ -40,7 +58,7 @@ Defined in: [packages/mce/src/mixins/drawingTool.ts:24](https://github.com/qq157
 
 > **addElement**: (`element`, `options?`) => `Element2D`
 
-Defined in: [packages/mce/src/mixins/4.3.element.ts:29](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/4.3.element.ts#L29)
+Defined in: [packages/mce/src/mixins/4.3.element.ts:30](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/4.3.element.ts#L30)
 
 #### Parameters
 
@@ -62,7 +80,7 @@ Defined in: [packages/mce/src/mixins/4.3.element.ts:29](https://github.com/qq157
 
 > **addElements**: (`element`, `options?`) => `Element2D`[]
 
-Defined in: [packages/mce/src/mixins/4.3.element.ts:30](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/4.3.element.ts#L30)
+Defined in: [packages/mce/src/mixins/4.3.element.ts:31](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/4.3.element.ts#L31)
 
 #### Parameters
 
@@ -80,29 +98,11 @@ Defined in: [packages/mce/src/mixins/4.3.element.ts:30](https://github.com/qq157
 
 ***
 
-### bindRenderCanvas()
+### assets
 
-> **bindRenderCanvas**: (`canvas`, `setEventTarget?`) => () => `void`
+> **assets**: `Assets`
 
-Defined in: [packages/mce/src/mixins/3.view.ts:6](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/3.view.ts#L6)
-
-#### Parameters
-
-##### canvas
-
-`HTMLCanvasElement`
-
-##### setEventTarget?
-
-`HTMLElement`
-
-#### Returns
-
-> (): `void`
-
-##### Returns
-
-`void`
+Defined in: [packages/mce/src/mixins/0.context.ts:36](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.context.ts#L36)
 
 ***
 
@@ -110,7 +110,7 @@ Defined in: [packages/mce/src/mixins/3.view.ts:6](https://github.com/qq15725/mce
 
 > **camera**: `Ref`\<`Camera2D`\>
 
-Defined in: [packages/mce/src/mixins/0.context.ts:37](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.context.ts#L37)
+Defined in: [packages/mce/src/mixins/0.context.ts:39](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.context.ts#L39)
 
 ***
 
@@ -118,7 +118,7 @@ Defined in: [packages/mce/src/mixins/0.context.ts:37](https://github.com/qq15725
 
 > **canLoad**: (`source`) => `Promise`\<`boolean`\>
 
-Defined in: [packages/mce/src/mixins/2.load.ts:20](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/2.load.ts#L20)
+Defined in: [packages/mce/src/mixins/loader.ts:20](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/loader.ts#L20)
 
 #### Parameters
 
@@ -136,7 +136,7 @@ Defined in: [packages/mce/src/mixins/2.load.ts:20](https://github.com/qq15725/mc
 
 > **canRedo**: `Ref`\<`boolean`\>
 
-Defined in: [packages/mce/src/plugins/history.ts:10](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/history.ts#L10)
+Defined in: [packages/mce/src/plugins/history.ts:10](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/history.ts#L10)
 
 ***
 
@@ -144,7 +144,7 @@ Defined in: [packages/mce/src/plugins/history.ts:10](https://github.com/qq15725/
 
 > **canUndo**: `Ref`\<`boolean`\>
 
-Defined in: [packages/mce/src/plugins/history.ts:9](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/history.ts#L9)
+Defined in: [packages/mce/src/plugins/history.ts:9](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/history.ts#L9)
 
 ***
 
@@ -152,7 +152,7 @@ Defined in: [packages/mce/src/plugins/history.ts:9](https://github.com/qq15725/m
 
 > **captureElementScreenshot**: (`element`) => `Promise`\<`HTMLCanvasElement`\>
 
-Defined in: [packages/mce/src/mixins/snapshot.ts:16](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/snapshot.ts#L16)
+Defined in: [packages/mce/src/mixins/snapshot.ts:10](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/snapshot.ts#L10)
 
 #### Parameters
 
@@ -170,7 +170,7 @@ Defined in: [packages/mce/src/mixins/snapshot.ts:16](https://github.com/qq15725/
 
 > **captureFrameScreenshot**: (`index`) => `void`
 
-Defined in: [packages/mce/src/mixins/snapshot.ts:17](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/snapshot.ts#L17)
+Defined in: [packages/mce/src/mixins/snapshot.ts:11](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/snapshot.ts#L11)
 
 #### Parameters
 
@@ -184,11 +184,23 @@ Defined in: [packages/mce/src/mixins/snapshot.ts:17](https://github.com/qq15725/
 
 ***
 
+### clearDoc()
+
+> **clearDoc**: () => `void`
+
+Defined in: [packages/mce/src/plugins/doc.ts:30](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/doc.ts#L30)
+
+#### Returns
+
+`void`
+
+***
+
 ### commands
 
 > **commands**: `Reactive`\<`Map`\<`string`, [`Command`](Command.md)\>\>
 
-Defined in: [packages/mce/src/mixins/0.command.ts:23](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.command.ts#L23)
+Defined in: [packages/mce/src/mixins/0.command.ts:23](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.command.ts#L23)
 
 ***
 
@@ -196,7 +208,7 @@ Defined in: [packages/mce/src/mixins/0.command.ts:23](https://github.com/qq15725
 
 > **contextMenu**: `ComputedRef`\<[`MenuItem`](MenuItem.md)[]\>
 
-Defined in: [packages/mce/src/plugins/menu.ts:19](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/menu.ts#L19)
+Defined in: [packages/mce/src/plugins/menu.ts:19](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/menu.ts#L19)
 
 ***
 
@@ -204,7 +216,7 @@ Defined in: [packages/mce/src/plugins/menu.ts:19](https://github.com/qq15725/mce
 
 > **copiedData**: `Ref`\<`any`\>
 
-Defined in: [packages/mce/src/plugins/edit.ts:34](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/edit.ts#L34)
+Defined in: [packages/mce/src/plugins/edit.ts:39](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/edit.ts#L39)
 
 ***
 
@@ -212,7 +224,7 @@ Defined in: [packages/mce/src/plugins/edit.ts:34](https://github.com/qq15725/mce
 
 > **currentTime**: `WritableComputedRef`\<`number`\>
 
-Defined in: [packages/mce/src/mixins/1.timeline.ts:11](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.timeline.ts#L11)
+Defined in: [packages/mce/src/mixins/1.timeline.ts:11](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/1.timeline.ts#L11)
 
 ***
 
@@ -220,7 +232,7 @@ Defined in: [packages/mce/src/mixins/1.timeline.ts:11](https://github.com/qq1572
 
 > **docLoading**: `Ref`\<`boolean`\>
 
-Defined in: [packages/mce/src/mixins/0.context.ts:45](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.context.ts#L45)
+Defined in: [packages/mce/src/mixins/0.context.ts:47](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.context.ts#L47)
 
 ***
 
@@ -228,7 +240,7 @@ Defined in: [packages/mce/src/mixins/0.context.ts:45](https://github.com/qq15725
 
 > **drawboardAabb**: `Ref`\<`Aabb2D`\>
 
-Defined in: [packages/mce/src/mixins/0.context.ts:41](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.context.ts#L41)
+Defined in: [packages/mce/src/mixins/0.context.ts:43](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.context.ts#L43)
 
 ***
 
@@ -236,7 +248,7 @@ Defined in: [packages/mce/src/mixins/0.context.ts:41](https://github.com/qq15725
 
 > **drawboardContextMenuPointer**: `Ref`\<`Vector2` \| `undefined`\>
 
-Defined in: [packages/mce/src/mixins/0.context.ts:43](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.context.ts#L43)
+Defined in: [packages/mce/src/mixins/0.context.ts:45](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.context.ts#L45)
 
 ***
 
@@ -244,7 +256,7 @@ Defined in: [packages/mce/src/mixins/0.context.ts:43](https://github.com/qq15725
 
 > **drawboardDom**: `Ref`\<`HTMLElement` \| `undefined`\>
 
-Defined in: [packages/mce/src/mixins/0.context.ts:40](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.context.ts#L40)
+Defined in: [packages/mce/src/mixins/0.context.ts:42](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.context.ts#L42)
 
 ***
 
@@ -252,7 +264,7 @@ Defined in: [packages/mce/src/mixins/0.context.ts:40](https://github.com/qq15725
 
 > **drawboardEffect**: `Ref`\<`DrawboardEffect`\>
 
-Defined in: [packages/mce/src/mixins/0.context.ts:38](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.context.ts#L38)
+Defined in: [packages/mce/src/mixins/0.context.ts:40](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.context.ts#L40)
 
 ***
 
@@ -260,15 +272,7 @@ Defined in: [packages/mce/src/mixins/0.context.ts:38](https://github.com/qq15725
 
 > **drawboardPointer**: `Ref`\<`Vector2` \| `undefined`\>
 
-Defined in: [packages/mce/src/mixins/0.context.ts:42](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.context.ts#L42)
-
-***
-
-### drawingTools
-
-> **drawingTools**: `Reactive`\<`Map`\<`string`, [`DrawingTool`](DrawingTool.md)\>\>
-
-Defined in: [packages/mce/src/mixins/drawingTool.ts:23](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/drawingTool.ts#L23)
+Defined in: [packages/mce/src/mixins/0.context.ts:44](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.context.ts#L44)
 
 ***
 
@@ -276,7 +280,7 @@ Defined in: [packages/mce/src/mixins/drawingTool.ts:23](https://github.com/qq157
 
 > **elementSelection**: `Ref`\<`Element2D`[]\>
 
-Defined in: [packages/mce/src/mixins/0.context.ts:50](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.context.ts#L50)
+Defined in: [packages/mce/src/mixins/0.context.ts:52](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.context.ts#L52)
 
 ***
 
@@ -284,7 +288,7 @@ Defined in: [packages/mce/src/mixins/0.context.ts:50](https://github.com/qq15725
 
 > **endTime**: `WritableComputedRef`\<`number`\>
 
-Defined in: [packages/mce/src/mixins/1.timeline.ts:13](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.timeline.ts#L13)
+Defined in: [packages/mce/src/mixins/1.timeline.ts:13](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/1.timeline.ts#L13)
 
 ***
 
@@ -292,7 +296,7 @@ Defined in: [packages/mce/src/mixins/1.timeline.ts:13](https://github.com/qq1572
 
 > **exec**: \<`K`\>(`command`, ...`args`) => `ReturnType`\<[`Commands`](Commands.md)\[`K`\]\>
 
-Defined in: [packages/mce/src/mixins/0.command.ts:26](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.command.ts#L26)
+Defined in: [packages/mce/src/mixins/0.command.ts:26](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.command.ts#L26)
 
 #### Type Parameters
 
@@ -320,7 +324,7 @@ Defined in: [packages/mce/src/mixins/0.command.ts:26](https://github.com/qq15725
 
 > **export**: \<`K`\>(`name`, `options?`) => [`Exporters`](Exporters.md)\[`K`\]
 
-Defined in: [packages/mce/src/mixins/2.export.ts:29](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/2.export.ts#L29)
+Defined in: [packages/mce/src/mixins/exporter.ts:29](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/exporter.ts#L29)
 
 #### Type Parameters
 
@@ -348,7 +352,7 @@ Defined in: [packages/mce/src/mixins/2.export.ts:29](https://github.com/qq15725/
 
 > **exportConfig**: () => `Blob`
 
-Defined in: [packages/mce/src/mixins/0.config.ts:16](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config.ts#L16)
+Defined in: [packages/mce/src/mixins/0.config.ts:22](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.config.ts#L22)
 
 #### Returns
 
@@ -360,7 +364,7 @@ Defined in: [packages/mce/src/mixins/0.config.ts:16](https://github.com/qq15725/
 
 > **exporters**: `Reactive`\<`Map`\<`string`, [`Exporter`](Exporter.md)\>\>
 
-Defined in: [packages/mce/src/mixins/2.export.ts:26](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/2.export.ts#L26)
+Defined in: [packages/mce/src/mixins/exporter.ts:26](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/exporter.ts#L26)
 
 ***
 
@@ -368,7 +372,7 @@ Defined in: [packages/mce/src/mixins/2.export.ts:26](https://github.com/qq15725/
 
 > **exporting**: `Ref`\<`boolean`\>
 
-Defined in: [packages/mce/src/mixins/2.export.ts:31](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/2.export.ts#L31)
+Defined in: [packages/mce/src/mixins/exporter.ts:31](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/exporter.ts#L31)
 
 ***
 
@@ -376,7 +380,7 @@ Defined in: [packages/mce/src/mixins/2.export.ts:31](https://github.com/qq15725/
 
 > **exportProgress**: `Ref`\<`number`\>
 
-Defined in: [packages/mce/src/mixins/2.export.ts:32](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/2.export.ts#L32)
+Defined in: [packages/mce/src/mixins/exporter.ts:32](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/exporter.ts#L32)
 
 ***
 
@@ -384,7 +388,7 @@ Defined in: [packages/mce/src/mixins/2.export.ts:32](https://github.com/qq15725/
 
 > **findFrame**: (`target`) => `Element2D` \| `undefined`
 
-Defined in: [packages/mce/src/mixins/4.2.frame.ts:7](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/4.2.frame.ts#L7)
+Defined in: [packages/mce/src/mixins/4.2.frame.ts:7](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/4.2.frame.ts#L7)
 
 #### Parameters
 
@@ -402,7 +406,7 @@ Defined in: [packages/mce/src/mixins/4.2.frame.ts:7](https://github.com/qq15725/
 
 > **findSibling**: (`target`) => `Node` \| `undefined`
 
-Defined in: [packages/mce/src/mixins/4.0.node.ts:7](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/4.0.node.ts#L7)
+Defined in: [packages/mce/src/mixins/4.0.node.ts:7](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/4.0.node.ts#L7)
 
 #### Parameters
 
@@ -420,7 +424,7 @@ Defined in: [packages/mce/src/mixins/4.0.node.ts:7](https://github.com/qq15725/m
 
 > **fonts**: `Fonts`
 
-Defined in: [packages/mce/src/mixins/0.context.ts:34](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.context.ts#L34)
+Defined in: [packages/mce/src/mixins/0.context.ts:35](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.context.ts#L35)
 
 ***
 
@@ -428,7 +432,7 @@ Defined in: [packages/mce/src/mixins/0.context.ts:34](https://github.com/qq15725
 
 > **frames**: `ComputedRef`\<`Element2D`[]\>
 
-Defined in: [packages/mce/src/mixins/1.frame.ts:17](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.frame.ts#L17)
+Defined in: [packages/mce/src/mixins/1.frame.ts:17](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/1.frame.ts#L17)
 
 ***
 
@@ -436,7 +440,7 @@ Defined in: [packages/mce/src/mixins/1.frame.ts:17](https://github.com/qq15725/m
 
 > **frameThumbs**: `Ref`\<[`FrameThumb`](FrameThumb.md)[]\>
 
-Defined in: [packages/mce/src/mixins/1.frame.ts:16](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.frame.ts#L16)
+Defined in: [packages/mce/src/mixins/1.frame.ts:16](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/1.frame.ts#L16)
 
 ***
 
@@ -444,7 +448,7 @@ Defined in: [packages/mce/src/mixins/1.frame.ts:16](https://github.com/qq15725/m
 
 > **getAabb**: (`node`, `inTarget?`) => `Aabb2D`
 
-Defined in: [packages/mce/src/mixins/2.box.ts:14](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/2.box.ts#L14)
+Defined in: [packages/mce/src/mixins/2.box.ts:14](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/2.box.ts#L14)
 
 #### Parameters
 
@@ -466,7 +470,7 @@ Defined in: [packages/mce/src/mixins/2.box.ts:14](https://github.com/qq15725/mce
 
 > **getAncestorFrame**: (`node?`, `isTop?`) => `Element2D` \| `undefined`
 
-Defined in: [packages/mce/src/mixins/1.frame.ts:18](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.frame.ts#L18)
+Defined in: [packages/mce/src/mixins/1.frame.ts:18](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/1.frame.ts#L18)
 
 #### Parameters
 
@@ -486,9 +490,31 @@ Defined in: [packages/mce/src/mixins/1.frame.ts:18](https://github.com/qq15725/m
 
 ### getConfig()
 
-> **getConfig**: \<`T`\>(`path`) => `WritableComputedRef`\<`T`\>
+> **getConfig**: (`path`, `defaultValue?`) => `any`
 
-Defined in: [packages/mce/src/mixins/0.config.ts:13](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config.ts#L13)
+Defined in: [packages/mce/src/mixins/0.config.ts:17](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.config.ts#L17)
+
+#### Parameters
+
+##### path
+
+`string`
+
+##### defaultValue?
+
+`any`
+
+#### Returns
+
+`any`
+
+***
+
+### getConfigRef()
+
+> **getConfigRef**: \<`T`\>(`path`) => `WritableComputedRef`\<`T`\>
+
+Defined in: [packages/mce/src/mixins/0.config.ts:19](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.config.ts#L19)
 
 #### Type Parameters
 
@@ -508,25 +534,15 @@ Defined in: [packages/mce/src/mixins/0.config.ts:13](https://github.com/qq15725/
 
 ***
 
-### getConfigValue()
+### getDoc()
 
-> **getConfigValue**: (`path`, `defaultValue?`) => `any`
+> **getDoc**: () => [`JsonData`](JsonData.md)
 
-Defined in: [packages/mce/src/mixins/0.config.ts:11](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config.ts#L11)
-
-#### Parameters
-
-##### path
-
-`string`
-
-##### defaultValue?
-
-`any`
+Defined in: [packages/mce/src/plugins/doc.ts:27](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/doc.ts#L27)
 
 #### Returns
 
-`any`
+[`JsonData`](JsonData.md)
 
 ***
 
@@ -534,7 +550,7 @@ Defined in: [packages/mce/src/mixins/0.config.ts:11](https://github.com/qq15725/
 
 > **getGlobalPointer**: () => `Vector2Like`
 
-Defined in: [packages/mce/src/mixins/0.context.ts:54](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.context.ts#L54)
+Defined in: [packages/mce/src/mixins/0.context.ts:56](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.context.ts#L56)
 
 #### Returns
 
@@ -546,7 +562,7 @@ Defined in: [packages/mce/src/mixins/0.context.ts:54](https://github.com/qq15725
 
 > **getKbd**: (`command`) => `string`
 
-Defined in: [packages/mce/src/mixins/1.hotkey.ts:44](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.hotkey.ts#L44)
+Defined in: [packages/mce/src/mixins/hotkey.ts:44](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/hotkey.ts#L44)
 
 #### Parameters
 
@@ -564,7 +580,7 @@ Defined in: [packages/mce/src/mixins/1.hotkey.ts:44](https://github.com/qq15725/
 
 > **getObb**: (`node`, `inTarget?`) => `Obb2D`
 
-Defined in: [packages/mce/src/mixins/2.box.ts:12](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/2.box.ts#L12)
+Defined in: [packages/mce/src/mixins/2.box.ts:12](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/2.box.ts#L12)
 
 #### Parameters
 
@@ -582,67 +598,11 @@ Defined in: [packages/mce/src/mixins/2.box.ts:12](https://github.com/qq15725/mce
 
 ***
 
-### getSnapPoints()
-
-> **getSnapPoints**: (`resizing?`) => `object`
-
-Defined in: [packages/mce/src/plugins/smartGuides.ts:13](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/smartGuides.ts#L13)
-
-#### Parameters
-
-##### resizing?
-
-`boolean`
-
-#### Returns
-
-`object`
-
-##### x
-
-> **x**: `number`[]
-
-##### y
-
-> **y**: `number`[]
-
-***
-
-### getTextFill()
-
-> **getTextFill**: () => `NormalizedFill` \| `undefined`
-
-Defined in: [packages/mce/src/mixins/4.1.text.ts:21](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/4.1.text.ts#L21)
-
-#### Returns
-
-`NormalizedFill` \| `undefined`
-
-***
-
-### getTextStyle()
-
-> **getTextStyle**: (`key`) => `any`
-
-Defined in: [packages/mce/src/mixins/4.1.text.ts:19](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/4.1.text.ts#L19)
-
-#### Parameters
-
-##### key
-
-`string`
-
-#### Returns
-
-`any`
-
-***
-
 ### getTimeRange()
 
 > **getTimeRange**: (`node?`) => `object`
 
-Defined in: [packages/mce/src/mixins/1.timeline.ts:14](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.timeline.ts#L14)
+Defined in: [packages/mce/src/mixins/1.timeline.ts:14](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/1.timeline.ts#L14)
 
 #### Parameters
 
@@ -664,33 +624,11 @@ Defined in: [packages/mce/src/mixins/1.timeline.ts:14](https://github.com/qq1572
 
 ***
 
-### handleTextSelection()
-
-> **handleTextSelection**: (`textSelection`, `cb`) => `void`
-
-Defined in: [packages/mce/src/mixins/4.1.text.ts:16](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/4.1.text.ts#L16)
-
-#### Parameters
-
-##### textSelection
-
-`IndexCharacter`[]
-
-##### cb
-
-(`arg`) => `boolean`
-
-#### Returns
-
-`void`
-
-***
-
 ### hasTextSelectionRange
 
 > **hasTextSelectionRange**: `Ref`\<`boolean`\>
 
-Defined in: [packages/mce/src/mixins/4.1.text.ts:14](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/4.1.text.ts#L14)
+Defined in: [packages/mce/src/plugins/typography.ts:32](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/typography.ts#L32)
 
 ***
 
@@ -698,7 +636,7 @@ Defined in: [packages/mce/src/mixins/4.1.text.ts:14](https://github.com/qq15725/
 
 > **hotkeys**: `Reactive`\<`Map`\<`string`, [`Hotkey`](Hotkey.md)\>\>
 
-Defined in: [packages/mce/src/mixins/1.hotkey.ts:41](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.hotkey.ts#L41)
+Defined in: [packages/mce/src/mixins/hotkey.ts:41](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/hotkey.ts#L41)
 
 ***
 
@@ -706,7 +644,7 @@ Defined in: [packages/mce/src/mixins/1.hotkey.ts:41](https://github.com/qq15725/
 
 > **hotkeysData**: `WritableComputedRef`\<[`HotkeyData`](HotkeyData.md)[]\>
 
-Defined in: [packages/mce/src/mixins/1.hotkey.ts:40](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.hotkey.ts#L40)
+Defined in: [packages/mce/src/mixins/hotkey.ts:40](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/hotkey.ts#L40)
 
 ***
 
@@ -714,7 +652,7 @@ Defined in: [packages/mce/src/mixins/1.hotkey.ts:40](https://github.com/qq15725/
 
 > **hoverElement**: `Ref`\<`Element2D` \| `undefined`\>
 
-Defined in: [packages/mce/src/mixins/0.context.ts:52](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.context.ts#L52)
+Defined in: [packages/mce/src/mixins/0.context.ts:54](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.context.ts#L54)
 
 ***
 
@@ -722,7 +660,7 @@ Defined in: [packages/mce/src/mixins/0.context.ts:52](https://github.com/qq15725
 
 > **http**: [`Http`](Http.md)
 
-Defined in: [packages/mce/src/mixins/http.ts:42](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/http.ts#L42)
+Defined in: [packages/mce/src/mixins/http.ts:42](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/http.ts#L42)
 
 ***
 
@@ -730,7 +668,7 @@ Defined in: [packages/mce/src/mixins/http.ts:42](https://github.com/qq15725/mce/
 
 > **importConfig**: () => `Promise`\<`void`\>
 
-Defined in: [packages/mce/src/mixins/0.config.ts:15](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config.ts#L15)
+Defined in: [packages/mce/src/mixins/0.config.ts:21](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.config.ts#L21)
 
 #### Returns
 
@@ -742,7 +680,7 @@ Defined in: [packages/mce/src/mixins/0.config.ts:15](https://github.com/qq15725/
 
 > **inEditorIs**: (`node`, `inEditorIs?`) => `boolean`
 
-Defined in: [packages/mce/src/mixins/0.context.ts:59](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.context.ts#L59)
+Defined in: [packages/mce/src/mixins/0.context.ts:61](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.context.ts#L61)
 
 #### Parameters
 
@@ -764,7 +702,7 @@ Defined in: [packages/mce/src/mixins/0.context.ts:59](https://github.com/qq15725
 
 > **isElement**: (`value`) => `value is Element2D`
 
-Defined in: [packages/mce/src/mixins/0.context.ts:60](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.context.ts#L60)
+Defined in: [packages/mce/src/mixins/0.context.ts:62](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.context.ts#L62)
 
 #### Parameters
 
@@ -782,7 +720,7 @@ Defined in: [packages/mce/src/mixins/0.context.ts:60](https://github.com/qq15725
 
 > **isFrameNode**: (`node`, `isTop?`) => `boolean`
 
-Defined in: [packages/mce/src/mixins/0.context.ts:58](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.context.ts#L58)
+Defined in: [packages/mce/src/mixins/0.context.ts:60](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.context.ts#L60)
 
 #### Parameters
 
@@ -804,7 +742,7 @@ Defined in: [packages/mce/src/mixins/0.context.ts:58](https://github.com/qq15725
 
 > **isLock**: (`node`) => `boolean`
 
-Defined in: [packages/mce/src/mixins/0.context.ts:63](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.context.ts#L63)
+Defined in: [packages/mce/src/mixins/0.context.ts:65](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.context.ts#L65)
 
 #### Parameters
 
@@ -822,7 +760,7 @@ Defined in: [packages/mce/src/mixins/0.context.ts:63](https://github.com/qq15725
 
 > **isNode**: (`value`) => `value is Node`
 
-Defined in: [packages/mce/src/mixins/0.context.ts:56](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.context.ts#L56)
+Defined in: [packages/mce/src/mixins/0.context.ts:58](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.context.ts#L58)
 
 #### Parameters
 
@@ -840,7 +778,7 @@ Defined in: [packages/mce/src/mixins/0.context.ts:56](https://github.com/qq15725
 
 > **isPointerInSelection**: `ComputedRef`\<`boolean`\>
 
-Defined in: [packages/mce/src/mixins/2.box.ts:22](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/2.box.ts#L22)
+Defined in: [packages/mce/src/mixins/2.box.ts:22](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/2.box.ts#L22)
 
 ***
 
@@ -848,7 +786,7 @@ Defined in: [packages/mce/src/mixins/2.box.ts:22](https://github.com/qq15725/mce
 
 > **isRootNode**: (`node`) => `boolean`
 
-Defined in: [packages/mce/src/mixins/0.context.ts:57](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.context.ts#L57)
+Defined in: [packages/mce/src/mixins/0.context.ts:59](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.context.ts#L59)
 
 #### Parameters
 
@@ -866,7 +804,7 @@ Defined in: [packages/mce/src/mixins/0.context.ts:57](https://github.com/qq15725
 
 > **isTextAllSelected**: `Ref`\<`boolean`\>
 
-Defined in: [packages/mce/src/mixins/4.1.text.ts:15](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/4.1.text.ts#L15)
+Defined in: [packages/mce/src/plugins/typography.ts:33](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/typography.ts#L33)
 
 ***
 
@@ -874,7 +812,7 @@ Defined in: [packages/mce/src/mixins/4.1.text.ts:15](https://github.com/qq15725/
 
 > **isVisible**: (`node`) => `boolean`
 
-Defined in: [packages/mce/src/mixins/0.context.ts:61](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.context.ts#L61)
+Defined in: [packages/mce/src/mixins/0.context.ts:63](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.context.ts#L63)
 
 #### Parameters
 
@@ -892,7 +830,7 @@ Defined in: [packages/mce/src/mixins/0.context.ts:61](https://github.com/qq15725
 
 > **load**: \<`T`\>(`source`) => `Promise`\<`T`[]\>
 
-Defined in: [packages/mce/src/mixins/2.load.ts:21](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/2.load.ts#L21)
+Defined in: [packages/mce/src/mixins/loader.ts:21](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/loader.ts#L21)
 
 #### Type Parameters
 
@@ -912,11 +850,29 @@ Defined in: [packages/mce/src/mixins/2.load.ts:21](https://github.com/qq15725/mc
 
 ***
 
+### loadDoc()
+
+> **loadDoc**: (`source`) => `Promise`\<`Doc`\>
+
+Defined in: [packages/mce/src/plugins/doc.ts:29](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/doc.ts#L29)
+
+#### Parameters
+
+##### source
+
+`any`
+
+#### Returns
+
+`Promise`\<`Doc`\>
+
+***
+
 ### loaders
 
 > **loaders**: `Reactive`\<`Map`\<`string`, [`Loader`](Loader.md)\>\>
 
-Defined in: [packages/mce/src/mixins/2.load.ts:17](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/2.load.ts#L17)
+Defined in: [packages/mce/src/mixins/loader.ts:17](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/loader.ts#L17)
 
 ***
 
@@ -924,7 +880,7 @@ Defined in: [packages/mce/src/mixins/2.load.ts:17](https://github.com/qq15725/mc
 
 > **loadFont**: (`source`, `options?`) => `Promise`\<`FontLoadedResult`\>
 
-Defined in: [packages/mce/src/mixins/0.font.ts:8](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.font.ts#L8)
+Defined in: [packages/mce/src/mixins/0.font.ts:8](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.font.ts#L8)
 
 #### Parameters
 
@@ -946,7 +902,7 @@ Defined in: [packages/mce/src/mixins/0.font.ts:8](https://github.com/qq15725/mce
 
 > **mainMenu**: `ComputedRef`\<[`MenuItem`](MenuItem.md)[]\>
 
-Defined in: [packages/mce/src/plugins/menu.ts:18](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/menu.ts#L18)
+Defined in: [packages/mce/src/plugins/menu.ts:18](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/menu.ts#L18)
 
 ***
 
@@ -954,7 +910,19 @@ Defined in: [packages/mce/src/plugins/menu.ts:18](https://github.com/qq15725/mce
 
 > **msPerPx**: `Ref`\<`number`\>
 
-Defined in: [packages/mce/src/mixins/1.timeline.ts:10](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.timeline.ts#L10)
+Defined in: [packages/mce/src/mixins/1.timeline.ts:10](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/1.timeline.ts#L10)
+
+***
+
+### newDoc()
+
+> **newDoc**: () => `void`
+
+Defined in: [packages/mce/src/plugins/doc.ts:31](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/doc.ts#L31)
+
+#### Returns
+
+`void`
 
 ***
 
@@ -962,7 +930,7 @@ Defined in: [packages/mce/src/mixins/1.timeline.ts:10](https://github.com/qq1572
 
 > **nodeIndexMap**: `Map`\<`string`, `number`\>
 
-Defined in: [packages/mce/src/mixins/0.context.ts:47](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.context.ts#L47)
+Defined in: [packages/mce/src/mixins/0.context.ts:49](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.context.ts#L49)
 
 ***
 
@@ -970,7 +938,7 @@ Defined in: [packages/mce/src/mixins/0.context.ts:47](https://github.com/qq15725
 
 > **nodes**: `Ref`\<`Node`[]\>
 
-Defined in: [packages/mce/src/mixins/0.context.ts:46](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.context.ts#L46)
+Defined in: [packages/mce/src/mixins/0.context.ts:48](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.context.ts#L48)
 
 ***
 
@@ -978,7 +946,7 @@ Defined in: [packages/mce/src/mixins/0.context.ts:46](https://github.com/qq15725
 
 > **obbToDrawboardObb**: (`aabb`) => `Obb2D`
 
-Defined in: [packages/mce/src/mixins/2.box.ts:13](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/2.box.ts#L13)
+Defined in: [packages/mce/src/mixins/2.box.ts:13](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/2.box.ts#L13)
 
 #### Parameters
 
@@ -996,7 +964,7 @@ Defined in: [packages/mce/src/mixins/2.box.ts:13](https://github.com/qq15725/mce
 
 > **obbToFit**: (`element`) => `void`
 
-Defined in: [packages/mce/src/mixins/2.box.ts:11](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/2.box.ts#L11)
+Defined in: [packages/mce/src/mixins/2.box.ts:11](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/2.box.ts#L11)
 
 #### Parameters
 
@@ -1010,11 +978,23 @@ Defined in: [packages/mce/src/mixins/2.box.ts:11](https://github.com/qq15725/mce
 
 ***
 
+### openDoc()
+
+> **openDoc**: () => `Promise`\<`void`\>
+
+Defined in: [packages/mce/src/plugins/doc.ts:32](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/doc.ts#L32)
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
 ### openFileDialog()
 
 > **openFileDialog**: (`options?`) => `Promise`\<`File`[]\>
 
-Defined in: [packages/mce/src/mixins/2.load.ts:22](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/2.load.ts#L22)
+Defined in: [packages/mce/src/mixins/loader.ts:22](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/loader.ts#L22)
 
 #### Parameters
 
@@ -1034,7 +1014,7 @@ Defined in: [packages/mce/src/mixins/2.load.ts:22](https://github.com/qq15725/mc
 
 > **parseAnchor**: (`anchor`, `isRtl?`) => [`ParsedAnchor`](../type-aliases/ParsedAnchor.md)
 
-Defined in: [packages/mce/src/mixins/0.context.ts:55](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.context.ts#L55)
+Defined in: [packages/mce/src/mixins/0.context.ts:57](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.context.ts#L57)
 
 #### Parameters
 
@@ -1056,7 +1036,7 @@ Defined in: [packages/mce/src/mixins/0.context.ts:55](https://github.com/qq15725
 
 > **redo**: () => `void`
 
-Defined in: [packages/mce/src/plugins/history.ts:12](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/history.ts#L12)
+Defined in: [packages/mce/src/plugins/history.ts:12](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/history.ts#L12)
 
 #### Returns
 
@@ -1068,7 +1048,7 @@ Defined in: [packages/mce/src/plugins/history.ts:12](https://github.com/qq15725/
 
 > **registerCommand**: (`value`) => `void`
 
-Defined in: [packages/mce/src/mixins/0.command.ts:24](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.command.ts#L24)
+Defined in: [packages/mce/src/mixins/0.command.ts:24](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.command.ts#L24)
 
 #### Parameters
 
@@ -1084,9 +1064,9 @@ Defined in: [packages/mce/src/mixins/0.command.ts:24](https://github.com/qq15725
 
 ### registerConfig()
 
-> **registerConfig**: \<`T`\>(`path`, `initValue`) => `WritableComputedRef`\<`T`\>
+> **registerConfig**: \<`T`\>(`path`, `declaration?`) => `WritableComputedRef`\<`T`\>
 
-Defined in: [packages/mce/src/mixins/0.config.ts:14](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config.ts#L14)
+Defined in: [packages/mce/src/mixins/0.config.ts:20](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.config.ts#L20)
 
 #### Type Parameters
 
@@ -1100,9 +1080,9 @@ Defined in: [packages/mce/src/mixins/0.config.ts:14](https://github.com/qq15725/
 
 `string`
 
-##### initValue
+##### declaration?
 
-`T`
+[`ConfigDeclaration`](ConfigDeclaration.md)\<`T`\>
 
 #### Returns
 
@@ -1110,29 +1090,11 @@ Defined in: [packages/mce/src/mixins/0.config.ts:14](https://github.com/qq15725/
 
 ***
 
-### registerDrawingTool()
-
-> **registerDrawingTool**: (`tool`) => `void`
-
-Defined in: [packages/mce/src/mixins/drawingTool.ts:25](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/drawingTool.ts#L25)
-
-#### Parameters
-
-##### tool
-
-[`DrawingTool`](DrawingTool.md) | [`DrawingTool`](DrawingTool.md)[]
-
-#### Returns
-
-`void`
-
-***
-
 ### registerExporter()
 
 > **registerExporter**: (`value`) => `void`
 
-Defined in: [packages/mce/src/mixins/2.export.ts:27](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/2.export.ts#L27)
+Defined in: [packages/mce/src/mixins/exporter.ts:27](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/exporter.ts#L27)
 
 #### Parameters
 
@@ -1150,7 +1112,7 @@ Defined in: [packages/mce/src/mixins/2.export.ts:27](https://github.com/qq15725/
 
 > **registerHotkey**: (`value`) => `void`
 
-Defined in: [packages/mce/src/mixins/1.hotkey.ts:42](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.hotkey.ts#L42)
+Defined in: [packages/mce/src/mixins/hotkey.ts:42](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/hotkey.ts#L42)
 
 #### Parameters
 
@@ -1168,7 +1130,7 @@ Defined in: [packages/mce/src/mixins/1.hotkey.ts:42](https://github.com/qq15725/
 
 > **registerLoader**: (`value`) => `void`
 
-Defined in: [packages/mce/src/mixins/2.load.ts:18](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/2.load.ts#L18)
+Defined in: [packages/mce/src/mixins/loader.ts:18](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/loader.ts#L18)
 
 #### Parameters
 
@@ -1182,11 +1144,51 @@ Defined in: [packages/mce/src/mixins/2.load.ts:18](https://github.com/qq15725/mc
 
 ***
 
+### registerSnapper()
+
+> **registerSnapper**: (`key`, `snapper`) => `void`
+
+Defined in: [packages/mce/src/mixins/snapper.ts:20](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/snapper.ts#L20)
+
+#### Parameters
+
+##### key
+
+`string`
+
+##### snapper
+
+[`Snapper`](Snapper.md)
+
+#### Returns
+
+`void`
+
+***
+
+### registerTool()
+
+> **registerTool**: (`tool`) => `void`
+
+Defined in: [packages/mce/src/mixins/tool.ts:25](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/tool.ts#L25)
+
+#### Parameters
+
+##### tool
+
+[`Tool`](Tool.md) | [`Tool`](Tool.md)[]
+
+#### Returns
+
+`void`
+
+***
+
 ### renderEngine
 
 > **renderEngine**: `Ref`\<`Engine`\>
 
-Defined in: [packages/mce/src/mixins/0.context.ts:35](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.context.ts#L35)
+Defined in: [packages/mce/src/mixins/0.context.ts:37](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.context.ts#L37)
 
 ***
 
@@ -1194,7 +1196,7 @@ Defined in: [packages/mce/src/mixins/0.context.ts:35](https://github.com/qq15725
 
 > **resizeElement**: (`element`, `newWidth`, `newHeight`, `options?`) => `void`
 
-Defined in: [packages/mce/src/mixins/4.3.element.ts:31](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/4.3.element.ts#L31)
+Defined in: [packages/mce/src/mixins/4.3.element.ts:32](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/4.3.element.ts#L32)
 
 #### Parameters
 
@@ -1224,7 +1226,7 @@ Defined in: [packages/mce/src/mixins/4.3.element.ts:31](https://github.com/qq157
 
 > **root**: `Ref`\<`Doc`\>
 
-Defined in: [packages/mce/src/mixins/0.context.ts:44](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.context.ts#L44)
+Defined in: [packages/mce/src/mixins/0.context.ts:46](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.context.ts#L46)
 
 ***
 
@@ -1232,7 +1234,7 @@ Defined in: [packages/mce/src/mixins/0.context.ts:44](https://github.com/qq15725
 
 > **rootAabb**: `ComputedRef`\<`Aabb2D`\>
 
-Defined in: [packages/mce/src/mixins/2.box.ts:17](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/2.box.ts#L17)
+Defined in: [packages/mce/src/mixins/2.box.ts:17](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/2.box.ts#L17)
 
 ***
 
@@ -1240,7 +1242,7 @@ Defined in: [packages/mce/src/mixins/2.box.ts:17](https://github.com/qq15725/mce
 
 > **saveAsConfig**: (`filename?`) => `void`
 
-Defined in: [packages/mce/src/mixins/0.config.ts:17](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config.ts#L17)
+Defined in: [packages/mce/src/mixins/0.config.ts:23](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.config.ts#L23)
 
 #### Parameters
 
@@ -1258,23 +1260,23 @@ Defined in: [packages/mce/src/mixins/0.config.ts:17](https://github.com/qq15725/
 
 > **screenCenter**: `ComputedRef`\<\{ `x`: `number`; `y`: `number`; \}\>
 
-Defined in: [packages/mce/src/mixins/1.screen.ts:10](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.screen.ts#L10)
+Defined in: [packages/mce/src/mixins/1.screen.ts:21](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/1.screen.ts#L21)
 
 ***
 
 ### screenCenterOffset
 
-> **screenCenterOffset**: `ComputedRef`\<`Required`\<[`ScreenOffset`](ScreenOffset.md)\>\>
+> **screenCenterOffset**: `ComputedRef`\<`Required`\<[`ScreenPadding`](ScreenPadding.md)\>\>
 
-Defined in: [packages/mce/src/mixins/1.screen.ts:9](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.screen.ts#L9)
+Defined in: [packages/mce/src/mixins/1.screen.ts:20](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/1.screen.ts#L20)
 
 ***
 
 ### screenControlsOffset
 
-> **screenControlsOffset**: `ComputedRef`\<`Required`\<[`ScreenOffset`](ScreenOffset.md)\>\>
+> **screenControlsOffset**: `ComputedRef`\<`Required`\<[`ScreenPadding`](ScreenPadding.md)\>\>
 
-Defined in: [packages/mce/src/mixins/1.screen.ts:8](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.screen.ts#L8)
+Defined in: [packages/mce/src/mixins/1.screen.ts:19](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/1.screen.ts#L19)
 
 ***
 
@@ -1282,7 +1284,7 @@ Defined in: [packages/mce/src/mixins/1.screen.ts:8](https://github.com/qq15725/m
 
 > **selection**: `Ref`\<`Node`[]\>
 
-Defined in: [packages/mce/src/mixins/0.context.ts:48](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.context.ts#L48)
+Defined in: [packages/mce/src/mixins/0.context.ts:50](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.context.ts#L50)
 
 ***
 
@@ -1290,7 +1292,7 @@ Defined in: [packages/mce/src/mixins/0.context.ts:48](https://github.com/qq15725
 
 > **selectionAabb**: `ComputedRef`\<`Aabb2D`\>
 
-Defined in: [packages/mce/src/mixins/2.box.ts:18](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/2.box.ts#L18)
+Defined in: [packages/mce/src/mixins/2.box.ts:18](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/2.box.ts#L18)
 
 ***
 
@@ -1298,7 +1300,7 @@ Defined in: [packages/mce/src/mixins/2.box.ts:18](https://github.com/qq15725/mce
 
 > **selectionAabbInDrawboard**: `ComputedRef`\<`Aabb2D`\>
 
-Defined in: [packages/mce/src/mixins/2.box.ts:19](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/2.box.ts#L19)
+Defined in: [packages/mce/src/mixins/2.box.ts:19](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/2.box.ts#L19)
 
 ***
 
@@ -1306,7 +1308,7 @@ Defined in: [packages/mce/src/mixins/2.box.ts:19](https://github.com/qq15725/mce
 
 > **selectionMarquee**: `Ref`\<`Aabb2D`\>
 
-Defined in: [packages/mce/src/mixins/0.context.ts:49](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.context.ts#L49)
+Defined in: [packages/mce/src/mixins/0.context.ts:51](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.context.ts#L51)
 
 ***
 
@@ -1314,7 +1316,7 @@ Defined in: [packages/mce/src/mixins/0.context.ts:49](https://github.com/qq15725
 
 > **selectionObb**: `ComputedRef`\<`Obb2D`\>
 
-Defined in: [packages/mce/src/mixins/2.box.ts:20](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/2.box.ts#L20)
+Defined in: [packages/mce/src/mixins/2.box.ts:20](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/2.box.ts#L20)
 
 ***
 
@@ -1322,33 +1324,15 @@ Defined in: [packages/mce/src/mixins/2.box.ts:20](https://github.com/qq15725/mce
 
 > **selectionObbInDrawboard**: `ComputedRef`\<`Aabb2D`\>
 
-Defined in: [packages/mce/src/mixins/2.box.ts:21](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/2.box.ts#L21)
+Defined in: [packages/mce/src/mixins/2.box.ts:21](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/2.box.ts#L21)
 
 ***
 
-### setActiveDrawingTool()
+### setConfig()
 
-> **setActiveDrawingTool**: (`tool`) => `void`
+> **setConfig**: (`path`, `value`) => `void`
 
-Defined in: [packages/mce/src/mixins/drawingTool.ts:27](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/drawingTool.ts#L27)
-
-#### Parameters
-
-##### tool
-
-`string` | `undefined`
-
-#### Returns
-
-`void`
-
-***
-
-### setConfigValue()
-
-> **setConfigValue**: (`path`, `value`) => `void`
-
-Defined in: [packages/mce/src/mixins/0.config.ts:12](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config.ts#L12)
+Defined in: [packages/mce/src/mixins/0.config.ts:18](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.config.ts#L18)
 
 #### Parameters
 
@@ -1370,7 +1354,7 @@ Defined in: [packages/mce/src/mixins/0.config.ts:12](https://github.com/qq15725/
 
 > **setCursor**: (`mode`) => `void`
 
-Defined in: [packages/mce/src/mixins/0.context.ts:39](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.context.ts#L39)
+Defined in: [packages/mce/src/mixins/0.context.ts:41](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.context.ts#L41)
 
 #### Parameters
 
@@ -1388,7 +1372,7 @@ Defined in: [packages/mce/src/mixins/0.context.ts:39](https://github.com/qq15725
 
 > **setDefaultFont**: (`source`, `options?`) => `Promise`\<`void`\>
 
-Defined in: [packages/mce/src/mixins/0.font.ts:9](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.font.ts#L9)
+Defined in: [packages/mce/src/mixins/0.font.ts:9](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.font.ts#L9)
 
 #### Parameters
 
@@ -1406,11 +1390,29 @@ Defined in: [packages/mce/src/mixins/0.font.ts:9](https://github.com/qq15725/mce
 
 ***
 
+### setDoc()
+
+> **setDoc**: (`doc`) => `Doc`
+
+Defined in: [packages/mce/src/plugins/doc.ts:28](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/doc.ts#L28)
+
+#### Parameters
+
+##### doc
+
+[`DocumentSource`](../type-aliases/DocumentSource.md)
+
+#### Returns
+
+`Doc`
+
+***
+
 ### setLock()
 
 > **setLock**: (`node`, `lock`) => `void`
 
-Defined in: [packages/mce/src/mixins/0.context.ts:64](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.context.ts#L64)
+Defined in: [packages/mce/src/mixins/0.context.ts:66](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.context.ts#L66)
 
 #### Parameters
 
@@ -1428,69 +1430,11 @@ Defined in: [packages/mce/src/mixins/0.context.ts:64](https://github.com/qq15725
 
 ***
 
-### setTextContentByEachFragment()
-
-> **setTextContentByEachFragment**: (`handler`) => `void`
-
-Defined in: [packages/mce/src/mixins/4.1.text.ts:23](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/4.1.text.ts#L23)
-
-#### Parameters
-
-##### handler
-
-(`fragment`) => `void`
-
-#### Returns
-
-`void`
-
-***
-
-### setTextFill()
-
-> **setTextFill**: (`value`) => `void`
-
-Defined in: [packages/mce/src/mixins/4.1.text.ts:22](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/4.1.text.ts#L22)
-
-#### Parameters
-
-##### value
-
-`NormalizedFill` | `undefined`
-
-#### Returns
-
-`void`
-
-***
-
-### setTextStyle()
-
-> **setTextStyle**: (`key`, `value`) => `void`
-
-Defined in: [packages/mce/src/mixins/4.1.text.ts:20](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/4.1.text.ts#L20)
-
-#### Parameters
-
-##### key
-
-`string`
-
-##### value
-
-`any`
-
-#### Returns
-
-`void`
-
-***
-
 ### setVisible()
 
 > **setVisible**: (`node`, `visible`) => `void`
 
-Defined in: [packages/mce/src/mixins/0.context.ts:62](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.context.ts#L62)
+Defined in: [packages/mce/src/mixins/0.context.ts:64](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.context.ts#L64)
 
 #### Parameters
 
@@ -1508,63 +1452,29 @@ Defined in: [packages/mce/src/mixins/0.context.ts:62](https://github.com/qq15725
 
 ***
 
-### snapshot()
+### snap()
 
-> **snapshot**: () => `void`
+> **snap**: (`box`) => `void`
 
-Defined in: [packages/mce/src/mixins/snapshot.ts:15](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/snapshot.ts#L15)
-
-#### Returns
-
-`void`
-
-***
-
-### snapThreshold
-
-> **snapThreshold**: `ComputedRef`\<`number`\>
-
-Defined in: [packages/mce/src/plugins/smartGuides.ts:12](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/smartGuides.ts#L12)
-
-***
-
-### startTime
-
-> **startTime**: `WritableComputedRef`\<`number`\>
-
-Defined in: [packages/mce/src/mixins/1.timeline.ts:12](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.timeline.ts#L12)
-
-***
-
-### state
-
-> **state**: `Ref`\<[`State`](../type-aliases/State.md)\>
-
-Defined in: [packages/mce/src/mixins/0.context.ts:53](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.context.ts#L53)
-
-***
-
-### t
-
-> **t**: [`Translation`](../type-aliases/Translation.md)
-
-Defined in: [packages/mce/src/mixins/0.locale.ts:12](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.locale.ts#L12)
-
-***
-
-### textFontSizeToFit()
-
-> **textFontSizeToFit**: (`element`, `scale?`) => `void`
-
-Defined in: [packages/mce/src/mixins/4.1.text.ts:17](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/4.1.text.ts#L17)
+Defined in: [packages/mce/src/mixins/snapper.ts:22](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/snapper.ts#L22)
 
 #### Parameters
 
-##### element
+##### box
 
-`Element2D`
+###### height
 
-##### scale?
+`number`
+
+###### left
+
+`number`
+
+###### top
+
+`number`
+
+###### width
 
 `number`
 
@@ -1574,29 +1484,19 @@ Defined in: [packages/mce/src/mixins/4.1.text.ts:17](https://github.com/qq15725/
 
 ***
 
-### textSelection
+### snappers
 
-> **textSelection**: `Ref`\<`IndexCharacter`[] \| `undefined`\>
+> **snappers**: `Reactive`\<`Map`\<`string`, [`Snapper`](Snapper.md)\>\>
 
-Defined in: [packages/mce/src/mixins/0.context.ts:51](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.context.ts#L51)
+Defined in: [packages/mce/src/mixins/snapper.ts:19](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/snapper.ts#L19)
 
 ***
 
-### textToFit()
+### snapshot()
 
-> **textToFit**: (`element`, `typography?`) => `void`
+> **snapshot**: () => `void`
 
-Defined in: [packages/mce/src/mixins/4.1.text.ts:18](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/4.1.text.ts#L18)
-
-#### Parameters
-
-##### element
-
-`Element2D`
-
-##### typography?
-
-[`TypographyStrategy`](../type-aliases/TypographyStrategy.md)
+Defined in: [packages/mce/src/mixins/snapshot.ts:9](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/snapshot.ts#L9)
 
 #### Returns
 
@@ -1604,11 +1504,43 @@ Defined in: [packages/mce/src/mixins/4.1.text.ts:18](https://github.com/qq15725/
 
 ***
 
+### startTime
+
+> **startTime**: `WritableComputedRef`\<`number`\>
+
+Defined in: [packages/mce/src/mixins/1.timeline.ts:12](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/1.timeline.ts#L12)
+
+***
+
+### state
+
+> **state**: `Ref`\<[`State`](../type-aliases/State.md)\>
+
+Defined in: [packages/mce/src/mixins/0.context.ts:55](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.context.ts#L55)
+
+***
+
+### t
+
+> **t**: [`Translation`](../type-aliases/Translation.md)
+
+Defined in: [packages/mce/src/mixins/0.locale.ts:12](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.locale.ts#L12)
+
+***
+
+### textSelection
+
+> **textSelection**: `Ref`\<`IndexCharacter`[] \| `undefined`\>
+
+Defined in: [packages/mce/src/mixins/0.context.ts:53](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.context.ts#L53)
+
+***
+
 ### timeline
 
 > **timeline**: `Ref`\<`Timeline`\>
 
-Defined in: [packages/mce/src/mixins/0.context.ts:36](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.context.ts#L36)
+Defined in: [packages/mce/src/mixins/0.context.ts:38](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.context.ts#L38)
 
 ***
 
@@ -1616,7 +1548,7 @@ Defined in: [packages/mce/src/mixins/0.context.ts:36](https://github.com/qq15725
 
 > **to**: \<`K`\>(`name`, `options?`) => [`Exporters`](Exporters.md)\[`K`\]
 
-Defined in: [packages/mce/src/mixins/2.export.ts:30](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/2.export.ts#L30)
+Defined in: [packages/mce/src/mixins/exporter.ts:30](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/exporter.ts#L30)
 
 #### Type Parameters
 
@@ -1640,11 +1572,19 @@ Defined in: [packages/mce/src/mixins/2.export.ts:30](https://github.com/qq15725/
 
 ***
 
+### tools
+
+> **tools**: `Reactive`\<`Map`\<`string`, [`Tool`](Tool.md)\>\>
+
+Defined in: [packages/mce/src/mixins/tool.ts:23](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/tool.ts#L23)
+
+***
+
 ### undo()
 
 > **undo**: () => `void`
 
-Defined in: [packages/mce/src/plugins/history.ts:11](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/history.ts#L11)
+Defined in: [packages/mce/src/plugins/history.ts:11](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/history.ts#L11)
 
 #### Returns
 
@@ -1656,7 +1596,7 @@ Defined in: [packages/mce/src/plugins/history.ts:11](https://github.com/qq15725/
 
 > **unregisterCommand**: (`command`) => `void`
 
-Defined in: [packages/mce/src/mixins/0.command.ts:25](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.command.ts#L25)
+Defined in: [packages/mce/src/mixins/0.command.ts:25](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.command.ts#L25)
 
 #### Parameters
 
@@ -1670,29 +1610,11 @@ Defined in: [packages/mce/src/mixins/0.command.ts:25](https://github.com/qq15725
 
 ***
 
-### unregisterDrawingTool()
-
-> **unregisterDrawingTool**: (`tool`) => `void`
-
-Defined in: [packages/mce/src/mixins/drawingTool.ts:26](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/drawingTool.ts#L26)
-
-#### Parameters
-
-##### tool
-
-`string`
-
-#### Returns
-
-`void`
-
-***
-
 ### unregisterExporter()
 
 > **unregisterExporter**: (`name`) => `void`
 
-Defined in: [packages/mce/src/mixins/2.export.ts:28](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/2.export.ts#L28)
+Defined in: [packages/mce/src/mixins/exporter.ts:28](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/exporter.ts#L28)
 
 #### Parameters
 
@@ -1710,7 +1632,7 @@ Defined in: [packages/mce/src/mixins/2.export.ts:28](https://github.com/qq15725/
 
 > **unregisterHotkey**: (`command`) => `void`
 
-Defined in: [packages/mce/src/mixins/1.hotkey.ts:43](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.hotkey.ts#L43)
+Defined in: [packages/mce/src/mixins/hotkey.ts:43](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/hotkey.ts#L43)
 
 #### Parameters
 
@@ -1728,7 +1650,7 @@ Defined in: [packages/mce/src/mixins/1.hotkey.ts:43](https://github.com/qq15725/
 
 > **unregisterLoader**: (`name`) => `void`
 
-Defined in: [packages/mce/src/mixins/2.load.ts:19](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/2.load.ts#L19)
+Defined in: [packages/mce/src/mixins/loader.ts:19](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/loader.ts#L19)
 
 #### Parameters
 
@@ -1742,11 +1664,47 @@ Defined in: [packages/mce/src/mixins/2.load.ts:19](https://github.com/qq15725/mc
 
 ***
 
+### unregisterSnapper()
+
+> **unregisterSnapper**: (`key`) => `void`
+
+Defined in: [packages/mce/src/mixins/snapper.ts:21](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/snapper.ts#L21)
+
+#### Parameters
+
+##### key
+
+`string`
+
+#### Returns
+
+`void`
+
+***
+
+### unregisterTool()
+
+> **unregisterTool**: (`tool`) => `void`
+
+Defined in: [packages/mce/src/mixins/tool.ts:26](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/tool.ts#L26)
+
+#### Parameters
+
+##### tool
+
+`string`
+
+#### Returns
+
+`void`
+
+***
+
 ### upload
 
 > **upload**: [`Upload`](../type-aliases/Upload.md)
 
-Defined in: [packages/mce/src/mixins/1.upload.ts:8](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.upload.ts#L8)
+Defined in: [packages/mce/src/mixins/1.upload.ts:8](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/1.upload.ts#L8)
 
 ***
 
@@ -1754,7 +1712,7 @@ Defined in: [packages/mce/src/mixins/1.upload.ts:8](https://github.com/qq15725/m
 
 > **viewportAabb**: `ComputedRef`\<`Aabb2D`\>
 
-Defined in: [packages/mce/src/mixins/2.box.ts:16](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/2.box.ts#L16)
+Defined in: [packages/mce/src/mixins/2.box.ts:16](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/2.box.ts#L16)
 
 ***
 
@@ -1762,7 +1720,7 @@ Defined in: [packages/mce/src/mixins/2.box.ts:16](https://github.com/qq15725/mce
 
 > **waitUntilFontLoad**: () => `Promise`\<`void`\>
 
-Defined in: [packages/mce/src/mixins/0.font.ts:10](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.font.ts#L10)
+Defined in: [packages/mce/src/mixins/0.font.ts:10](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.font.ts#L10)
 
 #### Returns
 

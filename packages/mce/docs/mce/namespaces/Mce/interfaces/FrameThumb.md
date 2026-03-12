@@ -6,7 +6,7 @@
 
 # Interface: FrameThumb
 
-Defined in: [packages/mce/src/mixins/1.frame.ts:8](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.frame.ts#L8)
+Defined in: [packages/mce/src/mixins/1.frame.ts:8](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/1.frame.ts#L8)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: [packages/mce/src/mixins/1.frame.ts:8](https://github.com/qq15725/mc
 
 > **height**: `number`
 
-Defined in: [packages/mce/src/mixins/1.frame.ts:11](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.frame.ts#L11)
+Defined in: [packages/mce/src/mixins/1.frame.ts:11](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/1.frame.ts#L11)
 
 ***
 
@@ -22,7 +22,7 @@ Defined in: [packages/mce/src/mixins/1.frame.ts:11](https://github.com/qq15725/m
 
 > **instanceId**: `number`
 
-Defined in: [packages/mce/src/mixins/1.frame.ts:9](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.frame.ts#L9)
+Defined in: [packages/mce/src/mixins/1.frame.ts:9](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/1.frame.ts#L9)
 
 ***
 
@@ -30,7 +30,7 @@ Defined in: [packages/mce/src/mixins/1.frame.ts:9](https://github.com/qq15725/mc
 
 > **url**: `string`
 
-Defined in: [packages/mce/src/mixins/1.frame.ts:12](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.frame.ts#L12)
+Defined in: [packages/mce/src/mixins/1.frame.ts:12](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/1.frame.ts#L12)
 
 ***
 
@@ -38,4 +38,4 @@ Defined in: [packages/mce/src/mixins/1.frame.ts:12](https://github.com/qq15725/m
 
 > **width**: `number`
 
-Defined in: [packages/mce/src/mixins/1.frame.ts:10](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.frame.ts#L10)
+Defined in: [packages/mce/src/mixins/1.frame.ts:10](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/1.frame.ts#L10)

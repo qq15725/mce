@@ -6,7 +6,7 @@
 
 # Interface: Events
 
-Defined in: [packages/mce/src/mixins/0.command.ts:18](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.command.ts#L18)
+Defined in: [packages/mce/src/mixins/0.command.ts:18](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.command.ts#L18)
 
 ## Extends
 
@@ -18,7 +18,17 @@ Defined in: [packages/mce/src/mixins/0.command.ts:18](https://github.com/qq15725
 
 > **clearDoc**: \[\]
 
-Defined in: [packages/mce/src/plugins/doc.ts:35](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/doc.ts#L35)
+Defined in: [packages/mce/src/plugins/doc.ts:53](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/doc.ts#L53)
+
+***
+
+### command:activateTool
+
+> **command:activateTool**: \[`void`\]
+
+#### Inherited from
+
+[`Commands`](Commands.md).[`activateTool`](Commands.md#activatetool)
 
 ***
 
@@ -159,6 +169,16 @@ Defined in: [packages/mce/src/plugins/doc.ts:35](https://github.com/qq15725/mce/
 #### Inherited from
 
 [`Commands`](Commands.md).[`clearDoc`](Commands.md#cleardoc)
+
+***
+
+### command:clearRulerLines
+
+> **command:clearRulerLines**: \[`void`\]
+
+#### Inherited from
+
+[`Commands`](Commands.md).[`clearRulerLines`](Commands.md#clearrulerlines)
 
 ***
 
@@ -332,6 +352,46 @@ Defined in: [packages/mce/src/plugins/doc.ts:35](https://github.com/qq15725/mce/
 
 ***
 
+### command:getTextFill
+
+> **command:getTextFill**: \[`NormalizedFill` \| `undefined`\]
+
+#### Inherited from
+
+[`Commands`](Commands.md).[`getTextFill`](Commands.md#gettextfill)
+
+***
+
+### command:getTextStyle
+
+> **command:getTextStyle**: \[`any`\]
+
+#### Inherited from
+
+[`Commands`](Commands.md).[`getTextStyle`](Commands.md#gettextstyle)
+
+***
+
+### command:getTransform
+
+> **command:getTransform**: \[[`TransformValue`](TransformValue.md)\]
+
+#### Inherited from
+
+[`Commands`](Commands.md).[`getTransform`](Commands.md#gettransform)
+
+***
+
+### command:getUiConfig
+
+> **command:getUiConfig**: \[[`RulerConfig`](RulerConfig.md) \| [`ScrollbarConfig`](ScrollbarConfig.md) \| [`MadeWithConfig`](MadeWithConfig.md) \| [`CreatorConfig`](CreatorConfig.md) \| [`StatusbarConfig`](StatusbarConfig.md) \| [`TimelineConfig`](TimelineConfig.md) \| [`ToolbeltConfig`](ToolbeltConfig.md)\]
+
+#### Inherited from
+
+[`Commands`](Commands.md).[`getUiConfig`](Commands.md#getuiconfig)
+
+***
+
 ### command:groupSelection
 
 > **command:groupSelection**: \[`void`\]
@@ -339,6 +399,36 @@ Defined in: [packages/mce/src/plugins/doc.ts:35](https://github.com/qq15725/mce/
 #### Inherited from
 
 [`Commands`](Commands.md).[`groupSelection`](Commands.md#groupselection)
+
+***
+
+### command:handleTextSelection
+
+> **command:handleTextSelection**: \[`void`\]
+
+#### Inherited from
+
+[`Commands`](Commands.md).[`handleTextSelection`](Commands.md#handletextselection)
+
+***
+
+### command:hidePanel
+
+> **command:hidePanel**: \[`void`\]
+
+#### Inherited from
+
+[`Commands`](Commands.md).[`hidePanel`](Commands.md#hidepanel)
+
+***
+
+### command:hideUi
+
+> **command:hideUi**: \[`void`\]
+
+#### Inherited from
+
+[`Commands`](Commands.md).[`hideUi`](Commands.md#hideui)
 
 ***
 
@@ -359,6 +449,26 @@ Defined in: [packages/mce/src/plugins/doc.ts:35](https://github.com/qq15725/mce/
 #### Inherited from
 
 [`Commands`](Commands.md).[`insertImage`](Commands.md#insertimage)
+
+***
+
+### command:isPanelVisible
+
+> **command:isPanelVisible**: \[`boolean`\]
+
+#### Inherited from
+
+[`Commands`](Commands.md).[`isPanelVisible`](Commands.md#ispanelvisible)
+
+***
+
+### command:isUiVisible
+
+> **command:isUiVisible**: \[`boolean`\]
+
+#### Inherited from
+
+[`Commands`](Commands.md).[`isUiVisible`](Commands.md#isuivisible)
 
 ***
 
@@ -462,23 +572,13 @@ Defined in: [packages/mce/src/plugins/doc.ts:35](https://github.com/qq15725/mce/
 
 ***
 
-### command:new
+### command:newDoc
 
-> **command:new**: \[`void`\]
-
-#### Inherited from
-
-[`Commands`](Commands.md).[`new`](Commands.md#new)
-
-***
-
-### command:open
-
-> **command:open**: \[`Promise`\<`void`\>\]
+> **command:newDoc**: \[`void`\]
 
 #### Inherited from
 
-[`Commands`](Commands.md).[`open`](Commands.md#open)
+[`Commands`](Commands.md).[`newDoc`](Commands.md#newdoc)
 
 ***
 
@@ -492,13 +592,13 @@ Defined in: [packages/mce/src/plugins/doc.ts:35](https://github.com/qq15725/mce/
 
 ***
 
-### command:panels
+### command:openDoc
 
-> **command:panels**: \[`Promise`\<`boolean`\>\]
+> **command:openDoc**: \[`Promise`\<`void`\>\]
 
 #### Inherited from
 
-[`Commands`](Commands.md).[`panels`](Commands.md#panels)
+[`Commands`](Commands.md).[`openDoc`](Commands.md#opendoc)
 
 ***
 
@@ -682,23 +782,23 @@ Defined in: [packages/mce/src/plugins/doc.ts:35](https://github.com/qq15725/mce/
 
 ***
 
-### command:setActiveDrawingTool
-
-> **command:setActiveDrawingTool**: \[`void`\]
-
-#### Inherited from
-
-[`Commands`](Commands.md).[`setActiveDrawingTool`](Commands.md#setactivedrawingtool)
-
-***
-
 ### command:setDoc
 
-> **command:setDoc**: \[`Promise`\<`Doc`\>\]
+> **command:setDoc**: \[`Doc`\]
 
 #### Inherited from
 
 [`Commands`](Commands.md).[`setDoc`](Commands.md#setdoc)
+
+***
+
+### command:setPanelVisible
+
+> **command:setPanelVisible**: \[`void`\]
+
+#### Inherited from
+
+[`Commands`](Commands.md).[`setPanelVisible`](Commands.md#setpanelvisible)
 
 ***
 
@@ -722,6 +822,56 @@ Defined in: [packages/mce/src/plugins/doc.ts:35](https://github.com/qq15725/mce/
 
 ***
 
+### command:setTextContentByEachFragment
+
+> **command:setTextContentByEachFragment**: \[`void`\]
+
+#### Inherited from
+
+[`Commands`](Commands.md).[`setTextContentByEachFragment`](Commands.md#settextcontentbyeachfragment)
+
+***
+
+### command:setTextFill
+
+> **command:setTextFill**: \[`void`\]
+
+#### Inherited from
+
+[`Commands`](Commands.md).[`setTextFill`](Commands.md#settextfill)
+
+***
+
+### command:setTextStyle
+
+> **command:setTextStyle**: \[`void`\]
+
+#### Inherited from
+
+[`Commands`](Commands.md).[`setTextStyle`](Commands.md#settextstyle)
+
+***
+
+### command:setTransform
+
+> **command:setTransform**: \[`void`\]
+
+#### Inherited from
+
+[`Commands`](Commands.md).[`setTransform`](Commands.md#settransform)
+
+***
+
+### command:setUiVisible
+
+> **command:setUiVisible**: \[`void`\]
+
+#### Inherited from
+
+[`Commands`](Commands.md).[`setUiVisible`](Commands.md#setuivisible)
+
+***
+
 ### command:showOrHideSelection
 
 > **command:showOrHideSelection**: \[`void`\]
@@ -729,6 +879,26 @@ Defined in: [packages/mce/src/plugins/doc.ts:35](https://github.com/qq15725/mce/
 #### Inherited from
 
 [`Commands`](Commands.md).[`showOrHideSelection`](Commands.md#showorhideselection)
+
+***
+
+### command:showPanel
+
+> **command:showPanel**: \[`void`\]
+
+#### Inherited from
+
+[`Commands`](Commands.md).[`showPanel`](Commands.md#showpanel)
+
+***
+
+### command:showUi
+
+> **command:showUi**: \[`void`\]
+
+#### Inherited from
+
+[`Commands`](Commands.md).[`showUi`](Commands.md#showui)
 
 ***
 
@@ -762,6 +932,26 @@ Defined in: [packages/mce/src/plugins/doc.ts:35](https://github.com/qq15725/mce/
 
 ***
 
+### command:textFontSizeToFit
+
+> **command:textFontSizeToFit**: \[`void`\]
+
+#### Inherited from
+
+[`Commands`](Commands.md).[`textFontSizeToFit`](Commands.md#textfontsizetofit)
+
+***
+
+### command:textToFit
+
+> **command:textToFit**: \[`void`\]
+
+#### Inherited from
+
+[`Commands`](Commands.md).[`textToFit`](Commands.md#texttofit)
+
+***
+
 ### command:tidyUp
 
 > **command:tidyUp**: \[`void`\]
@@ -769,6 +959,26 @@ Defined in: [packages/mce/src/plugins/doc.ts:35](https://github.com/qq15725/mce/
 #### Inherited from
 
 [`Commands`](Commands.md).[`tidyUp`](Commands.md#tidyup)
+
+***
+
+### command:togglePanel
+
+> **command:togglePanel**: \[`void`\]
+
+#### Inherited from
+
+[`Commands`](Commands.md).[`togglePanel`](Commands.md#togglepanel)
+
+***
+
+### command:toggleUi
+
+> **command:toggleUi**: \[`void`\]
+
+#### Inherited from
+
+[`Commands`](Commands.md).[`toggleUi`](Commands.md#toggleui)
 
 ***
 
@@ -789,16 +999,6 @@ Defined in: [packages/mce/src/plugins/doc.ts:35](https://github.com/qq15725/mce/
 #### Inherited from
 
 [`Commands`](Commands.md).[`ungroupSelection`](Commands.md#ungroupselection)
-
-***
-
-### command:view
-
-> **command:view**: \[`Promise`\<`boolean`\>\]
-
-#### Inherited from
-
-[`Commands`](Commands.md).[`view`](Commands.md#view)
 
 ***
 
@@ -876,7 +1076,7 @@ Defined in: [packages/mce/src/plugins/doc.ts:35](https://github.com/qq15725/mce/
 
 > **docLoaded**: \[`any`, `Error` \| `Doc`\]
 
-Defined in: [packages/mce/src/plugins/doc.ts:34](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/doc.ts#L34)
+Defined in: [packages/mce/src/plugins/doc.ts:52](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/doc.ts#L52)
 
 ***
 
@@ -884,7 +1084,7 @@ Defined in: [packages/mce/src/plugins/doc.ts:34](https://github.com/qq15725/mce/
 
 > **docLoading**: \[`any`\]
 
-Defined in: [packages/mce/src/plugins/doc.ts:33](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/doc.ts#L33)
+Defined in: [packages/mce/src/plugins/doc.ts:51](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/doc.ts#L51)
 
 ***
 
@@ -1044,15 +1244,15 @@ Defined in: [packages/mce/src/plugins/doc.ts:33](https://github.com/qq15725/mce/
 
 ***
 
-### hotkey:new
+### hotkey:newDoc
 
-> **hotkey:new**: \[`KeyboardEvent`\]
+> **hotkey:newDoc**: \[`KeyboardEvent`\]
 
 ***
 
-### hotkey:open
+### hotkey:openDoc
 
-> **hotkey:open**: \[`KeyboardEvent`\]
+> **hotkey:openDoc**: \[`KeyboardEvent`\]
 
 ***
 
@@ -1180,15 +1380,7 @@ Defined in: [packages/mce/src/plugins/doc.ts:33](https://github.com/qq15725/mce/
 
 > **loadFont**: \[`FontLoadedResult`\]
 
-Defined in: [packages/mce/src/mixins/0.font.ts:18](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.font.ts#L18)
-
-***
-
-### pointerMove
-
-> **pointerMove**: \[`PointerEvent`\]
-
-Defined in: [packages/mce/src/plugins/ui.ts:22](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/ui.ts#L22)
+Defined in: [packages/mce/src/mixins/0.font.ts:14](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.font.ts#L14)
 
 ***
 
@@ -1196,31 +1388,31 @@ Defined in: [packages/mce/src/plugins/ui.ts:22](https://github.com/qq15725/mce/b
 
 > **ready**: \[\]
 
-Defined in: [packages/mce/src/typed-global.d.ts:24](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/typed-global.d.ts#L24)
+Defined in: [packages/mce/src/typed-global.d.ts:24](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/typed-global.d.ts#L24)
 
 ***
 
 ### selectionTransform
 
-> **selectionTransform**: \[[`SelectionTransformContext`](SelectionTransformContext.md)\]
+> **selectionTransform**: \[[`TransformContext`](TransformContext.md)\]
 
-Defined in: [packages/mce/src/plugins/selection.ts:72](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L72)
+Defined in: [packages/mce/src/plugins/selection.ts:60](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/selection.ts#L60)
 
 ***
 
 ### selectionTransformEnd
 
-> **selectionTransformEnd**: \[[`SelectionTransformContext`](SelectionTransformContext.md)\]
+> **selectionTransformEnd**: \[[`TransformContext`](TransformContext.md)\]
 
-Defined in: [packages/mce/src/plugins/selection.ts:73](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L73)
+Defined in: [packages/mce/src/plugins/selection.ts:61](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/selection.ts#L61)
 
 ***
 
 ### selectionTransformStart
 
-> **selectionTransformStart**: \[[`SelectionTransformContext`](SelectionTransformContext.md)\]
+> **selectionTransformStart**: \[[`TransformContext`](TransformContext.md)\]
 
-Defined in: [packages/mce/src/plugins/selection.ts:71](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L71)
+Defined in: [packages/mce/src/plugins/selection.ts:59](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/selection.ts#L59)
 
 ***
 
@@ -1228,7 +1420,7 @@ Defined in: [packages/mce/src/plugins/selection.ts:71](https://github.com/qq1572
 
 > **setDoc**: \[`Doc`, `Doc`\]
 
-Defined in: [packages/mce/src/plugins/doc.ts:32](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/doc.ts#L32)
+Defined in: [packages/mce/src/plugins/doc.ts:50](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/doc.ts#L50)
 
 ***
 
@@ -1236,4 +1428,4 @@ Defined in: [packages/mce/src/plugins/doc.ts:32](https://github.com/qq15725/mce/
 
 > **updateDoc**: \[`Uint8Array`\<`ArrayBufferLike`\>, `any`\]
 
-Defined in: [packages/mce/src/plugins/doc.ts:36](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/doc.ts#L36)
+Defined in: [packages/mce/src/plugins/doc.ts:54](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/doc.ts#L54)

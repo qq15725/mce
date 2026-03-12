@@ -6,23 +6,15 @@
 
 # Interface: Exporters
 
-Defined in: [packages/mce/src/plugins/gif.ts:10](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/gif.ts#L10)
+Defined in: [packages/mce/src/plugins/image.ts:16](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/image.ts#L16)
 
 ## Properties
-
-### gif
-
-> **gif**: `Promise`\<`Blob`\>
-
-Defined in: [packages/mce/src/plugins/gif.ts:11](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/gif.ts#L11)
-
-***
 
 ### jpeg
 
 > **jpeg**: `Promise`\<`Blob`\>
 
-Defined in: [packages/mce/src/plugins/image.ts:18](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/image.ts#L18)
+Defined in: [packages/mce/src/plugins/image.ts:18](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/image.ts#L18)
 
 ***
 
@@ -30,7 +22,7 @@ Defined in: [packages/mce/src/plugins/image.ts:18](https://github.com/qq15725/mc
 
 > **json**: [`JsonData`](JsonData.md)
 
-Defined in: [packages/mce/src/plugins/json.ts:27](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/json.ts#L27)
+Defined in: [packages/mce/src/plugins/json.ts:27](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/json.ts#L27)
 
 ***
 
@@ -38,7 +30,7 @@ Defined in: [packages/mce/src/plugins/json.ts:27](https://github.com/qq15725/mce
 
 > **png**: `Promise`\<`Blob`\>
 
-Defined in: [packages/mce/src/plugins/image.ts:17](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/image.ts#L17)
+Defined in: [packages/mce/src/plugins/image.ts:17](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/image.ts#L17)
 
 ***
 
@@ -46,4 +38,4 @@ Defined in: [packages/mce/src/plugins/image.ts:17](https://github.com/qq15725/mc
 
 > **webp**: `Promise`\<`Blob`\>
 
-Defined in: [packages/mce/src/plugins/image.ts:19](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/image.ts#L19)
+Defined in: [packages/mce/src/plugins/image.ts:19](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/image.ts#L19)

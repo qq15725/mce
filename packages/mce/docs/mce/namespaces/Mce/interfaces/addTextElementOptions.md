@@ -6,7 +6,7 @@
 
 # Interface: addTextElementOptions
 
-Defined in: [packages/mce/src/plugins/text.ts:8](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/text.ts#L8)
+Defined in: [packages/mce/src/plugins/typography.ts:36](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/typography.ts#L36)
 
 ## Extends
 
@@ -18,7 +18,7 @@ Defined in: [packages/mce/src/plugins/text.ts:8](https://github.com/qq15725/mce/
 
 > `optional` **active**: `boolean`
 
-Defined in: [packages/mce/src/mixins/4.3.element.ts:18](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/4.3.element.ts#L18)
+Defined in: [packages/mce/src/mixins/4.3.element.ts:19](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/4.3.element.ts#L19)
 
 #### Inherited from
 
@@ -30,7 +30,7 @@ Defined in: [packages/mce/src/mixins/4.3.element.ts:18](https://github.com/qq157
 
 > `optional` **content**: `string`
 
-Defined in: [packages/mce/src/plugins/text.ts:9](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/text.ts#L9)
+Defined in: [packages/mce/src/plugins/typography.ts:37](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/typography.ts#L37)
 
 ***
 
@@ -38,7 +38,7 @@ Defined in: [packages/mce/src/plugins/text.ts:9](https://github.com/qq15725/mce/
 
 > `optional` **index**: `number`
 
-Defined in: [packages/mce/src/mixins/4.3.element.ts:16](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/4.3.element.ts#L16)
+Defined in: [packages/mce/src/mixins/4.3.element.ts:17](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/4.3.element.ts#L17)
 
 #### Inherited from
 
@@ -50,7 +50,7 @@ Defined in: [packages/mce/src/mixins/4.3.element.ts:16](https://github.com/qq157
 
 > `optional` **parent**: `Node`
 
-Defined in: [packages/mce/src/mixins/4.3.element.ts:15](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/4.3.element.ts#L15)
+Defined in: [packages/mce/src/mixins/4.3.element.ts:16](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/4.3.element.ts#L16)
 
 #### Inherited from
 
@@ -62,7 +62,7 @@ Defined in: [packages/mce/src/mixins/4.3.element.ts:15](https://github.com/qq157
 
 > `optional` **position**: [`AddElementPosition`](../type-aliases/AddElementPosition.md)
 
-Defined in: [packages/mce/src/mixins/4.3.element.ts:14](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/4.3.element.ts#L14)
+Defined in: [packages/mce/src/mixins/4.3.element.ts:15](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/4.3.element.ts#L15)
 
 #### Inherited from
 
@@ -74,7 +74,7 @@ Defined in: [packages/mce/src/mixins/4.3.element.ts:14](https://github.com/qq157
 
 > `optional` **regenId**: `boolean`
 
-Defined in: [packages/mce/src/mixins/4.3.element.ts:19](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/4.3.element.ts#L19)
+Defined in: [packages/mce/src/mixins/4.3.element.ts:20](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/4.3.element.ts#L20)
 
 #### Inherited from
 
@@ -86,7 +86,7 @@ Defined in: [packages/mce/src/mixins/4.3.element.ts:19](https://github.com/qq157
 
 > `optional` **sizeToFit**: `boolean`
 
-Defined in: [packages/mce/src/mixins/4.3.element.ts:17](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/4.3.element.ts#L17)
+Defined in: [packages/mce/src/mixins/4.3.element.ts:18](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/4.3.element.ts#L18)
 
 #### Inherited from
 
@@ -98,4 +98,4 @@ Defined in: [packages/mce/src/mixins/4.3.element.ts:17](https://github.com/qq157
 
 > `optional` **style**: `Record`\<`string`, `any`\>
 
-Defined in: [packages/mce/src/plugins/text.ts:10](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/text.ts#L10)
+Defined in: [packages/mce/src/plugins/typography.ts:38](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/typography.ts#L38)

@@ -6,7 +6,7 @@
 
 # Interface: Loader
 
-Defined in: [packages/mce/src/mixins/2.load.ts:9](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/2.load.ts#L9)
+Defined in: [packages/mce/src/mixins/loader.ts:9](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/loader.ts#L9)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: [packages/mce/src/mixins/2.load.ts:9](https://github.com/qq15725/mce
 
 > `optional` **accept**: `string`
 
-Defined in: [packages/mce/src/mixins/2.load.ts:11](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/2.load.ts#L11)
+Defined in: [packages/mce/src/mixins/loader.ts:11](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/loader.ts#L11)
 
 ***
 
@@ -22,7 +22,7 @@ Defined in: [packages/mce/src/mixins/2.load.ts:11](https://github.com/qq15725/mc
 
 > **load**: (`source`) => `Promise`\<`NormalizedElement`\<`Meta`\> \| `NormalizedElement`\<`Meta`\>[]\>
 
-Defined in: [packages/mce/src/mixins/2.load.ts:13](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/2.load.ts#L13)
+Defined in: [packages/mce/src/mixins/loader.ts:13](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/loader.ts#L13)
 
 #### Parameters
 
@@ -40,7 +40,7 @@ Defined in: [packages/mce/src/mixins/2.load.ts:13](https://github.com/qq15725/mc
 
 > **name**: `string`
 
-Defined in: [packages/mce/src/mixins/2.load.ts:10](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/2.load.ts#L10)
+Defined in: [packages/mce/src/mixins/loader.ts:10](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/loader.ts#L10)
 
 ***
 
@@ -48,7 +48,7 @@ Defined in: [packages/mce/src/mixins/2.load.ts:10](https://github.com/qq15725/mc
 
 > **test**: (`source`) => `boolean` \| `Promise`\<`boolean`\>
 
-Defined in: [packages/mce/src/mixins/2.load.ts:12](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/2.load.ts#L12)
+Defined in: [packages/mce/src/mixins/loader.ts:12](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/loader.ts#L12)
 
 #### Parameters
 

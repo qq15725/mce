@@ -6,15 +6,33 @@
 
 # Interface: Commands
 
-Defined in: [packages/mce/src/plugins/arrange.ts:25](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/arrange.ts#L25)
+Defined in: [packages/mce/src/plugins/arrange.ts:25](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/arrange.ts#L25)
 
 ## Properties
+
+### activateTool()
+
+> **activateTool**: (`tool`) => `void`
+
+Defined in: [packages/mce/src/plugins/tool.ts:7](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/tool.ts#L7)
+
+#### Parameters
+
+##### tool
+
+`string` | `undefined`
+
+#### Returns
+
+`void`
+
+***
 
 ### addSubNode()
 
 > **addSubNode**: () => `void`
 
-Defined in: [packages/mce/src/plugins/node.ts:7](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/node.ts#L7)
+Defined in: [packages/mce/src/plugins/node.ts:16](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/node.ts#L16)
 
 #### Returns
 
@@ -26,7 +44,7 @@ Defined in: [packages/mce/src/plugins/node.ts:7](https://github.com/qq15725/mce/
 
 > **addTextElement**: (`options?`) => `Element2D`
 
-Defined in: [packages/mce/src/plugins/text.ts:14](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/text.ts#L14)
+Defined in: [packages/mce/src/plugins/typography.ts:43](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/typography.ts#L43)
 
 #### Parameters
 
@@ -44,7 +62,7 @@ Defined in: [packages/mce/src/plugins/text.ts:14](https://github.com/qq15725/mce
 
 > **align**: (`direction`) => `void`
 
-Defined in: [packages/mce/src/plugins/arrange.ts:31](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/arrange.ts#L31)
+Defined in: [packages/mce/src/plugins/arrange.ts:31](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/arrange.ts#L31)
 
 #### Parameters
 
@@ -62,7 +80,7 @@ Defined in: [packages/mce/src/plugins/arrange.ts:31](https://github.com/qq15725/
 
 > **alignBottom**: () => `void`
 
-Defined in: [packages/mce/src/plugins/arrange.ts:35](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/arrange.ts#L35)
+Defined in: [packages/mce/src/plugins/arrange.ts:35](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/arrange.ts#L35)
 
 #### Returns
 
@@ -74,7 +92,7 @@ Defined in: [packages/mce/src/plugins/arrange.ts:35](https://github.com/qq15725/
 
 > **alignHorizontalCenter**: () => `void`
 
-Defined in: [packages/mce/src/plugins/arrange.ts:36](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/arrange.ts#L36)
+Defined in: [packages/mce/src/plugins/arrange.ts:36](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/arrange.ts#L36)
 
 #### Returns
 
@@ -86,7 +104,7 @@ Defined in: [packages/mce/src/plugins/arrange.ts:36](https://github.com/qq15725/
 
 > **alignLeft**: () => `void`
 
-Defined in: [packages/mce/src/plugins/arrange.ts:32](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/arrange.ts#L32)
+Defined in: [packages/mce/src/plugins/arrange.ts:32](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/arrange.ts#L32)
 
 #### Returns
 
@@ -98,7 +116,7 @@ Defined in: [packages/mce/src/plugins/arrange.ts:32](https://github.com/qq15725/
 
 > **alignRight**: () => `void`
 
-Defined in: [packages/mce/src/plugins/arrange.ts:33](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/arrange.ts#L33)
+Defined in: [packages/mce/src/plugins/arrange.ts:33](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/arrange.ts#L33)
 
 #### Returns
 
@@ -110,7 +128,7 @@ Defined in: [packages/mce/src/plugins/arrange.ts:33](https://github.com/qq15725/
 
 > **alignTop**: () => `void`
 
-Defined in: [packages/mce/src/plugins/arrange.ts:34](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/arrange.ts#L34)
+Defined in: [packages/mce/src/plugins/arrange.ts:34](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/arrange.ts#L34)
 
 #### Returns
 
@@ -122,7 +140,7 @@ Defined in: [packages/mce/src/plugins/arrange.ts:34](https://github.com/qq15725/
 
 > **alignVerticalCenter**: () => `void`
 
-Defined in: [packages/mce/src/plugins/arrange.ts:37](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/arrange.ts#L37)
+Defined in: [packages/mce/src/plugins/arrange.ts:37](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/arrange.ts#L37)
 
 #### Returns
 
@@ -134,7 +152,7 @@ Defined in: [packages/mce/src/plugins/arrange.ts:37](https://github.com/qq15725/
 
 > **applyFormatPaint**: (`targets?`) => `void`
 
-Defined in: [packages/mce/src/plugins/formatPaint.ts:9](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/formatPaint.ts#L9)
+Defined in: [packages/mce/src/plugins/formatPaint.ts:9](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/formatPaint.ts#L9)
 
 #### Parameters
 
@@ -152,7 +170,7 @@ Defined in: [packages/mce/src/plugins/formatPaint.ts:9](https://github.com/qq157
 
 > **bringForward**: (`target?`) => `void`
 
-Defined in: [packages/mce/src/plugins/arrange.ts:27](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/arrange.ts#L27)
+Defined in: [packages/mce/src/plugins/arrange.ts:27](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/arrange.ts#L27)
 
 #### Parameters
 
@@ -170,7 +188,7 @@ Defined in: [packages/mce/src/plugins/arrange.ts:27](https://github.com/qq15725/
 
 > **bringToFront**: (`target?`) => `void`
 
-Defined in: [packages/mce/src/plugins/arrange.ts:29](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/arrange.ts#L29)
+Defined in: [packages/mce/src/plugins/arrange.ts:29](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/arrange.ts#L29)
 
 #### Parameters
 
@@ -188,7 +206,7 @@ Defined in: [packages/mce/src/plugins/arrange.ts:29](https://github.com/qq15725/
 
 > **cancel**: () => `void`
 
-Defined in: [packages/mce/src/plugins/edit.ts:16](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/edit.ts#L16)
+Defined in: [packages/mce/src/plugins/edit.ts:20](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/edit.ts#L20)
 
 #### Returns
 
@@ -200,7 +218,19 @@ Defined in: [packages/mce/src/plugins/edit.ts:16](https://github.com/qq15725/mce
 
 > **clearDoc**: () => `void`
 
-Defined in: [packages/mce/src/plugins/doc.ts:28](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/doc.ts#L28)
+Defined in: [packages/mce/src/plugins/doc.ts:39](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/doc.ts#L39)
+
+#### Returns
+
+`void`
+
+***
+
+### clearRulerLines()
+
+> **clearRulerLines**: () => `void`
+
+Defined in: [packages/mce/src/plugins/ruler.ts:19](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/ruler.ts#L19)
 
 #### Returns
 
@@ -212,7 +242,7 @@ Defined in: [packages/mce/src/plugins/doc.ts:28](https://github.com/qq15725/mce/
 
 > **copy**: (`source?`) => `Promise`\<`void`\>
 
-Defined in: [packages/mce/src/plugins/edit.ts:18](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/edit.ts#L18)
+Defined in: [packages/mce/src/plugins/edit.ts:22](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/edit.ts#L22)
 
 #### Parameters
 
@@ -230,7 +260,7 @@ Defined in: [packages/mce/src/plugins/edit.ts:18](https://github.com/qq15725/mce
 
 > **copyAs**: (`type`, `options?`) => `Promise`\<`void`\>
 
-Defined in: [packages/mce/src/plugins/copyAs.ts:10](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/copyAs.ts#L10)
+Defined in: [packages/mce/src/plugins/edit.ts:23](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/edit.ts#L23)
 
 #### Parameters
 
@@ -252,7 +282,7 @@ keyof [`Exporters`](Exporters.md)
 
 > **cut**: () => `Promise`\<`void`\>
 
-Defined in: [packages/mce/src/plugins/edit.ts:19](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/edit.ts#L19)
+Defined in: [packages/mce/src/plugins/edit.ts:24](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/edit.ts#L24)
 
 #### Returns
 
@@ -264,7 +294,7 @@ Defined in: [packages/mce/src/plugins/edit.ts:19](https://github.com/qq15725/mce
 
 > **delete**: () => `void`
 
-Defined in: [packages/mce/src/plugins/edit.ts:17](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/edit.ts#L17)
+Defined in: [packages/mce/src/plugins/edit.ts:21](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/edit.ts#L21)
 
 #### Returns
 
@@ -276,7 +306,7 @@ Defined in: [packages/mce/src/plugins/edit.ts:17](https://github.com/qq15725/mce
 
 > **distributeHorizontalSpacing**: () => `void`
 
-Defined in: [packages/mce/src/plugins/arrange.ts:39](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/arrange.ts#L39)
+Defined in: [packages/mce/src/plugins/arrange.ts:39](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/arrange.ts#L39)
 
 #### Returns
 
@@ -288,7 +318,7 @@ Defined in: [packages/mce/src/plugins/arrange.ts:39](https://github.com/qq15725/
 
 > **distributeSpacing**: (`direction`) => `void`
 
-Defined in: [packages/mce/src/plugins/arrange.ts:38](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/arrange.ts#L38)
+Defined in: [packages/mce/src/plugins/arrange.ts:38](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/arrange.ts#L38)
 
 #### Parameters
 
@@ -306,7 +336,7 @@ Defined in: [packages/mce/src/plugins/arrange.ts:38](https://github.com/qq15725/
 
 > **distributeVerticalSpacing**: () => `void`
 
-Defined in: [packages/mce/src/plugins/arrange.ts:40](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/arrange.ts#L40)
+Defined in: [packages/mce/src/plugins/arrange.ts:40](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/arrange.ts#L40)
 
 #### Returns
 
@@ -318,7 +348,7 @@ Defined in: [packages/mce/src/plugins/arrange.ts:40](https://github.com/qq15725/
 
 > **duplicate**: () => `void`
 
-Defined in: [packages/mce/src/plugins/edit.ts:21](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/edit.ts#L21)
+Defined in: [packages/mce/src/plugins/edit.ts:26](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/edit.ts#L26)
 
 #### Returns
 
@@ -330,7 +360,7 @@ Defined in: [packages/mce/src/plugins/edit.ts:21](https://github.com/qq15725/mce
 
 > **enter**: () => `void`
 
-Defined in: [packages/mce/src/plugins/transform.ts:10](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/transform.ts#L10)
+Defined in: [packages/mce/src/plugins/transform.ts:52](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/transform.ts#L52)
 
 #### Returns
 
@@ -342,7 +372,7 @@ Defined in: [packages/mce/src/plugins/transform.ts:10](https://github.com/qq1572
 
 > **exitFormatPaint**: () => `void`
 
-Defined in: [packages/mce/src/plugins/formatPaint.ts:10](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/formatPaint.ts#L10)
+Defined in: [packages/mce/src/plugins/formatPaint.ts:10](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/formatPaint.ts#L10)
 
 #### Returns
 
@@ -352,15 +382,15 @@ Defined in: [packages/mce/src/plugins/formatPaint.ts:10](https://github.com/qq15
 
 ### flip()
 
-> **flip**: (`target`) => `void`
+> **flip**: (`direction`) => `void`
 
-Defined in: [packages/mce/src/plugins/transform.ts:11](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/transform.ts#L11)
+Defined in: [packages/mce/src/plugins/transform.ts:62](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/transform.ts#L62)
 
 #### Parameters
 
-##### target
+##### direction
 
-[`FlipTarget`](../type-aliases/FlipTarget.md)
+[`FlipDirection`](../type-aliases/FlipDirection.md)
 
 #### Returns
 
@@ -372,7 +402,7 @@ Defined in: [packages/mce/src/plugins/transform.ts:11](https://github.com/qq1572
 
 > **flipHorizontal**: () => `void`
 
-Defined in: [packages/mce/src/plugins/transform.ts:12](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/transform.ts#L12)
+Defined in: [packages/mce/src/plugins/transform.ts:63](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/transform.ts#L63)
 
 #### Returns
 
@@ -384,7 +414,7 @@ Defined in: [packages/mce/src/plugins/transform.ts:12](https://github.com/qq1572
 
 > **flipVertical**: () => `void`
 
-Defined in: [packages/mce/src/plugins/transform.ts:13](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/transform.ts#L13)
+Defined in: [packages/mce/src/plugins/transform.ts:64](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/transform.ts#L64)
 
 #### Returns
 
@@ -396,7 +426,7 @@ Defined in: [packages/mce/src/plugins/transform.ts:13](https://github.com/qq1572
 
 > **formatPaint**: () => `void`
 
-Defined in: [packages/mce/src/plugins/formatPaint.ts:8](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/formatPaint.ts#L8)
+Defined in: [packages/mce/src/plugins/formatPaint.ts:8](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/formatPaint.ts#L8)
 
 #### Returns
 
@@ -408,7 +438,7 @@ Defined in: [packages/mce/src/plugins/formatPaint.ts:8](https://github.com/qq157
 
 > **frameSelection**: () => `void`
 
-Defined in: [packages/mce/src/plugins/selection.ts:31](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L31)
+Defined in: [packages/mce/src/plugins/selection.ts:32](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/selection.ts#L32)
 
 #### Returns
 
@@ -420,7 +450,7 @@ Defined in: [packages/mce/src/plugins/selection.ts:31](https://github.com/qq1572
 
 > **getDoc**: () => [`JsonData`](JsonData.md)
 
-Defined in: [packages/mce/src/plugins/doc.ts:25](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/doc.ts#L25)
+Defined in: [packages/mce/src/plugins/doc.ts:36](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/doc.ts#L36)
 
 #### Returns
 
@@ -432,7 +462,7 @@ Defined in: [packages/mce/src/plugins/doc.ts:25](https://github.com/qq15725/mce/
 
 > **getState**: () => [`State`](../type-aliases/State.md)
 
-Defined in: [packages/mce/src/plugins/state.ts:6](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/state.ts#L6)
+Defined in: [packages/mce/src/plugins/state.ts:6](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/state.ts#L6)
 
 #### Returns
 
@@ -440,11 +470,139 @@ Defined in: [packages/mce/src/plugins/state.ts:6](https://github.com/qq15725/mce
 
 ***
 
+### getTextFill()
+
+> **getTextFill**: () => `NormalizedFill` \| `undefined`
+
+Defined in: [packages/mce/src/plugins/typography.ts:49](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/typography.ts#L49)
+
+#### Returns
+
+`NormalizedFill` \| `undefined`
+
+***
+
+### getTextStyle()
+
+> **getTextStyle**: (`key`) => `any`
+
+Defined in: [packages/mce/src/plugins/typography.ts:47](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/typography.ts#L47)
+
+#### Parameters
+
+##### key
+
+`string`
+
+#### Returns
+
+`any`
+
+***
+
+### getTransform()
+
+> **getTransform**: () => [`TransformValue`](TransformValue.md)
+
+Defined in: [packages/mce/src/plugins/transform.ts:53](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/transform.ts#L53)
+
+#### Returns
+
+[`TransformValue`](TransformValue.md)
+
+***
+
+### getUiConfig()
+
+> **getUiConfig**: \<`T`\>(`name`) => [`UIConfig`](UIConfig.md)\[`T`\]
+
+Defined in: [packages/mce/src/plugins/view.ts:13](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/view.ts#L13)
+
+#### Type Parameters
+
+##### T
+
+`T` *extends* keyof [`UIConfig`](UIConfig.md)
+
+#### Parameters
+
+##### name
+
+`T`
+
+#### Returns
+
+[`UIConfig`](UIConfig.md)\[`T`\]
+
+***
+
 ### groupSelection()
 
 > **groupSelection**: () => `void`
 
-Defined in: [packages/mce/src/plugins/selection.ts:29](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L29)
+Defined in: [packages/mce/src/plugins/selection.ts:30](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/selection.ts#L30)
+
+#### Returns
+
+`void`
+
+***
+
+### handleTextSelection()
+
+> **handleTextSelection**: (`textSelection`, `cb`) => `void`
+
+Defined in: [packages/mce/src/plugins/typography.ts:44](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/typography.ts#L44)
+
+#### Parameters
+
+##### textSelection
+
+`IndexCharacter`[]
+
+##### cb
+
+(`arg`) => `boolean`
+
+#### Returns
+
+`void`
+
+***
+
+### hidePanel()
+
+> **hidePanel**: (`name`, `visible`) => `void`
+
+Defined in: [packages/mce/src/plugins/view.ts:21](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/view.ts#L21)
+
+#### Parameters
+
+##### name
+
+`string`
+
+##### visible
+
+`boolean` | `"toggle"`
+
+#### Returns
+
+`void`
+
+***
+
+### hideUi()
+
+> **hideUi**: (`name`) => `void`
+
+Defined in: [packages/mce/src/plugins/view.ts:16](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/view.ts#L16)
+
+#### Parameters
+
+##### name
+
+keyof [`UIConfig`](UIConfig.md)
 
 #### Returns
 
@@ -456,7 +614,7 @@ Defined in: [packages/mce/src/plugins/selection.ts:29](https://github.com/qq1572
 
 > **import**: (`options?`) => `Promise`\<`Element2D`[]\>
 
-Defined in: [packages/mce/src/plugins/import.ts:13](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/import.ts#L13)
+Defined in: [packages/mce/src/plugins/import.ts:13](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/import.ts#L13)
 
 #### Parameters
 
@@ -474,7 +632,7 @@ Defined in: [packages/mce/src/plugins/import.ts:13](https://github.com/qq15725/m
 
 > **insertImage**: (`url`, `options?`) => `Promise`\<`Element2D`\>
 
-Defined in: [packages/mce/src/plugins/image.ts:13](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/image.ts#L13)
+Defined in: [packages/mce/src/plugins/image.ts:13](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/image.ts#L13)
 
 #### Parameters
 
@@ -492,11 +650,47 @@ Defined in: [packages/mce/src/plugins/image.ts:13](https://github.com/qq15725/mc
 
 ***
 
+### isPanelVisible()
+
+> **isPanelVisible**: (`name`) => `boolean`
+
+Defined in: [packages/mce/src/plugins/view.ts:19](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/view.ts#L19)
+
+#### Parameters
+
+##### name
+
+`string`
+
+#### Returns
+
+`boolean`
+
+***
+
+### isUiVisible()
+
+> **isUiVisible**: (`name`) => `boolean`
+
+Defined in: [packages/mce/src/plugins/view.ts:15](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/view.ts#L15)
+
+#### Parameters
+
+##### name
+
+keyof [`UIConfig`](UIConfig.md)
+
+#### Returns
+
+`boolean`
+
+***
+
 ### layerScrollIntoView()
 
 > **layerScrollIntoView**: () => `boolean`
 
-Defined in: [packages/mce/src/plugins/ui.ts:18](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/ui.ts#L18)
+Defined in: [packages/mce/src/plugins/layers.ts:7](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/layers.ts#L7)
 
 #### Returns
 
@@ -508,7 +702,7 @@ Defined in: [packages/mce/src/plugins/ui.ts:18](https://github.com/qq15725/mce/b
 
 > **loadDoc**: (`source`) => `Promise`\<`Doc`\>
 
-Defined in: [packages/mce/src/plugins/doc.ts:27](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/doc.ts#L27)
+Defined in: [packages/mce/src/plugins/doc.ts:38](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/doc.ts#L38)
 
 #### Parameters
 
@@ -526,7 +720,7 @@ Defined in: [packages/mce/src/plugins/doc.ts:27](https://github.com/qq15725/mce/
 
 > **lockOrUnlockSelection**: (`target?`) => `void`
 
-Defined in: [packages/mce/src/plugins/selection.ts:33](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L33)
+Defined in: [packages/mce/src/plugins/selection.ts:34](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/selection.ts#L34)
 
 #### Parameters
 
@@ -544,7 +738,7 @@ Defined in: [packages/mce/src/plugins/selection.ts:33](https://github.com/qq1572
 
 > **marqueeSelect**: (`marquee?`) => `void`
 
-Defined in: [packages/mce/src/plugins/selection.ts:21](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L21)
+Defined in: [packages/mce/src/plugins/selection.ts:22](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/selection.ts#L22)
 
 #### Parameters
 
@@ -562,13 +756,13 @@ Defined in: [packages/mce/src/plugins/selection.ts:21](https://github.com/qq1572
 
 > **move**: (`direction`, `distance?`) => `void`
 
-Defined in: [packages/mce/src/plugins/move.ts:8](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/move.ts#L8)
+Defined in: [packages/mce/src/plugins/transform.ts:55](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/transform.ts#L55)
 
 #### Parameters
 
 ##### direction
 
-[`MoveCommandDirection`](../type-aliases/MoveCommandDirection.md)
+[`MoveDirection`](../type-aliases/MoveDirection.md)
 
 ##### distance?
 
@@ -584,7 +778,7 @@ Defined in: [packages/mce/src/plugins/move.ts:8](https://github.com/qq15725/mce/
 
 > **moveBottom**: (`distance?`) => `void`
 
-Defined in: [packages/mce/src/plugins/move.ts:12](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/move.ts#L12)
+Defined in: [packages/mce/src/plugins/transform.ts:59](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/transform.ts#L59)
 
 #### Parameters
 
@@ -602,7 +796,7 @@ Defined in: [packages/mce/src/plugins/move.ts:12](https://github.com/qq15725/mce
 
 > **moveLeft**: (`distance?`) => `void`
 
-Defined in: [packages/mce/src/plugins/move.ts:9](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/move.ts#L9)
+Defined in: [packages/mce/src/plugins/transform.ts:56](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/transform.ts#L56)
 
 #### Parameters
 
@@ -620,7 +814,7 @@ Defined in: [packages/mce/src/plugins/move.ts:9](https://github.com/qq15725/mce/
 
 > **moveRight**: (`distance?`) => `void`
 
-Defined in: [packages/mce/src/plugins/move.ts:11](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/move.ts#L11)
+Defined in: [packages/mce/src/plugins/transform.ts:58](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/transform.ts#L58)
 
 #### Parameters
 
@@ -638,7 +832,7 @@ Defined in: [packages/mce/src/plugins/move.ts:11](https://github.com/qq15725/mce
 
 > **moveTop**: (`distance?`) => `void`
 
-Defined in: [packages/mce/src/plugins/move.ts:10](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/move.ts#L10)
+Defined in: [packages/mce/src/plugins/transform.ts:57](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/transform.ts#L57)
 
 #### Parameters
 
@@ -656,7 +850,7 @@ Defined in: [packages/mce/src/plugins/move.ts:10](https://github.com/qq15725/mce
 
 > **nestIntoFrame**: (`element`, `options?`) => `void`
 
-Defined in: [packages/mce/src/plugins/autoNest.ts:14](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/autoNest.ts#L14)
+Defined in: [packages/mce/src/plugins/autoNest.ts:14](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/autoNest.ts#L14)
 
 #### Parameters
 
@@ -674,11 +868,11 @@ Defined in: [packages/mce/src/plugins/autoNest.ts:14](https://github.com/qq15725
 
 ***
 
-### new()
+### newDoc()
 
-> **new**: () => `void`
+> **newDoc**: () => `void`
 
-Defined in: [packages/mce/src/plugins/new.ts:6](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/new.ts#L6)
+Defined in: [packages/mce/src/plugins/doc.ts:40](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/doc.ts#L40)
 
 #### Returns
 
@@ -686,29 +880,17 @@ Defined in: [packages/mce/src/plugins/new.ts:6](https://github.com/qq15725/mce/b
 
 ***
 
-### open()
-
-> **open**: () => `Promise`\<`void`\>
-
-Defined in: [packages/mce/src/plugins/open.ts:6](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/open.ts#L6)
-
-#### Returns
-
-`Promise`\<`void`\>
-
-***
-
 ### openContextMenu()
 
-> **openContextMenu**: (`e?`) => `boolean`
+> **openContextMenu**: (`event?`) => `boolean`
 
-Defined in: [packages/mce/src/plugins/ui.ts:17](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/ui.ts#L17)
+Defined in: [packages/mce/src/plugins/menu.ts:23](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/menu.ts#L23)
 
 #### Parameters
 
-##### e?
+##### event?
 
-`MouseEvent` | `PointerEvent`
+`MouseEvent`
 
 #### Returns
 
@@ -716,31 +898,15 @@ Defined in: [packages/mce/src/plugins/ui.ts:17](https://github.com/qq15725/mce/b
 
 ***
 
-### panels()
+### openDoc()
 
-> **panels**: \<`T`\>(`panel`, ...`args`) => `Promise`\<`boolean`\>
+> **openDoc**: () => `Promise`\<`void`\>
 
-Defined in: [packages/mce/src/plugins/panels.ts:14](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/panels.ts#L14)
-
-#### Type Parameters
-
-##### T
-
-`T` *extends* keyof [`Panels`](Panels.md)
-
-#### Parameters
-
-##### panel
-
-`T`
-
-##### args
-
-...[`Panels`](Panels.md)\[`T`\]
+Defined in: [packages/mce/src/plugins/doc.ts:41](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/doc.ts#L41)
 
 #### Returns
 
-`Promise`\<`boolean`\>
+`Promise`\<`void`\>
 
 ***
 
@@ -748,7 +914,7 @@ Defined in: [packages/mce/src/plugins/panels.ts:14](https://github.com/qq15725/m
 
 > **paste**: (`source?`) => `Promise`\<`void`\>
 
-Defined in: [packages/mce/src/plugins/edit.ts:20](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/edit.ts#L20)
+Defined in: [packages/mce/src/plugins/edit.ts:25](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/edit.ts#L25)
 
 #### Parameters
 
@@ -766,7 +932,7 @@ Defined in: [packages/mce/src/plugins/edit.ts:20](https://github.com/qq15725/mce
 
 > **pointerDown**: (`e`, `options?`) => `void`
 
-Defined in: [packages/mce/src/plugins/ui.ts:14](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/ui.ts#L14)
+Defined in: [packages/mce/src/plugins/view.ts:24](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/view.ts#L24)
 
 #### Parameters
 
@@ -788,7 +954,7 @@ Defined in: [packages/mce/src/plugins/ui.ts:14](https://github.com/qq15725/mce/b
 
 > **redo**: () => `void`
 
-Defined in: [packages/mce/src/plugins/history.ts:22](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/history.ts#L22)
+Defined in: [packages/mce/src/plugins/history.ts:22](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/history.ts#L22)
 
 #### Returns
 
@@ -800,7 +966,7 @@ Defined in: [packages/mce/src/plugins/history.ts:22](https://github.com/qq15725/
 
 > **rotate**: (`deg`) => `void`
 
-Defined in: [packages/mce/src/plugins/rotate.ts:6](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/rotate.ts#L6)
+Defined in: [packages/mce/src/plugins/transform.ts:60](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/transform.ts#L60)
 
 #### Parameters
 
@@ -818,7 +984,7 @@ Defined in: [packages/mce/src/plugins/rotate.ts:6](https://github.com/qq15725/mc
 
 > **rotate90**: () => `void`
 
-Defined in: [packages/mce/src/plugins/rotate.ts:7](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/rotate.ts#L7)
+Defined in: [packages/mce/src/plugins/transform.ts:61](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/transform.ts#L61)
 
 #### Returns
 
@@ -830,7 +996,7 @@ Defined in: [packages/mce/src/plugins/rotate.ts:7](https://github.com/qq15725/mc
 
 > **saveAs**: (`type`, `options?`) => `Promise`\<`void`\>
 
-Defined in: [packages/mce/src/plugins/saveAs.ts:11](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/saveAs.ts#L11)
+Defined in: [packages/mce/src/plugins/saveAs.ts:11](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/saveAs.ts#L11)
 
 #### Parameters
 
@@ -852,7 +1018,7 @@ keyof [`Exporters`](Exporters.md)
 
 > **scrollTo**: (`target`, `options?`) => `Promise`\<`void`\>
 
-Defined in: [packages/mce/src/plugins/scroll.ts:22](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/scroll.ts#L22)
+Defined in: [packages/mce/src/plugins/scroll.ts:31](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/scroll.ts#L31)
 
 #### Parameters
 
@@ -874,7 +1040,7 @@ Defined in: [packages/mce/src/plugins/scroll.ts:22](https://github.com/qq15725/m
 
 > **scrollToSelection**: (`options?`) => `void`
 
-Defined in: [packages/mce/src/plugins/scroll.ts:23](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/scroll.ts#L23)
+Defined in: [packages/mce/src/plugins/scroll.ts:32](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/scroll.ts#L32)
 
 #### Parameters
 
@@ -892,7 +1058,7 @@ Defined in: [packages/mce/src/plugins/scroll.ts:23](https://github.com/qq15725/m
 
 > **select**: (`target`) => `void`
 
-Defined in: [packages/mce/src/plugins/selection.ts:20](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L20)
+Defined in: [packages/mce/src/plugins/selection.ts:21](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/selection.ts#L21)
 
 #### Parameters
 
@@ -910,7 +1076,7 @@ Defined in: [packages/mce/src/plugins/selection.ts:20](https://github.com/qq1572
 
 > **selectAll**: () => `void`
 
-Defined in: [packages/mce/src/plugins/selection.ts:22](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L22)
+Defined in: [packages/mce/src/plugins/selection.ts:23](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/selection.ts#L23)
 
 #### Returns
 
@@ -922,7 +1088,7 @@ Defined in: [packages/mce/src/plugins/selection.ts:22](https://github.com/qq1572
 
 > **selectChildren**: () => `void`
 
-Defined in: [packages/mce/src/plugins/selection.ts:25](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L25)
+Defined in: [packages/mce/src/plugins/selection.ts:26](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/selection.ts#L26)
 
 #### Returns
 
@@ -934,7 +1100,7 @@ Defined in: [packages/mce/src/plugins/selection.ts:25](https://github.com/qq1572
 
 > **selectInverse**: () => `void`
 
-Defined in: [packages/mce/src/plugins/selection.ts:23](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L23)
+Defined in: [packages/mce/src/plugins/selection.ts:24](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/selection.ts#L24)
 
 #### Returns
 
@@ -946,7 +1112,7 @@ Defined in: [packages/mce/src/plugins/selection.ts:23](https://github.com/qq1572
 
 > **selectNextSibling**: () => `void`
 
-Defined in: [packages/mce/src/plugins/selection.ts:28](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L28)
+Defined in: [packages/mce/src/plugins/selection.ts:29](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/selection.ts#L29)
 
 #### Returns
 
@@ -958,7 +1124,7 @@ Defined in: [packages/mce/src/plugins/selection.ts:28](https://github.com/qq1572
 
 > **selectNone**: () => `void`
 
-Defined in: [packages/mce/src/plugins/selection.ts:24](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L24)
+Defined in: [packages/mce/src/plugins/selection.ts:25](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/selection.ts#L25)
 
 #### Returns
 
@@ -970,7 +1136,7 @@ Defined in: [packages/mce/src/plugins/selection.ts:24](https://github.com/qq1572
 
 > **selectParent**: () => `void`
 
-Defined in: [packages/mce/src/plugins/selection.ts:26](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L26)
+Defined in: [packages/mce/src/plugins/selection.ts:27](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/selection.ts#L27)
 
 #### Returns
 
@@ -982,7 +1148,7 @@ Defined in: [packages/mce/src/plugins/selection.ts:26](https://github.com/qq1572
 
 > **selectPreviousSibling**: () => `void`
 
-Defined in: [packages/mce/src/plugins/selection.ts:27](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L27)
+Defined in: [packages/mce/src/plugins/selection.ts:28](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/selection.ts#L28)
 
 #### Returns
 
@@ -994,7 +1160,7 @@ Defined in: [packages/mce/src/plugins/selection.ts:27](https://github.com/qq1572
 
 > **sendBackward**: (`target?`) => `void`
 
-Defined in: [packages/mce/src/plugins/arrange.ts:28](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/arrange.ts#L28)
+Defined in: [packages/mce/src/plugins/arrange.ts:28](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/arrange.ts#L28)
 
 #### Parameters
 
@@ -1012,7 +1178,7 @@ Defined in: [packages/mce/src/plugins/arrange.ts:28](https://github.com/qq15725/
 
 > **sendToBack**: (`target?`) => `void`
 
-Defined in: [packages/mce/src/plugins/arrange.ts:30](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/arrange.ts#L30)
+Defined in: [packages/mce/src/plugins/arrange.ts:30](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/arrange.ts#L30)
 
 #### Parameters
 
@@ -1026,29 +1192,11 @@ Defined in: [packages/mce/src/plugins/arrange.ts:30](https://github.com/qq15725/
 
 ***
 
-### setActiveDrawingTool()
-
-> **setActiveDrawingTool**: (`tool`) => `void`
-
-Defined in: [packages/mce/src/plugins/drawingTool.ts:7](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/drawingTool.ts#L7)
-
-#### Parameters
-
-##### tool
-
-`string` | `undefined`
-
-#### Returns
-
-`void`
-
-***
-
 ### setDoc()
 
-> **setDoc**: (`doc`) => `Promise`\<`Doc`\>
+> **setDoc**: (`doc`) => `Doc`
 
-Defined in: [packages/mce/src/plugins/doc.ts:26](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/doc.ts#L26)
+Defined in: [packages/mce/src/plugins/doc.ts:37](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/doc.ts#L37)
 
 #### Parameters
 
@@ -1058,7 +1206,29 @@ Defined in: [packages/mce/src/plugins/doc.ts:26](https://github.com/qq15725/mce/
 
 #### Returns
 
-`Promise`\<`Doc`\>
+`Doc`
+
+***
+
+### setPanelVisible()
+
+> **setPanelVisible**: (`name`, `visible`) => `void`
+
+Defined in: [packages/mce/src/plugins/view.ts:20](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/view.ts#L20)
+
+#### Parameters
+
+##### name
+
+`string`
+
+##### visible
+
+`boolean` | `"toggle"`
+
+#### Returns
+
+`void`
 
 ***
 
@@ -1066,7 +1236,7 @@ Defined in: [packages/mce/src/plugins/doc.ts:26](https://github.com/qq15725/mce/
 
 > **setSmartSelectionCurrentElement**: (`element?`) => `void`
 
-Defined in: [packages/mce/src/plugins/smartSelection.ts:9](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/smartSelection.ts#L9)
+Defined in: [packages/mce/src/plugins/smartSelection.ts:9](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/smartSelection.ts#L9)
 
 #### Parameters
 
@@ -1082,15 +1252,121 @@ Defined in: [packages/mce/src/plugins/smartSelection.ts:9](https://github.com/qq
 
 ### setState()
 
-> **setState**: (`val`) => `void`
+> **setState**: (`value`) => `void`
 
-Defined in: [packages/mce/src/plugins/state.ts:7](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/state.ts#L7)
+Defined in: [packages/mce/src/plugins/state.ts:7](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/state.ts#L7)
 
 #### Parameters
 
-##### val
+##### value
 
 [`State`](../type-aliases/State.md)
+
+#### Returns
+
+`void`
+
+***
+
+### setTextContentByEachFragment()
+
+> **setTextContentByEachFragment**: (`handler`) => `void`
+
+Defined in: [packages/mce/src/plugins/typography.ts:51](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/typography.ts#L51)
+
+#### Parameters
+
+##### handler
+
+(`fragment`) => `void`
+
+#### Returns
+
+`void`
+
+***
+
+### setTextFill()
+
+> **setTextFill**: (`value`) => `void`
+
+Defined in: [packages/mce/src/plugins/typography.ts:50](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/typography.ts#L50)
+
+#### Parameters
+
+##### value
+
+`NormalizedFill` | `undefined`
+
+#### Returns
+
+`void`
+
+***
+
+### setTextStyle()
+
+> **setTextStyle**: (`key`, `value`) => `void`
+
+Defined in: [packages/mce/src/plugins/typography.ts:48](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/typography.ts#L48)
+
+#### Parameters
+
+##### key
+
+`string`
+
+##### value
+
+`any`
+
+#### Returns
+
+`void`
+
+***
+
+### setTransform()
+
+> **setTransform**: (`type`, `value`, `options?`) => `void`
+
+Defined in: [packages/mce/src/plugins/transform.ts:54](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/transform.ts#L54)
+
+#### Parameters
+
+##### type
+
+[`TransformType`](../type-aliases/TransformType.md)
+
+##### value
+
+`Partial`\<[`TransformValue`](TransformValue.md)\>
+
+##### options?
+
+[`TransformOptions`](TransformOptions.md)
+
+#### Returns
+
+`void`
+
+***
+
+### setUiVisible()
+
+> **setUiVisible**: (`name`, `visible`) => `void`
+
+Defined in: [packages/mce/src/plugins/view.ts:14](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/view.ts#L14)
+
+#### Parameters
+
+##### name
+
+keyof [`UIConfig`](UIConfig.md)
+
+##### visible
+
+`boolean` | `"toggle"`
 
 #### Returns
 
@@ -1102,7 +1378,7 @@ Defined in: [packages/mce/src/plugins/state.ts:7](https://github.com/qq15725/mce
 
 > **showOrHideSelection**: (`target?`) => `void`
 
-Defined in: [packages/mce/src/plugins/selection.ts:32](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L32)
+Defined in: [packages/mce/src/plugins/selection.ts:33](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/selection.ts#L33)
 
 #### Parameters
 
@@ -1116,17 +1392,57 @@ Defined in: [packages/mce/src/plugins/selection.ts:32](https://github.com/qq1572
 
 ***
 
-### startTransform()
+### showPanel()
 
-> **startTransform**: (`e?`) => `boolean`
+> **showPanel**: (`name`, `visible`) => `void`
 
-Defined in: [packages/mce/src/plugins/ui.ts:16](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/ui.ts#L16)
+Defined in: [packages/mce/src/plugins/view.ts:22](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/view.ts#L22)
 
 #### Parameters
 
-##### e?
+##### name
 
-`MouseEvent` | `PointerEvent`
+`string`
+
+##### visible
+
+`boolean` | `"toggle"`
+
+#### Returns
+
+`void`
+
+***
+
+### showUi()
+
+> **showUi**: (`name`) => `void`
+
+Defined in: [packages/mce/src/plugins/view.ts:17](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/view.ts#L17)
+
+#### Parameters
+
+##### name
+
+keyof [`UIConfig`](UIConfig.md)
+
+#### Returns
+
+`void`
+
+***
+
+### startTransform()
+
+> **startTransform**: (`event?`) => `boolean`
+
+Defined in: [packages/mce/src/plugins/selection.ts:20](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/selection.ts#L20)
+
+#### Parameters
+
+##### event?
+
+`MouseEvent`
 
 #### Returns
 
@@ -1136,15 +1452,15 @@ Defined in: [packages/mce/src/plugins/ui.ts:16](https://github.com/qq15725/mce/b
 
 ### startTyping()
 
-> **startTyping**: (`e?`) => `Promise`\<`boolean`\>
+> **startTyping**: (`event?`) => `Promise`\<`boolean`\>
 
-Defined in: [packages/mce/src/plugins/ui.ts:15](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/ui.ts#L15)
+Defined in: [packages/mce/src/plugins/typography.ts:42](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/typography.ts#L42)
 
 #### Parameters
 
-##### e?
+##### event?
 
-`MouseEvent` | `PointerEvent`
+`MouseEvent`
 
 #### Returns
 
@@ -1156,7 +1472,7 @@ Defined in: [packages/mce/src/plugins/ui.ts:15](https://github.com/qq15725/mce/b
 
 > **testPerformance**: (`count?`) => `void`
 
-Defined in: [packages/mce/src/plugins/test.ts:7](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/test.ts#L7)
+Defined in: [packages/mce/src/plugins/test.ts:7](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/test.ts#L7)
 
 #### Parameters
 
@@ -1170,11 +1486,95 @@ Defined in: [packages/mce/src/plugins/test.ts:7](https://github.com/qq15725/mce/
 
 ***
 
+### textFontSizeToFit()
+
+> **textFontSizeToFit**: (`element`, `scale?`) => `void`
+
+Defined in: [packages/mce/src/plugins/typography.ts:45](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/typography.ts#L45)
+
+#### Parameters
+
+##### element
+
+`Element2D`
+
+##### scale?
+
+`number`
+
+#### Returns
+
+`void`
+
+***
+
+### textToFit()
+
+> **textToFit**: (`element`, `typography?`) => `void`
+
+Defined in: [packages/mce/src/plugins/typography.ts:46](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/typography.ts#L46)
+
+#### Parameters
+
+##### element
+
+`Element2D`
+
+##### typography?
+
+[`TypographyStrategy`](../type-aliases/TypographyStrategy.md)
+
+#### Returns
+
+`void`
+
+***
+
 ### tidyUp()
 
 > **tidyUp**: () => `void`
 
-Defined in: [packages/mce/src/plugins/arrange.ts:41](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/arrange.ts#L41)
+Defined in: [packages/mce/src/plugins/arrange.ts:41](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/arrange.ts#L41)
+
+#### Returns
+
+`void`
+
+***
+
+### togglePanel()
+
+> **togglePanel**: (`name`, `visible`) => `void`
+
+Defined in: [packages/mce/src/plugins/view.ts:23](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/view.ts#L23)
+
+#### Parameters
+
+##### name
+
+`string`
+
+##### visible
+
+`boolean` | `"toggle"`
+
+#### Returns
+
+`void`
+
+***
+
+### toggleUi()
+
+> **toggleUi**: (`name`) => `void`
+
+Defined in: [packages/mce/src/plugins/view.ts:18](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/view.ts#L18)
+
+#### Parameters
+
+##### name
+
+keyof [`UIConfig`](UIConfig.md)
 
 #### Returns
 
@@ -1186,7 +1586,7 @@ Defined in: [packages/mce/src/plugins/arrange.ts:41](https://github.com/qq15725/
 
 > **undo**: () => `void`
 
-Defined in: [packages/mce/src/plugins/history.ts:21](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/history.ts#L21)
+Defined in: [packages/mce/src/plugins/history.ts:21](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/history.ts#L21)
 
 #### Returns
 
@@ -1198,7 +1598,7 @@ Defined in: [packages/mce/src/plugins/history.ts:21](https://github.com/qq15725/
 
 > **ungroupSelection**: () => `void`
 
-Defined in: [packages/mce/src/plugins/selection.ts:30](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/selection.ts#L30)
+Defined in: [packages/mce/src/plugins/selection.ts:31](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/selection.ts#L31)
 
 #### Returns
 
@@ -1206,39 +1606,11 @@ Defined in: [packages/mce/src/plugins/selection.ts:30](https://github.com/qq1572
 
 ***
 
-### view()
-
-> **view**: \<`T`\>(`view`, ...`args`) => `Promise`\<`boolean`\>
-
-Defined in: [packages/mce/src/plugins/view.ts:17](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/view.ts#L17)
-
-#### Type Parameters
-
-##### T
-
-`T` *extends* keyof [`Views`](Views.md)
-
-#### Parameters
-
-##### view
-
-`T`
-
-##### args
-
-...[`Views`](Views.md)\[`T`\]
-
-#### Returns
-
-`Promise`\<`boolean`\>
-
-***
-
 ### zoomIn()
 
 > **zoomIn**: () => `void`
 
-Defined in: [packages/mce/src/plugins/zoom.ts:33](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/zoom.ts#L33)
+Defined in: [packages/mce/src/plugins/zoom.ts:37](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/zoom.ts#L37)
 
 #### Returns
 
@@ -1250,7 +1622,7 @@ Defined in: [packages/mce/src/plugins/zoom.ts:33](https://github.com/qq15725/mce
 
 > **zoomOut**: () => `void`
 
-Defined in: [packages/mce/src/plugins/zoom.ts:34](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/zoom.ts#L34)
+Defined in: [packages/mce/src/plugins/zoom.ts:38](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/zoom.ts#L38)
 
 #### Returns
 
@@ -1262,13 +1634,13 @@ Defined in: [packages/mce/src/plugins/zoom.ts:34](https://github.com/qq15725/mce
 
 > **zoomTo**: (`target`, `options?`) => `Promise`\<`void`\>
 
-Defined in: [packages/mce/src/plugins/zoom.ts:35](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/zoom.ts#L35)
+Defined in: [packages/mce/src/plugins/zoom.ts:39](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/zoom.ts#L39)
 
 #### Parameters
 
 ##### target
 
-[`ZoomTarget`](../type-aliases/ZoomTarget.md)
+[`ZoomToTarget`](../type-aliases/ZoomToTarget.md)
 
 ##### options?
 
@@ -1284,7 +1656,7 @@ Defined in: [packages/mce/src/plugins/zoom.ts:35](https://github.com/qq15725/mce
 
 > **zoomTo100**: () => `void`
 
-Defined in: [packages/mce/src/plugins/zoom.ts:36](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/zoom.ts#L36)
+Defined in: [packages/mce/src/plugins/zoom.ts:40](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/zoom.ts#L40)
 
 #### Returns
 
@@ -1296,7 +1668,7 @@ Defined in: [packages/mce/src/plugins/zoom.ts:36](https://github.com/qq15725/mce
 
 > **zoomToFit**: () => `void`
 
-Defined in: [packages/mce/src/plugins/zoom.ts:37](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/zoom.ts#L37)
+Defined in: [packages/mce/src/plugins/zoom.ts:41](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/zoom.ts#L41)
 
 #### Returns
 
@@ -1308,7 +1680,7 @@ Defined in: [packages/mce/src/plugins/zoom.ts:37](https://github.com/qq15725/mce
 
 > **zoomToSelection**: (`options?`) => `void`
 
-Defined in: [packages/mce/src/plugins/zoom.ts:38](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/zoom.ts#L38)
+Defined in: [packages/mce/src/plugins/zoom.ts:42](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/zoom.ts#L42)
 
 #### Parameters
 
@@ -1326,7 +1698,7 @@ Defined in: [packages/mce/src/plugins/zoom.ts:38](https://github.com/qq15725/mce
 
 > **zOrder**: (`type`, `target?`) => `void`
 
-Defined in: [packages/mce/src/plugins/arrange.ts:26](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/arrange.ts#L26)
+Defined in: [packages/mce/src/plugins/arrange.ts:26](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/arrange.ts#L26)
 
 #### Parameters
 

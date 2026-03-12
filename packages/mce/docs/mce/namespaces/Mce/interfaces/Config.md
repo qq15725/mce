@@ -6,59 +6,23 @@
 
 # Interface: Config
 
-Defined in: [packages/mce/src/mixins/0.config/base.ts:27](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L27)
-
-## Extends
-
-- `Record`\<keyof [`Panels`](Panels.md), `boolean`\>
+Defined in: [packages/mce/src/mixins/0.config/base.ts:60](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.config/base.ts#L60)
 
 ## Properties
 
-### camera
+### canvas
 
-> **camera**: `boolean`
+> **canvas**: [`CanvasConfig`](CanvasConfig.md)
 
-Defined in: [packages/mce/src/mixins/0.config/base.ts:35](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L35)
-
-***
-
-### checkerboard
-
-> **checkerboard**: `boolean`
-
-Defined in: [packages/mce/src/mixins/0.config/base.ts:31](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L31)
+Defined in: [packages/mce/src/mixins/0.config/base.ts:63](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.config/base.ts#L63)
 
 ***
 
-### checkerboardStyle
+### db
 
-> **checkerboardStyle**: `CheckerboardStyle`
+> **db**: [`DBConfig`](DBConfig.md)
 
-Defined in: [packages/mce/src/mixins/0.config/base.ts:32](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L32)
-
-***
-
-### frameGap
-
-> **frameGap**: `number`
-
-Defined in: [packages/mce/src/mixins/0.config/base.ts:37](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L37)
-
-***
-
-### frameOutline
-
-> **frameOutline**: `boolean`
-
-Defined in: [packages/mce/src/mixins/0.config/base.ts:36](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L36)
-
-***
-
-### frameScreenshot
-
-> **frameScreenshot**: `boolean`
-
-Defined in: [packages/mce/src/mixins/snapshot.ts:11](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/snapshot.ts#L11)
+Defined in: [packages/mce/src/mixins/0.config/base.ts:61](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.config/base.ts#L61)
 
 ***
 
@@ -66,146 +30,36 @@ Defined in: [packages/mce/src/mixins/snapshot.ts:11](https://github.com/qq15725/
 
 > **hotkeys**: [`HotkeyData`](HotkeyData.md)[]
 
-Defined in: [packages/mce/src/mixins/1.hotkey.ts:22](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/1.hotkey.ts#L22)
+Defined in: [packages/mce/src/mixins/hotkey.ts:22](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/hotkey.ts#L22)
 
 ***
 
-### layers
+### interaction
 
-> **layers**: `boolean`
+> **interaction**: [`InteractionConfig`](InteractionConfig.md)
 
-***
-
-### localDb
-
-> **localDb**: `boolean`
-
-Defined in: [packages/mce/src/mixins/0.config/base.ts:40](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L40)
+Defined in: [packages/mce/src/mixins/0.config/base.ts:65](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.config/base.ts#L65)
 
 ***
 
-### madeWith
+### typography
 
-> **madeWith**: `boolean`
+> **typography**: [`TypographyConfig`](TypographyConfig.md)
 
-Defined in: [packages/mce/src/plugins/madeWith.ts:7](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/madeWith.ts#L7)
-
-***
-
-### msaa
-
-> **msaa**: `boolean`
-
-Defined in: [packages/mce/src/mixins/0.config/base.ts:30](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L30)
+Defined in: [packages/mce/src/plugins/typography.ts:17](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/plugins/typography.ts#L17)
 
 ***
 
-### nodeCreator
+### ui
 
-> **nodeCreator**: `boolean`
+> **ui**: [`UIConfig`](UIConfig.md)
 
-Defined in: [packages/mce/src/plugins/node.ts:11](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/node.ts#L11)
-
-***
-
-### pixelate
-
-> **pixelate**: `boolean`
-
-Defined in: [packages/mce/src/mixins/0.config/base.ts:34](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L34)
+Defined in: [packages/mce/src/mixins/0.config/base.ts:62](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.config/base.ts#L62)
 
 ***
 
-### pixelGrid
+### viewport
 
-> **pixelGrid**: `boolean`
+> **viewport**: [`ViewportConfig`](ViewportConfig.md)
 
-Defined in: [packages/mce/src/mixins/0.config/base.ts:33](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L33)
-
-***
-
-### ruler
-
-> **ruler**: `boolean`
-
-Defined in: [packages/mce/src/plugins/ruler.ts:7](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/ruler.ts#L7)
-
-***
-
-### screenCenterOffset
-
-> **screenCenterOffset**: [`ScreenOffset`](ScreenOffset.md)
-
-Defined in: [packages/mce/src/mixins/0.config/base.ts:41](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L41)
-
-***
-
-### scrollbar
-
-> **scrollbar**: `boolean`
-
-Defined in: [packages/mce/src/plugins/scroll.ts:27](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/scroll.ts#L27)
-
-***
-
-### statusbar
-
-> **statusbar**: `boolean`
-
-Defined in: [packages/mce/src/plugins/statusbar.ts:7](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/statusbar.ts#L7)
-
-***
-
-### theme
-
-> **theme**: [`Theme`](../type-aliases/Theme.md)
-
-Defined in: [packages/mce/src/mixins/0.config/base.ts:28](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L28)
-
-***
-
-### timeline
-
-> **timeline**: `boolean`
-
-Defined in: [packages/mce/src/plugins/timeline.ts:7](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/timeline.ts#L7)
-
-***
-
-### toolbelt
-
-> **toolbelt**: `boolean`
-
-Defined in: [packages/mce/src/plugins/toolbelt.ts:7](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/toolbelt.ts#L7)
-
-***
-
-### transformControls
-
-> **transformControls**: [`TransformControlsConfig`](TransformControlsConfig.md)
-
-Defined in: [packages/mce/src/mixins/0.config/base.ts:39](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L39)
-
-***
-
-### typographyStrategy
-
-> **typographyStrategy**: [`TypographyStrategy`](../type-aliases/TypographyStrategy.md)
-
-Defined in: [packages/mce/src/mixins/0.config/base.ts:38](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L38)
-
-***
-
-### watermark?
-
-> `optional` **watermark**: `string`
-
-Defined in: [packages/mce/src/mixins/0.config/base.ts:29](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/mixins/0.config/base.ts#L29)
-
-***
-
-### zoomToFit
-
-> **zoomToFit**: [`ZoomToMode`](../type-aliases/ZoomToMode.md)
-
-Defined in: [packages/mce/src/plugins/zoom.ts:29](https://github.com/qq15725/mce/blob/865b01d697eb28080c375f733b243ebfb2a27a39/packages/mce/src/plugins/zoom.ts#L29)
+Defined in: [packages/mce/src/mixins/0.config/base.ts:64](https://github.com/qq15725/mce/blob/c6f24ea1c08be30a2b98716c58c6477e32dfd4c1/packages/mce/src/mixins/0.config/base.ts#L64)
