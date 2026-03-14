@@ -1,4 +1,4 @@
-import { saveAs as _saveAs } from 'file-saver'
+import { saveAs as _saveAs } from 'file-saver-es'
 import { definePlugin } from '../plugin'
 
 declare global {

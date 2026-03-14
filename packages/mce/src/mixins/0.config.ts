@@ -1,6 +1,6 @@
 import type { WritableComputedRef } from 'vue'
 import { useFileDialog } from '@vueuse/core'
-import { saveAs } from 'file-saver'
+import { saveAs } from 'file-saver-es'
 import { getObjectValueByPath, setObjectValueByPath } from 'modern-idoc'
 import { computed } from 'vue'
 import { defineMixin } from '../mixin'
