@@ -1,3 +1,9 @@
+## [0.17.7](https://github.com/qq15725/mce/compare/v0.17.6...v0.17.7) (2026-03-14)
+
+
+### Features
+
+* use file-saver esm version ([7644585](https://github.com/qq15725/mce/commit/764458503d6e1bbeab4a22f743799623660810b3))
 ## [0.17.6](https://github.com/qq15725/mce/compare/v0.17.5...v0.17.6) (2026-03-12)
 
 
