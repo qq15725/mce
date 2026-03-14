@@ -1,3 +1,9 @@
+## [0.17.8](https://github.com/qq15725/mce/compare/v0.17.7...v0.17.8) (2026-03-14)
+
+
+### Features
+
+* rm file-saver dep ([29820be](https://github.com/qq15725/mce/commit/29820bebba6bb7beb36dec5a6d1cc263398e67b2))
 ## [0.17.7](https://github.com/qq15725/mce/compare/v0.17.6...v0.17.7) (2026-03-14)
 
 
