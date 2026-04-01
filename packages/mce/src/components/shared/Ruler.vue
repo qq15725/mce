@@ -33,6 +33,7 @@ const props = withDefaults(
     borderColor?: string
     textColor?: string
     lineColor?: string
+    boxColor?: string
     locked?: boolean
     labelFormat?: (tick: number) => string
   }>(),
@@ -62,15 +63,17 @@ const box = ref<AxisAlignedBoundingBox>()
 const colors = reactive({
   text: '#000',
   border: '#000',
+  box: '#0000002E',
 })
 const borderColor = computed(() => props.borderColor ?? colors.border)
 const textColor = computed(() => props.textColor ?? colors.text)
 const lineColor = computed(() => props.lineColor ?? 'rgb(var(--m-theme-secondary))')
+const boxColor = computed(() => props.boxColor ?? colors.box)
 
 function drawSelected() {
   if (!props.selected?.width || !props.selected?.height)
     return
-  ctx.fillStyle = '#6165FD20'
+  ctx.fillStyle = boxColor.value
   const offset = props.vertical ? props.selected.top : props.selected.left
   const length = props.vertical ? props.selected.height : props.selected.width
   ctx.fillRect(offset, 0, length, props.size)
@@ -247,6 +250,7 @@ onMounted(() => {
     const style = window.getComputedStyle(dom)
     colors.text = style.getPropertyValue('--text-color').trim()
     colors.border = style.getPropertyValue('--border-color').trim()
+    colors.box = `rgba(${style.getPropertyValue('--m-theme-primary').trim()}, 0.18)`
   }
 })
 

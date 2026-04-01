@@ -12,6 +12,7 @@ declare global {
       visible: boolean
       adsorbed: boolean
       lineColor?: string
+      boxColor?: string
       locked: boolean
     }
 
