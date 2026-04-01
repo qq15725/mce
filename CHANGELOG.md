@@ -1,3 +1,9 @@
+## [0.17.9](https://github.com/qq15725/mce/compare/v0.17.8...v0.17.9) (2026-04-01)
+
+
+### Bug Fixes
+
+* third party ([325be74](https://github.com/qq15725/mce/commit/325be74412ca8eb48c79963d36810459ec5c77ca))
 ## [0.17.8](https://github.com/qq15725/mce/compare/v0.17.7...v0.17.8) (2026-03-14)
 
 
