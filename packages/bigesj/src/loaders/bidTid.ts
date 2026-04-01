@@ -41,19 +41,19 @@ export function bidTidLoader(editor: Editor, api: Record<string, any>): Mce.Load
       }
       doc.meta.maxTime = maxTime
       doc.meta.inEditorIs = 'Doc'
-      let left = 0
+      let offsetX = 0
       docs.forEach((_doc) => {
         let width = 0
         _doc.children?.forEach((element) => {
           if (element.style) {
             if (Number(_doc.meta?.version ?? 0) <= 1) {
-              element.style.left = left
+              element.style.left = Number(element.style.left ?? 0) + offsetX
               width = Math.max(width, Number(element.style.width))
             }
             doc.children.push(element)
           }
         })
-        left += width + config.value.canvas.frame.gap
+        offsetX += width + config.value.canvas.frame.gap
       })
       return doc
     },
