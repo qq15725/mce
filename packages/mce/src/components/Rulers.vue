@@ -29,6 +29,7 @@ const config = getConfigRef('ui.ruler')
       axis
       :size="16"
       :line-color="config.lineColor"
+      :box-color="config.boxColor"
       :locked="config.locked"
     />
 
@@ -42,6 +43,7 @@ const config = getConfigRef('ui.ruler')
       vertical
       :size="16"
       :line-color="config.lineColor"
+      :box-color="config.boxColor"
       :locked="config.locked"
     />
 
