@@ -1,3 +1,17 @@
+## [0.17.10](https://github.com/qq15725/mce/compare/v0.17.9...v0.17.10) (2026-04-09)
+
+
+### Bug Fixes
+
+* CmdOrCtrl+C prevent default ([13c7a60](https://github.com/qq15725/mce/commit/13c7a6062c70076dfc86cce423b0d23320ec907a))
+* CmdOrCtrl+C prevent default ([7feef52](https://github.com/qq15725/mce/commit/7feef52f5f358c00f5bcb5b8e2cb0be65c7b9e06))
+* transform ([1613f23](https://github.com/qq15725/mce/commit/1613f2322f2ca27c20941cbd3a5da38e9a9d1952))
+
+
+### Features
+
+* optimize the feel of double click ([d9001b4](https://github.com/qq15725/mce/commit/d9001b40dafaf0b4446a60ecae163a5990169af9))
+* ruler元素投影默认使用主题色，支持配置 ([2054960](https://github.com/qq15725/mce/commit/20549603a680bb5d30e01528afc7c74fc1588944))
 ## [0.17.9](https://github.com/qq15725/mce/compare/v0.17.8...v0.17.9) (2026-04-01)
 
 
