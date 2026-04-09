@@ -77,6 +77,7 @@ export default definePlugin((editor, options) => {
   }
 
   const copy: Mce.Commands['copy'] = async (source) => {
+    console.log(source)
     if (typeof source === 'string') {
       if (useClipboard) {
         await navigator!.clipboard.write([
@@ -115,6 +116,11 @@ export default definePlugin((editor, options) => {
         let html = ''
         if (!source) {
           const selected = selection.value
+
+          if (!selected.length) {
+            return
+          }
+
           html += `<mce-clipboard>${JSON.stringify(selected.map((v) => {
             const json = v.toJSON()
             if (json.style) {
@@ -155,7 +161,13 @@ export default definePlugin((editor, options) => {
       }
       else {
         if (source === undefined) {
-          source = selection.value.map((v) => {
+          const selected = selection.value
+
+          if (!selected.length) {
+            return
+          }
+
+          source = selected.map((v) => {
             const json = v.toJSON()
             delete json.style.left
             delete json.style.top
@@ -336,7 +348,7 @@ export default definePlugin((editor, options) => {
     hotkeys: [
       { command: 'cancel', key: 'escape', editable: false },
       { command: 'delete', key: ['Backspace', 'Delete'], when: () => Boolean(selection.value.length > 0) },
-      { command: 'copy', key: 'CmdOrCtrl+C', editable: false },
+      { command: 'copy', key: 'CmdOrCtrl+C', editable: false, preventDefault: false },
       { command: 'cut', key: 'CmdOrCtrl+X', editable: false },
       { command: 'paste', key: 'CmdOrCtrl+V', editable: false, preventDefault: false },
       { command: 'duplicate', key: 'CmdOrCtrl+D', editable: false },
