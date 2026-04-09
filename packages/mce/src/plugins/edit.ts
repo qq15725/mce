@@ -77,7 +77,6 @@ export default definePlugin((editor, options) => {
   }
 
   const copy: Mce.Commands['copy'] = async (source) => {
-    console.log(source)
     if (typeof source === 'string') {
       if (useClipboard) {
         await navigator!.clipboard.write([
