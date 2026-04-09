@@ -143,7 +143,7 @@ function bindRenderCanvas(canvas: HTMLCanvasElement, eventTarget?: HTMLElement) 
   return unbind
 }
 
-function onHover(event: PointerInputEvent) {
+function onEnginePointerHover(event: PointerInputEvent) {
   let cursor: Cursor | undefined
   let hovered: Element2D | undefined
   if (
@@ -185,18 +185,29 @@ function onHover(event: PointerInputEvent) {
   setCursor(cursor)
 }
 
+let _lastClickTime = 0
+let _lastClickPos = { x: 0, y: 0 }
+
 function onEnginePointerDown(
   downEvent: PointerInputEvent,
   options: Mce.PointerDownOptions = {},
 ): void {
+  const {
+    srcElement,
+    button,
+    target: element,
+    clientX,
+    clientY,
+  } = downEvent
+
   if (
     (
-      downEvent.srcElement
-      && downEvent.srcElement !== drawboardDom.value
-      && (downEvent.srcElement as HTMLElement).dataset?.pointerdown_to_drawboard === undefined
+      srcElement
+      && srcElement !== drawboardDom.value
+      && (srcElement as HTMLElement).dataset?.pointerdown_to_drawboard === undefined
     )
     || camera.value.spaceKey
-    || ![0, 2].includes(downEvent.button)
+    || ![0, 2].includes(button)
   ) {
     return
   }
@@ -212,24 +223,18 @@ function onEnginePointerDown(
       && !node.findAncestor(ancestor => isLock(ancestor))
   }
 
-  const drawing = state.value === 'drawing'
-  const hand = state.value === 'hand'
-  const element = downEvent.target
-  const start = { x: downEvent.clientX, y: downEvent.clientY }
-  let current = { ...start }
-  let prev = { ...current }
-  let dragging = false
-  let selecting = false
-  let isUp = false
+  const downState = state.value
+  const startPos = { x: clientX, y: clientY }
+  let currentPos = { ...startPos }
+  let prevPos = { ...currentPos }
   let selected: Element2D[] = []
-  let ctxState: Mce.State | undefined
   const inSelection = (allowTopFrame && elementSelection.value.some(node => node.equal(element)))
     || selectionAabbInDrawboard.value.contains({
-      x: start.x - drawboardAabb.value.left,
-      y: start.y - drawboardAabb.value.top,
+      x: startPos.x - drawboardAabb.value.left,
+      y: startPos.y - drawboardAabb.value.top,
     })
 
-  if (downEvent.button === 2) {
+  if (button === 2) {
     if (!inSelection) {
       const result = props.activeStrategy({
         element,
@@ -251,17 +256,39 @@ function onEnginePointerDown(
     return
   }
 
-  let drawingTool: any
-  if (drawing) {
-    drawingTool = activeTool.value?.handle?.(
-      camera.value.toGlobal({
-        x: current.x - drawboardAabb.value.left,
-        y: current.y - drawboardAabb.value.top,
-      }),
-    )
+  const now = Date.now()
+  let dragging = false
+  let selecting = false
+  let isUp = false
+  let ctxState: Mce.State | undefined
+
+  const _dx = Math.abs(currentPos.x - _lastClickPos.x)
+  const _dy = Math.abs(currentPos.y - _lastClickPos.y)
+  const isDoubleClick = now - _lastClickTime < 300 && _dx < 5 && _dy < 5
+  if (isDoubleClick) {
+    _lastClickTime = 0
+    props.doubleclickStrategy({ event: downEvent as any, editor })
+    return
   }
-  else if (hand) {
-    grabbing.value = true
+  else {
+    _lastClickTime = now
+    _lastClickPos = { ...currentPos }
+  }
+
+  let drawingTool: any
+
+  switch (downState) {
+    case 'drawing':
+      drawingTool = activeTool.value?.handle?.(
+        camera.value.toGlobal({
+          x: currentPos.x - drawboardAabb.value.left,
+          y: currentPos.y - drawboardAabb.value.top,
+        }),
+      )
+      break
+    case 'hand':
+      grabbing.value = true
+      break
   }
 
   function onDrag(event: PointerInputEvent): void {
@@ -285,13 +312,13 @@ function onEnginePointerDown(
 
   function onSelectArea(): void {
     selecting = true
-    if (state.value !== 'painting' && state.value !== 'selecting') {
+    if (downState !== 'painting' && downState !== 'selecting') {
       state.value = 'selecting'
     }
-    selectionMarquee.value.x = Math.min(start.x, current.x) - drawboardAabb.value.left
-    selectionMarquee.value.y = Math.min(start.y, current.y) - drawboardAabb.value.top
-    selectionMarquee.value.width = Math.abs(start.x - current.x)
-    selectionMarquee.value.height = Math.abs(start.y - current.y)
+    selectionMarquee.value.x = Math.min(startPos.x, currentPos.x) - drawboardAabb.value.left
+    selectionMarquee.value.y = Math.min(startPos.y, currentPos.y) - drawboardAabb.value.top
+    selectionMarquee.value.width = Math.abs(startPos.x - currentPos.x)
+    selectionMarquee.value.height = Math.abs(startPos.y - currentPos.y)
     exec('marqueeSelect')
     selected = elementSelection.value
   }
@@ -331,112 +358,130 @@ function onEnginePointerDown(
 
   function canStartDrag() {
     return !dragging
-      && state.value !== 'painting'
+      && downState !== 'painting'
       && (
-        Math.abs(current.x - start.x) >= 3
-        || Math.abs(current.y - start.y) >= 3
+        Math.abs(currentPos.x - startPos.x) >= 3
+        || Math.abs(currentPos.y - startPos.y) >= 3
       )
   }
 
   function _onEnginePointerMove(moveEvent: PointerInputEvent) {
-    if (drawing || hand) {
-      //
-    }
-    else {
-      if (inSelection) {
-        if (canStartDrag()) {
-          dragging = true
-          exec('startTransform', downEvent)
-        }
-      }
-      else {
-        if (element) {
+    switch (downState) {
+      case 'drawing':
+      case 'hand':
+        break
+      default:
+        if (inSelection) {
           if (canStartDrag()) {
             dragging = true
-            onDrag(moveEvent)
-            nextTick(() => {
-              if (!isUp) {
-                exec('startTransform', downEvent)
-              }
-            })
+            exec('startTransform', downEvent)
           }
         }
-      }
+        else {
+          if (element) {
+            if (canStartDrag()) {
+              dragging = true
+              onDrag(moveEvent)
+              nextTick(() => {
+                if (!isUp) {
+                  exec('startTransform', downEvent)
+                }
+              })
+            }
+          }
+        }
+        break
     }
   }
 
   function _onPointerMove(moveEvent: PointerEvent) {
-    current = { x: moveEvent.clientX, y: moveEvent.clientY }
-    if (drawing) {
-      drawingTool?.move?.(
-        camera.value.toGlobal({
-          x: current.x - drawboardAabb.value.left,
-          y: current.y - drawboardAabb.value.top,
-        }),
-      )
-    }
-    else if (hand) {
-      camera.value.position.add({
-        x: Math.round(prev.x - current.x),
-        y: Math.round(prev.y - current.y),
-      })
-    }
-    else {
-      if (!inSelection) {
-        if (!isIncluded(element)) {
-          onSelectArea()
+    currentPos = { x: moveEvent.clientX, y: moveEvent.clientY }
+
+    switch (downState) {
+      case 'drawing':
+        drawingTool?.move?.(
+          camera.value.toGlobal({
+            x: currentPos.x - drawboardAabb.value.left,
+            y: currentPos.y - drawboardAabb.value.top,
+          }),
+        )
+        break
+      case 'hand':
+        camera.value.position.add({
+          x: Math.round(prevPos.x - currentPos.x),
+          y: Math.round(prevPos.y - currentPos.y),
+        })
+        break
+      default:
+        if (!inSelection) {
+          if (!isIncluded(element)) {
+            onSelectArea()
+          }
         }
-      }
+        break
     }
-    prev = { ...current }
+
+    prevPos = { ...currentPos }
   }
 
   async function _onPointerUp(upEvent: PointerEvent) {
-    current = { x: upEvent.clientX, y: upEvent.clientY }
-    if (drawing) {
-      drawingTool?.end?.(
-        camera.value.toGlobal({
-          x: current.x - drawboardAabb.value.left,
-          y: current.y - drawboardAabb.value.top,
-        }),
-      )
-    }
-    else if (hand) {
-      grabbing.value = false
-    }
-    else {
-      if (!dragging) {
-        if (element && !selecting) {
-          onActivate()
-        }
+    currentPos = { x: upEvent.clientX, y: upEvent.clientY }
 
-        elementSelection.value = selected
+    switch (downState) {
+      case 'drawing':
+        drawingTool?.end?.(
+          camera.value.toGlobal({
+            x: currentPos.x - drawboardAabb.value.left,
+            y: currentPos.y - drawboardAabb.value.top,
+          }),
+        )
+        break
+      case 'hand':
+        grabbing.value = false
+        break
+      default: {
+        if (!dragging) {
+          if (element && !selecting) {
+            onActivate()
+          }
 
-        if (ctxState) {
-          if (selected[0] && !isLock(selected[0])) {
-            switch (ctxState) {
-              case 'typing': {
-                await exec('startTyping', upEvent)
-                break
+          elementSelection.value = selected
+
+          if (ctxState) {
+            if (selected[0] && !isLock(selected[0])) {
+              switch (ctxState) {
+                case 'typing': {
+                  await exec('startTyping', upEvent)
+                  break
+                }
               }
             }
           }
+
+          onEnginePointerHover(downEvent)
         }
 
-        onHover(downEvent)
-      }
-
-      if (state.value === 'painting' || state.value === 'selecting') {
-        selectionMarquee.value = new Aabb2D({ x: -1, y: -1, width: 0, height: 0 })
-      }
-      if (state.value === 'painting') {
-        exec('applyFormatPaint', selected)
-        if (!(upEvent?.ctrlKey || upEvent?.shiftKey || upEvent?.metaKey)) {
-          exec('exitFormatPaint')
+        switch (state.value) {
+          case 'selecting':
+            selectionMarquee.value = new Aabb2D({ x: -1, y: -1, width: 0, height: 0 })
+            if (state.value) {
+              state.value = undefined
+            }
+            break
+          case 'painting':
+            selectionMarquee.value = new Aabb2D({ x: -1, y: -1, width: 0, height: 0 })
+            exec('applyFormatPaint', selected)
+            if (!(upEvent?.ctrlKey || upEvent?.shiftKey || upEvent?.metaKey)) {
+              exec('exitFormatPaint')
+            }
+            break
+          default:
+            if (state.value) {
+              state.value = undefined
+            }
+            break
         }
-      }
-      else if (state.value) {
-        state.value = undefined
+        break
       }
     }
 
@@ -466,7 +511,7 @@ function onEnginePointerMove(event: PointerInputEvent): void {
     return
   }
 
-  onHover(event)
+  onEnginePointerHover(event)
 }
 
 function onEnginePointerOver(event: PointerInputEvent): void {
@@ -485,13 +530,6 @@ function onScroll() {
       drawboardDom.value.scrollTop = 0
     }
   }
-}
-
-async function onDoubleclick(event: MouseEvent) {
-  props.doubleclickStrategy({
-    event: event as any,
-    editor,
-  })
 }
 
 function setComponentRef(ref: any, item: EditorComponent) {
@@ -539,7 +577,6 @@ const slotProps = {
         ref="drawboardDom"
         class="m-editor__drawboard"
         :data-pixel-ratio="renderEngine.pixelRatio"
-        @dblclick="onDoubleclick($event)"
         @scroll="onScroll"
         @wheel.prevent
       >
