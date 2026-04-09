@@ -382,7 +382,6 @@ function onPointerDown(event?: MouseEvent, index?: number): boolean {
     : computedHandles.value[index]
   const handle = handleObj.type
 
-  activeHandle.value = handle
   const handleArr = handle.split('-')
   const last = handleArr.length > 1 ? (handleArr.pop() || '') : ''
   const key = handleArr.join('-')
@@ -429,6 +428,7 @@ function onPointerDown(event?: MouseEvent, index?: number): boolean {
     threshold: props.threshold,
     start: (ctx) => {
       transforming.value = true
+      activeHandle.value = handle
       ctx.handle = handle
       ctx.value = ctx.oldValue = getRawModel()
       emit('start', ctx)
