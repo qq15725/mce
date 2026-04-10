@@ -55,7 +55,9 @@ export async function convertTextEffects(el: BigeElement): Promise<Partial<Style
 
   return await Promise.all(
     [...effects].reverse().map(async (effect) => {
-      const result: Partial<StyleObject> = {}
+      const result: Partial<StyleObject> = {
+        transformOrigin: 'center top',
+      }
       const { offset, skew, stroke, shadow, filling } = effect
       if (offset) {
         result.translateX = offset.x

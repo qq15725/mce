@@ -69,14 +69,14 @@
     "@floating-ui/vue": "^1.1.11",
     "@vueuse/components": "^14.2.1",
     "@vueuse/core": "^14.2.1",
-    "diff": "^8.0.3",
-    "lodash-es": "^4.17.23",
+    "diff": "^8.0.4",
+    "lodash-es": "^4.18.1",
     "modern-canvas": "^0.15.9",
     "modern-font": "^0.5.0",
     "modern-idoc": "^0.10.21",
-    "modern-text": "^1.10.16",
+    "modern-text": "^1.10.17",
     "y-protocols": "^1.0.7",
-    "yjs": "^13.6.29"
+    "yjs": "^13.6.30"
   },
   "peerDependencies": {
     "lottie-web": "^5",
@@ -97,10 +97,10 @@
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.12",
-    "@vitejs/plugin-vue": "^6.0.4",
+    "@vitejs/plugin-vue": "^6.0.5",
     "jiti": "^2.6.1",
-    "sass-embedded": "^1.98.0",
-    "typedoc": "^0.28.17",
-    "typedoc-plugin-markdown": "^4.10.0"
+    "sass-embedded": "^1.99.0",
+    "typedoc": "^0.28.18",
+    "typedoc-plugin-markdown": "^4.11.0"
   }
 }
