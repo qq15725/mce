@@ -11,7 +11,7 @@ export function bidTidLoader(editor: Editor, api: Record<string, any>): Mce.Load
     name: 'bigesj:bidTid',
     test: source => typeof source === 'object' && source && !!(source.bid || source.tid),
     load: async (source: { bid: string, tid: string }) => {
-      const text = source.bid ?? source.tid ?? ''
+      const text = source.bid || source.tid || ''
       const load = async (id: string): Promise<Record<string, any>> => {
         return await http.request({
           url: (source.bid ? api.bid : api.tid).replace('%d', id),
