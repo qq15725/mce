@@ -1,7 +1,7 @@
 {
   "name": "@mce/gif",
   "type": "module",
-  "version": "0.17.11",
+  "version": "0.17.12",
   "description": "GIF plugin for mce",
   "author": "wxm",
   "license": "MIT",
