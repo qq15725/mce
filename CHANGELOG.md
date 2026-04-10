@@ -1,3 +1,10 @@
+## [0.17.11](https://github.com/qq15725/mce/compare/v0.17.10...v0.17.11) (2026-04-10)
+
+
+### Bug Fixes
+
+* text effects ([104beb4](https://github.com/qq15725/mce/commit/104beb44d1e78703353a2a81cc6707360bfbbac9))
+* third party ([de7dd3e](https://github.com/qq15725/mce/commit/de7dd3e76efb3f5338dffb03b647a01afff3a407))
 ## [0.17.10](https://github.com/qq15725/mce/compare/v0.17.9...v0.17.10) (2026-04-09)
 
 
