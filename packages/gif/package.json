@@ -52,7 +52,7 @@
     "lint": "eslint src"
   },
   "dependencies": {
-    "modern-gif": "^2.0.4"
+    "modern-gif": "^2.1.0"
   },
   "devDependencies": {
     "mce": "workspace:*"

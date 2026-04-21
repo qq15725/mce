@@ -100,24 +100,25 @@ export default definePlugin((editor) => {
             }
           }
 
-          const box = getAabb(elements, 'parent')
+          const { left, top, width, height } = getAabb(elements, 'parent')
 
           return {
             id,
             name,
             style: {
-              width: box.width * scale,
-              height: box.height * scale,
+              width: width * scale,
+              height: height * scale,
               transformOrigin: 'left top',
               transform: `scale(${scale})`,
             },
             children: elements.map((el) => {
               const json = el.toJSON()
-              if (box.left) {
-                json.style.left = (json.style.left ?? 0) - box.left
+              const style = json.style
+              if (left) {
+                style.left = (style.left ?? 0) - left
               }
-              if (box.top) {
-                json.style.top = (json.style.top ?? 0) - box.top
+              if (top) {
+                style.top = (style.top ?? 0) - top
               }
               json.meta ??= {}
               json.meta.inPptIs = 'Slide'

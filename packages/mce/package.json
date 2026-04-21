@@ -69,9 +69,9 @@
     "@floating-ui/vue": "^1.1.11",
     "@vueuse/components": "^14.2.1",
     "@vueuse/core": "^14.2.1",
-    "diff": "^8.0.4",
+    "diff": "^9.0.0",
     "lodash-es": "^4.18.1",
-    "modern-canvas": "^0.15.9",
+    "modern-canvas": "^0.16.2",
     "modern-font": "^0.5.0",
     "modern-idoc": "^0.10.21",
     "modern-text": "^1.10.17",
@@ -97,10 +97,10 @@
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.12",
-    "@vitejs/plugin-vue": "^6.0.5",
+    "@vitejs/plugin-vue": "^6.0.6",
     "jiti": "^2.6.1",
     "sass-embedded": "^1.99.0",
-    "typedoc": "^0.28.18",
+    "typedoc": "^0.28.19",
     "typedoc-plugin-markdown": "^4.11.0"
   }
 }
