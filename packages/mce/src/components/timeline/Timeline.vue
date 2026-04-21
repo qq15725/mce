@@ -180,6 +180,7 @@ onBeforeUnmount(pause)
                 <Segment
                   :node="node"
                   :ms-per-px="msPerPx"
+                  :end-time="endTime"
                   :active="selection.some(v => v.equal(node))"
                   @mousedown.stop="selection = [node]"
                 />

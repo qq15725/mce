@@ -399,7 +399,9 @@ export function convertAnimation(
     name: animation.name ?? animation.title ?? animation.id,
     delay,
     duration: name ? duration * (iterations || 1) : 0,
-    effectMode: mode === '逐字' || mode === '逐行' ? 'sibling' : 'parent',
+    // TODO
+    // effectMode: mode === '逐字' || mode === '逐行' ? 'sibling' : 'parent',
+    effectMode: 'parent',
     keyframes: keyframes ?? [],
     easing: animations.easing[easing],
     meta: {
@@ -476,7 +478,7 @@ export function parseAnimations(
   return {
     delay: startTime,
     duration: Math.max(0, endTime - startTime),
-    hasOut: Boolean(_animOut),
-    animations: animations.filter(v => !!v?.keyframes),
+    hasOut: Boolean(_animOut?.keyframes?.length),
+    animations: animations.filter(v => !!v?.keyframes?.length),
   }
 }

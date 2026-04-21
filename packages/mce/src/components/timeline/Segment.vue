@@ -2,14 +2,20 @@
 import type { TimelineNode } from 'modern-canvas'
 import { Animation, Element2D } from 'modern-canvas'
 import { computed } from 'vue'
+import { useNode } from '../../composables'
 
 const props = withDefaults(defineProps<{
   node: TimelineNode
+  endTime: number
   msPerPx?: number
   active?: boolean
 }>(), {
   msPerPx: 1,
 })
+
+const { thumbnailName } = useNode(
+  computed(() => props.node),
+)
 
 const blocks = computed<Record<string, any>[]>(() => {
   const node = props.node
@@ -47,22 +53,19 @@ const blocks = computed<Record<string, any>[]>(() => {
 const style = computed(() => {
   const node = props.node
 
+  const { duration: _duration = 0, delay = 0 } = node
+
+  const duration = _duration || props.endTime - delay
+
   const box: Record<string, any> = {
-    left: node.delay / props.msPerPx,
+    left: delay / props.msPerPx,
     top: 0,
-    width: node.duration / props.msPerPx,
+    width: duration / props.msPerPx,
     height: 0,
   }
 
-  if (box.width) {
-    box.width = `${box.width}px`
-  }
-  else {
-    box.width = '100%'
-  }
-
   return {
-    width: box.width,
+    width: `${box.width}px`,
     transform: `matrix(1, 0, 0, 1, ${box.left}, ${box.top})`,
   }
 })
@@ -86,7 +89,7 @@ const style = computed(() => {
 
     <div v-if="active" class="m-segment__edge m-segment__edge--front" />
 
-    <span class="m-segment__node" style="overflow: hidden;">{{ props.node.name }}</span>
+    <span class="m-segment__node" style="overflow: hidden;">{{ thumbnailName }}</span>
 
     <div v-if="active" class="m-segment__edge m-segment__edge--end" />
   </div>

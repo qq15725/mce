@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import type { Node } from 'modern-canvas'
 import type { PropType } from 'vue'
-import { Lottie2D, Video2D } from 'modern-canvas'
 import { computed, nextTick, ref } from 'vue'
-import { useEditor, useLayerItem } from '../composables'
+import { useEditor, useLayerItem, useNode } from '../composables'
 import { Icon } from './icon'
 import Btn from './shared/Btn.vue'
 
@@ -25,9 +24,10 @@ const props = defineProps({
   },
 })
 
+const editor = useEditor()
+
 const {
   isElement,
-  inEditorIs,
   isVisible,
   setVisible,
   isLock,
@@ -38,10 +38,14 @@ const {
   hoverElement,
   exec,
   t,
-} = useEditor()
+} = editor
 
 const opened = defineModel('opened', { default: false })
 const dom = ref<HTMLElement>()
+const { thumbnailIcon, thumbnailName } = useNode(
+  computed(() => props.node),
+  editor,
+)
 
 const {
   selecting,
@@ -64,60 +68,6 @@ const isHoverElement = computed(() => props.node?.equal(hoverElement.value))
 const hovering = ref(false)
 const editing = ref(false)
 const editValue = ref<string>()
-const thumbnailIcon = computed(() => {
-  const node = props.node
-  if (inEditorIs(node, 'Frame')) {
-    return '$frame'
-  }
-  else if (node.children.filter(isElement).length) {
-    return '$group'
-  }
-  else if (node instanceof Lottie2D) {
-    return '$lottie'
-  }
-  else if (node instanceof Video2D) {
-    return '$video'
-  }
-  else if (isElement(node)) {
-    if (node.foreground.isValid() && node.foreground.image) {
-      return '$image'
-    }
-    if (node.text.isValid()) {
-      return '$text'
-    }
-  }
-  return '$shape'
-})
-const thumbnailName = computed(() => {
-  const node = props.node
-  let value = node.name
-  if (!value || value[0] === '@') {
-    if (inEditorIs(node, 'Frame')) {
-      return t('frame')
-    }
-    else if (node.children.filter(isElement).length) {
-      value = t('group')
-    }
-    else if (node instanceof Lottie2D) {
-      value = t('lottie')
-    }
-    else if (node instanceof Video2D) {
-      value = t('video')
-    }
-    else if (isElement(node)) {
-      if (node.foreground.isValid() && node.foreground.image) {
-        value = t('image')
-      }
-      else if (node.text.isValid()) {
-        value = (node as any)._textContent || node.text.getStringContent()
-      }
-      else {
-        value = t('shape')
-      }
-    }
-  }
-  return value || node.id
-})
 
 function onClickExpand() {
   opened.value = !opened.value

@@ -75,6 +75,10 @@ export async function convertElement(
     meta.lock = true
   }
 
+  if (!el.animations?.length && el.anim) {
+    el.animations = [el.anim]
+  }
+
   if (el.animations?.length) {
     const parsed = parseAnimations(el)
     ;(element as any).delay = parsed.delay
