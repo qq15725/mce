@@ -1,3 +1,16 @@
+# [0.18.0](https://github.com/qq15725/mce/compare/v0.17.13...v0.18.0) (2026-05-08)
+
+
+### Bug Fixes
+
+* doc update order and clear emit ([328dc89](https://github.com/qq15725/mce/commit/328dc891f276041f3b47bc511ebbd11650e990d7))
+* docSet event ([13786ae](https://github.com/qq15725/mce/commit/13786ae7edf38ee5d8c956f7aa459c5f5789423d))
+* pkg ([1b6316a](https://github.com/qq15725/mce/commit/1b6316a9c22990a4b223780e42ef7a9e56f4a733))
+
+
+### Features
+
+* up deps ([1426904](https://github.com/qq15725/mce/commit/1426904fc6103311a7d013e9833d249d51bba046))
 ## [0.17.13](https://github.com/qq15725/mce/compare/v0.17.12...v0.17.13) (2026-04-21)
 
 
