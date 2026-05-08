@@ -104,6 +104,7 @@ export async function convertElement(
       meta.lockAspectRatio = true
 
       element.foreground = {
+        enabled: true,
         image: el.clipUrl || el.url,
         fillWithShape: true,
       }
@@ -136,6 +137,7 @@ export async function convertElement(
       meta.inPptIs = 'Picture'
       meta.lockAspectRatio = true
       element.foreground = {
+        enabled: true,
         image: await convertSvgElementToUrl(el),
         fillWithShape: true,
       }
@@ -165,7 +167,7 @@ export async function convertElement(
       meta.textEffectsId = el.effectId
 
       if (style.color && isGradientFill(style.color)) {
-        element.text!.fill = normalizeGradientFill(style.color)
+        element.text!.fill = { enabled: true, ...normalizeGradientFill(style.color) }
         style.color = '#000000'
       }
       break
@@ -197,25 +199,28 @@ export async function convertElement(
       if (set.paths.length === 1) {
         const path = set.paths[0]
         element.shape = {
+          enabled: true,
           paths: [
             { ...path.style, data: path.toData() },
           ],
           viewBox: set.viewBox,
         }
         if (path.style.fill !== 'none') {
-          element.fill = { color: el.fill }
+          element.fill = { enabled: true, color: el.fill }
         }
         if (path.style.stroke !== 'none') {
           element.outline = {
+            enabled: true,
             color: el.stroke,
             width: el.strokeWidth,
           }
         }
       }
       else {
-        element.shape = { svg }
-        element.fill = { color: el.fill }
+        element.shape = { enabled: true, svg }
+        element.fill = { enabled: true, color: el.fill }
         element.outline = {
+          enabled: true,
           color: el.stroke,
           width: el.strokeWidth,
         }

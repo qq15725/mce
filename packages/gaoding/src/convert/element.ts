@@ -68,6 +68,7 @@ export async function convertElement(el: any, _parent?: any): Promise<Normalized
       meta.inCanvasIs = 'Element2D'
       meta.inPptIs = 'Shape'
       element.text = {
+        enabled: true,
         content: el.content,
       }
       break
@@ -76,6 +77,7 @@ export async function convertElement(el: any, _parent?: any): Promise<Normalized
       meta.inPptIs = 'Picture'
       meta.lockAspectRatio = true
       element.foreground = {
+        enabled: true,
         image: el.url,
         fillWithShape: true,
       }
@@ -104,6 +106,7 @@ export async function convertElement(el: any, _parent?: any): Promise<Normalized
       meta.inPptIs = 'Picture'
       meta.lockAspectRatio = true
       element.foreground = {
+        enabled: true,
         image: el.imageUrl,
         fillWithShape: true,
       }

@@ -15,11 +15,13 @@ export function convertBackground(el: BigeElement): NormalizedBackground | undef
   if (color) {
     if (isGradient(color ?? '')) {
       background = {
+        enabled: true,
         image: color,
       }
     }
     else {
       background = {
+        enabled: true,
         color,
       }
     }
@@ -30,6 +32,7 @@ export function convertBackground(el: BigeElement): NormalizedBackground | undef
 
   if (image) {
     background = {
+      enabled: true,
       image: image.match(/url\((.+)\)/)?.[1] ?? image,
     }
   }
