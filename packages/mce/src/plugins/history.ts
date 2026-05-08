@@ -40,7 +40,7 @@ export default definePlugin((editor) => {
     root.value.undo()
   }
 
-  function onHistory(um: Y.UndoManager) {
+  function onHistoryChanged(um: Y.UndoManager) {
     canUndo.value = um.canUndo()
     canRedo.value = um.canRedo()
   }
@@ -63,10 +63,7 @@ export default definePlugin((editor) => {
       { command: 'redo', key: 'Shift+CmdOrCtrl+Z' },
     ],
     events: {
-      docSet: (root, oldRoot) => {
-        oldRoot?.off('history', onHistory)
-        root.on('history', onHistory)
-      },
+      historyChanged: onHistoryChanged,
     },
   }
 })

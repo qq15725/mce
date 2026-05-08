@@ -1,4 +1,5 @@
 import type { Element } from 'modern-idoc'
+import type * as Y from 'yjs'
 import { Element2D } from 'modern-canvas'
 import { definePlugin } from '../plugin'
 import { Doc } from '../scene'
@@ -52,6 +53,7 @@ declare global {
       docLoaded: [source: any, root: Doc | Error]
       docCleared: []
       docUpdated: [update: Uint8Array, origin: any]
+      historyChanged: [arg0: Y.UndoManager]
     }
   }
 }
@@ -74,8 +76,12 @@ export default definePlugin((editor, options) => {
     return to('json')
   }
 
-  function onUpdateDoc(update: Uint8Array, origin: any) {
+  function onDocUpdated(update: Uint8Array, origin: any) {
     emit('docUpdated', update, origin)
+  }
+
+  function onHistoryChanged(arg0: Y.UndoManager) {
+    emit('historyChanged', arg0)
   }
 
   const setDoc: Mce.Editor['setDoc'] = (source) => {
@@ -101,12 +107,14 @@ export default definePlugin((editor, options) => {
       }
       return false
     })
-    oldDoc.off('update', onUpdateDoc)
     doc.init()
     root.value = doc
-    doc.on('update', onUpdateDoc)
     oldDoc.remove()
     renderEngine.value.root.append(doc)
+    oldDoc.off('update', onDocUpdated)
+    oldDoc.off('history', onHistoryChanged)
+    doc.on('update', onDocUpdated)
+    doc.on('history', onHistoryChanged)
     emit('docSet', doc, oldDoc)
     oldDoc.destroy()
     return doc
