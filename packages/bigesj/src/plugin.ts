@@ -88,12 +88,12 @@ async function setupFonts(editor: Editor, api: Record<string, any>): Promise<voi
   }
 
   onBeforeMount(() => {
-    on('setDoc', preload)
+    on('docSet', preload)
     renderEngine.value.on('nodeEnter', preloadNode)
   })
 
   onScopeDispose(() => {
-    off('setDoc', preload)
+    off('docSet', preload)
     renderEngine.value.off('nodeEnter', preloadNode)
   })
 

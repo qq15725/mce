@@ -103,7 +103,7 @@ npm i mce
     },
   })
 
-  editor.on('setDoc', () => {
+  editor.on('docSet', () => {
     editor.load('http://localhost:5173/example.jpg').then((el) => {
       editor.addElement(el, {
         position: { x: 500, y: 100 },
