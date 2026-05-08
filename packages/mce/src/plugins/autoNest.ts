@@ -1,4 +1,5 @@
-import type { Element2D, Vector2Like } from 'modern-canvas'
+import type { Element2D } from 'modern-canvas'
+import type { Vector2Like } from 'modern-path2d'
 import { definePlugin } from '../plugin'
 
 declare global {

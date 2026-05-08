@@ -1,5 +1,5 @@
 import type { Element2D } from 'modern-canvas'
-import { Vector2 } from 'modern-canvas'
+import { Vector2 } from 'modern-path2d'
 import { onMounted, onScopeDispose } from 'vue'
 import { definePlugin } from '../plugin'
 

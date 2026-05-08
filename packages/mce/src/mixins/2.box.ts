@@ -1,6 +1,7 @@
 import type { Element2D, Node } from 'modern-canvas'
 import type { ComputedRef } from 'vue'
-import { Aabb2D, Obb2D, Transform2D } from 'modern-canvas'
+import { Aabb2D, Obb2D } from 'modern-canvas'
+import { Transform2D } from 'modern-path2d'
 import { computed } from 'vue'
 import { defineMixin } from '../mixin'
 import { noop } from '../utils'

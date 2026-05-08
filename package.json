@@ -17,14 +17,14 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^8.2.0",
-    "@types/node": "^25.6.0",
-    "bumpp": "^11.0.1",
+    "@types/node": "^25.6.2",
+    "bumpp": "^11.1.0",
     "conventional-changelog-cli": "^5.0.0",
-    "eslint": "^10.2.1",
+    "eslint": "^10.3.0",
     "typescript": "^6.0.3",
-    "vite": "^8.0.9",
-    "vitest": "^4.1.4",
-    "vue": "^3.5.32",
-    "vue-tsc": "^3.2.7"
+    "vite": "^8.0.11",
+    "vitest": "^4.1.5",
+    "vue": "^3.5.34",
+    "vue-tsc": "^3.2.8"
   }
 }

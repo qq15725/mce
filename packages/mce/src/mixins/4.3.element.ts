@@ -1,5 +1,6 @@
-import type { Element2D, Vector2Like } from 'modern-canvas'
+import type { Element2D } from 'modern-canvas'
 import type { Element } from 'modern-idoc'
+import type { Vector2Like } from 'modern-path2d'
 import { Node } from 'modern-canvas'
 import { defineMixin } from '../mixin'
 
@@ -157,7 +158,7 @@ export default defineMixin((editor) => {
             break
           default: {
             const _parentAabb = parentAabb ?? rootAabb.value
-            const anchor = parseAnchor(position)
+            const anchor = parseAnchor(position as Mce.Anchor)
             globalPosition = { x: 0, y: 0 }
 
             const map = {

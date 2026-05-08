@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Vector2 } from 'modern-canvas'
+import { Vector2 } from 'modern-path2d'
 import { onBeforeMount, onBeforeUnmount, useTemplateRef, watch } from 'vue'
 import { useEditor } from '../composables/editor'
 import Menu from './shared/Menu.vue'

@@ -1,4 +1,4 @@
-import type { Vector2Like } from 'modern-canvas'
+import type { Vector2Like } from 'modern-path2d'
 import type { Reactive, Ref } from 'vue'
 import { reactive, ref, watch } from 'vue'
 import { defineMixin } from '../mixin'
