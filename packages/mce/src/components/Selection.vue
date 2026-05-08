@@ -95,21 +95,21 @@ const selectionObbStyles = computed(() => {
 })
 
 function onStart(ctx: Mce.TransformContext): void {
-  emit('selectionTransformStart', ctx)
+  emit('selectionTransformStarted', ctx)
 }
 
 function onMove(ctx: Mce.TransformContext) {
   if (!state.value) {
     state.value = ctx.handle === 'move' ? 'moving' : 'transforming'
   }
-  emit('selectionTransform', ctx)
+  emit('selectionTransformed', ctx)
 }
 
 function onEnd(ctx: Mce.TransformContext) {
   if (state.value === 'moving' || state.value === 'transforming') {
     state.value = undefined
   }
-  emit('selectionTransformEnd', ctx)
+  emit('selectionTransformEnded', ctx)
 }
 
 const transformValue = computed(() => exec('getTransform'))

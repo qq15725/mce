@@ -129,11 +129,11 @@ export default definePlugin((editor) => {
       }
 
       onBeforeMount(() => {
-        on('setDoc', onSetDoc)
+        on('docSet', onSetDoc)
       })
 
       onScopeDispose(() => {
-        off('setDoc', onSetDoc)
+        off('docSet', onSetDoc)
       })
     },
   }

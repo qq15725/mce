@@ -66,12 +66,12 @@ export default definePlugin((editor) => {
       }
 
       onBeforeMount(() => {
-        on('setDoc', updateEndTime)
+        on('docSet', updateEndTime)
         assets.on('loaded', updateEndTime)
       })
 
       onScopeDispose(() => {
-        off('setDoc', updateEndTime)
+        off('docSet', updateEndTime)
         assets.off('loaded', updateEndTime)
       })
     },

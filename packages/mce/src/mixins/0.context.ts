@@ -275,13 +275,13 @@ export default defineMixin((editor, options) => {
     }
 
     onBeforeMount(() => {
-      on('setDoc', onSetDoc)
+      on('docSet', onSetDoc)
       renderEngine.value.start()
       document.addEventListener('mousemove', onMouseMove)
     })
 
     onScopeDispose(() => {
-      off('setDoc', onSetDoc)
+      off('docSet', onSetDoc)
       renderEngine.value.stop()
       document.removeEventListener('mousemove', onMouseMove)
     })

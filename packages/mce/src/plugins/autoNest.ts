@@ -90,7 +90,7 @@ export default definePlugin((editor) => {
       { command: 'nestIntoFrame', handle: nestIntoFrame },
     ],
     events: {
-      selectionTransformStart: ({ handle, event }) => {
+      selectionTransformStarted: ({ handle, event }) => {
         if (handle !== 'move' || (event as any)?.__FROM__) {
           return
         }
@@ -121,7 +121,7 @@ export default definePlugin((editor) => {
           context = ctx
         }
       },
-      selectionTransform: () => {
+      selectionTransformed: () => {
         if (context) {
           const excluded = new Set(elementSelection.value.map(el => el.instanceId))
           elementSelection.value.forEach((el) => {
@@ -136,7 +136,7 @@ export default definePlugin((editor) => {
           })
         }
       },
-      selectionTransformEnd: () => {
+      selectionTransformEnded: () => {
         context = undefined
       },
     },

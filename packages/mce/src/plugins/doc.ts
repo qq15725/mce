@@ -47,11 +47,11 @@ declare global {
     }
 
     interface Events {
-      setDoc: [doc: Doc, oldDoc: Doc]
-      docLoading: [source: any]
+      docSet: [doc: Doc, oldDoc: Doc]
+      docLoadStart: [source: any]
       docLoaded: [source: any, root: Doc | Error]
-      clearDoc: []
-      updateDoc: [update: Uint8Array, origin: any]
+      docCleared: []
+      docUpdated: [update: Uint8Array, origin: any]
     }
   }
 }
@@ -72,6 +72,10 @@ export default definePlugin((editor, options) => {
 
   const getDoc: Mce.Editor['getDoc'] = () => {
     return to('json')
+  }
+
+  function onUpdateDoc(update: Uint8Array, origin: any) {
+    emit('docUpdated', update, origin)
   }
 
   const setDoc: Mce.Editor['setDoc'] = (source) => {
@@ -97,18 +101,20 @@ export default definePlugin((editor, options) => {
       }
       return false
     })
+    oldDoc.off('update', onUpdateDoc)
     doc.init()
     root.value = doc
+    doc.on('update', onUpdateDoc)
     oldDoc.remove()
     renderEngine.value.root.append(doc)
-    emit('setDoc', doc, oldDoc)
+    emit('docSet', doc, oldDoc)
     oldDoc.destroy()
     return doc
   }
 
   const loadDoc: Mce.Editor['loadDoc'] = async (source) => {
     docLoading.value = true
-    emit('docLoading', source)
+    emit('docLoadStart', source)
     try {
       await waitUntilFontLoad()
       const data = await load(source)
@@ -130,6 +136,7 @@ export default definePlugin((editor, options) => {
 
   const clearDoc: Mce.Editor['clearDoc'] = async () => {
     setDoc([])
+    emit('docCleared')
   }
 
   const newDoc: Mce.Editor['newDoc'] = async () => {

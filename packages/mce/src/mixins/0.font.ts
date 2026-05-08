@@ -11,7 +11,7 @@ declare global {
     }
 
     interface Events {
-      loadFont: [font: FontLoadedResult]
+      fontLoaded: [font: FontLoadedResult]
     }
   }
 }
@@ -30,7 +30,7 @@ export default defineMixin((editor) => {
       injectFontFace: false,
       injectStyleTag: false,
     })
-    emit('loadFont', res)
+    emit('fontLoaded', res)
     return res
   }
 

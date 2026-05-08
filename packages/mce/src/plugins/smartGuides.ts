@@ -449,7 +449,7 @@ export default definePlugin((editor) => {
   return {
     name: 'mce:smartGuides',
     events: {
-      selectionTransform: ({ handle }) => {
+      selectionTransformed: ({ handle }) => {
         if (
           handle === 'move'
           // TODO
@@ -458,7 +458,7 @@ export default definePlugin((editor) => {
           updateSmartGuides()
         }
       },
-      selectionTransformEnd: () => {
+      selectionTransformEnded: () => {
         linePairs.value = []
       },
     },

@@ -231,7 +231,7 @@ export default definePlugin((editor) => {
       { command: 'zoomToPreviousFrame', key: 'Shift+N' },
     ],
     events: {
-      setDoc: () => exec('zoomToFit'),
+      docSet: () => exec('zoomToFit'),
     },
     setup: () => {
       watch(drawboardAabb, (_aabb, oldAabb) => {

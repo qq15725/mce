@@ -376,10 +376,10 @@ export default definePlugin((editor) => {
       { command: 'flipVertical', key: 'Shift+V' },
     ],
     events: {
-      selectionTransformStart: () => {
+      selectionTransformStarted: () => {
         initContext()
       },
-      selectionTransform: (ctx) => {
+      selectionTransformed: (ctx) => {
         const { handle, value, event } = ctx
         const [type, direction = ''] = handle.split('-')
         const isCorner = direction.length > 1
@@ -388,7 +388,7 @@ export default definePlugin((editor) => {
           isCorner,
         })
       },
-      selectionTransformEnd: () => {
+      selectionTransformEnded: () => {
         context = undefined
       },
     },

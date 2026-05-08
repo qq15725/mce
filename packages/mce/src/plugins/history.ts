@@ -63,7 +63,7 @@ export default definePlugin((editor) => {
       { command: 'redo', key: 'Shift+CmdOrCtrl+Z' },
     ],
     events: {
-      setDoc: (root, oldRoot) => {
+      docSet: (root, oldRoot) => {
         oldRoot?.off('history', onHistory)
         root.on('history', onHistory)
       },

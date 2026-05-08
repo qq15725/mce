@@ -56,9 +56,9 @@ declare global {
     }
 
     interface Events {
-      selectionTransformStart: [context: TransformContext]
-      selectionTransform: [context: TransformContext]
-      selectionTransformEnd: [context: TransformContext]
+      selectionTransformStarted: [context: TransformContext]
+      selectionTransformed: [context: TransformContext]
+      selectionTransformEnded: [context: TransformContext]
     }
   }
 }
@@ -276,8 +276,8 @@ export default definePlugin((editor) => {
       { command: 'lockOrUnlockSelection', key: 'Shift+CmdOrCtrl+L' },
     ],
     events: {
-      clearDoc: () => select('none'),
-      selectionTransform: () => {
+      docCleared: () => select('none'),
+      selectionTransformed: () => {
         elementSelection.value.forEach((el) => {
           el.findAncestor((ancestor) => {
             if (
