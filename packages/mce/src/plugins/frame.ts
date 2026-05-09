@@ -97,7 +97,11 @@ export default definePlugin((editor) => {
         frameThumbs,
       } = editor
 
+      let cleanupDoc: (() => void) | null = null
+
       function onSetDoc(doc: Doc) {
+        cleanupDoc?.()
+
         if (config.value.thumbnail) {
           snapshot()
         }
@@ -126,6 +130,11 @@ export default definePlugin((editor) => {
 
         doc.on('addChild', onAddChild)
         doc.on('removeChild', onRemoveChild)
+
+        cleanupDoc = () => {
+          doc.off('addChild', onAddChild)
+          doc.off('removeChild', onRemoveChild)
+        }
       }
 
       onBeforeMount(() => {
@@ -134,6 +143,7 @@ export default definePlugin((editor) => {
 
       onScopeDispose(() => {
         off('docSet', onSetDoc)
+        cleanupDoc?.()
       })
     },
   }

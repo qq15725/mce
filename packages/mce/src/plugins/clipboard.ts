@@ -13,7 +13,12 @@ export default definePlugin(() => {
         load: async (doc: Document) => {
           const mce = doc.querySelector('mce-clipboard')
           if (mce) {
-            return JSON.parse(mce.textContent) as any[]
+            try {
+              return JSON.parse(mce.textContent!) as any[]
+            }
+            catch {
+              return []
+            }
           }
           return []
         },

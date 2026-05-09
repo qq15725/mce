@@ -97,7 +97,10 @@ export class IndexeddbProvider extends Observable<IndexeddbProviderEvents> {
       ])
     })
 
-    this.whenSynced = new Promise(resolve => this.on('synced', () => resolve(this)))
+    this.whenSynced = new Promise((resolve, reject) => {
+      this.on('synced', () => resolve(this))
+      this._db.catch(reject)
+    })
 
     this._db.then((db) => {
       this.db = db
@@ -114,6 +117,8 @@ export class IndexeddbProvider extends Observable<IndexeddbProviderEvents> {
           this.emit('synced', this)
         },
       )
+    }).catch(() => {
+      // db open failed — synced will never fire, callers should handle whenSynced rejection
     })
 
     this._storeUpdate = (update: Uint8Array, origin: any) => {

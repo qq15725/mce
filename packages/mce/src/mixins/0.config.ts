@@ -82,9 +82,13 @@ export default defineMixin((editor) => {
         const file = files?.[0]
 
         if (file) {
-          // TODO 校验
-          config.value = JSON.parse(await file.text())
-          resolve(config.value)
+          try {
+            config.value = JSON.parse(await file.text())
+            resolve(config.value)
+          }
+          catch {
+            // ignore invalid config file
+          }
         }
       })
 
