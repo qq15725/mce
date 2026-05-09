@@ -54,8 +54,8 @@ export default definePlugin((editor) => {
               currentPath.currentCurve.addCurve(currentLine)
               update()
             }
+            return
           }
-          else {
             el = addElement({
               name: 'pen',
               style: {
@@ -92,14 +92,19 @@ export default definePlugin((editor) => {
             }
 
             renderEngine.value.on('pointermove', onMove)
-            const stop = watch([state, activeTool], () => {
+
+            let stopWatch: (() => void) | undefined
+            const cleanup = () => {
               renderEngine.value.off('pointermove', onMove)
-              stop()
+              stopWatch?.()
+              stopWatch = undefined
               el = undefined
               currentPath = undefined
               currentLine = undefined
-            })
-          }
+            }
+            stopWatch = watch([state, activeTool], cleanup)
+
+            return { end: cleanup }
         },
       },
       {

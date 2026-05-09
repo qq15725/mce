@@ -31,9 +31,8 @@ export default definePlugin((editor) => {
           try {
             return await load(dom)
           }
-          // eslint-disable-next-line unused-imports/no-unused-vars
-          catch (_err: any) {
-            console.log(dom)
+          catch (err) {
+            console.error(err)
             return []
           }
         },
