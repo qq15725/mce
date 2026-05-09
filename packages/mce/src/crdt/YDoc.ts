@@ -68,7 +68,7 @@ export class YDoc extends Observable {
       return !transaction.origin || transaction.origin === this._yDoc.clientID
     }
     else {
-      return !this._transacting
+      return this._transacting === false
     }
   }
 
