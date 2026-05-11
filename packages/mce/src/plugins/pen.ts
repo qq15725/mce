@@ -56,55 +56,55 @@ export default definePlugin((editor) => {
             }
             return
           }
-            el = addElement({
-              name: 'pen',
-              style: {
-                width: 1,
-                height: 1,
-              },
-              outline: {
-                color: '#d9d9d9',
-                width: 5,
-                lineCap: 'round',
-                lineJoin: 'round',
-              },
-              meta: {
-                inPptIs: 'Shape',
-              },
-            }, {
-              position: start,
-            })
-            currentPath = new Path2D()
-            currentLine = new LineCurve(
-              new Vector2(start.x, start.y),
-              new Vector2(start.x, start.y),
-            )
-            currentPath.currentCurve.addCurve(currentLine)
-            update()
+          el = addElement({
+            name: 'pen',
+            style: {
+              width: 1,
+              height: 1,
+            },
+            outline: {
+              color: '#d9d9d9',
+              width: 5,
+              lineCap: 'round',
+              lineJoin: 'round',
+            },
+            meta: {
+              inPptIs: 'Shape',
+            },
+          }, {
+            position: start,
+          })
+          currentPath = new Path2D()
+          currentLine = new LineCurve(
+            new Vector2(start.x, start.y),
+            new Vector2(start.x, start.y),
+          )
+          currentPath.currentCurve.addCurve(currentLine)
+          update()
 
-            const onMove = () => {
-              const move = getGlobalPointer()
-              if (currentLine && move) {
-                currentLine.p2.x = move.x
-                currentLine.p2.y = move.y
-                update()
-              }
+          const onMove = () => {
+            const move = getGlobalPointer()
+            if (currentLine && move) {
+              currentLine.p2.x = move.x
+              currentLine.p2.y = move.y
+              update()
             }
+          }
 
-            renderEngine.value.on('pointermove', onMove)
+          renderEngine.value.on('pointermove', onMove)
 
-            let stopWatch: (() => void) | undefined
-            const cleanup = () => {
-              renderEngine.value.off('pointermove', onMove)
-              stopWatch?.()
-              stopWatch = undefined
-              el = undefined
-              currentPath = undefined
-              currentLine = undefined
-            }
-            stopWatch = watch([state, activeTool], cleanup)
+          let stopWatch: (() => void) | undefined
+          const cleanup = () => {
+            renderEngine.value.off('pointermove', onMove)
+            stopWatch?.()
+            stopWatch = undefined
+            el = undefined
+            currentPath = undefined
+            currentLine = undefined
+          }
+          stopWatch = watch([state, activeTool], cleanup)
 
-            return { end: cleanup }
+          return { end: cleanup }
         },
       },
       {
