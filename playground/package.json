@@ -25,6 +25,6 @@
     "@vue/tsconfig": "^0.9.1",
     "mce": "workspace:*",
     "npm-run-all2": "^8.0.4",
-    "vite-plugin-vue-devtools": "^8.1.1"
+    "vite-plugin-vue-devtools": "^8.1.2"
   }
 }

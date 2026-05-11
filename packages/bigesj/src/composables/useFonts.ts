@@ -1,3 +1,4 @@
+import type { Editor } from 'mce'
 import type { FontLoadedResult } from 'modern-font'
 import { useEditor } from 'mce'
 import { ref } from 'vue'
@@ -23,11 +24,11 @@ function levenshteinDistance(a: string, b: string): number {
   return matrix[b.length][a.length]
 }
 
-export function useFonts() {
+export function useFonts(editor?: Editor) {
   const {
     http,
     loadFont: baseLoadFont,
-  } = useEditor()
+  } = editor ?? useEditor()
 
   async function loadBigeFonts(url: string, init = false): Promise<BigeFont[]> {
     let result = bigeFonts.value
