@@ -1,3 +1,21 @@
+## [0.18.1](https://github.com/qq15725/mce/compare/v0.18.0...v0.18.1) (2026-05-11)
+
+
+### Bug Fixes
+
+* correct _isSelfTransaction logic, fix pen tool listener leak, log html load errors ([00a1502](https://github.com/qq15725/mce/commit/00a15025a608d8b01cf9c98547b6e8598a483108))
+* handle JSON parse errors, unhandled promise rejections, and event listener leaks ([36f81ad](https://github.com/qq15725/mce/commit/36f81adc992f549030363b5be9451b90311fcd5e))
+* useFonts ([344a40f](https://github.com/qq15725/mce/commit/344a40f64eb1ab3da9029c512134b0c9c451edd0))
+
+
+### Features
+
+* export scene ([33eb333](https://github.com/qq15725/mce/commit/33eb333a75a960e2b60edaf63bbae2069bc30e65))
+
+
+### Reverts
+
+* restore _isSelfTransaction === false check ([3579bb1](https://github.com/qq15725/mce/commit/3579bb14a104c0d19ee0a4dbcbe72ecf49a493a4))
 # [0.18.0](https://github.com/qq15725/mce/compare/v0.17.13...v0.18.0) (2026-05-08)
 
 
