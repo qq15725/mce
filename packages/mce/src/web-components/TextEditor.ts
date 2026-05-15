@@ -508,13 +508,19 @@ export class TextEditor extends HTMLElement implements PropertyAccessor {
     yWeight?: number
   }): number {
     const isVertical = this.text.isVertical
+    const { boundingBox } = this.text
 
     const {
-      x,
-      y,
       xWeight = 1,
       yWeight = 1,
     } = options
+
+    // Pointer coords are in host space; `_chars` use `inlineBox` coords. The
+    // container is offset by `-boundingBox.left/top`, so undo that here. Matters
+    // whenever shadow/outline expands the box past the text baseline (negative
+    // offsets in particular).
+    const x = options.x + boundingBox.left
+    const y = options.y + boundingBox.top
 
     const char = this._chars.reduce(
       (prev, current, index) => {
