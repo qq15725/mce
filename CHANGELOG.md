@@ -1,3 +1,9 @@
+## [0.18.2](https://github.com/qq15725/mce/compare/v0.18.1...v0.18.2) (2026-05-15)
+
+
+### Bug Fixes
+
+* convert pointer coords to inlineBox space in TextEditor _findNearest ([c58ed7c](https://github.com/qq15725/mce/commit/c58ed7c7cbcc5568f9160f52a4374e3c7e6a02a1))
 ## [0.18.1](https://github.com/qq15725/mce/compare/v0.18.0...v0.18.1) (2026-05-11)
 
 
