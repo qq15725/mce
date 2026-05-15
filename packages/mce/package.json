@@ -74,7 +74,7 @@
     "modern-canvas": "^0.17.2",
     "modern-font": "^0.5.0",
     "modern-idoc": "^0.11.4",
-    "modern-text": "^1.11.0",
+    "modern-text": "^1.11.1",
     "y-protocols": "^1.0.7",
     "yjs": "^13.6.30"
   },
@@ -97,7 +97,7 @@
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.12",
-    "@vitejs/plugin-vue": "^6.0.6",
+    "@vitejs/plugin-vue": "^6.0.7",
     "jiti": "^2.7.0",
     "sass-embedded": "^1.99.0",
     "typedoc": "^0.28.19",
