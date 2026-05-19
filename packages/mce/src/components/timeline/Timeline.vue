@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import type { Element2D } from 'modern-canvas'
-import { Animation, IN_MAC_OS } from 'modern-canvas'
+import type { Element2D, TimelineNode } from 'modern-canvas'
+import { Animation, IN_MAC_OS, Video2D } from 'modern-canvas'
 import { computed, ref, useTemplateRef } from 'vue'
 import { useEditor } from '../../composables'
 import { Icon } from '../icon'
@@ -27,13 +27,23 @@ const {
 const ruler = useTemplateRef('rulerTpl')
 const offset = ref([0, 0])
 
+function hasAnimatedContent(el: Element2D): boolean {
+  if (el.children.some(c => c instanceof Animation))
+    return true
+  return Boolean(
+    el.background?.animatedTexture
+    || el.foreground?.animatedTexture
+    || el.fill?.animatedTexture
+    || el.outline?.animatedTexture,
+  )
+}
+
 const elements = computed(() => {
-  return root.value.findAll<Element2D>((node) => {
-    if (isElement(node)) {
-      if (node.children.some(child => child instanceof Animation)) {
-        return true
-      }
-    }
+  return root.value.findAll<TimelineNode>((node) => {
+    if (node instanceof Video2D)
+      return true
+    if (isElement(node) && hasAnimatedContent(node))
+      return true
     return false
   }).reverse()
 })

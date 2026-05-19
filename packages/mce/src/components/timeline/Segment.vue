@@ -1,8 +1,18 @@
 <script setup lang="ts">
 import type { TimelineNode } from 'modern-canvas'
-import { Animation, Element2D } from 'modern-canvas'
+import { Animation, Element2D, Video2D } from 'modern-canvas'
 import { computed } from 'vue'
 import { useEditor, useNode } from '../../composables'
+
+type BlockKind = 'animation' | 'media' | 'video'
+
+interface BlockItem {
+  kind: BlockKind
+  delay: number
+  duration: number
+  anim?: Animation
+  label?: string
+}
 
 const props = withDefaults(defineProps<{
   node: TimelineNode
@@ -20,25 +30,47 @@ const { thumbnailName } = useNode(
   computed(() => props.node),
 )
 
-const animations = computed<Animation[]>(() => {
+const blocks = computed<BlockItem[]>(() => {
   const node = props.node
-  if (node instanceof Element2D) {
-    return node.children.filter((child): child is Animation => child instanceof Animation)
+  const items: BlockItem[] = []
+
+  if (node instanceof Video2D) {
+    const d = node.videoDuration || 0
+    if (d > 0) {
+      items.push({ kind: 'video', delay: 0, duration: d, label: 'Video' })
+    }
   }
-  return []
+
+  if (node instanceof Element2D) {
+    for (const slot of ['background', 'foreground', 'fill', 'outline'] as const) {
+      const tx = node[slot]?.animatedTexture
+      if (tx?.duration) {
+        items.push({ kind: 'media', delay: 0, duration: tx.duration, label: slot })
+      }
+    }
+    node.children.forEach((child) => {
+      if (child instanceof Animation) {
+        items.push({
+          kind: 'animation',
+          delay: child.delay,
+          duration: child.duration,
+          anim: child,
+        })
+      }
+    })
+  }
+
+  return items
 })
 
-const blocks = computed(() => {
-  return animations.value.map(anim => ({
-    anim,
-    style: {
-      left: `${anim.delay / props.msPerPx}px`,
-      width: anim.duration > 0
-        ? `${anim.duration / props.msPerPx}px`
-        : '100%',
-    },
-  }))
-})
+function blockStyle(b: BlockItem): Record<string, string> {
+  return {
+    left: `${b.delay / props.msPerPx}px`,
+    width: b.duration > 0
+      ? `${b.duration / props.msPerPx}px`
+      : '100%',
+  }
+}
 
 const style = computed(() => {
   const node = props.node
@@ -157,10 +189,13 @@ function onBlockMove(e: MouseEvent) {
       v-for="(block, index) in blocks"
       :key="index"
       class="m-segment__block"
-      :style="block.style"
-      @mousedown="onBlockDown($event, block.anim)"
-      @mousemove="onBlockMove"
-    />
+      :class="`m-segment__block--${block.kind}`"
+      :style="blockStyle(block)"
+      @mousedown="block.anim && onBlockDown($event, block.anim)"
+      @mousemove="block.kind === 'animation' && onBlockMove($event)"
+    >
+      <span v-if="block.label" class="m-segment__block-label">{{ block.label }}</span>
+    </div>
 
     <div v-if="active" class="m-segment__edge m-segment__edge--front" />
 
@@ -234,20 +269,43 @@ function onBlockMove(e: MouseEvent) {
       position: absolute;
       top: 0;
       height: 100%;
-      background-color: rgba(255, 255, 255, 0.18);
       border: 1px solid rgba(255, 255, 255, 0.4);
       border-radius: 2px;
       box-sizing: border-box;
-      cursor: grab;
       pointer-events: auto;
+      overflow: hidden;
 
-      &:hover {
-        background-color: rgba(255, 255, 255, 0.28);
+      &--animation {
+        background-color: rgba(255, 255, 255, 0.18);
+        cursor: grab;
+
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.28);
+        }
+
+        &:active {
+          cursor: grabbing;
+        }
       }
 
-      &:active {
-        cursor: grabbing;
+      &--media {
+        background-color: rgba(64, 156, 96, 0.85);
+        cursor: default;
       }
+
+      &--video {
+        background-color: rgba(116, 84, 196, 0.85);
+        cursor: default;
+      }
+    }
+
+    &__block-label {
+      font-size: 0.625rem;
+      line-height: 1;
+      padding: 2px 4px;
+      pointer-events: none;
+      white-space: nowrap;
+      opacity: 0.9;
     }
   }
 </style>
