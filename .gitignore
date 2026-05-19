@@ -11,6 +11,7 @@ package-lock.json
 .vs/
 .claude/
 .codex/
+.playwright-mcp/
 
 # Logs
 yarn-error.log
