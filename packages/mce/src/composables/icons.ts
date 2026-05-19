@@ -9,6 +9,10 @@ export interface IconAliases {
   close: IconValue
   play: IconValue
   pause: IconValue
+  skipPrevious: IconValue
+  skipNext: IconValue
+  stepBackward: IconValue
+  stepForward: IconValue
   gps: IconValue
   arrowRight: IconValue
   arrowDown: IconValue

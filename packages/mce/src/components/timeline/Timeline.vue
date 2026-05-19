@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { Element2D } from 'modern-canvas'
 import { Animation, IN_MAC_OS } from 'modern-canvas'
-import { computed, onBeforeUnmount, ref, useTemplateRef } from 'vue'
+import { computed, ref, useTemplateRef } from 'vue'
 import { useEditor } from '../../composables'
 import { Icon } from '../icon'
 import Ruler from '../shared/Ruler.vue'
@@ -10,19 +10,21 @@ import Segment from './Segment.vue'
 import Track from './Track.vue'
 import Trackhead from './Trackhead.vue'
 
+const editor = useEditor()
 const {
   isElement,
   root,
   msPerPx,
   currentTime,
-  timeline,
   endTime,
   selection,
-} = useEditor()
+  paused,
+  fps,
+  exec,
+  t,
+} = editor
 
-const fps = ref(1000 / 30)
 const ruler = useTemplateRef('rulerTpl')
-const paused = ref(true)
 const offset = ref([0, 0])
 
 const elements = computed(() => {
@@ -35,6 +37,22 @@ const elements = computed(() => {
     return false
   }).reverse()
 })
+
+function pad(n: number): string {
+  return String(Math.max(0, Math.floor(n))).padStart(2, '0')
+}
+
+function formatTime(ms: number): string {
+  const safe = Number.isFinite(ms) ? ms : 0
+  const totalFrames = Math.round(safe / 1000 * fps.value)
+  const f = totalFrames % fps.value
+  const s = Math.floor(totalFrames / fps.value) % 60
+  const m = Math.floor(totalFrames / fps.value / 60)
+  return `${pad(m)}:${pad(s)}.${pad(f)}`
+}
+
+const currentLabel = computed(() => formatTime(currentTime.value))
+const totalLabel = computed(() => formatTime(endTime.value))
 
 function onWheel(e: WheelEvent) {
   if (e.ctrlKey || e.metaKey) {
@@ -71,49 +89,16 @@ function onMousedown(e: MouseEvent) {
 }
 
 function rulerLabelFormat(f: number) {
-  if (f % 30 === 0) {
-    const m = Math.floor(f / 30 / 60)
-    const s = Math.floor(f / 30) % 60
+  const framesPerSec = fps.value
+  if (f % framesPerSec === 0) {
+    const m = Math.floor(f / framesPerSec / 60)
+    const s = Math.floor(f / framesPerSec) % 60
     const mm = String(m).padStart(2, '0')
     const ss = String(s).padStart(2, '0')
     return `${mm}:${ss}`
   }
-  return `${Math.floor(f % 30)}f`
+  return `${Math.floor(f % framesPerSec)}f`
 }
-
-let requestId: number | undefined
-
-function play() {
-  paused.value = false
-  let prevTime: number | undefined
-  function loop(time?: number) {
-    if (prevTime !== undefined && time !== undefined) {
-      timeline.value.addTime(time - prevTime)
-    }
-    prevTime = time
-    requestId = requestAnimationFrame(loop)
-  }
-  loop()
-}
-
-function pause() {
-  paused.value = true
-  if (requestId !== undefined) {
-    cancelAnimationFrame(requestId)
-    requestId = undefined
-  }
-}
-
-function toggle() {
-  if (paused.value) {
-    play()
-  }
-  else {
-    pause()
-  }
-}
-
-onBeforeUnmount(pause)
 </script>
 
 <template>
@@ -122,12 +107,56 @@ onBeforeUnmount(pause)
     @wheel.prevent
   >
     <div class="m-timeline__toolbar">
-      <div
-        class="m-timeline__play"
-        @click="toggle"
-      >
-        <Icon :icon="paused ? '$play' : '$pause'" />
+      <div class="m-timeline__time">
+        <span>{{ currentLabel }}</span>
+        <span class="m-timeline__time-sep">/</span>
+        <span class="m-timeline__time--muted">{{ totalLabel }}</span>
       </div>
+
+      <div class="m-timeline__controls">
+        <button
+          class="m-timeline__btn"
+          type="button"
+          :title="t('seekStart')"
+          @click="exec('seekStart')"
+        >
+          <Icon icon="$skipPrevious" />
+        </button>
+        <button
+          class="m-timeline__btn"
+          type="button"
+          :title="t('stepBackward')"
+          @click="exec('stepBackward')"
+        >
+          <Icon icon="$stepBackward" />
+        </button>
+        <button
+          class="m-timeline__btn m-timeline__btn--primary"
+          type="button"
+          :title="paused ? t('play') : t('pause')"
+          @click="exec('togglePlay')"
+        >
+          <Icon :icon="paused ? '$play' : '$pause'" />
+        </button>
+        <button
+          class="m-timeline__btn"
+          type="button"
+          :title="t('stepForward')"
+          @click="exec('stepForward')"
+        >
+          <Icon icon="$stepForward" />
+        </button>
+        <button
+          class="m-timeline__btn"
+          type="button"
+          :title="t('seekEnd')"
+          @click="exec('seekEnd')"
+        >
+          <Icon icon="$skipNext" />
+        </button>
+      </div>
+
+      <div class="m-timeline__toolbar-spacer" />
     </div>
 
     <div class="m-timeline__main">
@@ -158,7 +187,7 @@ onBeforeUnmount(pause)
           <div class="m-timeline__ruler">
             <Ruler
               ref="rulerTpl"
-              :zoom="1 / msPerPx * fps"
+              :zoom="1000 / msPerPx / fps"
               :unit="100"
               :unit-fractions="[1, 3]"
               style="position: relative;"
@@ -212,15 +241,66 @@ onBeforeUnmount(pause)
     &__toolbar {
       display: flex;
       align-items: center;
-      height: 24px;
+      gap: 8px;
+      height: 28px;
+      padding: 0 8px;
       border-bottom: 1px solid rgba(var(--m-border-color), var(--m-border-opacity));
+      font-size: 0.75rem;
+      user-select: none;
     }
 
-    &__play {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
+    &__time {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+      font-variant-numeric: tabular-nums;
+      min-width: 120px;
+
+      &-sep {
+        opacity: 0.5;
+      }
+
+      &--muted {
+        opacity: 0.5;
+      }
+    }
+
+    &__controls {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    &__btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      padding: 0;
+      border: 0;
+      border-radius: 4px;
+      background: transparent;
+      color: inherit;
       cursor: pointer;
+
+      &:hover {
+        background-color: rgba(var(--m-theme-on-surface), 0.08);
+      }
+
+      &:active {
+        background-color: rgba(var(--m-theme-on-surface), 0.16);
+      }
+
+      &--primary {
+        width: 26px;
+        height: 26px;
+      }
+    }
+
+    &__toolbar-spacer {
+      flex: 1;
     }
 
     &__main {
