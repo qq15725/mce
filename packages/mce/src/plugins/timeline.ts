@@ -1,4 +1,4 @@
-import { computed, onBeforeMount, onScopeDispose } from 'vue'
+import { computed, onBeforeMount, onScopeDispose, watch } from 'vue'
 import Timeline from '../components/timeline/Timeline.vue'
 import { definePlugin } from '../plugin'
 
@@ -59,11 +59,46 @@ export default definePlugin((editor) => {
         timeline.value.endTime = root.value
           ? getTimeRange(root.value).endTime
           : 0
-
-        if (!config.value.visible) {
-          timeline.value.currentTime = timeline.value.endTime
-        }
       }
+
+      let requestId: number | undefined
+      let prevTime: number | undefined
+
+      function play() {
+        if (requestId !== undefined)
+          return
+        if (!Number.isFinite(timeline.value.currentTime)) {
+          timeline.value.currentTime = timeline.value.startTime
+        }
+        function loop(time?: number) {
+          if (prevTime !== undefined && time !== undefined) {
+            const tl = timeline.value
+            if (tl.endTime > tl.startTime) {
+              tl.addTime(time - prevTime)
+            }
+          }
+          prevTime = time
+          requestId = requestAnimationFrame(loop)
+        }
+        loop()
+      }
+
+      function stop() {
+        if (requestId !== undefined) {
+          cancelAnimationFrame(requestId)
+          requestId = undefined
+        }
+        prevTime = undefined
+      }
+
+      watch(() => config.value.visible, (visible) => {
+        if (visible) {
+          stop()
+        }
+        else {
+          play()
+        }
+      }, { immediate: true })
 
       onBeforeMount(() => {
         on('docSet', updateEndTime)
@@ -71,6 +106,7 @@ export default definePlugin((editor) => {
       })
 
       onScopeDispose(() => {
+        stop()
         off('docSet', updateEndTime)
         assets.off('loaded', updateEndTime)
       })
