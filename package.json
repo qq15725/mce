@@ -17,14 +17,14 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^9.0.0",
-    "@types/node": "^25.8.0",
+    "@types/node": "^25.9.0",
     "bumpp": "^11.1.0",
     "conventional-changelog-cli": "^5.0.0",
-    "eslint": "^10.3.0",
+    "eslint": "^10.4.0",
     "typescript": "^6.0.3",
     "vite": "^8.0.13",
     "vitest": "^4.1.6",
     "vue": "^3.5.34",
-    "vue-tsc": "^3.2.9"
+    "vue-tsc": "^3.3.0"
   }
 }
