@@ -29,6 +29,7 @@ const editorOptions = {
   ui: {
     ...options.ui,
     toolbelt: { visible: true },
+    timeline: { visible: true },
   },
 }
 
