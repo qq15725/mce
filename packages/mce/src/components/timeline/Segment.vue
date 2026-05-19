@@ -2,7 +2,7 @@
 import type { TimelineNode } from 'modern-canvas'
 import { Animation, Element2D } from 'modern-canvas'
 import { computed } from 'vue'
-import { useNode } from '../../composables'
+import { useEditor, useNode } from '../../composables'
 
 const props = withDefaults(defineProps<{
   node: TimelineNode
@@ -13,62 +13,135 @@ const props = withDefaults(defineProps<{
   msPerPx: 1,
 })
 
+const editor = useEditor()
+const { root, currentTime, fps } = editor
+
 const { thumbnailName } = useNode(
   computed(() => props.node),
 )
 
-const blocks = computed<Record<string, any>[]>(() => {
+const animations = computed<Animation[]>(() => {
   const node = props.node
   if (node instanceof Element2D) {
-    return node
-      .children
-      .filter(child => child instanceof Animation)
-      .map((anim) => {
-        const box: Record<string, any> = {
-          left: anim.delay / props.msPerPx,
-          top: 0,
-          width: anim.duration / props.msPerPx,
-          height: 0,
-        }
-
-        if (box.width) {
-          box.width = `${box.width}px`
-        }
-        else {
-          box.width = '100%'
-        }
-
-        return {
-          name: anim.name,
-          style: {
-            width: box.width,
-            transform: `matrix(1, 0, 0, 1, ${box.left}, ${box.top})`,
-          },
-        }
-      })
+    return node.children.filter((child): child is Animation => child instanceof Animation)
   }
   return []
 })
 
+const blocks = computed(() => {
+  return animations.value.map(anim => ({
+    anim,
+    style: {
+      left: `${anim.delay / props.msPerPx}px`,
+      width: anim.duration > 0
+        ? `${anim.duration / props.msPerPx}px`
+        : '100%',
+    },
+  }))
+})
+
 const style = computed(() => {
   const node = props.node
-
   const { duration: _duration = 0, delay = 0 } = node
-
   const duration = _duration || props.endTime - delay
-
-  const box: Record<string, any> = {
-    left: delay / props.msPerPx,
-    top: 0,
-    width: duration / props.msPerPx,
-    height: 0,
-  }
-
   return {
-    width: `${box.width}px`,
-    transform: `matrix(1, 0, 0, 1, ${box.left}, ${box.top})`,
+    transform: `translateX(${delay / props.msPerPx}px)`,
+    width: `${duration / props.msPerPx}px`,
   }
 })
+
+function collectSnapTargets(excludeAnim: Animation): number[] {
+  const targets: number[] = [0, props.endTime, currentTime.value]
+  root.value.findAll((node) => {
+    if (node instanceof Animation && node !== excludeAnim) {
+      targets.push(node.delay)
+      targets.push(node.delay + node.duration)
+    }
+    return false
+  })
+  return targets
+}
+
+function snap(value: number, thresholdMs: number, exclude: Animation): number {
+  let best = value
+  let bestDist = thresholdMs
+  const targets = collectSnapTargets(exclude)
+  for (const t of targets) {
+    const d = Math.abs(t - value)
+    if (d < bestDist) {
+      bestDist = d
+      best = t
+    }
+  }
+  // frame snap (lowest priority)
+  if (bestDist === thresholdMs) {
+    const frameMs = 1000 / fps.value
+    const f = Math.round(value / frameMs) * frameMs
+    if (Math.abs(f - value) < thresholdMs) {
+      best = f
+    }
+  }
+  return best
+}
+
+type DragMode = 'move' | 'resize-left' | 'resize-right'
+
+function pickMode(e: MouseEvent): DragMode {
+  const el = e.currentTarget as HTMLElement
+  const rect = el.getBoundingClientRect()
+  const localX = e.clientX - rect.left
+  if (localX < 6)
+    return 'resize-left'
+  if (localX > rect.width - 6)
+    return 'resize-right'
+  return 'move'
+}
+
+function onBlockDown(e: MouseEvent, anim: Animation) {
+  e.stopPropagation()
+  const mode = pickMode(e)
+  const startX = e.clientX
+  const initialDelay = anim.delay
+  const initialDuration = anim.duration || (props.endTime - initialDelay)
+  const minDuration = 1000 / fps.value
+  const threshold = 8 * props.msPerPx
+
+  function onMove(ev: MouseEvent) {
+    const deltaMs = (ev.clientX - startX) * props.msPerPx
+    if (mode === 'move') {
+      const target = snap(initialDelay + deltaMs, threshold, anim)
+      anim.delay = Math.max(0, target)
+    }
+    else if (mode === 'resize-left') {
+      const maxDelay = initialDelay + initialDuration - minDuration
+      const target = snap(initialDelay + deltaMs, threshold, anim)
+      const newDelay = Math.max(0, Math.min(maxDelay, target))
+      anim.delay = newDelay
+      anim.duration = initialDuration - (newDelay - initialDelay)
+    }
+    else if (mode === 'resize-right') {
+      const target = snap(initialDelay + initialDuration + deltaMs, threshold, anim)
+      anim.duration = Math.max(minDuration, target - initialDelay)
+    }
+  }
+
+  function onUp() {
+    window.removeEventListener('mousemove', onMove)
+    window.removeEventListener('mouseup', onUp)
+  }
+
+  window.addEventListener('mousemove', onMove)
+  window.addEventListener('mouseup', onUp)
+}
+
+function onBlockMove(e: MouseEvent) {
+  const target = e.currentTarget as HTMLElement
+  const rect = target.getBoundingClientRect()
+  const localX = e.clientX - rect.left
+  target.style.cursor = localX < 6 || localX > rect.width - 6
+    ? 'col-resize'
+    : 'grab'
+}
 </script>
 
 <template>
@@ -85,6 +158,8 @@ const style = computed(() => {
       :key="index"
       class="m-segment__block"
       :style="block.style"
+      @mousedown="onBlockDown($event, block.anim)"
+      @mousemove="onBlockMove"
     />
 
     <div v-if="active" class="m-segment__edge m-segment__edge--front" />
@@ -111,82 +186,6 @@ const style = computed(() => {
 
     &--active {
       outline: 1px solid rgb(var(--m-theme-on-surface));
-    }
-
-    &__animation {
-      position: absolute;
-      bottom: 2px;
-
-      &--in {
-        width: 0;
-        left: 4px;
-        background-color: white;
-        height: 2px;
-        &:after {
-          border-color: transparent transparent transparent white;
-          border-style: solid;
-          border-width: 5px 0 0 6px;
-          bottom: 0;
-          content: "";
-          display: block;
-          height: 0;
-          left: 100%;
-          position: absolute;
-          width: 0;
-        }
-      }
-
-      &--out {
-        width: 0;
-        right: 4px;
-        background-color: white;
-        height: 2px;
-
-        &:before {
-          border-color: transparent white transparent transparent;
-          border-style: solid;
-          border-width: 5px 6px 0 0;
-          bottom: 0;
-          content: "";
-          display: block;
-          height: 0;
-          position: absolute;
-          right: 100%;
-          width: 0;
-        }
-      }
-
-      &--stay {
-        left: 0;
-        background-color: white;
-        height: 2px;
-
-        &:before {
-          border-color: transparent white transparent transparent;
-          border-style: solid;
-          border-width: 5px 6px 0 0;
-          bottom: 0;
-          content: "";
-          display: block;
-          height: 0;
-          position: absolute;
-          right: 100%;
-          width: 0;
-        }
-
-        &:after {
-          border-color: transparent transparent transparent white;
-          border-style: solid;
-          border-width: 5px 0 0 6px;
-          bottom: 0;
-          content: "";
-          display: block;
-          height: 0;
-          left: 100%;
-          position: absolute;
-          width: 0;
-        }
-      }
     }
 
     &__edge {
@@ -233,13 +232,22 @@ const style = computed(() => {
 
     &__block {
       position: absolute;
-      left: 0;
       top: 0;
-      font-size: 12px;
-      padding: 0 8px;
-      text-wrap: nowrap;
-      overflow: visible;
-      border-bottom: 1px solid rgb(var(--m-theme-surface));
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: 2px;
+      box-sizing: border-box;
+      cursor: grab;
+      pointer-events: auto;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.28);
+      }
+
+      &:active {
+        cursor: grabbing;
+      }
     }
   }
 </style>
