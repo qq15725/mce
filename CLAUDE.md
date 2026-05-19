@@ -79,4 +79,4 @@ playground/   # 演示与测试应用
 - **ESM only**：根 `package.json` 设置 `"type": "module"`，所有包均为 ESM 输出。
 - **TypeScript 严格模式**：启用 `strict: true` 及装饰器支持。
 - **ESLint**：使用 `@antfu/eslint-config`，通过 `eslint.config.js` 配置。
-- **提交规范**：遵循 `.github/commit-convention.md`，格式为 `type: message`（如 `feat:`、`fix:`、`release:`）。
+- **提交规范**：遵循 `.github/commit-convention.md`，格式为 `type: message`（如 `feat:`、`fix:`、`release:`）。message 尽量精简，不要带 `Co-Authored-By` 后缀。
