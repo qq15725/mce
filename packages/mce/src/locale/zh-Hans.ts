@@ -86,6 +86,7 @@ export default {
   'seekEnd': '跳到结尾',
   'stepBackward': '后退一帧',
   'stepForward': '前进一帧',
+  'collapse': '折叠',
   'creator': '创建节点',
   'memoryManager': '管理内存',
   'toolbelt': '工具腰带',

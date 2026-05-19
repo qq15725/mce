@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { Element2D, TimelineNode } from 'modern-canvas'
 import { Animation, IN_MAC_OS, Video2D } from 'modern-canvas'
-import { computed, ref, useTemplateRef } from 'vue'
+import { computed, onBeforeMount, onBeforeUnmount, ref, useTemplateRef } from 'vue'
 import { useEditor } from '../../composables'
 import { Icon } from '../icon'
 import Ruler from '../shared/Ruler.vue'
@@ -22,10 +22,33 @@ const {
   fps,
   exec,
   t,
+  assets,
 } = editor
 
 const ruler = useTemplateRef('rulerTpl')
 const offset = ref([0, 0])
+
+// Trigger for content state changes the computed cannot deeply observe
+// (animatedTexture finishing load on nested elements, late hydration, …).
+// Combines explicit asset events with a low-frequency poll while the panel
+// is mounted — cheap, and avoids tracks staying invisible until the user
+// happens to activate the element.
+const tracksRev = ref(0)
+function bumpTracksRev() {
+  tracksRev.value++
+}
+let pollId: ReturnType<typeof setInterval> | undefined
+onBeforeMount(() => {
+  assets.on('loaded', bumpTracksRev)
+  pollId = setInterval(bumpTracksRev, 500)
+})
+onBeforeUnmount(() => {
+  assets.off('loaded', bumpTracksRev)
+  if (pollId !== undefined) {
+    clearInterval(pollId)
+    pollId = undefined
+  }
+})
 
 function hasAnimatedContent(el: Element2D): boolean {
   if (el.children.some(c => c instanceof Animation))
@@ -39,6 +62,8 @@ function hasAnimatedContent(el: Element2D): boolean {
 }
 
 const elements = computed(() => {
+  void endTime.value
+  void tracksRev.value
   return root.value.findAll<TimelineNode>((node) => {
     if (node instanceof Video2D)
       return true
@@ -167,6 +192,15 @@ function rulerLabelFormat(f: number) {
       </div>
 
       <div class="m-timeline__toolbar-spacer" />
+
+      <button
+        class="m-timeline__btn"
+        type="button"
+        :title="t('collapse')"
+        @click="exec('togglePanel', 'timeline', 'toggle')"
+      >
+        <Icon icon="$arrowDown" />
+      </button>
     </div>
 
     <div class="m-timeline__main">
@@ -359,6 +393,10 @@ function rulerLabelFormat(f: number) {
       width: 100%;
       height: 24px;
       min-height: 24px;
+
+      &, * {
+        cursor: default;
+      }
     }
 
     &__track {

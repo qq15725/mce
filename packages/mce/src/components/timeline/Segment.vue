@@ -24,7 +24,7 @@ const props = withDefaults(defineProps<{
 })
 
 const editor = useEditor()
-const { root, currentTime, fps } = editor
+const { root, currentTime, fps, recomputeTimelineEndTime, selection } = editor
 
 const { thumbnailName } = useNode(
   computed(() => props.node),
@@ -75,17 +75,25 @@ function blockStyle(b: BlockItem): Record<string, string> {
 const style = computed(() => {
   const node = props.node
   const { duration: _duration = 0, delay = 0 } = node
-  const duration = _duration || props.endTime - delay
+  // Prefer the actual span of contained blocks so the segment hugs its content.
+  // Fall back to the element's own duration or the full timeline when empty.
+  let contentEnd = 0
+  for (const b of blocks.value) {
+    contentEnd = Math.max(contentEnd, b.delay + b.duration)
+  }
+  const duration = contentEnd || _duration || (props.endTime - delay)
   return {
     transform: `translateX(${delay / props.msPerPx}px)`,
     width: `${duration / props.msPerPx}px`,
   }
 })
 
-function collectSnapTargets(excludeAnim: Animation): number[] {
+function collectSnapTargets(exclude: TimelineNode): number[] {
   const targets: number[] = [0, props.endTime, currentTime.value]
   root.value.findAll((node) => {
-    if (node instanceof Animation && node !== excludeAnim) {
+    if (node === exclude)
+      return false
+    if (node instanceof Animation) {
       targets.push(node.delay)
       targets.push(node.delay + node.duration)
     }
@@ -94,7 +102,7 @@ function collectSnapTargets(excludeAnim: Animation): number[] {
   return targets
 }
 
-function snap(value: number, thresholdMs: number, exclude: Animation): number {
+function snap(value: number, thresholdMs: number, exclude: TimelineNode): number {
   let best = value
   let bestDist = thresholdMs
   const targets = collectSnapTargets(exclude)
@@ -118,7 +126,9 @@ function snap(value: number, thresholdMs: number, exclude: Animation): number {
 
 type DragMode = 'move' | 'resize-left' | 'resize-right'
 
-function pickMode(e: MouseEvent): DragMode {
+function pickMode(e: MouseEvent, resizable: boolean): DragMode {
+  if (!resizable)
+    return 'move'
   const el = e.currentTarget as HTMLElement
   const rect = el.getBoundingClientRect()
   const localX = e.clientX - rect.left
@@ -129,50 +139,47 @@ function pickMode(e: MouseEvent): DragMode {
   return 'move'
 }
 
-function onBlockDown(e: MouseEvent, anim: Animation) {
+function onBlockDown(e: MouseEvent, block: BlockItem) {
   e.stopPropagation()
-  const mode = pickMode(e)
+  selection.value = [props.node]
+  const resizable = block.kind === 'animation'
+  const target: TimelineNode = block.anim ?? props.node
+  const mode = pickMode(e, resizable)
   const startX = e.clientX
-  const initialDelay = anim.delay
-  const initialDuration = anim.duration || (props.endTime - initialDelay)
+  const initialDelay = target.delay
+  const initialDuration = resizable
+    ? (target.duration || (props.endTime - initialDelay))
+    : 0 // not used for media/video — duration is bound to the resource
   const minDuration = 1000 / fps.value
   const threshold = 8 * props.msPerPx
 
   function onMove(ev: MouseEvent) {
     const deltaMs = (ev.clientX - startX) * props.msPerPx
     if (mode === 'move') {
-      const target = snap(initialDelay + deltaMs, threshold, anim)
-      anim.delay = Math.max(0, target)
+      const t = snap(initialDelay + deltaMs, threshold, target)
+      target.delay = Math.max(0, t)
     }
     else if (mode === 'resize-left') {
       const maxDelay = initialDelay + initialDuration - minDuration
-      const target = snap(initialDelay + deltaMs, threshold, anim)
-      const newDelay = Math.max(0, Math.min(maxDelay, target))
-      anim.delay = newDelay
-      anim.duration = initialDuration - (newDelay - initialDelay)
+      const t = snap(initialDelay + deltaMs, threshold, target)
+      const newDelay = Math.max(0, Math.min(maxDelay, t))
+      target.delay = newDelay
+      target.duration = initialDuration - (newDelay - initialDelay)
     }
     else if (mode === 'resize-right') {
-      const target = snap(initialDelay + initialDuration + deltaMs, threshold, anim)
-      anim.duration = Math.max(minDuration, target - initialDelay)
+      const t = snap(initialDelay + initialDuration + deltaMs, threshold, target)
+      target.duration = Math.max(minDuration, t - initialDelay)
     }
   }
 
   function onUp() {
     window.removeEventListener('mousemove', onMove)
     window.removeEventListener('mouseup', onUp)
+    recomputeTimelineEndTime()
   }
 
   window.addEventListener('mousemove', onMove)
   window.addEventListener('mouseup', onUp)
-}
-
-function onBlockMove(e: MouseEvent) {
-  const target = e.currentTarget as HTMLElement
-  const rect = target.getBoundingClientRect()
-  const localX = e.clientX - rect.left
-  target.style.cursor = localX < 6 || localX > rect.width - 6
-    ? 'col-resize'
-    : 'grab'
 }
 </script>
 
@@ -191,8 +198,7 @@ function onBlockMove(e: MouseEvent) {
       class="m-segment__block"
       :class="`m-segment__block--${block.kind}`"
       :style="blockStyle(block)"
-      @mousedown="block.anim && onBlockDown($event, block.anim)"
-      @mousemove="block.kind === 'animation' && onBlockMove($event)"
+      @mousedown="onBlockDown($event, block)"
     >
       <span v-if="block.label" class="m-segment__block-label">{{ block.label }}</span>
     </div>
@@ -277,25 +283,26 @@ function onBlockMove(e: MouseEvent) {
 
       &--animation {
         background-color: rgba(255, 255, 255, 0.18);
-        cursor: grab;
 
         &:hover {
           background-color: rgba(255, 255, 255, 0.28);
-        }
-
-        &:active {
-          cursor: grabbing;
         }
       }
 
       &--media {
         background-color: rgba(64, 156, 96, 0.85);
-        cursor: default;
+
+        &:hover {
+          background-color: rgba(64, 156, 96, 1);
+        }
       }
 
       &--video {
         background-color: rgba(116, 84, 196, 0.85);
-        cursor: default;
+
+        &:hover {
+          background-color: rgba(116, 84, 196, 1);
+        }
       }
     }
 

@@ -16,6 +16,7 @@ declare global {
     interface Editor {
       paused: Ref<boolean>
       fps: Ref<number>
+      recomputeTimelineEndTime: () => Promise<void>
     }
 
     interface Commands {
@@ -53,7 +54,14 @@ export default definePlugin((editor) => {
   const paused = ref(true)
   const fps = ref(30)
 
-  Object.assign(editor, { paused, fps })
+  async function recomputeTimelineEndTime() {
+    await editor.renderEngine.value.nextTick()
+    timeline.value.endTime = editor.root.value
+      ? editor.getTimeRange(editor.root.value).endTime
+      : 0
+  }
+
+  Object.assign(editor, { paused, fps, recomputeTimelineEndTime })
 
   function play() {
     paused.value = false
@@ -128,17 +136,9 @@ export default definePlugin((editor) => {
         assets,
         on,
         off,
-        renderEngine,
-        getTimeRange,
-        root,
       } = editor
 
-      async function updateEndTime() {
-        await renderEngine.value.nextTick()
-        timeline.value.endTime = root.value
-          ? getTimeRange(root.value).endTime
-          : 0
-      }
+      const updateEndTime = recomputeTimelineEndTime
 
       let requestId: number | undefined
       let prevTime: number | undefined

@@ -48,9 +48,6 @@ function onMousedown(e: MouseEvent) {
 
   addDragListener(e, {
     threshold: 10,
-    start: () => {
-      document.body.style.cursor = 'grabbing'
-    },
     move: ({ event }) => {
       const target = event.composedPath().find((t) => {
         return t instanceof HTMLElement && t.classList.contains('m-trackhead')
@@ -61,7 +58,6 @@ function onMousedown(e: MouseEvent) {
       }
     },
     end: ({ event }) => {
-      document.body.style.cursor = ''
       document.querySelectorAll('.m-trackhead--dropping').forEach(el => el.classList.remove('m-trackhead--dropping'))
       const target = event.composedPath().find((t) => {
         return t instanceof HTMLElement && t.classList.contains('m-trackhead')
@@ -204,7 +200,6 @@ function onToggleVisible(e: MouseEvent) {
     width: 100%;
     border-radius: 4px;
     user-select: none;
-    cursor: default;
 
     &:hover {
       background-color: rgba(var(--m-theme-on-surface), 0.06);
@@ -263,10 +258,12 @@ function onToggleVisible(e: MouseEvent) {
 
       .m-trackhead__btn {
         opacity: 0;
+        pointer-events: none;
       }
 
       &--show .m-trackhead__btn {
         opacity: 1;
+        pointer-events: auto;
       }
     }
 
@@ -281,8 +278,6 @@ function onToggleVisible(e: MouseEvent) {
       border-radius: 3px;
       background: transparent;
       color: inherit;
-      cursor: pointer;
-      opacity: 0;
       font-size: 0.75rem;
 
       &:hover {
@@ -291,6 +286,7 @@ function onToggleVisible(e: MouseEvent) {
 
       &--show {
         opacity: 1 !important;
+        pointer-events: auto !important;
       }
     }
   }

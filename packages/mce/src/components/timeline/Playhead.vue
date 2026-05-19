@@ -19,7 +19,6 @@
     top: 0;
     width: 10px;
     color: rgb(var(--m-theme-on-surface));
-    cursor: col-resize;
 
     &__header {
       position: relative;

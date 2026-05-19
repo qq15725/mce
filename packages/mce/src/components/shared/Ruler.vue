@@ -402,7 +402,6 @@ defineExpose({
   height: 100%;
   --text-color: rgba(var(--m-theme-on-background), var(--m-low-emphasis-opacity));
   --border-color: rgba(var(--m-border-color), var(--m-border-opacity));
-  cursor: pointer;
 
   &--vertical {
     width: var(--size);

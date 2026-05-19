@@ -85,6 +85,7 @@ export default {
   'seekEnd': 'Go to End',
   'stepBackward': 'Previous Frame',
   'stepForward': 'Next Frame',
+  'collapse': 'Collapse',
   'statusbar': 'Statusbar',
   'creator': 'Create node',
   'memoryManager': 'Manage memory',
