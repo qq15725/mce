@@ -40,6 +40,7 @@ declare global {
         | 'transforming'
         | 'typing'
         | 'cropping'
+        | 'pathEditing'
         | 'imageReplacing'
         | 'shapeReplacing'
         | 'painting'

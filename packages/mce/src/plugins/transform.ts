@@ -108,6 +108,18 @@ export default definePlugin((editor) => {
       else if (el.foreground.isValid()) {
         state.value = 'cropping'
       }
+      // Editable vector path: enter node-editing mode. v1 only supports
+      // un-rotated / un-scaled elements with literal `paths` (not svg).
+      else if (
+        el.shape.isValid()
+        && el.shape.paths?.length
+        && !el.shape.svg
+        && !el.style.rotate
+        && (el.style.scaleX ?? 1) === 1
+        && (el.style.scaleY ?? 1) === 1
+      ) {
+        state.value = 'pathEditing'
+      }
     }
   }
 

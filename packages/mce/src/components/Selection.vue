@@ -3,6 +3,7 @@ import type { Element2D, Obb2D } from 'modern-canvas'
 import { computed, onBeforeMount, onBeforeUnmount, useTemplateRef } from 'vue'
 import { useEditor } from '../composables/editor'
 import ForegroundCropper from './ForegroundCropper.vue'
+import PathEditor from './PathEditor.vue'
 import Transform from './shared/Transform.vue'
 
 const {
@@ -208,8 +209,16 @@ defineExpose({
       </div>
     </template>
 
+    <PathEditor
+      v-if="state === 'pathEditing' && elementSelection.length === 1"
+      :element="elementSelection[0]"
+      :scale="[camera.zoom.x, camera.zoom.y]"
+      :offset="[-camera.position.x, -camera.position.y]"
+      @end="state = undefined"
+    />
+
     <Transform
-      v-if="transformValue.width && transformValue.height"
+      v-if="transformValue.width && transformValue.height && state !== 'pathEditing'"
       ref="transformTpl"
       v-bind="transformProps"
       :model-value="transformValue"
