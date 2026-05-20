@@ -93,9 +93,13 @@ export default definePlugin((editor) => {
       case 'all':
         selection.value = [...root.value.children]
         break
-      case 'inverse':
-        selection.value = []
+      case 'inverse': {
+        const current = selection.value
+        selection.value = root.value.children.filter(
+          node => !current.some(v => v.equal(node)),
+        )
         break
+      }
       case 'children': {
         const children = selection.value[0]?.children
         if (children?.length) {

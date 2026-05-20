@@ -1,3 +1,4 @@
+export * from './arrow'
 export * from './box'
 export * from './console'
 export * from './constants'

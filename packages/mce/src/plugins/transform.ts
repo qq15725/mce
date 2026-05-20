@@ -285,12 +285,12 @@ export default definePlugin((editor) => {
           }
         }
 
-        const scale = newStyle.rotate ? 100 : 1
+        const roundFactor = newStyle.rotate ? 100 : 1
 
         resizeElement(
           el,
-          Math.max(1, Math.round(newStyle.width * scale) / scale),
-          Math.max(1, Math.round(newStyle.height * scale) / scale),
+          Math.max(1, Math.round(newStyle.width * roundFactor) / roundFactor),
+          Math.max(1, Math.round(newStyle.height * roundFactor) / roundFactor),
           inEditorIs(el, 'Frame')
             ? undefined
             : el.shape.isValid()
@@ -330,7 +330,7 @@ export default definePlugin((editor) => {
 
   const rotate: Mce.Commands['rotate'] = (deg) => {
     elementSelection.value.forEach((el) => {
-      el.style.rotate = (el.style.rotate + deg) % 360
+      el.style.rotate = ((el.style.rotate + deg) % 360 + 360) % 360
     })
   }
 

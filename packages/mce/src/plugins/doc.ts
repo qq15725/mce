@@ -174,7 +174,7 @@ export default definePlugin((editor, options) => {
       { command: 'setDoc', handle: setDoc },
       { command: 'loadDoc', handle: loadDoc },
       { command: 'clearDoc', handle: clearDoc },
-      { command: 'newDoc', handle: clearDoc },
+      { command: 'newDoc', handle: newDoc },
       { command: 'openDoc', handle: openDoc },
     ],
     hotkeys: [

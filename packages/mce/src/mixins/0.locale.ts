@@ -55,7 +55,7 @@ export default defineMixin((editor, options) => {
     }
   })
 
-  function t(key: string, fallback?: string): string | undefined {
+  function t(key: string, fallback?: string): string {
     const { locale, localeMessages, fallbackMessages } = messages.value
 
     const value = options.t?.(key, fallback)
@@ -68,7 +68,7 @@ export default defineMixin((editor, options) => {
       console.warn(`[mce] Not found '${key}' key in '${locale}' locale messages.`)
     }
 
-    return value ?? key ?? fallback
+    return value ?? key ?? fallback ?? ''
   }
 
   Object.assign(editor, {

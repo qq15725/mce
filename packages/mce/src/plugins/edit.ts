@@ -201,11 +201,22 @@ export default definePlugin((editor, options) => {
   }
 
   let locked = false
+  let lockTimer: ReturnType<typeof setTimeout> | undefined
   function getPasteLock(): { locked: boolean, lock: () => void, unlock: () => void } {
     return {
       locked,
-      lock: () => locked = true,
-      unlock: () => locked = false,
+      // Debounce a programmatic paste against the system paste event that may
+      // follow it. Auto-release so the lock never stays held indefinitely and
+      // swallows a later, unrelated paste.
+      lock: () => {
+        locked = true
+        clearTimeout(lockTimer)
+        lockTimer = setTimeout(() => locked = false, 300)
+      },
+      unlock: () => {
+        locked = false
+        clearTimeout(lockTimer)
+      },
     }
   }
 

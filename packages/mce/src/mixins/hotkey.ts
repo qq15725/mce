@@ -209,6 +209,16 @@ function parseKey(key: string) {
     .join('+')
 }
 
+const parsedKeyCache = new Map<string, string>()
+function parseKeyMemo(key: string): string {
+  let value = parsedKeyCache.get(key)
+  if (value === undefined) {
+    value = parseKey(key)
+    parsedKeyCache.set(key, value)
+  }
+  return value
+}
+
 function parseKeyboardEvent(event: KeyboardEvent) {
   if (event.key.toLowerCase() === 'capslock') {
     return
@@ -326,11 +336,14 @@ export default defineMixin((editor) => {
         const eKey = parseKeyboardEvent(e)
 
         hotkeysData.value.forEach((hotkeyData) => {
+          if (hotkeyData.enabled === false) {
+            return
+          }
           const command = hotkeyData.command
           const hotkey = hotkeys.get(command)
           const keys = Array.isArray(hotkeyData.key) ? hotkeyData.key : [hotkeyData.key]
           keys.forEach((key) => {
-            const tKey = parseKey(key)
+            const tKey = parseKeyMemo(key)
 
             if (eKey === tKey && (!hotkey?.when || hotkey.when(e))) {
               if (hotkey?.preventDefault !== false) {

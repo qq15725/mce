@@ -18,9 +18,9 @@ declare global {
       toggleUi: (name: Ui) => void
       isPanelVisible: (name: string) => boolean
       setPanelVisible: (name: string, visible: boolean | 'toggle') => void
-      hidePanel: (name: string, visible: boolean | 'toggle') => void
-      showPanel: (name: string, visible: boolean | 'toggle') => void
-      togglePanel: (name: string, visible: boolean | 'toggle') => void
+      hidePanel: (name: string) => void
+      showPanel: (name: string) => void
+      togglePanel: (name: string) => void
       pointerDown: (e: PointerInputEvent, options?: PointerDownOptions) => void
     }
   }
@@ -68,7 +68,7 @@ export default definePlugin((editor) => {
     name: 'mce:view',
     commands: [
       { command: 'getUiConfig', handle: getUiConfig },
-      { command: 'isUiVisible', handle: name => Boolean(getUiConfig(name).visible) },
+      { command: 'isUiVisible', handle: name => Boolean(getUiConfig(name)?.visible) },
       { command: 'setUiVisible', handle: setUiVisible },
       { command: 'hideUi', handle: name => setUiVisible(name, false) },
       { command: 'showUi', handle: name => setUiVisible(name, true) },

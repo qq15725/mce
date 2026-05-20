@@ -95,7 +95,7 @@ export default definePlugin((editor) => {
         return
       }
       targetPosition = { x: aabb.left + aabb.width / 2, y: aabb.top + aabb.height / 2 }
-      offset.x += -_screenCenter.x
+      offset.x = -_screenCenter.x
       offset.y = -_screenCenter.y
     }
 

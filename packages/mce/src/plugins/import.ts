@@ -79,13 +79,16 @@ export default definePlugin((editor) => {
         }
       }
 
+      let dom: HTMLElement | undefined
       onMounted(() => {
-        drawboardDom.value?.addEventListener('dragover', onDragover)
-        drawboardDom.value?.addEventListener('drop', onDrop)
+        dom = drawboardDom.value
+        dom?.addEventListener('dragover', onDragover)
+        dom?.addEventListener('drop', onDrop)
       })
       onScopeDispose(() => {
-        drawboardDom.value?.removeEventListener('dragover', onDragover)
-        drawboardDom.value?.removeEventListener('drop', onDrop)
+        dom?.removeEventListener('dragover', onDragover)
+        dom?.removeEventListener('drop', onDrop)
+        dom = undefined
       })
     },
   }

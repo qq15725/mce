@@ -309,7 +309,7 @@ export default definePlugin((editor) => {
           }, value as number) ?? value as number
         default:
           if (
-            content.length === 1
+            content?.length === 1
             && content[0].fragments.length === 1
             && (content[0].fragments[0] as any)[key]
           ) {

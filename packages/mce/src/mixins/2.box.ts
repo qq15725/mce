@@ -65,7 +65,7 @@ export default defineMixin((editor) => {
         height: max.y - min.y,
       }
 
-      const aabbs: Record<number, any> = {}
+      const aabbs: Record<number, Aabb2D> = {}
       element.children.forEach((child, index) => {
         if (isElement(child)) {
           aabbs[index] = getAabb(child)

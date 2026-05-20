@@ -12,7 +12,7 @@ declare global {
     }
 
     interface Snapper {
-      get: () => SnapperData
+      getLines: () => SnapperData
     }
 
     interface Editor {
@@ -52,7 +52,7 @@ export default defineMixin((editor) => {
     const axisY = new Set<number>()
 
     snappers.forEach((snapper) => {
-      const { xLines, yLines } = snapper.get()
+      const { xLines, yLines } = snapper.getLines()
       xLines?.forEach(v => axisX.add(v))
       yLines?.forEach(v => axisY.add(v))
     })

@@ -53,6 +53,7 @@ export default defineMixin((editor) => {
   }
 
   const to: Mce.Editor['to'] = (name, options = {}) => {
+    exportProgress.value = 0
     const res = exporters.get(name)?.handle({
       ...options,
       onProgress: (progress) => {
@@ -61,7 +62,6 @@ export default defineMixin((editor) => {
       },
     })
     if (res instanceof Promise) {
-      exportProgress.value = 0
       exporting.value = true
       return res.finally(() => {
         exporting.value = false

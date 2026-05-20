@@ -57,8 +57,8 @@ export default definePlugin((editor) => {
   } = editor
 
   const snapThreshold = computed(() => Math.max(1, 5 / camera.value.zoom.x))
-  const parnet = computed(() => elementSelection.value[0]?.parent ?? root.value)
-  const parentBox = computed(() => createBox(parnet.value))
+  const parent = computed(() => elementSelection.value[0]?.parent ?? root.value)
+  const parentBox = computed(() => createBox(parent.value))
 
   function createBox(node?: Node | BoundingBox | undefined): Box | undefined {
     if (!node)
@@ -199,7 +199,7 @@ export default definePlugin((editor) => {
 
     if (box) {
       const excluded = new Set(elementSelection.value.map(el => el.instanceId))
-      const boxes = parnet.value
+      const boxes = parent.value
         .children
         .filter((node) => {
           return !excluded.has(node.instanceId)
@@ -437,7 +437,7 @@ export default definePlugin((editor) => {
   }
 
   registerSnapper('smartGuides', {
-    get: () => {
+    getLines: () => {
       const lines = getSnapPoints()
       return {
         xLines: lines.x,

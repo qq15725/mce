@@ -34,7 +34,7 @@ export default definePlugin((editor) => {
   })
 
   registerSnapper('ruler', {
-    get: () => {
+    getLines: () => {
       return {
         xLines: refLines.value.x,
         yLines: refLines.value.y,

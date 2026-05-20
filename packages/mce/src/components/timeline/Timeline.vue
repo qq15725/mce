@@ -197,7 +197,7 @@ function rulerLabelFormat(f: number) {
         class="m-timeline__btn"
         type="button"
         :title="t('collapse')"
-        @click="exec('togglePanel', 'timeline', 'toggle')"
+        @click="exec('togglePanel', 'timeline')"
       >
         <Icon icon="$arrowDown" />
       </button>

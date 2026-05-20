@@ -276,10 +276,11 @@ export default defineMixin((editor, options) => {
       updateNodes()
     }
 
-    watch(selection, (value) => {
-      // debug
-      ;(window as any).$$0 = value[0]
-    })
+    if (options.debug) {
+      watch(selection, (value) => {
+        ;(window as any).$$0 = value[0]
+      })
+    }
 
     watch(state, () => {
       textSelection.value = undefined

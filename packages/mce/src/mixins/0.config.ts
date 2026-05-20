@@ -18,7 +18,7 @@ declare global {
       setConfig: (path: keyof Config | string, value: any) => void
       getConfigRef: <T = any>(path: string) => WritableComputedRef<T>
       registerConfig: <T>(path: keyof Config | string, declaration?: ConfigDeclaration<T>) => WritableComputedRef<T>
-      importConfig: () => Promise<void>
+      importConfig: () => Promise<Mce.Config | undefined>
       exportConfig: () => Blob
       saveAsConfig: (filename?: string) => void
     }
@@ -70,9 +70,9 @@ export default defineMixin((editor) => {
     return ref
   }
 
-  function importConfig(): Promise<Mce.Config> {
+  function importConfig(): Promise<Mce.Config | undefined> {
     return new Promise((resolve) => {
-      const { onChange, open } = useFileDialog({
+      const { onChange, onCancel, open } = useFileDialog({
         accept: '.json',
         reset: true,
         multiple: false,
@@ -80,17 +80,21 @@ export default defineMixin((editor) => {
 
       onChange(async (files) => {
         const file = files?.[0]
-
-        if (file) {
-          try {
-            config.value = JSON.parse(await file.text())
-            resolve(config.value)
-          }
-          catch {
-            // ignore invalid config file
-          }
+        if (!file) {
+          resolve(undefined)
+          return
+        }
+        try {
+          config.value = JSON.parse(await file.text())
+          resolve(config.value)
+        }
+        catch {
+          console.warn('[mce] Failed to parse config file')
+          resolve(undefined)
         }
       })
+
+      onCancel(() => resolve(undefined))
 
       open()
     })
