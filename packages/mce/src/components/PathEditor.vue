@@ -22,15 +22,134 @@ const { elementSelection } = editor
 const el = props.element
 const svgRef = useTemplateRef<SVGSVGElement>('svgTpl')
 
+// Frozen element linear transform (rotation + scale, no translation). Used to
+// map between global edit space and the element's un-rotated local box so the
+// box can hug the path even when the element is rotated/scaled.
+const lin = { a: el.transform.a, b: el.transform.b, c: el.transform.c, d: el.transform.d }
+const det = lin.a * lin.d - lin.c * lin.b || 1
+function parentInv(g: { x: number, y: number }): { x: number, y: number } {
+  const pt = el.getParent<Element2D>()?.globalTransform
+  return pt ? pt.applyAffineInverse(g) : g
+}
+// global -> un-rotated, parent-local "u" space
+function toU(g: { x: number, y: number }): { x: number, y: number } {
+  const p = parentInv(g)
+  return { x: (lin.d * p.x - lin.c * p.y) / det, y: (-lin.b * p.x + lin.a * p.y) / det }
+}
+// u space -> parent-local (apply rotation/scale back)
+function applyR(u: { x: number, y: number }): { x: number, y: number } {
+  return { x: lin.a * u.x + lin.c * u.y, y: lin.b * u.x + lin.d * u.y }
+}
+
 type Field = 'xy' | 'cp1' | 'cp2'
 
 // Working copy of every path's commands, expressed in GLOBAL canvas coordinates
 // (a fixed edit space). The element box is derived from these on every edit.
 const paths = ref<Path2DCommand[][]>([])
-const originalPaths = el.shape.paths?.map(p => ({ ...p })) ?? []
+let originalPaths: { data: string, [k: string]: any }[] = []
+let lastWritten = ''
 const selected = ref<{ pi: number, ci: number } | null>(null)
 
+// Convert an SVG endpoint-arc to one or more cubic bezier segments so the path
+// has no `A` commands (which carry radii we can't edit/transform uniformly).
+function arcToCubic(x0: number, y0: number, rx: number, ry: number, angleDeg: number, largeArc: number, sweep: number, x: number, y: number): number[][] {
+  rx = Math.abs(rx)
+  ry = Math.abs(ry)
+  if (rx === 0 || ry === 0) {
+    return [[x0, y0, x, y, x, y]]
+  }
+  const rad = (angleDeg * Math.PI) / 180
+  const cos = Math.cos(rad)
+  const sin = Math.sin(rad)
+  const dx = (x0 - x) / 2
+  const dy = (y0 - y) / 2
+  const x1p = cos * dx + sin * dy
+  const y1p = -sin * dx + cos * dy
+  const lambda = (x1p * x1p) / (rx * rx) + (y1p * y1p) / (ry * ry)
+  if (lambda > 1) {
+    const s = Math.sqrt(lambda)
+    rx *= s
+    ry *= s
+  }
+  const sign = largeArc !== sweep ? 1 : -1
+  const num = Math.max(0, rx * rx * ry * ry - rx * rx * y1p * y1p - ry * ry * x1p * x1p)
+  const den = rx * rx * y1p * y1p + ry * ry * x1p * x1p
+  const co = sign * Math.sqrt(den === 0 ? 0 : num / den)
+  const cxp = (co * rx * y1p) / ry
+  const cyp = (-co * ry * x1p) / rx
+  const cx = cos * cxp - sin * cyp + (x0 + x) / 2
+  const cy = sin * cxp + cos * cyp + (y0 + y) / 2
+  const ang = (ux: number, uy: number, vx: number, vy: number): number => {
+    const len = Math.sqrt((ux * ux + uy * uy) * (vx * vx + vy * vy))
+    let a = Math.acos(Math.max(-1, Math.min(1, len === 0 ? 1 : (ux * vx + uy * vy) / len)))
+    if (ux * vy - uy * vx < 0) {
+      a = -a
+    }
+    return a
+  }
+  const theta1 = ang(1, 0, (x1p - cxp) / rx, (y1p - cyp) / ry)
+  let dtheta = ang((x1p - cxp) / rx, (y1p - cyp) / ry, (-x1p - cxp) / rx, (-y1p - cyp) / ry)
+  if (!sweep && dtheta > 0) {
+    dtheta -= 2 * Math.PI
+  }
+  if (sweep && dtheta < 0) {
+    dtheta += 2 * Math.PI
+  }
+  const segs = Math.max(1, Math.ceil(Math.abs(dtheta) / (Math.PI / 2)))
+  const delta = dtheta / segs
+  const k = (4 / 3) * Math.tan(delta / 4)
+  const pointAt = (a: number): Pt => ({ x: cx + rx * cos * Math.cos(a) - ry * sin * Math.sin(a), y: cy + rx * sin * Math.cos(a) + ry * cos * Math.sin(a) })
+  const tangentAt = (a: number): Pt => ({ x: -rx * cos * Math.sin(a) - ry * sin * Math.cos(a), y: -rx * sin * Math.sin(a) + ry * cos * Math.cos(a) })
+  const result: number[][] = []
+  let a1 = theta1
+  for (let i = 0; i < segs; i++) {
+    const a2 = a1 + delta
+    const p1 = pointAt(a1)
+    const p2 = pointAt(a2)
+    const t1 = tangentAt(a1)
+    const t2 = tangentAt(a2)
+    result.push([p1.x + k * t1.x, p1.y + k * t1.y, p2.x - k * t2.x, p2.y - k * t2.y, p2.x, p2.y])
+    a1 = a2
+  }
+  return result
+}
+
+function expandArcs(cmds: Path2DCommand[]): Path2DCommand[] {
+  const out: Path2DCommand[] = []
+  let cx = 0
+  let cy = 0
+  let sx = 0
+  let sy = 0
+  for (const c of cmds) {
+    const a = c as any
+    if (a.type === 'A') {
+      for (const s of arcToCubic(cx, cy, a.rx, a.ry, a.angle, a.largeArcFlag, a.sweepFlag, a.x, a.y)) {
+        out.push({ type: 'C', x1: s[0], y1: s[1], x2: s[2], y2: s[3], x: s[4], y: s[5] } as Path2DCommand)
+      }
+      cx = a.x
+      cy = a.y
+    }
+    else {
+      out.push(c)
+      if (a.type === 'M') {
+        sx = a.x
+        sy = a.y
+      }
+      if (a.type === 'Z') {
+        cx = sx
+        cy = sy
+      }
+      else if ('x' in a && 'y' in a) {
+        cx = a.x
+        cy = a.y
+      }
+    }
+  }
+  return out
+}
+
 function build(): void {
+  originalPaths = el.shape.paths?.map(p => ({ ...p })) ?? []
   const parsed = originalPaths.map(p => new Path2D(p.data))
 
   // Combined data-space bounding box (modern-canvas normalises the whole shape
@@ -57,7 +176,7 @@ function build(): void {
   }
 
   paths.value = parsed.map((p) => {
-    const cmds = svgPathDataToCommands(p.toData())
+    const cmds = expandArcs(svgPathDataToCommands(p.toData()))
     for (const c of cmds) {
       const a = c as any
       if ('x' in a && 'y' in a) {
@@ -198,16 +317,40 @@ const screenPath = computed(() => {
   return d
 })
 
-// Re-derive the element box + path data from the global working copy so the
-// rendered shape (which always fills its bbox) stays consistent.
+function mapCommandPoints(cmds: Path2DCommand[], fn: (p: { x: number, y: number }) => { x: number, y: number }): Path2DCommand[] {
+  return cmds.map((c) => {
+    const a = { ...c } as any
+    if ('x' in a && 'y' in a) {
+      const p = fn({ x: a.x, y: a.y })
+      a.x = p.x
+      a.y = p.y
+    }
+    if ('x1' in a) {
+      const p = fn({ x: a.x1, y: a.y1 })
+      a.x1 = p.x
+      a.y1 = p.y
+    }
+    if ('x2' in a) {
+      const p = fn({ x: a.x2, y: a.y2 })
+      a.x2 = p.x
+      a.y2 = p.y
+    }
+    return a
+  })
+}
+
+// Re-derive the element box + path data from the global working copy. The path
+// always normalises to its own bbox and fills the element box, so we un-rotate
+// the points into "u" space, hug the box there, then place the (rotated) box
+// back via the center pivot.
 function commit(): void {
-  const datas = paths.value.map(cmds => svgPathCommandsToData(cmds))
+  const uPaths = paths.value.map(cmds => mapCommandPoints(cmds, toU))
   let minX = Infinity
   let minY = Infinity
   let maxX = -Infinity
   let maxY = -Infinity
-  for (const d of datas) {
-    const bb = new Path2D(d).getBoundingBox()
+  for (const cmds of uPaths) {
+    const bb = new Path2D(svgPathCommandsToData(cmds)).getBoundingBox()
     minX = Math.min(minX, bb.left)
     minY = Math.min(minY, bb.top)
     maxX = Math.max(maxX, bb.left + bb.width)
@@ -218,19 +361,17 @@ function commit(): void {
   }
   const w = Math.max(1, maxX - minX)
   const h = Math.max(1, maxY - minY)
+  const center = applyR({ x: minX + w / 2, y: minY + h / 2 })
 
-  let lx = minX
-  let ly = minY
-  const pt = el.getParent<Element2D>()?.globalTransform
-  if (pt) {
-    const p = pt.applyAffineInverse({ x: minX, y: minY })
-    lx = p.x
-    ly = p.y
-  }
-  el.style.left = lx
-  el.style.top = ly
+  el.style.left = center.x - w / 2
+  el.style.top = center.y - h / 2
   el.style.width = w
   el.style.height = h
+
+  const datas = uPaths.map(cmds =>
+    svgPathCommandsToData(mapCommandPoints(cmds, p => ({ x: p.x - minX, y: p.y - minY }))),
+  )
+  lastWritten = datas.join('|')
   el.shape.paths = originalPaths.map((p, i) => ({ ...p, data: datas[i] ?? p.data }))
 }
 
@@ -461,6 +602,16 @@ watch(elementSelection, (sel) => {
   if (sel.length !== 1 || !sel[0]?.equal(el)) {
     emit('end')
   }
+})
+
+// Resync the working copy when shape.paths changes from outside our own commit
+// (e.g. undo/redo), so handles don't desync from the rendered shape.
+watch(() => el.shape.paths?.map(p => p.data).join('|') ?? '', (cur) => {
+  if (drag || cur === lastWritten) {
+    return
+  }
+  selected.value = null
+  build()
 })
 
 onMounted(() => window.addEventListener('keydown', onKeydown))
