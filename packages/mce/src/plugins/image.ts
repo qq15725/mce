@@ -33,6 +33,7 @@ export default definePlugin((editor) => {
     fonts,
     upload,
     drawboardEffect,
+    runExclusiveRender,
   } = editor
 
   const insertImage: Mce.Commands['insertImage'] = async (url, options) => {
@@ -50,7 +51,7 @@ export default definePlugin((editor) => {
       handle: async (options) => {
         const doc = await to('json', options)
 
-        const canvas = await render({
+        const canvas = await runExclusiveRender(() => render({
           data: doc,
           fonts,
           width: doc.style.width,
@@ -66,7 +67,7 @@ export default definePlugin((editor) => {
               }),
             )
           },
-        })
+        }))
 
         return await new Promise<Blob>((resolve) => {
           canvas.toBlob(

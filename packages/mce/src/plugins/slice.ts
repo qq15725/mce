@@ -12,6 +12,7 @@ export default definePlugin((editor) => {
     to,
     fonts,
     drawboardEffect,
+    runExclusiveRender,
   } = editor
 
   async function exportSlice(options: Mce.ExportOptions) {
@@ -38,7 +39,7 @@ export default definePlugin((editor) => {
       },
     } as any)
 
-    return await render({
+    return await runExclusiveRender(() => render({
       data: doc,
       fonts,
       width: aabb.width,
@@ -54,7 +55,7 @@ export default definePlugin((editor) => {
           }),
         )
       },
-    })
+    }))
   }
 
   return {

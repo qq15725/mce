@@ -20,6 +20,7 @@ export default defineMixin((editor) => {
     frameThumbs,
     log,
     fonts,
+    runExclusiveRender,
   } = editor
 
   async function snapshot(): Promise<void> {
@@ -46,12 +47,12 @@ export default defineMixin((editor) => {
     data.style ??= {}
     data.style.top = 0
     data.style.left = 0
-    return await render({
+    return await runExclusiveRender(() => render({
       width: data.style.width,
       height: data.style.height,
       fonts,
       data,
-    })
+    }))
   }
 
   async function captureFrameScreenshot(index: number): Promise<void> {

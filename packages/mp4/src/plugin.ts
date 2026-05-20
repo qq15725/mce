@@ -15,6 +15,7 @@ export function plugin() {
     const {
       fonts,
       to,
+      runExclusiveRender,
     } = editor
 
     return {
@@ -58,7 +59,7 @@ export function plugin() {
             }
             const encoder = new MP4Encoder(encoderOptions)
             let timestamp = 1
-            await render({
+            await runExclusiveRender(() => render({
               data,
               width,
               height,
@@ -75,7 +76,7 @@ export function plugin() {
                 timestamp += duration
                 onProgress?.(progress)
               },
-            })
+            }))
             return await encoder.flush()
           },
         },

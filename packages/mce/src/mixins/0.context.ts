@@ -37,6 +37,7 @@ declare global {
       fonts: Fonts
       assets: Assets
       renderEngine: Ref<Engine>
+      runExclusiveRender: <T>(fn: () => Promise<T> | T) => Promise<T>
       timeline: Ref<Timeline>
       camera: Ref<Camera2D>
       drawboardEffect: Ref<DrawboardEffect>
@@ -110,6 +111,29 @@ export default defineMixin((editor, options) => {
 
   function setCursor(mode: Cursor | undefined): void {
     renderEngine.value.input.setCursor(mode)
+  }
+
+  // Off-screen exports (gif/mp4/image/...) drive a shared singleton render
+  // engine and share resource objects (e.g. animatedTexture frame state) with
+  // this editor's engine. If the editor keeps rendering during an export it
+  // overwrites that shared state between async keyframes, freezing the output.
+  // Stop the editor engine for the duration of the export to render exclusively.
+  let exclusiveRenderDepth = 0
+  async function runExclusiveRender<T>(fn: () => Promise<T> | T): Promise<T> {
+    const engine = renderEngine.value
+    if (exclusiveRenderDepth === 0) {
+      engine.stop()
+    }
+    exclusiveRenderDepth++
+    try {
+      return await fn()
+    }
+    finally {
+      exclusiveRenderDepth--
+      if (exclusiveRenderDepth === 0) {
+        engine.start()
+      }
+    }
   }
 
   function getGlobalPointer(): Vector2Like {
@@ -188,6 +212,7 @@ export default defineMixin((editor, options) => {
     fonts,
     assets,
     renderEngine,
+    runExclusiveRender,
     timeline,
     camera,
     drawboardEffect,

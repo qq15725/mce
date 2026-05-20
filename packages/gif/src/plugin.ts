@@ -20,6 +20,7 @@ export function plugin() {
       assets,
       fonts,
       to,
+      runExclusiveRender,
     } = editor
 
     const gifWorkerUrl = options.gifWorkerUrl
@@ -39,7 +40,7 @@ export function plugin() {
             const width = Math.floor(data.style.width)
             const height = Math.floor(data.style.height)
             const encoder = new Encoder({ width, height, workerUrl: gifWorkerUrl })
-            await render({
+            await runExclusiveRender(() => render({
               data,
               width,
               height,
@@ -49,7 +50,7 @@ export function plugin() {
                 await encoder.encode({ data: data as any, delay: duration })
                 onProgress?.(progress)
               },
-            })
+            }))
             return await encoder.flush('blob')
           },
         },
