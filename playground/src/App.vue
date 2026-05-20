@@ -9,6 +9,7 @@ import svg from '@mce/svg'
 import { Editor, EditorLayers, EditorLayout, EditorLayoutItem } from 'mce'
 import gifWorkerUrl from 'modern-gif/worker?url'
 import { computed } from 'vue'
+import { loadAnimationDemo, loadConnectionDemo, loadGifDemo, loadLayoutDemo, loadVideoDemo } from './demos'
 import 'mce/styles'
 
 const editorOptions = {
@@ -55,18 +56,30 @@ const searchParams = new URL(window.location.href).searchParams
 const tid = searchParams.get('tid')
 const bid = searchParams.get('bid')
 const url = searchParams.get('url')
+const demo = searchParams.get('demo')
 if (tid || bid) {
   editor.loadDoc({ tid, bid })
 }
 else if (url) {
   editor.loadDoc(url)
 }
+else if (demo === 'connection') {
+  loadConnectionDemo(editor)
+}
+else if (demo === 'layout') {
+  loadLayoutDemo(editor)
+}
+else if (demo === 'animation') {
+  loadAnimationDemo(editor)
+}
+else if (demo === 'gif') {
+  loadGifDemo(editor)
+}
+else if (demo === 'video') {
+  loadVideoDemo(editor)
+}
 
 const element = computed(() => editor.elementSelection.value[0])
-
-const {
-  config,
-} = editor
 </script>
 
 <template>
@@ -111,21 +124,22 @@ const {
       </template>
 
       <template #drawboard>
-        <div class="bar toolbar">
-          <button @click="() => editor.exec('toggleUi', 'ruler')">
-            {{ editor.exec('isUiVisible', 'ruler') ? '隐藏' : '显示' }}标尺
+        <div class="bar demobar">
+          <button @click="() => loadConnectionDemo(editor)">
+            连线示例
           </button>
-          <button @click="config.ui.ruler.locked = !config.ui.ruler.locked">
-            {{ config.ui.ruler.locked ? '解锁' : '锁定' }}标尺
+          <button @click="() => loadLayoutDemo(editor)">
+            布局示例
           </button>
-          <button @click="() => editor.exec('clearRulerLines')">
-            清空标尺
+          <button @click="() => loadAnimationDemo(editor)">
+            动画示例
           </button>
-          <input
-            :value="config.ui.ruler.lineColor || '#000000'"
-            type="color"
-            @input="e => config.ui.ruler.lineColor = e.target.value"
-          >
+          <button @click="() => loadGifDemo(editor)">
+            GIF 示例
+          </button>
+          <button @click="() => loadVideoDemo(editor)">
+            视频示例
+          </button>
         </div>
       </template>
 
@@ -163,10 +177,10 @@ const {
   bottom: -12px;
   transform: translateY(100%);
 }
-.toolbar{
+.demobar{
   position: absolute;
-  right: 12px;
-  bottom: 12px;
+  left: 12px;
+  top: 12px;
   pointer-events: auto;
 }
 </style>
