@@ -11,7 +11,6 @@ interface BlockItem {
   delay: number
   duration: number
   anim?: Animation
-  label?: string
 }
 
 const props = withDefaults(defineProps<{
@@ -41,7 +40,7 @@ const blocks = computed<BlockItem[]>(() => {
   if (node instanceof Video2D) {
     const d = node.videoDuration || 0
     if (d > 0) {
-      items.push({ kind: 'video', delay: 0, duration: d, label: 'Video' })
+      items.push({ kind: 'video', delay: 0, duration: d })
     }
   }
 
@@ -49,7 +48,7 @@ const blocks = computed<BlockItem[]>(() => {
     for (const slot of ['background', 'foreground', 'fill', 'outline'] as const) {
       const tx = node[slot]?.animatedTexture
       if (tx?.duration) {
-        items.push({ kind: 'media', delay: 0, duration: tx.duration, label: slot })
+        items.push({ kind: 'media', delay: 0, duration: tx.duration })
       }
     }
     node.children.forEach((child) => {
@@ -143,11 +142,11 @@ function pickMode(e: MouseEvent, resizable: boolean): DragMode {
   return 'move'
 }
 
-function onBlockDown(e: MouseEvent, block: BlockItem) {
+// Drag a timeline target (the element itself, or one of its animation children)
+// by adjusting its delay; animation blocks may also resize.
+function startDrag(e: MouseEvent, target: TimelineNode, resizable: boolean) {
   e.stopPropagation()
   selection.value = [props.node]
-  const resizable = block.kind === 'animation'
-  const target: TimelineNode = block.anim ?? props.node
   const mode = pickMode(e, resizable)
   const startX = e.clientX
   const initialDelay = target.delay
@@ -185,6 +184,17 @@ function onBlockDown(e: MouseEvent, block: BlockItem) {
   window.addEventListener('mousemove', onMove)
   window.addEventListener('mouseup', onUp)
 }
+
+// Animation block: drag/resize the animation itself (relative to its element).
+function onBlockDown(e: MouseEvent, block: BlockItem) {
+  startDrag(e, block.anim ?? props.node, block.kind === 'animation')
+}
+
+// Segment body / name handle: move the whole element track (shifts the element
+// and all its animations together). Blocks stop propagation so they take over.
+function onSegmentDown(e: MouseEvent) {
+  startDrag(e, props.node, false)
+}
 </script>
 
 <template>
@@ -195,6 +205,7 @@ function onBlockDown(e: MouseEvent, block: BlockItem) {
       active && `m-segment--active`,
     ]"
     :style="style"
+    @mousedown="onSegmentDown"
   >
     <div
       v-for="(block, index) in blocks"
@@ -203,9 +214,7 @@ function onBlockDown(e: MouseEvent, block: BlockItem) {
       :class="`m-segment__block--${block.kind}`"
       :style="blockStyle(block)"
       @mousedown="onBlockDown($event, block)"
-    >
-      <span v-if="block.label" class="m-segment__block-label">{{ block.label }}</span>
-    </div>
+    />
 
     <div v-if="active" class="m-segment__edge m-segment__edge--front" />
 
@@ -268,6 +277,12 @@ function onBlockDown(e: MouseEvent, block: BlockItem) {
     }
 
     &__node {
+      // Sits above the absolutely-positioned blocks so it stays a grabbable
+      // handle for moving the whole element track, even when a block (e.g. an
+      // animation that spans the full segment) covers the bar.
+      position: relative;
+      z-index: 1;
+      cursor: move;
       border-radius: 2px;
       padding: 2px 8px;
       white-space: nowrap;
@@ -308,15 +323,6 @@ function onBlockDown(e: MouseEvent, block: BlockItem) {
           background-color: rgba(116, 84, 196, 1);
         }
       }
-    }
-
-    &__block-label {
-      font-size: 0.625rem;
-      line-height: 1;
-      padding: 2px 4px;
-      pointer-events: none;
-      white-space: nowrap;
-      opacity: 0.9;
     }
   }
 </style>

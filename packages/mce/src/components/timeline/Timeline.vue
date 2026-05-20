@@ -256,7 +256,6 @@ function rulerLabelFormat(f: number) {
                   :end-time="endTime"
                   :rev="tracksRev"
                   :active="selection.some(v => v.equal(node))"
-                  @mousedown.stop="selection = [node]"
                 />
               </Track>
             </div>
