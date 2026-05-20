@@ -155,8 +155,10 @@ const roundable = computed(() => {
 })
 
 function tip() {
+  // Use the computed size, not style: style.width/height may be 'auto' or a
+  // percentage string (e.g. flex layout), which has no toFixed.
   const obb = elementSelection.value.length === 1
-    ? elementSelection.value[0].style
+    ? elementSelection.value[0].size
     : selectionObb.value
   return `${Number(obb.width.toFixed(2))} × ${Number(obb.height.toFixed(2))}`
 }
