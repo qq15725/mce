@@ -254,6 +254,7 @@ function rulerLabelFormat(f: number) {
                   :node="node"
                   :ms-per-px="msPerPx"
                   :end-time="endTime"
+                  :rev="tracksRev"
                   :active="selection.some(v => v.equal(node))"
                   @mousedown.stop="selection = [node]"
                 />

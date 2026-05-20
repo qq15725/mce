@@ -19,6 +19,9 @@ const props = withDefaults(defineProps<{
   endTime: number
   msPerPx?: number
   active?: boolean
+  // Bumped by Timeline on asset load / poll. Lets blocks recompute when async
+  // content (e.g. video duration) becomes available after the segment mounts.
+  rev?: number
 }>(), {
   msPerPx: 1,
 })
@@ -31,6 +34,7 @@ const { thumbnailName } = useNode(
 )
 
 const blocks = computed<BlockItem[]>(() => {
+  void props.rev
   const node = props.node
   const items: BlockItem[] = []
 
