@@ -1,3 +1,29 @@
+## [0.18.4](https://github.com/qq15725/mce/compare/v0.18.3...v0.18.4) (2026-05-21)
+
+
+### Bug Fixes
+
+* address code review findings across plugins and mixins ([fa3a558](https://github.com/qq15725/mce/commit/fa3a55862a076c8497f8d5641f998fecb63562f8))
+* **export:** stop editor engine during render to avoid frozen output ([49d9daf](https://github.com/qq15725/mce/commit/49d9dafb37dc2777507e9109faf98c5392059c6d))
+* **pen:** keep path alive across clicks and finish properly ([ade4a7a](https://github.com/qq15725/mce/commit/ade4a7ad6f940560464557fe7fa383fcb2febb31))
+* **selection:** use computed size for dimension tip ([f26b947](https://github.com/qq15725/mce/commit/f26b947a8c65ec1ff5c6b0e7e62eb51f29800832))
+* **timeline:** recompute segment blocks when async media duration loads ([ed467de](https://github.com/qq15725/mce/commit/ed467de89ab243e592f5ca7204ea1b373339468c))
+
+
+### Features
+
+* auto-play timeline when its panel is hidden ([a6fe198](https://github.com/qq15725/mce/commit/a6fe198b0b44afdebf5cc5acb57e689193416a5c))
+* **path-editing:** add vector path node editor ([6b021c1](https://github.com/qq15725/mce/commit/6b021c1c38f95404b41851b37f4bebff17d7b2bd))
+* **path-editing:** support rotated/scaled elements, arcs and undo sync ([165f462](https://github.com/qq15725/mce/commit/165f462bf25f1d5866325ed82c509c5254aa80db))
+* **playground:** add connection, layout, animation, gif and video demos ([c35e5bd](https://github.com/qq15725/mce/commit/c35e5bd9a868e30ae7b97863a168710690ec9a99))
+* **timeline:** drag and resize animation segments with snapping ([bd37e25](https://github.com/qq15725/mce/commit/bd37e253be7f594ea87708e9bf84eb22c8298d39))
+* **timeline:** media drag, collapse, refresh and default cursors ([ae12c7d](https://github.com/qq15725/mce/commit/ae12c7d013c6222b8988d2f8df30065cc27ab898))
+* **timeline:** move element track via segment, drop block labels ([71dba2b](https://github.com/qq15725/mce/commit/71dba2b749936d8b3d3bc4edbf0203d712a8a02f))
+* **timeline:** playback toolbar with frame stepping and hotkeys ([25e66fc](https://github.com/qq15725/mce/commit/25e66fcdd355b6f8e9398fe954d4d8d50e57d285))
+* **timeline:** show tracks for animated textures and Video2D nodes ([4925ca4](https://github.com/qq15725/mce/commit/4925ca492eba447745c313baee36531eaa502c53))
+* **timeline:** trackhead with thumbnail, rename, lock and visibility ([c5d3be7](https://github.com/qq15725/mce/commit/c5d3be72a9cc0d59799b94d3bbe5428e99e8a0d1))
+* up deps ([2e8cbd5](https://github.com/qq15725/mce/commit/2e8cbd5f2b41fb7d81595e4316c8b303c9c42ab0))
+* up deps ([7d6755a](https://github.com/qq15725/mce/commit/7d6755a530d5a6a76961c3a97147e8f4d2ac6e9d))
 ## [0.18.3](https://github.com/qq15725/mce/compare/v0.18.2...v0.18.3) (2026-05-19)
 
 
