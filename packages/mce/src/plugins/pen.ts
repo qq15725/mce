@@ -18,13 +18,19 @@ export default definePlugin((editor) => {
     addElement,
     renderEngine,
     activeTool,
+    activateTool,
     getGlobalPointer,
+    camera,
+    selection,
     state,
   } = editor
 
   let el: Element2D | undefined
   let currentPath: Path2D | undefined
   let currentLine: LineCurve | undefined
+  let onMove: (() => void) | undefined
+  let onKey: ((e: KeyboardEvent) => void) | undefined
+  let stopWatch: (() => void) | undefined
 
   const update = () => {
     if (el && currentPath) {
@@ -39,21 +45,66 @@ export default definePlugin((editor) => {
     }
   }
 
+  // End the in-progress path: drop the trailing rubber-band segment, optionally
+  // close it, commit, then tear down listeners. The pen stays alive across
+  // clicks until this runs (tool switch / Esc / Enter / clicking the start).
+  function finish(close = false) {
+    if (!el || !currentPath) {
+      return
+    }
+    const curves = currentPath.currentCurve.curves
+    if (currentLine && curves[curves.length - 1] === currentLine) {
+      curves.pop()
+    }
+    if (close && curves.length) {
+      currentPath.currentCurve.closePath()
+    }
+    const placed = curves.length
+    const ref = el
+    if (placed > 0) {
+      update()
+    }
+    renderEngine.value.off('pointermove', onMove as any)
+    if (onKey) {
+      window.removeEventListener('keydown', onKey)
+    }
+    stopWatch?.()
+    stopWatch = undefined
+    onMove = undefined
+    onKey = undefined
+    el = undefined
+    currentPath = undefined
+    currentLine = undefined
+    if (placed > 0) {
+      selection.value = [ref]
+    }
+    else {
+      ref.remove()
+    }
+  }
+
   return {
     name: 'mce:pen',
     tools: [
       {
         name: 'pen',
         handle: (start) => {
-          if (el) {
-            if (currentPath) {
-              currentLine = new LineCurve(
-                new Vector2(start.x, start.y),
-                new Vector2(start.x, start.y),
-              )
-              currentPath.currentCurve.addCurve(currentLine)
-              update()
+          if (el && currentPath) {
+            // Click near the first anchor to close the path.
+            const first = currentPath.currentCurve.curves[0] as LineCurve | undefined
+            const threshold = 8 / (camera.value.zoom.x || 1)
+            if (first && currentPath.currentCurve.curves.length > 1 && first.p1.distanceTo(start) < threshold) {
+              finish(true)
+              activateTool(undefined)
+              return
             }
+            // Commit the current rubber band, start a new one from this click.
+            currentLine = new LineCurve(
+              new Vector2(start.x, start.y),
+              new Vector2(start.x, start.y),
+            )
+            currentPath.currentCurve.addCurve(currentLine)
+            update()
             return
           }
           el = addElement({
@@ -82,7 +133,7 @@ export default definePlugin((editor) => {
           currentPath.currentCurve.addCurve(currentLine)
           update()
 
-          const onMove = () => {
+          onMove = () => {
             const move = getGlobalPointer()
             if (currentLine && move) {
               currentLine.p2.x = move.x
@@ -90,21 +141,19 @@ export default definePlugin((editor) => {
               update()
             }
           }
-
           renderEngine.value.on('pointermove', onMove)
 
-          let stopWatch: (() => void) | undefined
-          const cleanup = () => {
-            renderEngine.value.off('pointermove', onMove)
-            stopWatch?.()
-            stopWatch = undefined
-            el = undefined
-            currentPath = undefined
-            currentLine = undefined
+          onKey = (e: KeyboardEvent) => {
+            if (e.key === 'Enter' || e.key === 'Escape') {
+              e.preventDefault()
+              finish(false)
+              activateTool(undefined)
+            }
           }
-          stopWatch = watch([state, activeTool], cleanup)
+          window.addEventListener('keydown', onKey)
 
-          return { end: cleanup }
+          // Finish (without changing tool) when the tool/state changes externally.
+          stopWatch = watch([state, activeTool], () => finish(false))
         },
       },
       {
