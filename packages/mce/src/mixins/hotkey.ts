@@ -323,13 +323,18 @@ export default defineMixin((editor) => {
   return () => {
     const {
       exec,
+      state,
     } = editor
 
     useEventListener(
       isClient ? window : undefined,
       'keydown',
       (e: KeyboardEvent) => {
-        if (isInputEvent(e)) {
+        // While editing text, keystrokes belong to the editor's textarea. The
+        // textarea lives in a shadow DOM and may not be in the event path (e.g.
+        // focus briefly lands on <body> after entering edit mode), so guard on
+        // the typing state too — otherwise tool/select-all shortcuts leak through.
+        if (isInputEvent(e) || state.value === 'typing') {
           return
         }
 

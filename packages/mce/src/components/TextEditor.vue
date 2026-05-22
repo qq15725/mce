@@ -67,6 +67,15 @@ async function startTyping(e?: PointerEvent): Promise<boolean> {
   await nextTick()
   if (editor.pointerDown(e)) {
     editor.selectAll()
+    // A double-click fires pointerdown → mousedown on the drawboard; the
+    // trailing mousedown's default action steals focus to <body> right after
+    // we focus the hidden textarea. Re-focus once the gesture settles so typed
+    // keys land in the editor instead of leaking to global hotkeys.
+    requestAnimationFrame(() => {
+      if (state.value === 'typing') {
+        editor.selectAll()
+      }
+    })
     return true
   }
   return false

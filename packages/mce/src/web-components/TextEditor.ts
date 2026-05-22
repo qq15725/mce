@@ -408,6 +408,10 @@ export class TextEditor extends HTMLElement implements PropertyAccessor {
     changes.forEach((change) => {
       const chars = Array.from(change.value)
       if (change.removed) {
+        // Inherit the style at the start of the removed range so a typed
+        // replacement (e.g. select-all then type) keeps the original styling
+        // instead of falling back to empty defaults.
+        prevOldStyle = normalizeStyle(oldStyles[oldStyleIndex] ?? {})
         oldStyleIndex += chars.length
       }
       else {
