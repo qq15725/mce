@@ -1,15 +1,6 @@
 import type { Editor } from 'mce'
 import { Flexbox } from 'modern-canvas'
 
-let connectionRaf: number | undefined
-
-function stopConnectionLoop(): void {
-  if (connectionRaf !== undefined) {
-    cancelAnimationFrame(connectionRaf)
-    connectionRaf = undefined
-  }
-}
-
 // 通过 URL 参数加载时，时间轴插件的 immediate watcher 会在挂载后把 paused 重置为
 // 面板可见状态，所以延迟到挂载之后再 play，按钮点击场景也兼容。
 function fitAndPlay(editor: Editor, delay: number): void {
@@ -19,6 +10,7 @@ function fitAndPlay(editor: Editor, delay: number): void {
   }, delay)
 }
 
+interface ConnectionPoint { idx: number, x: number, y: number, ang?: number }
 interface BoxOptions {
   id: string
   label: string
@@ -27,12 +19,13 @@ interface BoxOptions {
   top: number
   width?: number
   height?: number
+  points?: ConnectionPoint[]
 }
 
 function box(o: BoxOptions): any {
   const width = o.width ?? 140
   const height = o.height ?? 80
-  return {
+  const el: any = {
     id: o.id,
     style: {
       left: o.left,
@@ -50,52 +43,41 @@ function box(o: BoxOptions): any {
     text: o.label,
     meta: { inCanvasIs: 'Element2D' },
   }
+  if (o.points) {
+    el.shape = { connectionPoints: o.points }
+  }
+  return el
 }
 
-function connector(id: string, startId: string, endId: string, color: string): any {
+// Edge connection points (x/y normalized 0..1, ang = exit direction in radians;
+// canvas y is down so π/2 = down, -π/2 = up).
+const RIGHT = { idx: 0, x: 1, y: 0.5, ang: 0 }
+const LEFT = { idx: 1, x: 0, y: 0.5, ang: Math.PI }
+const BOTTOM = { idx: 2, x: 0.5, y: 1, ang: Math.PI / 2 }
+const TOP = { idx: 3, x: 0.5, y: 0, ang: -Math.PI / 2 }
+
+// modern-canvas 现在内建连线路由：设置 connection.start/end(+idx) + mode，连接器会
+// 自动定位、按方向路由并绘制线条（派生路径，不写 shape.paths），拖动元素时实时跟随。
+type ConnectionMode = 'straight' | 'curved' | 'orthogonal'
+function connector(id: string, start: [string, number], end: [string, number], color: string, mode: ConnectionMode): any {
   return {
     id,
     style: { pointerEvents: 'none' },
     outline: { color, width: 3, lineCap: 'round', lineJoin: 'round' },
-    connection: { start: { id: startId }, end: { id: endId } },
+    connection: { start: { id: start[0], idx: start[1] }, end: { id: end[0], idx: end[1] }, mode },
     meta: { inCanvasIs: 'Element2D' },
   }
 }
 
-// 连接器元素只会自动定位/缩放到两个锚点之间的包围盒，并不会自己画线。
-// 这里按真实锚点位置每帧重算连线 path，让连线在拖动元素时实时跟随。
-function startConnectionLoop(editor: Editor, ids: string[]): void {
-  const update = (): void => {
-    const root: any = editor.root.value
-    for (const id of ids) {
-      const conn: any = root.findOne((n: any) => n.id === id)
-      if (!conn?.connection?.isValid())
-        continue
-      const s = conn.connection.resolveAnchor(conn.connection.start)
-      const e = conn.connection.resolveAnchor(conn.connection.end)
-      if (!s || !e)
-        continue
-      const minX = Math.min(s.x, e.x)
-      const minY = Math.min(s.y, e.y)
-      conn.shape.paths = [
-        { data: `M ${s.x - minX} ${s.y - minY} L ${e.x - minX} ${e.y - minY}` },
-      ]
-    }
-    connectionRaf = requestAnimationFrame(update)
-  }
-  connectionRaf = requestAnimationFrame(update)
-}
-
 export function loadConnectionDemo(editor: Editor): void {
-  stopConnectionLoop()
   editor.setDoc([
-    box({ id: 'c-a', label: '开始', color: '#4f8cff', left: 0, top: 0 }),
-    box({ id: 'c-b', label: '处理', color: '#22c55e', left: 380, top: 140 }),
-    box({ id: 'c-c', label: '结束', color: '#a855f7', left: 120, top: 340 }),
-    connector('c-ab', 'c-a', 'c-b', '#f43f5e'),
-    connector('c-bc', 'c-b', 'c-c', '#f59e0b'),
-  ])
-  startConnectionLoop(editor, ['c-ab', 'c-bc'])
+    box({ id: 'c-a', label: '开始', color: '#4f8cff', left: 0, top: 60, points: [RIGHT, BOTTOM] }),
+    box({ id: 'c-b', label: '处理', color: '#22c55e', left: 460, top: 0, points: [LEFT, BOTTOM] }),
+    box({ id: 'c-c', label: '结束', color: '#a855f7', left: 320, top: 340, points: [TOP, LEFT] }),
+    connector('c-ab', ['c-a', RIGHT.idx], ['c-b', LEFT.idx], '#f43f5e', 'orthogonal'),
+    connector('c-bc', ['c-b', BOTTOM.idx], ['c-c', TOP.idx], '#f59e0b', 'curved'),
+    connector('c-ac', ['c-a', BOTTOM.idx], ['c-c', LEFT.idx], '#06b6d4', 'straight'),
+  ] as any)
   setTimeout(() => editor.exec('zoomToFit'), 100)
 }
 
@@ -119,7 +101,6 @@ function layoutChild(id: string, label: string, color: string, w: number, h: num
 }
 
 export async function loadLayoutDemo(editor: Editor): Promise<void> {
-  stopConnectionLoop()
   // 编辑器声明支持 flex 布局，但底层 yoga 引擎需要按需加载。
   await Flexbox.load()
   // 顶层 flex 容器作为 yoga 根节点，其自身 left/top 会被强制为 (0,0)，
@@ -189,7 +170,6 @@ export async function loadLayoutDemo(editor: Editor): Promise<void> {
 // 动画通过 Element2D 的 Animation 子节点（keyframes）驱动，时间轴播放时生效。
 // playground 默认打开时间轴面板会把播放暂停，所以加载后主动 play。
 export function loadAnimationDemo(editor: Editor): void {
-  stopConnectionLoop()
   const animBox: any = box({ id: 'anim-box', label: '动画', color: '#4f8cff', left: 0, top: 80, width: 120, height: 120 })
   animBox.children = [
     {
@@ -216,7 +196,6 @@ export function loadAnimationDemo(editor: Editor): void {
 }
 
 export function loadGifDemo(editor: Editor): void {
-  stopConnectionLoop()
   editor.setDoc([
     {
       id: 'gif-demo',
@@ -229,7 +208,6 @@ export function loadGifDemo(editor: Editor): void {
 }
 
 export async function loadVideoDemo(editor: Editor): Promise<void> {
-  stopConnectionLoop()
   editor.setDoc([
     {
       is: 'Video2D',

@@ -115,8 +115,16 @@ function onEnd(ctx: Mce.TransformContext) {
 
 const transformValue = computed(() => exec('getTransform'))
 
+// A pure connection line is positioned/sized by its route, so the box
+// move/resize/rotate handles are meaningless — suppress them.
+const isConnection = computed(() => {
+  return elementSelection.value.length === 1
+    && Boolean((elementSelection.value[0] as any).connection?.isValid())
+})
+
 const movable = computed(() => {
   return state.value !== 'typing'
+    && !isConnection.value
     && elementSelection.value.every((element) => {
       return !isLock(element)
         && element.meta.movable !== false
@@ -126,6 +134,7 @@ const movable = computed(() => {
 
 const resizable = computed(() => {
   return state.value !== 'typing'
+    && !isConnection.value
     && elementSelection.value.every((element) => {
       return !isLock(element)
         && element.meta.resizable !== false
@@ -135,6 +144,7 @@ const resizable = computed(() => {
 
 const rotatable = computed(() => {
   return state.value !== 'typing'
+    && !isConnection.value
     && elementSelection.value.every((element) => {
       return !isLock(element)
         && element.meta.rotatable !== false
@@ -145,6 +155,7 @@ const rotatable = computed(() => {
 const roundable = computed(() => {
   if (
     state.value !== 'typing'
+    && !isConnection.value
     && elementSelection.value.length === 1
   ) {
     const element = elementSelection.value[0]

@@ -204,6 +204,8 @@ export default definePlugin((editor) => {
         .filter((node) => {
           return !excluded.has(node.instanceId)
             && isElement(node)
+            // Connection lines are route-positioned; don't snap others to them.
+            && !(node as any).connection?.isValid()
             && viewportAabb.value.overlap(node.globalAabb)
         })
         .map(node => createBox(node)!)
