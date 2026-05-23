@@ -36,6 +36,10 @@ export default definePlugin((editor) => {
     el: Element2D,
     options?: Mce.NestIntoFrameOptions,
   ): void {
+    // workflow 节点（meta.inEditorIs 形如 'WorkflowText'）始终独立于画板，不被自动嵌入
+    if (el.meta?.inEditorIs?.startsWith('Workflow')) {
+      return
+    }
     const pointer = options?.pointer as any
     const frame1 = el.findAncestor(node => isFrameNode(node, true))
     const aabb1 = el.globalAabb

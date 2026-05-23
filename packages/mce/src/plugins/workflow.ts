@@ -90,7 +90,9 @@ export default definePlugin((editor, options) => {
       // Light border for definition (drop shadow intentionally omitted).
       outline: { color: '#ececf0', width: 1 },
       text: { content: buildContent(t) },
-      meta: { inPptIs: 'Shape', inCanvasIs: 'Element2D' },
+      // workflow 节点是 graph 节点，用 inEditorIs 标记为 Workflow<Type>（如 WorkflowText），
+      // autoNest 据此让它始终独立于画板（Frame）
+      meta: { inPptIs: 'Shape', inCanvasIs: 'Element2D', inEditorIs: `Workflow${type.charAt(0).toUpperCase()}${type.slice(1)}` },
     }
   }
 

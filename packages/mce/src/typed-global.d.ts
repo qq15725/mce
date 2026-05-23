@@ -5,7 +5,7 @@ import 'modern-canvas'
 declare module 'modern-canvas' {
   interface Meta {
     inPptIs?: 'Pptx' | 'Picture' | 'Shape' | 'GroupShape' | 'Animation'
-    inEditorIs?: 'Doc' | 'Frame' | 'Element' | 'Node'
+    inEditorIs?: 'Doc' | 'Frame' | 'Element' | 'Node' | `Workflow${string}`
     inCanvasIs?: 'Lottie2D' | 'Element2D' | 'Animation'
     lock?: boolean
     lockAspectRatio?: boolean
