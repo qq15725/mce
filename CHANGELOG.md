@@ -1,3 +1,18 @@
+## [0.18.5](https://github.com/qq15725/mce/compare/v0.18.4...v0.18.5) (2026-05-23)
+
+
+### Bug Fixes
+
+* **text:** keep edit focus and styles, block hotkey leak while typing ([5dd0648](https://github.com/qq15725/mce/commit/5dd0648711567f5aad2be7200cca280b1b1263c6))
+
+
+### Features
+
+* **connection:** adopt built-in routing, refine selection and snapping ([6dc7a6b](https://github.com/qq15725/mce/commit/6dc7a6b89ec494549063decc547c30b72bf6ec4d))
+* **preset:** add card, flow-node and sticky element factories ([1ae6e1e](https://github.com/qq15725/mce/commit/1ae6e1e300d55930587a3b7327750e57326c372d))
+* **strategy:** configure interaction strategies via editor options ([7a0d49c](https://github.com/qq15725/mce/commit/7a0d49c87ff13f792601d2e3c492eaa7e563089a))
+* up deps ([eeba5f5](https://github.com/qq15725/mce/commit/eeba5f5cfb27ca0f7faba74ca1682cdfd23983e8))
+* **workflow:** add node-graph workflow mode ([68fa364](https://github.com/qq15725/mce/commit/68fa364d79a9515ae980a5cf4b773f1430096047))
 ## [0.18.4](https://github.com/qq15725/mce/compare/v0.18.3...v0.18.4) (2026-05-21)
 
 
