@@ -22,6 +22,7 @@ import _http from './http'
 import _loader from './loader'
 import _snapper from './snapper'
 import _snapshot from './snapshot'
+import _strategy from './strategy'
 import _tool from './tool'
 
 export const mixins = [
@@ -45,5 +46,6 @@ export const mixins = [
   _loader,
   _snapper,
   _snapshot,
+  _strategy,
   _tool,
 ]

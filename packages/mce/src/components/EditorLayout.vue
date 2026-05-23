@@ -17,12 +17,7 @@ import {
 import { useEditor } from '../composables/editor'
 import { createIcons, IconsSymbol } from '../composables/icons'
 import { provideOverlay } from '../composables/overlay'
-import {
-  defaultActiveStrategy,
-  defaultDoubleclickStrategy,
-  defaultHoverStrategy,
-  makeMceStrategyProps,
-} from '../composables/strategy'
+import { makeMceStrategyProps } from '../composables/strategy'
 import { Editor } from '../editor'
 import Floatbar from './Floatbar.vue'
 import FloatPanel from './shared/FloatPanel.vue'
@@ -31,11 +26,9 @@ import LayoutItem from './shared/LayoutItem.vue'
 import Main from './shared/Main.vue'
 
 const props = defineProps({
-  ...makeMceStrategyProps({
-    activeStrategy: defaultActiveStrategy,
-    doubleclickStrategy: defaultDoubleclickStrategy,
-    hoverStrategy: defaultHoverStrategy,
-  }),
+  // No defaults here: when a strategy prop is omitted we fall back to the one
+  // configured on the editor (via options), which itself defaults sensibly.
+  ...makeMceStrategyProps(),
   editor: Editor,
 })
 
@@ -81,6 +74,11 @@ const {
   screenCenterOffset,
   activeTool,
 } = editor
+
+// Prop wins when provided, otherwise use the editor's configured strategy.
+const activeStrategy = computed(() => props.activeStrategy ?? editor.activeStrategy)
+const doubleclickStrategy = computed(() => props.doubleclickStrategy ?? editor.doubleclickStrategy)
+const hoverStrategy = computed(() => props.hoverStrategy ?? editor.hoverStrategy)
 
 const overlayContainer = useTemplateRef('overlayContainerTpl')
 const canvas = useTemplateRef('canvasTpl')
@@ -157,7 +155,7 @@ function onEnginePointerHover(event: PointerInputEvent) {
   }
   else {
     const element = event.target
-    const result = props.hoverStrategy({
+    const result = hoverStrategy.value({
       element,
       event,
       editor,
@@ -236,7 +234,7 @@ function onEnginePointerDown(
 
   if (button === 2) {
     if (!inSelection) {
-      const result = props.activeStrategy({
+      const result = activeStrategy.value({
         element,
         event: downEvent,
         editor,
@@ -267,7 +265,7 @@ function onEnginePointerDown(
   const isDoubleClick = now - _lastClickTime < 300 && _dx < 5 && _dy < 5
   if (isDoubleClick) {
     _lastClickTime = 0
-    props.doubleclickStrategy({ event: downEvent as any, editor })
+    doubleclickStrategy.value({ event: downEvent as any, editor })
     return
   }
   else {
@@ -292,7 +290,7 @@ function onEnginePointerDown(
   }
 
   function onDrag(event: PointerInputEvent): void {
-    const result = props.activeStrategy({
+    const result = activeStrategy.value({
       element,
       event,
       editor,
@@ -324,7 +322,7 @@ function onEnginePointerDown(
   }
 
   function onActivate() {
-    const result = props.activeStrategy({
+    const result = activeStrategy.value({
       element,
       event: downEvent,
       editor,
