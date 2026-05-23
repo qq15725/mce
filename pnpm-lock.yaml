@@ -95,8 +95,8 @@ importers:
         specifier: ^0.6.0
         version: 0.6.0
       modern-idoc:
-        specifier: ^0.11.5
-        version: 0.11.5
+        specifier: ^0.11.6
+        version: 0.11.6
       modern-text:
         specifier: ^2.0.3
         version: 2.0.3
@@ -2376,8 +2376,8 @@ packages:
   modern-idoc@0.10.21:
     resolution: {integrity: sha512-sdN5Qfjxto90VizQV8LujvUVD0d9B4iwom6gkPWKbJLF+QUOaCCet1BycBwrUrutAcZqjvFeRlOO352sa0iQow==}
 
-  modern-idoc@0.11.5:
-    resolution: {integrity: sha512-aa4v6ZSz2eCQE6AVSpIaOZ36v5GugXWZxY8SlKKaafJjawxT2a926Wk5MLiGLY8TAJir/PnAZ25eiBKTFHv7JQ==}
+  modern-idoc@0.11.6:
+    resolution: {integrity: sha512-88wKoMOsrKKFsPOfvKa/tNbX6sXgyU2ZJ5uOIUqUAfsKzujqDnuxpWVc9IHnmd/E3ft+ATI69S7wbrEgCpryUQ==}
 
   modern-mp4@0.2.0:
     resolution: {integrity: sha512-Z2X7+B1Kru8MTI2E6mpcSqm1E7FMxYg61DXoTkwq/KnMMfeyFcMCY4UVjvklFtdw4/NnvKA93bxw7XsqtMB1Tw==}
@@ -5518,7 +5518,7 @@ snapshots:
       colord: 2.9.3
       earcut: 3.0.2
       modern-font: 0.6.0
-      modern-idoc: 0.11.5
+      modern-idoc: 0.11.6
       modern-path2d: 1.7.0
       modern-text: 2.0.3
     optionalDependencies:
@@ -5552,7 +5552,7 @@ snapshots:
       colord: 2.9.3
       nanoid: 5.1.11
 
-  modern-idoc@0.11.5:
+  modern-idoc@0.11.6:
     dependencies:
       colord: 2.9.3
       nanoid: 5.1.11
@@ -5586,14 +5586,14 @@ snapshots:
     dependencies:
       diff: 9.0.0
       modern-font: 0.5.0
-      modern-idoc: 0.11.5
+      modern-idoc: 0.11.6
       modern-path2d: 1.7.0
 
   modern-text@2.0.3:
     dependencies:
       diff: 9.0.0
       modern-font: 0.6.0
-      modern-idoc: 0.11.5
+      modern-idoc: 0.11.6
       modern-path2d: 1.7.0
 
   module-replacements@3.0.0-beta.7: {}
