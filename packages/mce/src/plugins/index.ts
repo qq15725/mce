@@ -39,6 +39,7 @@ import _transform from './transform'
 import _typography from './typography'
 import _url from './url'
 import _view from './view'
+import _workflow from './workflow'
 import _zoom from './zoom'
 
 export const plugins = [
@@ -79,5 +80,6 @@ export const plugins = [
   _typography,
   _url,
   _view,
+  _workflow,
   _zoom,
 ]

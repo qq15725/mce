@@ -56,6 +56,7 @@ declare global {
       textSelection: Ref<IndexCharacter[] | undefined>
       hoverElement: Ref<Element2D | undefined>
       state: Ref<State | undefined>
+      mode: Ref<Mode>
       getGlobalPointer: () => Vector2Like
       parseAnchor: (anchor: Anchor, isRtl?: boolean) => ParsedAnchor
       isNode: (value: any) => value is Node
@@ -108,6 +109,7 @@ export default defineMixin((editor, options) => {
   const textSelection = ref<any[]>()
   const hoverElement = ref<Element2D>()
   const state = ref<Mce.State>()
+  const mode = ref<Mce.Mode>('canvas')
 
   function setCursor(mode: Cursor | undefined): void {
     renderEngine.value.input.setCursor(mode)
@@ -230,6 +232,7 @@ export default defineMixin((editor, options) => {
     drawboardPointer,
     drawboardContextMenuPointer,
     state,
+    mode,
     setCursor,
     getGlobalPointer,
     parseAnchor,

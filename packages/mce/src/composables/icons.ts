@@ -19,6 +19,7 @@ export interface IconAliases {
   mouseLeftClick: IconValue
   mouseRightClick: IconValue
   check: IconValue
+  plus: IconValue
   collapse: IconValue
   frame: IconValue
   group: IconValue

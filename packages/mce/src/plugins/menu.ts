@@ -44,6 +44,7 @@ export default definePlugin((editor, options) => {
     components,
     isElement,
     exec,
+    mode,
   } = editor
 
   const {
@@ -86,6 +87,14 @@ export default definePlugin((editor, options) => {
   const nodeMenu = computed(() => [
     { key: 'addSubNode' },
   ])
+
+  const modeMenu = computed(() => ({
+    key: 'mode',
+    children: [
+      { key: 'mode:canvas', checked: mode.value === 'canvas', handle: () => mode.value = 'canvas' },
+      { key: 'mode:workflow', checked: mode.value === 'workflow', handle: () => mode.value = 'workflow' },
+    ],
+  }))
 
   const editMenus1 = computed(() => [
     { key: 'copy', disabled: !hasSelected.value },
@@ -341,6 +350,8 @@ export default definePlugin((editor, options) => {
     else {
       return [
         { key: 'paste' },
+        { type: 'divider' },
+        modeMenu.value,
         { type: 'divider' },
         ...mainMenu.value,
         { type: 'divider' },

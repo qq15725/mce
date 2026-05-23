@@ -31,6 +31,11 @@ declare global {
       //
     }
 
+    // Persistent editor mode, orthogonal to the transient `State`. 'canvas' is
+    // the free-form editing experience; 'workflow' turns the canvas into a
+    // node-graph editor (directional connections, port handles).
+    type Mode = 'canvas' | 'workflow'
+
     type State
       = | 'loading'
         | 'hand'
