@@ -489,7 +489,7 @@ export default definePlugin((editor) => {
       createTextElement(content, {
         fontSize: 64,
         ...style,
-      }),
+      }, fonts),
       {
         sizeToFit: true,
         active: true,
@@ -537,7 +537,7 @@ export default definePlugin((editor) => {
           return false
         },
         load: async (source: File | Blob) => {
-          return createTextElement(await source.text())
+          return createTextElement(await source.text(), undefined, fonts)
         },
       },
     ],

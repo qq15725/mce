@@ -1,4 +1,5 @@
 import type { Element, Fill, Outline, ShapeConnectionPoint } from 'modern-idoc'
+import type { Options } from 'modern-text'
 import { normalizeTextContent } from 'modern-idoc'
 import { measureText } from 'modern-text'
 import { getImageSizeFromUrl } from './image'
@@ -28,8 +29,10 @@ export function createShapeElement(shape?: Element['shape'], fill?: Fill, outlin
   }
 }
 
-export function createTextElement(content: string, style?: Record<string, any>): Element {
-  const box = measureText({ style, content }).boundingBox
+export function createTextElement(content: string, style?: Record<string, any>, fonts?: Options['fonts']): Element {
+  // 必须传入 fonts，否则默认的 'font' 测量后端拿不到字体度量，
+  // 字符 advanceWidth 全为 0、相互重叠，测出的宽度只剩单字宽（文字会被挤成竖排一列）。
+  const box = measureText({ fonts, style, content }).boundingBox
 
   return {
     style: {
