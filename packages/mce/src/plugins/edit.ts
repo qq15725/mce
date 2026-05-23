@@ -56,6 +56,7 @@ export default definePlugin((editor, options) => {
     hoverElement,
     to,
     exporters,
+    renderEngine,
   } = editor
 
   const copiedData = ref<any>()
@@ -68,6 +69,31 @@ export default definePlugin((editor, options) => {
 
   const _delete: Mce.Commands['delete'] = () => {
     if (selection.value.length) {
+      // Ids being removed (selected nodes + their descendants).
+      const removed = new Set<string>()
+      const collect = (node: any): void => {
+        removed.add(node.id)
+        node.children?.forEach(collect)
+      }
+      selection.value.forEach(collect)
+
+      // Cascade-delete connections that would dangle: any connection referencing
+      // a removed element (and not already inside a removed subtree). The engine
+      // keeps a flat id→node map, so use it instead of walking the tree.
+      const nodeMap: Map<string, any> = (renderEngine.value as any).nodeMap
+      const danglingConnections: any[] = []
+      nodeMap?.forEach((node) => {
+        const conn = node.connection
+        if (
+          !removed.has(node.id)
+          && conn?.isValid?.()
+          && (removed.has(conn.start?.id) || removed.has(conn.end?.id))
+        ) {
+          danglingConnections.push(node)
+        }
+      })
+
+      danglingConnections.forEach(node => node.remove())
       selection.value.forEach((node) => {
         node.remove()
       })

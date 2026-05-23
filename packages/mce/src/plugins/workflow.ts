@@ -57,7 +57,7 @@ const DEFAULT_NODES: Record<string, Mce.WorkflowNodeTemplate> = {
 const RECT_PATH = 'M0 0h24v24H0z'
 
 export default definePlugin((editor, options) => {
-  const { addElement, root } = editor
+  const { addElement, renderEngine } = editor
 
   // Per-field merge: user templates override the defaults, missing fields fall back.
   function getTemplate(type: string): Mce.WorkflowNodeTemplate {
@@ -101,7 +101,7 @@ export default definePlugin((editor, options) => {
   // Write the element's default ports onto its shape so the connection routing
   // anchors at the edge port (without them it falls back to the box center).
   function materializePorts(id: string): void {
-    const el = root.value?.findOne((n: any) => n.id === id) as Element2D | undefined
+    const el = (renderEngine.value as any).nodeMap.get(id) as Element2D | undefined
     if (el && !(el.shape?.connectionPoints?.length))
       el.shape.connectionPoints = toConnectionPoints(getWorkflowPorts(el))
   }
