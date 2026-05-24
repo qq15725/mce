@@ -478,7 +478,9 @@ export class TextEditor extends HTMLElement implements PropertyAccessor {
     this.text.content = this._getNewContent(
       this.text.content,
       newText,
-      this._oldText,
+      // oldString 必须与 oldStyles（取自 content）的字符表示一致：用 content 的原始字符串，
+      // 而非 textarea 里已被 emoji→'?' 替换过的 _oldText——否则 emoji 处字符数不一致会让样式整体错位。
+      textContentToString(this.text.content),
     )
     this._oldText = newText
     this.text.update()
