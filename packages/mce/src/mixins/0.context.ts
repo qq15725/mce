@@ -296,11 +296,22 @@ export default defineMixin((editor, options) => {
       drawboardAabb.value = new Aabb2D(left, top, width, height)
     })
 
+    // mousemove 高频触发，用 rAF 合并到每帧一次，避免 hover 时持续写响应式 drawboardPointer
+    let pointerRafId: number | null = null
+    let lastPointerEvent: MouseEvent | undefined
     function onMouseMove(event: MouseEvent) {
-      drawboardPointer.value = new Vector2(
-        event.clientX - drawboardAabb.value.left,
-        event.clientY - drawboardAabb.value.top,
-      )
+      lastPointerEvent = event
+      if (pointerRafId !== null) {
+        return
+      }
+      pointerRafId = requestAnimationFrame(() => {
+        pointerRafId = null
+        const e = lastPointerEvent!
+        drawboardPointer.value = new Vector2(
+          e.clientX - drawboardAabb.value.left,
+          e.clientY - drawboardAabb.value.top,
+        )
+      })
     }
 
     onBeforeMount(() => {
@@ -313,6 +324,9 @@ export default defineMixin((editor, options) => {
       off('docSet', onSetDoc)
       renderEngine.value.stop()
       document.removeEventListener('mousemove', onMouseMove)
+      if (pointerRafId !== null) {
+        cancelAnimationFrame(pointerRafId)
+      }
     })
   }
 })

@@ -63,6 +63,12 @@ const {
 const selected = computed(() => selection.value.some(v => v.equal(props.node)))
 const children = computed(() => props.node.children)
 const childrenLength = computed(() => children.value.length)
+// 展开项中处于显示状态的数量；模板里避免每次渲染都 Array.from().filter()
+const openedShownCount = computed(() => {
+  let n = 0
+  openedItems.forEach((v) => { if (v.value) n++ })
+  return n
+})
 const inputDom = ref<HTMLInputElement>()
 const isHoverElement = computed(() => props.node?.equal(hoverElement.value))
 const hovering = ref(false)
@@ -264,7 +270,7 @@ function onInputBlur() {
       >
         <template v-if="props.root">
           <Btn
-            v-if="Array.from(openedItems.values()).filter(v => v.value).length > 1"
+            v-if="openedShownCount > 1"
             icon
             class="m-layer__btn m-layer__btn--show"
             @mousedown.prevent.stop="openedItems.forEach((item, _id) => {

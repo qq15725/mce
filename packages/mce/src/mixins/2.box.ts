@@ -176,11 +176,14 @@ export default defineMixin((editor) => {
         }
         node.forEach((child) => {
           if (isElement(child)) {
-            const aabb = getAabb(child)
-            min.x = Math.min(min.x, aabb.left)
-            min.y = Math.min(min.y, aabb.top)
-            max.x = Math.max(max.x, aabb.left + aabb.width)
-            max.y = Math.max(max.y, aabb.top + aabb.height)
+            // 直接读 globalAabb 聚合，省去每个子节点的 clone；noop 保留响应式订阅
+            const style = child.style
+            noop(style.left, style.top, style.width, style.height, style.rotate)
+            const box = child.globalAabb
+            min.x = Math.min(min.x, box.left)
+            min.y = Math.min(min.y, box.top)
+            max.x = Math.max(max.x, box.left + box.width)
+            max.y = Math.max(max.y, box.top + box.height)
           }
         })
         aabb = new Aabb2D(

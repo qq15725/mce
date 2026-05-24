@@ -134,12 +134,23 @@ export default definePlugin((editor) => {
 
   function marqueeSelect(marquee = selectionMarquee.value): void {
     const area = new Obb2D(marquee) // TODO
+    // 每个节点的 obb 在本次框选中最多算一次（flatMap 与 filter 复用），
+    // 避免对 frame 等节点重复调 getObb。
+    const obbCache = new Map<Element2D, Obb2D>()
+    const obbOf = (node: Element2D): Obb2D => {
+      let obb = obbCache.get(node)
+      if (!obb) {
+        obb = getObb(node, 'drawboard')
+        obbCache.set(node, obb)
+      }
+      return obb
+    }
     selection.value = root.value
       ?.children
       .flatMap((node) => {
         if (
           isFrameNode(node, true)
-          && !area.contains(getObb(node, 'drawboard'))
+          && !area.contains(obbOf(node as Element2D))
         ) {
           return node.children as unknown as Element2D[]
         }
@@ -148,7 +159,7 @@ export default definePlugin((editor) => {
       .filter((node) => {
         return 'isVisibleInTree' in node
           && node.isVisibleInTree()
-          && getObb(node, 'drawboard').overlap(area)
+          && obbOf(node).overlap(area)
           && !isLock(node)
           && !node.findAncestor(ancestor => isLock(ancestor))
       }) ?? []

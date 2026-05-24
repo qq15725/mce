@@ -272,7 +272,7 @@ export class YDoc extends Observable {
       this.transact(() => {
         const childId = child.id
         this._debug(`[removeChild][${childId}]`, child.name, oldIndex)
-        const index = childrenIds.toJSON().indexOf(childId)
+        const index = childrenIds.toArray().indexOf(childId)
         if (index > -1) {
           childrenIds.delete(index, 1)
         }

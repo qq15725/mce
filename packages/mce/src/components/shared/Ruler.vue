@@ -223,12 +223,23 @@ function render() {
   renderTransfer(cvs)
 }
 
+// 拆成基本类型监听并去掉 deep：原先 deep 会在每次 selected 变化时深遍历 canvas DOM 元素，开销极大。
 watch(
-  [canvas, () => props.zoom, () => props.position, () => props.selected, () => borderColor.value, () => textColor.value],
+  [
+    canvas,
+    () => props.zoom,
+    () => props.position,
+    () => props.selected?.left,
+    () => props.selected?.top,
+    () => props.selected?.width,
+    () => props.selected?.height,
+    () => borderColor.value,
+    () => textColor.value,
+  ],
   () => {
     render()
   },
-  { immediate: true, deep: true },
+  { immediate: true },
 )
 
 const resize = useDebounceFn(() => {

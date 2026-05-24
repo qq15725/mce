@@ -99,14 +99,18 @@ onBeforeMount(() => {
   renderEngine.value.on('pointerover', onEnginePointerOver)
 })
 
+let unbindRenderCanvas: (() => void) | undefined
+
 onMounted(() => {
-  bindRenderCanvas(canvas.value!, drawboardDom.value!)
+  unbindRenderCanvas = bindRenderCanvas(canvas.value!, drawboardDom.value!)
 })
 
 onBeforeUnmount(() => {
   renderEngine.value.off('pointerdown', onEnginePointerDown)
   renderEngine.value.off('pointermove', onEnginePointerMove)
   renderEngine.value.off('pointerover', onEnginePointerOver)
+  // rendered 回调随引擎常驻，组件卸载时必须注销，否则跨重挂载累积
+  unbindRenderCanvas?.()
 })
 
 function bindRenderCanvas(canvas: HTMLCanvasElement, eventTarget?: HTMLElement) {
