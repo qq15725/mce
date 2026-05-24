@@ -54,8 +54,6 @@ const DEFAULT_NODES: Record<string, Mce.WorkflowNodeTemplate> = {
   },
 }
 
-const RECT_PATH = 'M0 0h24v24H0z'
-
 export default definePlugin((editor, options) => {
   const { addElement, renderEngine } = editor
 
@@ -75,6 +73,8 @@ export default definePlugin((editor, options) => {
     const t = getTemplate(type)
     return {
       name: t.label ?? type,
+      // 用 style 渲染圆角卡片（背景 + 边框），不提供 shape——shape 的 outline 会与
+      // style.border 冲突。连接点由 materializePorts 在首次连线时懒挂到节点 shape 上。
       style: {
         width: 380,
         height: 280,
@@ -82,13 +82,10 @@ export default definePlugin((editor, options) => {
         padding: 28,
         fontSize: 16,
         lineHeight: 1.6,
+        backgroundColor: '#ffffff',
+        borderColor: '#ececf0',
+        borderWidth: 1,
       },
-      // Ports aren't baked in; they come from getWorkflowPorts and are
-      // materialized lazily when the node is first connected.
-      shape: [{ data: RECT_PATH }],
-      fill: '#ffffff',
-      // Light border for definition (drop shadow intentionally omitted).
-      outline: { color: '#ececf0', width: 1 },
       text: { content: buildContent(t) },
       // workflow 节点是 graph 节点，用 inEditorIs 标记为 Workflow<Type>（如 WorkflowText），
       // autoNest 据此让它始终独立于画板（Frame）
