@@ -52,7 +52,7 @@
     "lint": "eslint src"
   },
   "dependencies": {
-    "modern-idoc-svg": "^0.2.0",
+    "modern-idoc-svg": "^0.3.3",
     "modern-path2d": "^1.7.0"
   },
   "devDependencies": {

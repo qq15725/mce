@@ -52,7 +52,7 @@
     "lint": "eslint src"
   },
   "dependencies": {
-    "modern-pdf": "^1.4.0"
+    "modern-pdf": "^1.5.0"
   },
   "devDependencies": {
     "mce": "workspace:*"
