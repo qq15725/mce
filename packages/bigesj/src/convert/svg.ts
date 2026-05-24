@@ -1,4 +1,4 @@
-import { assets } from 'modern-canvas'
+import { cachedFetchImageBitmap } from './image'
 
 export async function convertSvgElementToUrl(el: Record<string, any>): Promise<string> {
   const {
@@ -27,25 +27,20 @@ export async function convertSvgElementToUrl(el: Record<string, any>): Promise<s
   }
 
   const images = svg.querySelectorAll('image')
-  for (let i = 0; i < images.length; i++) {
-    const image = images[i]
+  // 内嵌图并行处理，避免逐张串行 await 累加延迟
+  await Promise.all(Array.from(images).map(async (image) => {
     const url = image.href.baseVal
     if (!url.startsWith('http')) {
-      continue
+      return
     }
-    image?.setAttribute(
-      'href',
-      await assets.fetchImageBitmap(url)
-        .then((bitmap) => {
-          const canvas = document.createElement('canvas')
-          canvas.width = bitmap.width
-          canvas.height = bitmap.height
-          canvas.getContext('2d')?.drawImage(bitmap, 0, 0)
-          bitmap.close()
-          return canvas.toDataURL('image/png')
-        }),
-    )
-  }
+    const bitmap = await cachedFetchImageBitmap(url)
+    const canvas = document.createElement('canvas')
+    canvas.width = bitmap.width
+    canvas.height = bitmap.height
+    canvas.getContext('2d')?.drawImage(bitmap, 0, 0)
+    bitmap.close()
+    image.setAttribute('href', canvas.toDataURL('image/png'))
+  }))
 
   // image fill
   if (background.src) {
@@ -55,7 +50,7 @@ export async function convertSvgElementToUrl(el: Record<string, any>): Promise<s
 
     if (fillPattern && fillImage) {
       try {
-        const base64Url = await assets.fetchImageBitmap(background.src)
+        const base64Url = await cachedFetchImageBitmap(background.src)
           .then((bitmap) => {
             const canvas = document.createElement('canvas')
             canvas.width = bitmap.width

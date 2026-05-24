@@ -1,5 +1,14 @@
 import { assets } from 'modern-canvas'
 
+// 按 url 缓存 blob（assets.loadBy 负责去重/复用），再每次解码出独立 ImageBitmap。
+// 不能缓存 bitmap 本身——调用方用完会 close()。仅缓存 http 资源，其余走原路径。
+export function cachedFetchImageBitmap(url: string): Promise<ImageBitmap> {
+  if (typeof url === 'string' && url.startsWith('http')) {
+    return assets.loadBy(url).then(blob => assets.fetchImageBitmap(blob as Blob))
+  }
+  return assets.fetchImageBitmap(url)
+}
+
 export async function convertImageElementToUrl(el: Record<string, any>): Promise<string> {
   const {
     cropping = {},
@@ -37,7 +46,7 @@ export async function convertImageElementToUrl(el: Record<string, any>): Promise
     return url
   }
 
-  const img = await assets.fetchImageBitmap(url)
+  const img = await cachedFetchImageBitmap(url)
 
   const {
     originWidth = img.width,
@@ -66,7 +75,7 @@ export async function convertImageElementToUrl(el: Record<string, any>): Promise
 
   // maskUrl
   if (maskUrl) {
-    const mask = await assets.fetchImageBitmap(maskUrl)
+    const mask = await cachedFetchImageBitmap(maskUrl)
     ctx.drawImage(mask, 0, 0, cropping?.maskWidth ?? width, cropping?.maskHeight ?? height)
     ctx.globalCompositeOperation = 'source-in'
     mask.close()
@@ -108,7 +117,7 @@ export async function convertImageElementToUrl(el: Record<string, any>): Promise
           ctx1.drawImage(canvas2, 0, 0, width, height)
         }
         else if (filling.imageContent?.image) {
-          const img2 = await assets.fetchImageBitmap(filling.imageContent.image)
+          const img2 = await cachedFetchImageBitmap(filling.imageContent.image)
           ctx1.drawImage(img2, 0, 0, width, height)
           img2.close()
         }

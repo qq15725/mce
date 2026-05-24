@@ -24,6 +24,29 @@ function levenshteinDistance(a: string, b: string): number {
   return matrix[b.length][a.length]
 }
 
+// 字体索引与查询结果缓存：仅在 bigeFonts 列表（按引用）变化时重建，
+// 避免每个文本片段都重建 Map + 重复跑模糊匹配。
+let indexedFonts: BigeFont[] | undefined
+let idIndexMap = new Map<string, number>()
+let nameIndexMap = new Map<string, number>()
+const searchCache = new Map<string, BigeFont | undefined>()
+
+function ensureFontIndex(fonts: BigeFont[]): void {
+  if (indexedFonts === fonts) {
+    return
+  }
+  indexedFonts = fonts
+  idIndexMap = new Map(fonts.map((item, index) => [item.id, index]))
+  nameIndexMap = new Map(
+    fonts.flatMap((item, index) =>
+      [...item.en_name.split(','), ...item.name.split(',')].map(
+        name => [name, index] as [string, number],
+      ),
+    ),
+  )
+  searchCache.clear()
+}
+
 export function useFonts(editor?: Editor) {
   const {
     http,
@@ -42,14 +65,10 @@ export function useFonts(editor?: Editor) {
   }
 
   function searchBigeFont(keyword: string, fonts: BigeFont[] = bigeFonts.value): BigeFont | undefined {
-    const idIndexMap = new Map<string, number>(fonts.map((item, index) => [item.id, index]))
-    const nameIndexMap = new Map<string, number>(
-      fonts.flatMap((item, index) => {
-        return [...item.en_name.split(','), ...item.name.split(',')].map((name) => {
-          return [name, index]
-        })
-      }),
-    )
+    ensureFontIndex(fonts)
+    if (searchCache.has(keyword)) {
+      return searchCache.get(keyword)
+    }
     const fontFamilies = keyword.replace(/"/g, '').split(',')
     let index: number | undefined
     fontFamilies.forEach((fontFamily) => {
@@ -75,6 +94,10 @@ export function useFonts(editor?: Editor) {
         // 3.3 根据字符距离查找最近
         const aLen = a.length
         nameIndexMap.forEach((i, b) => {
+          // 长度差已 >= aLen 时编辑距离必 >= aLen，跳过昂贵的 O(L²) 计算
+          if (Math.abs(aLen - b.length) >= aLen) {
+            return
+          }
           const dist = levenshteinDistance(a, b)
           // 跳过需要全字符改写的情况
           if (aLen <= dist) {
@@ -90,7 +113,9 @@ export function useFonts(editor?: Editor) {
         })
       })
     }
-    return index !== undefined ? fonts[index] : undefined
+    const result = index !== undefined ? fonts[index] : undefined
+    searchCache.set(keyword, result)
+    return result
   }
 
   async function loadFont(name: string | string[]): Promise<(FontLoadedResult | undefined)[]> {
