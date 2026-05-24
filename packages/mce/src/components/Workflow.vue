@@ -37,7 +37,11 @@ const selectedNode = computed<Element2D | undefined>(() => {
   if (mode.value !== 'workflow')
     return undefined
   const el = elementSelection.value[0]
-  return el && isConnectable(el) ? el : undefined
+  // 仅根节点（Doc）下的直接子元素才是工作流节点、才显示连接加号；
+  // 画板（Frame）内的元素不参与工作流连接。
+  if (!el || !isConnectable(el) || el.getParent?.()?.id !== root.value?.id)
+    return undefined
+  return el
 })
 
 interface ScreenPort { kind: PortKind, idx: number, x: number, y: number }
@@ -125,12 +129,13 @@ function startConnection(port: ScreenPort, e: PointerEvent): void {
     document.removeEventListener('pointermove', onMove)
     document.removeEventListener('pointerup', onUp)
     const drop = toDrawboard(ev)
-    drag.value = undefined
     const target = findNodeAt(drop, sourceId)
     if (target) {
+      drag.value = undefined
       connect(port, sourceId, target.id, getWorkflowPorts(target))
     }
     else {
+      // 落在空白处：弹出节点类型菜单，保留预览连线直到菜单关闭（选择/取消）
       menu.value = {
         port,
         x: drop.x,
@@ -147,6 +152,7 @@ function startConnection(port: ScreenPort, e: PointerEvent): void {
 function chooseNodeType(type: string): void {
   const m = menu.value
   menu.value = undefined
+  drag.value = undefined
   if (!m)
     return
   const node = exec('addWorkflowNode', type) as Element2D
@@ -160,6 +166,7 @@ function chooseNodeType(type: string): void {
 
 function closeMenu(): void {
   menu.value = undefined
+  drag.value = undefined
 }
 
 // Horizontal S-curve between the two drawboard points (matches the canvas

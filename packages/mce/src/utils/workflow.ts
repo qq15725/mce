@@ -11,13 +11,18 @@ export interface WorkflowPort extends ShapeConnectionPoint {
 export const INPUT_PORT: WorkflowPort = { idx: 0, x: 0, y: 0.5, ang: Math.PI, kind: 'input' }
 export const OUTPUT_PORT: WorkflowPort = { idx: 1, x: 1, y: 0.5, ang: 0, kind: 'output' }
 
-// Default ports an element exposes in workflow mode. Any element is connectable
-// and gets input + output out of the box; specific kinds narrow this (a frame
-// only emits). Extend the switch as more node kinds need bespoke ports.
+// Ports an element exposes in workflow mode, by priority:
+//   1. custom `shape.connectionPoints` win — kind inferred from x (left = input,
+//      right = output), so materialized defaults round-trip consistently;
+//   2. workflow nodes (WorkflowText/Image/Video) get input + output (left + right);
+//   3. any other element only emits — a single output port on the right.
 export function getWorkflowPorts(el: Element2D): WorkflowPort[] {
-  if (el.meta?.inEditorIs === 'Frame')
-    return [OUTPUT_PORT]
-  return [INPUT_PORT, OUTPUT_PORT]
+  const custom = el.shape?.connectionPoints
+  if (custom?.length)
+    return custom.map(p => ({ ...p, kind: p.x < 0.5 ? 'input' : 'output' }))
+  if (el.meta?.inEditorIs?.startsWith('Workflow'))
+    return [INPUT_PORT, OUTPUT_PORT]
+  return [OUTPUT_PORT]
 }
 
 // Strip the workflow-only `kind` down to what `shape.connectionPoints` stores.
