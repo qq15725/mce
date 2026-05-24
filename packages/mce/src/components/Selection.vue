@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Element2D, Obb2D } from 'modern-canvas'
+import type { Element2D } from 'modern-canvas'
 import { computed, onBeforeMount, onBeforeUnmount, useTemplateRef } from 'vue'
 import { useEditor } from '../composables/editor'
 import ForegroundCropper from './ForegroundCropper.vue'
@@ -68,14 +68,15 @@ const parentObbStyles = computed(() => {
   if (selection.value.length !== 1) {
     return []
   }
-  const obbs: Obb2D[] = []
+  const result: { id: number, style: Record<string, any> }[] = []
   selection.value[0]?.findAncestor((ancestor) => {
     if (isElement(ancestor)) {
-      obbs.push(getObb(ancestor as Element2D, 'drawboard'))
+      const el = ancestor as Element2D
+      result.push({ id: el.instanceId, style: getObb(el, 'drawboard').toCssStyle() })
     }
     return false
   })
-  return obbs.map(obb => obb.toCssStyle())
+  return result
 })
 
 const selectionObbStyles = computed(() => {
@@ -89,8 +90,11 @@ const selectionObbStyles = computed(() => {
   return elementSelection.value.map((el) => {
     const box = getObb(el, 'drawboard')
     return {
-      ...box.toCssStyle(),
-      borderRadius: `${(el.style.borderRadius ?? 0) * camera.value.zoom.x}px`,
+      id: el.instanceId,
+      style: {
+        ...box.toCssStyle(),
+        borderRadius: `${(el.style.borderRadius ?? 0) * camera.value.zoom.x}px`,
+      },
     }
   })
 })
@@ -167,11 +171,17 @@ const roundable = computed(() => {
 })
 
 function tip() {
-  // Use the computed size, not style: style.width/height may be 'auto' or a
-  // percentage string (e.g. flex layout), which has no toFixed.
-  const obb = elementSelection.value.length === 1
-    ? elementSelection.value[0].size
-    : selectionObb.value
+  // 必须读 el.style.width/height 建立响应式依赖——el.size 是非响应式 getter，
+  // 只用它时尺寸变化标签不会更新。style 为 'auto'/百分比等非数字时回退到 size。
+  if (elementSelection.value.length === 1) {
+    const el = elementSelection.value[0]
+    const sw = el.style.width
+    const sh = el.style.height
+    const w = typeof sw === 'number' ? sw : el.size.width
+    const h = typeof sh === 'number' ? sh : el.size.height
+    return `${Number(w.toFixed(2))} × ${Number(h.toFixed(2))}`
+  }
+  const obb = selectionObb.value
   return `${Number(obb.width.toFixed(2))} × ${Number(obb.height.toFixed(2))}`
 }
 
@@ -183,19 +193,19 @@ defineExpose({
 <template>
   <div class="m-selection">
     <div
-      v-for="(style, index) in parentObbStyles" :key="index"
+      v-for="item in parentObbStyles" :key="item.id"
       class="m-selection__parent"
-      :style="style"
+      :style="item.style"
     />
 
     <template
       v-if="state !== 'moving' && state !== 'transforming'"
     >
       <div
-        v-for="(style, index) in selectionObbStyles"
-        :key="index"
+        v-for="item in selectionObbStyles"
+        :key="item.id"
         class="m-selection__node"
-        :style="style"
+        :style="item.style"
       />
     </template>
 
