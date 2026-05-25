@@ -29,6 +29,10 @@ export function plugin() {
 
     return {
       name: 'mce:gif',
+      messages: {
+        en: { 'saveAs:gif': 'Save as GIF' },
+        zhHans: { 'saveAs:gif': '另存为 GIF' },
+      },
       exporters: [
         {
           name: 'gif',

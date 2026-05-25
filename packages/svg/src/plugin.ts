@@ -21,6 +21,10 @@ export function plugin() {
 
     return {
       name: 'mce:svg',
+      messages: {
+        en: { 'saveAs:svg': 'Save as SVG' },
+        zhHans: { 'saveAs:svg': '另存为 SVG' },
+      },
       loaders: [
         {
           name: 'svg',

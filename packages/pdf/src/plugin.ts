@@ -23,6 +23,10 @@ export function plugin() {
 
     return {
       name: 'mce:pdf',
+      messages: {
+        en: { 'saveAs:pdf': 'Save as PDF' },
+        zhHans: { 'saveAs:pdf': '另存为 PDF' },
+      },
       exporters: [
         {
           name: 'pdf',

@@ -20,6 +20,10 @@ export function plugin() {
 
     return {
       name: 'mce:mp4',
+      messages: {
+        en: { 'saveAs:mp4': 'Save as MP4' },
+        zhHans: { 'saveAs:mp4': '另存为 MP4' },
+      },
       exporters: [
         {
           name: 'mp4',
