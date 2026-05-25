@@ -52,7 +52,7 @@
     "lint": "eslint src"
   },
   "dependencies": {
-    "modern-openxml": "^1.12.2"
+    "modern-openxml": "^1.12.3"
   },
   "devDependencies": {
     "mce": "workspace:*"

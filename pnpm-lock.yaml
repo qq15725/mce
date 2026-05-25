@@ -48,8 +48,8 @@ importers:
         specifier: ^0.8.3
         version: 0.8.3
       modern-openxml:
-        specifier: ^1.12.2
-        version: 1.12.2
+        specifier: ^1.12.3
+        version: 1.12.3
     devDependencies:
       mce:
         specifier: workspace:*
@@ -151,8 +151,8 @@ importers:
   packages/openxml:
     dependencies:
       modern-openxml:
-        specifier: ^1.12.2
-        version: 1.12.2
+        specifier: ^1.12.3
+        version: 1.12.3
     devDependencies:
       mce:
         specifier: workspace:*
@@ -2323,8 +2323,8 @@ packages:
     peerDependencies:
       mp4box: '*'
 
-  modern-openxml@1.12.2:
-    resolution: {integrity: sha512-XfVj4msjwVNTBtg9Pei0lqIU430NbzwUsFtDxRGm00qEbvEEF1zmW15Sa7Xp0UCnZCHNRDyAvyc3eoT8MRzDcA==}
+  modern-openxml@1.12.3:
+    resolution: {integrity: sha512-6bXXAcbQkXFK7Jn14hMkwJPR7cCbf8dYUNcDfcG5pxZ9vqJS72Ax+MpGHFpz5ZzPs5HNsFxdtRtyEIlZAiTw2w==}
 
   modern-palette@2.0.0:
     resolution: {integrity: sha512-wKZcom2QzK6sS6h5RLYHEkd3V3maQLzgkI+ekDCimlk7dfXa63aekZcy+7KS+8JEqIDeY/yV1CAvA7l+7u6QHA==}
@@ -3873,8 +3873,8 @@ snapshots:
 
   '@typescript-eslint/project-service@8.56.1(typescript@6.0.3)':
     dependencies:
-      '@typescript-eslint/tsconfig-utils': 8.59.4(typescript@6.0.3)
-      '@typescript-eslint/types': 8.59.4
+      '@typescript-eslint/tsconfig-utils': 8.56.1(typescript@6.0.3)
+      '@typescript-eslint/types': 8.56.1
       debug: 4.4.3
       typescript: 6.0.3
     transitivePeerDependencies:
@@ -5398,7 +5398,7 @@ snapshots:
     dependencies:
       mp4box: 2.1.1
 
-  modern-openxml@1.12.2:
+  modern-openxml@1.12.3:
     dependencies:
       fflate: 0.8.3
       modern-idoc: 0.11.8
