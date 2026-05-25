@@ -50,7 +50,6 @@ export default {
   'saveAs:gif': '另存为 GIF',
   'saveAs:mp4': '另存为 MP4',
   'saveAs:pdf': '另存为 PDF',
-  'saveAs:pptx': '另存为 PPTX',
   'saveAs:json': '另存为 JSON',
   'addSubNode': '添加子节点',
   'edit': '编辑',

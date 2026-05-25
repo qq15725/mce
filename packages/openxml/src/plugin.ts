@@ -31,6 +31,18 @@ export function plugin() {
 
     return {
       name: 'mce:openxml',
+      messages: {
+        en: {
+          'saveAs:pptx': 'Save as PPTX',
+          'saveAs:xlsx': 'Save as XLSX',
+          'saveAs:docx': 'Save as DOCX',
+        },
+        zhHans: {
+          'saveAs:pptx': '另存为 PPTX',
+          'saveAs:xlsx': '另存为 XLSX',
+          'saveAs:docx': '另存为 DOCX',
+        },
+      },
       loaders: [
         {
           name: 'pptx',

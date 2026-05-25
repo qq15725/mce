@@ -50,7 +50,6 @@ export default {
   'saveAs:gif': 'Save as GIF',
   'saveAs:mp4': 'Save as MP4',
   'saveAs:pdf': 'Save as PDF',
-  'saveAs:pptx': 'Save as PPTX',
   'saveAs:json': 'Save as JSON',
   'addSubNode': 'Add sub node',
   'edit': 'Edit',
