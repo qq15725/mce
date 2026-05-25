@@ -181,19 +181,29 @@ const selectedAnchorMerged = computed(() => {
   return cell ? isMergedCell(cell) : false
 })
 
-function cellContentStyle(cell: TableModelCell): Record<string, string> {
-  const s = cell.children?.[0]?.style ?? {}
+// Flex alignment for the edit wrapper, mirroring the cell's text/vertical align
+// so the editing caret sits where the committed (canvas-rendered) text will.
+const editingAlign = computed(() => {
+  const s = editingCell.value?.children?.[0]?.style ?? {}
   const align = s.textAlign ?? 'center'
   const valign = s.verticalAlign ?? 'middle'
+  return {
+    display: 'flex',
+    justifyContent: align === 'left' ? 'flex-start' : align === 'right' ? 'flex-end' : 'center',
+    alignItems: valign === 'top' ? 'flex-start' : valign === 'bottom' ? 'flex-end' : 'center',
+  }
+})
+
+const editingTextStyle = computed(() => {
+  const s = editingCell.value?.children?.[0]?.style ?? {}
   return {
     fontSize: `${s.fontSize ?? 13}px`,
     color: s.color ?? '#333333',
     fontWeight: String(s.fontWeight ?? 400),
-    textAlign: align,
-    justifyContent: align === 'left' ? 'flex-start' : align === 'right' ? 'flex-end' : 'center',
-    alignItems: valign === 'top' ? 'flex-start' : valign === 'bottom' ? 'flex-end' : 'center',
+    textAlign: s.textAlign ?? 'center',
+    maxWidth: '100%',
   }
-}
+})
 
 // ── enter / exit ─────────────────────────────────────────────────────────────
 
@@ -735,17 +745,24 @@ onBeforeUnmount(() => {
         :style="selectionRectStyle"
       />
 
-      <!-- single cell text editor, positioned over the editing cell -->
+      <!-- single cell text editor, positioned over the editing cell. The flex
+           wrapper centers the inner editable item so the caret stays centered
+           even when the cell is empty (a flex contenteditable would not). -->
       <div
         v-if="editingCell"
-        ref="editBox"
-        class="m-table-editor__content m-table-editor__content--editing"
-        contenteditable="true"
-        :style="{ ...editingRectStyle, ...cellContentStyle(editingCell) }"
-        @blur="onEditBlur"
+        class="m-table-editor__edit-wrapper"
+        :style="{ ...editingRectStyle, ...editingAlign }"
         @pointerdown.stop
         @dblclick.stop
-      />
+      >
+        <div
+          ref="editBox"
+          class="m-table-editor__edit-input"
+          contenteditable="true"
+          :style="editingTextStyle"
+          @blur="onEditBlur"
+        />
+      </div>
     </div>
 
     <!-- context menu: teleported to body so the camera transform on the root
@@ -852,24 +869,22 @@ onBeforeUnmount(() => {
     cursor: cell;
   }
 
-  &__content {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    padding: 2px 4px;
+  &__edit-wrapper {
+    position: absolute;
+    z-index: 4;
     box-sizing: border-box;
+    overflow: hidden;
+    cursor: text;
+    background: rgb(var(--m-theme-background, 255 255 255));
+    outline: 2px solid rgb(var(--m-theme-primary));
+  }
+
+  &__edit-input {
+    outline: none;
+    padding: 0 4px;
     white-space: pre-wrap;
     word-break: break-word;
     line-height: 1.2;
-    overflow: hidden;
-
-    &--editing {
-      position: absolute;
-      z-index: 4;
-      cursor: text;
-      outline: 2px solid rgb(var(--m-theme-primary));
-      background: rgb(var(--m-theme-background, 255 255 255));
-    }
   }
 
   &__selection {
