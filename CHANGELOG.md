@@ -1,3 +1,17 @@
+## [0.19.2](https://github.com/qq15725/mce/compare/v0.19.1...v0.19.2) (2026-05-25)
+
+
+### Bug Fixes
+
+* **lint:** split single-line if in Layer openedShownCount ([b04b423](https://github.com/qq15725/mce/commit/b04b4234deea4670339eeee8665fb05e643d093f))
+
+## [0.19.2](https://github.com/qq15725/mce/compare/v0.19.1...v0.19.2) (2026-05-25)
+
+
+### Bug Fixes
+
+* **lint:** split single-line if in Layer openedShownCount ([b04b423](https://github.com/qq15725/mce/commit/b04b4234deea4670339eeee8665fb05e643d093f))
+
 ## [0.19.1](https://github.com/qq15725/mce/compare/v0.19.0...v0.19.1) (2026-05-25)
 
 # [0.19.0](https://github.com/qq15725/mce/compare/v0.18.5...v0.19.0) (2026-05-25)
