@@ -66,7 +66,10 @@ const childrenLength = computed(() => children.value.length)
 // 展开项中处于显示状态的数量；模板里避免每次渲染都 Array.from().filter()
 const openedShownCount = computed(() => {
   let n = 0
-  openedItems.forEach((v) => { if (v.value) n++ })
+  openedItems.forEach((v) => {
+    if (v.value)
+      n++
+  })
   return n
 })
 const inputDom = ref<HTMLInputElement>()
