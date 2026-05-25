@@ -1,15 +1,19 @@
-import type { PptxMeta } from 'modern-openxml'
+import type { DocxMeta, PptxMeta, XlsxMeta } from 'modern-openxml'
 import { definePlugin } from 'mce'
-import { docToPptx, pptxToDoc } from 'modern-openxml'
+import { docToDocx, docToPptx, docToXlsx, docxToDoc, pptxToDoc, xlsxToDoc } from 'modern-openxml'
 
 declare global {
   namespace Mce {
     interface ExportOptions {
       pptx?: Partial<PptxMeta>
+      xlsx?: Partial<XlsxMeta>
+      docx?: Partial<DocxMeta>
     }
 
     interface Exporters {
       pptx: Promise<Blob>
+      xlsx: Promise<Blob>
+      docx: Promise<Blob>
     }
   }
 }
@@ -86,6 +90,44 @@ export function plugin() {
             return doc
           },
         },
+        {
+          name: 'xlsx',
+          accept: '.xlsx',
+          test: (source) => {
+            if (source instanceof Blob && source.type.includes('spreadsheetml.sheet')) {
+              return true
+            }
+            if (source instanceof File && /\.xlsx$/i.test(source.name)) {
+              return true
+            }
+            return false
+          },
+          load: async (source: File | Blob) => {
+            const doc = await xlsxToDoc(await source.arrayBuffer())
+            doc.name = (source as any).name
+            ;(doc.meta as any).inEditorIs = 'Doc'
+            return doc
+          },
+        },
+        {
+          name: 'docx',
+          accept: '.docx',
+          test: (source) => {
+            if (source instanceof Blob && source.type.includes('wordprocessingml.document')) {
+              return true
+            }
+            if (source instanceof File && /\.docx$/i.test(source.name)) {
+              return true
+            }
+            return false
+          },
+          load: async (source: File | Blob) => {
+            const doc = await docxToDoc(await source.arrayBuffer())
+            doc.name = (source as any).name
+            ;(doc.meta as any).inEditorIs = 'Doc'
+            return doc
+          },
+        },
       ],
       exporters: [
         {
@@ -109,6 +151,36 @@ export function plugin() {
 
             return new Blob([pptx], {
               type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            })
+          },
+        },
+        {
+          name: 'xlsx',
+          saveAs: true,
+          handle: async (options) => {
+            const { xlsx: xlsxOptions, ...jsonOptions } = options
+            const doc = await to('json', jsonOptions)
+            const xlsx = await docToXlsx({
+              ...doc as any,
+              meta: { ...doc.meta, ...xlsxOptions },
+            })
+            return new Blob([xlsx as any], {
+              type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            })
+          },
+        },
+        {
+          name: 'docx',
+          saveAs: true,
+          handle: async (options) => {
+            const { docx: docxOptions, ...jsonOptions } = options
+            const doc = await to('json', jsonOptions)
+            const docx = await docToDocx({
+              ...doc as any,
+              meta: { ...doc.meta, ...docxOptions },
+            })
+            return new Blob([docx as any], {
+              type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
             })
           },
         },
