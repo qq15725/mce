@@ -1,3 +1,57 @@
+# [0.19.0](https://github.com/qq15725/mce/compare/v0.18.5...v0.19.0) (2026-05-25)
+
+
+### Bug Fixes
+
+* **bigesj:** drop dirty numeric style values ([0335172](https://github.com/qq15725/mce/commit/03351723f44ca6a7ff35a39ac5883a4cbfb6f804))
+* **selection:** reactive size tip and stable v-for key ([4a62944](https://github.com/qq15725/mce/commit/4a629448cacf807c5fb2bbb649e57ea71ba4f10c))
+* **text-editor:** keep styles aligned when editing emoji ([4d2d7ed](https://github.com/qq15725/mce/commit/4d2d7edddd7f6bf84696a2134409d1c171a424da))
+* **text-editor:** preserve emoji when editing text ([aa25bc1](https://github.com/qq15725/mce/commit/aa25bc1a98c354808f354dd546530bc3bd3156ec))
+* **typography:** pass fonts to measureText for correct width ([7737d1a](https://github.com/qq15725/mce/commit/7737d1a9f807d2594ab92b2fe4e423f50df56c21))
+* **workflow:** exclude nodes from frame auto-nest ([d5a3891](https://github.com/qq15725/mce/commit/d5a38916044c004f069f5391e7f7c19a8e06a9b3))
+* **workflow:** refine port display and preview line ([72fa610](https://github.com/qq15725/mce/commit/72fa610c2f2816be6833416d1789f06af116dcf5))
+
+
+### Features
+
+* add table and chart elements to shape tools ([87d7f32](https://github.com/qq15725/mce/commit/87d7f324b56da3928c30fff5887a4d6d26114b11))
+* **i18n:** let plugins register their own messages ([c892290](https://github.com/qq15725/mce/commit/c892290528e9c38b3b3d7b80bd87998ae351815a))
+* **openxml:** own save i18n via plugin messages ([fc1f523](https://github.com/qq15725/mce/commit/fc1f523a30f48cce354d19d701b3596cab87276b))
+* **openxml:** support xlsx and docx loading and export ([e9fd1e4](https://github.com/qq15725/mce/commit/e9fd1e4f28822345763323393da7a21dc69c6f72))
+
+
+### Performance Improvements
+
+* **bigesj:** cache font matching and image blobs ([8da1556](https://github.com/qq15725/mce/commit/8da15565d7a7148b1571dda91b35507ec4e7e47a))
+* **mce:** reduce reactive overhead and fix rendered leak ([0ef25e4](https://github.com/qq15725/mce/commit/0ef25e4c57c55d85fcf23f84185e2c6e33286bb7))
+
+# [0.19.0](https://github.com/qq15725/mce/compare/v0.18.5...v0.19.0) (2026-05-25)
+
+
+### Bug Fixes
+
+* **bigesj:** drop dirty numeric style values ([0335172](https://github.com/qq15725/mce/commit/03351723f44ca6a7ff35a39ac5883a4cbfb6f804))
+* **selection:** reactive size tip and stable v-for key ([4a62944](https://github.com/qq15725/mce/commit/4a629448cacf807c5fb2bbb649e57ea71ba4f10c))
+* **text-editor:** keep styles aligned when editing emoji ([4d2d7ed](https://github.com/qq15725/mce/commit/4d2d7edddd7f6bf84696a2134409d1c171a424da))
+* **text-editor:** preserve emoji when editing text ([aa25bc1](https://github.com/qq15725/mce/commit/aa25bc1a98c354808f354dd546530bc3bd3156ec))
+* **typography:** pass fonts to measureText for correct width ([7737d1a](https://github.com/qq15725/mce/commit/7737d1a9f807d2594ab92b2fe4e423f50df56c21))
+* **workflow:** exclude nodes from frame auto-nest ([d5a3891](https://github.com/qq15725/mce/commit/d5a38916044c004f069f5391e7f7c19a8e06a9b3))
+* **workflow:** refine port display and preview line ([72fa610](https://github.com/qq15725/mce/commit/72fa610c2f2816be6833416d1789f06af116dcf5))
+
+
+### Features
+
+* add table and chart elements to shape tools ([87d7f32](https://github.com/qq15725/mce/commit/87d7f324b56da3928c30fff5887a4d6d26114b11))
+* **i18n:** let plugins register their own messages ([c892290](https://github.com/qq15725/mce/commit/c892290528e9c38b3b3d7b80bd87998ae351815a))
+* **openxml:** own save i18n via plugin messages ([fc1f523](https://github.com/qq15725/mce/commit/fc1f523a30f48cce354d19d701b3596cab87276b))
+* **openxml:** support xlsx and docx loading and export ([e9fd1e4](https://github.com/qq15725/mce/commit/e9fd1e4f28822345763323393da7a21dc69c6f72))
+
+
+### Performance Improvements
+
+* **bigesj:** cache font matching and image blobs ([8da1556](https://github.com/qq15725/mce/commit/8da15565d7a7148b1571dda91b35507ec4e7e47a))
+* **mce:** reduce reactive overhead and fix rendered leak ([0ef25e4](https://github.com/qq15725/mce/commit/0ef25e4c57c55d85fcf23f84185e2c6e33286bb7))
+
 ## [0.18.5](https://github.com/qq15725/mce/compare/v0.18.4...v0.18.5) (2026-05-23)
 
 
