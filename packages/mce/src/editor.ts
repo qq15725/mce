@@ -194,6 +194,7 @@ export class Editor extends Observable<Events> {
         exporters = [],
         tools = [],
         components = [],
+        messages,
         setup,
       } = result
 
@@ -203,6 +204,9 @@ export class Editor extends Observable<Events> {
       this.registerExporter(exporters)
       this.registerTool(tools)
       this.registerComponent(name, components)
+      if (messages) {
+        this.registerMessages(messages)
+      }
 
       if (setup) {
         this.setups.push(setup)

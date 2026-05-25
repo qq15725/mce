@@ -1,5 +1,5 @@
 import { merge } from 'lodash-es'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import en from '../locale/en'
 import zhHans from '../locale/zh-Hans'
 import { defineMixin } from '../mixin'
@@ -10,6 +10,8 @@ declare global {
 
     interface Editor {
       t: Translation
+      /** 插件追加自己的 i18n 文案，按 locale（如 en / zhHans）合并，避免全部聚合到核心 locale。 */
+      registerMessages: (messages: Partial<Record<string, LocaleMessages>>) => void
     }
 
     interface LocaleMessages {
@@ -34,6 +36,13 @@ export default defineMixin((editor, options) => {
     locale,
   } = options
 
+  // 插件通过 registerMessages 追加自己的 i18n（按 locale 合并），不必塞进核心 locale 文件
+  const pluginMessages = ref<Record<string, Mce.LocaleMessages>>({})
+
+  function registerMessages(value: Partial<Record<string, Mce.LocaleMessages>>): void {
+    pluginMessages.value = merge({}, pluginMessages.value, value)
+  }
+
   const messages = computed(() => {
     const {
       locale: _locale,
@@ -50,8 +59,8 @@ export default defineMixin((editor, options) => {
 
     return {
       locale: _locale as string,
-      localeMessages: (messages as any)[_locale] as Record<string, any>,
-      fallbackMessages: (messages as any)[_fallback] as Record<string, any>,
+      localeMessages: merge({}, (messages as any)[_locale], pluginMessages.value[_locale]) as Record<string, any>,
+      fallbackMessages: merge({}, (messages as any)[_fallback], pluginMessages.value[_fallback]) as Record<string, any>,
     }
   })
 
@@ -73,5 +82,6 @@ export default defineMixin((editor, options) => {
 
   Object.assign(editor, {
     t,
+    registerMessages,
   })
 })

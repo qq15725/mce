@@ -40,6 +40,8 @@ export interface PluginObject {
   exporters?: Mce.Exporter[]
   tools?: Mce.Tool[]
   components?: PluginComponent[]
+  /** 插件追加的 i18n 文案，按 locale 合并（如 { en: {...}, zhHans: {...} }）。 */
+  messages?: Partial<Record<string, Mce.LocaleMessages>>
   setup?: () => void | Promise<void>
 }
 
