@@ -26,6 +26,10 @@ const shapeItems = computed(() => {
     'ellipse',
     'polygon',
     'star',
+    'table',
+    'chartBar',
+    'chartLine',
+    'chartPie',
   ]
 
   return [

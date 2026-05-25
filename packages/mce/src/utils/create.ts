@@ -1,4 +1,4 @@
-import type { Element, Fill, Outline, ShapeConnectionPoint } from 'modern-idoc'
+import type { Chart, ChartType, Element, Fill, Outline, ShapeConnectionPoint, TableCellObject } from 'modern-idoc'
 import type { Options } from 'modern-text'
 import { normalizeTextContent } from 'modern-idoc'
 import { measureText } from 'modern-text'
@@ -214,5 +214,73 @@ export function createStickyElement(content: string, options: CreateStickyElemen
       inPptIs: 'Shape',
       inCanvasIs: 'Element2D',
     },
+  }
+}
+
+export interface CreateTableElementOptions {
+  width?: number
+  height?: number
+}
+
+/** A grid table backed by the native `table` element property; first row is a header. */
+export function createTableElement(rows = 3, cols = 3, options: CreateTableElementOptions = {}): Element {
+  const { width = 360, height = 160 } = options
+  const cells: TableCellObject[] = []
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      cells.push({
+        row: r,
+        col: c,
+        children: [
+          {
+            style: {
+              fontSize: 13,
+              color: '#333333',
+              textAlign: 'center',
+              verticalAlign: 'middle',
+              fontWeight: r === 0 ? 700 : 400,
+            },
+            text: { content: normalizeTextContent(r === 0 ? `列 ${c + 1}` : '') },
+            meta: { inCanvasIs: 'Element2D' },
+          },
+        ],
+      })
+    }
+  }
+  return {
+    style: { width, height },
+    table: {
+      columns: Array.from({ length: cols }, () => ({ width: width / cols })),
+      rows: Array.from({ length: rows }, () => ({ height: height / rows })),
+      cells,
+    },
+    meta: { inPptIs: 'Shape', inCanvasIs: 'Element2D', inEditorIs: 'Table' },
+  }
+}
+
+export interface CreateChartElementOptions {
+  width?: number
+  height?: number
+  categories?: string[]
+  series?: Chart['series']
+}
+
+/** A chart backed by the native `chart` element property (column/line/pie/…). */
+export function createChartElement(type: ChartType = 'column', options: CreateChartElementOptions = {}): Element {
+  const {
+    width = 360,
+    height = 240,
+    categories = ['一月', '二月', '三月', '四月', '五月'],
+    series = [{ name: '系列 1', values: [40, 70, 55, 90, 60] }],
+  } = options
+  return {
+    style: { width, height },
+    chart: {
+      type,
+      categories,
+      series,
+      legend: 'bottom',
+    },
+    meta: { inPptIs: 'Shape', inCanvasIs: 'Element2D', inEditorIs: 'Chart' },
   }
 }
