@@ -102,7 +102,10 @@ export default definePlugin((editor) => {
     const els = elementSelection.value
     if (els.length === 1) {
       const el = els[0]
-      if (el.text.isValid()) {
+      if (el.table.isValid()) {
+        state.value = 'tableEditing'
+      }
+      else if (el.text.isValid()) {
         await exec('startTyping')
       }
       else if (el.foreground.isValid()) {

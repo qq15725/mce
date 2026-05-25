@@ -3,6 +3,7 @@ import type { Options } from 'modern-text'
 import { normalizeTextContent } from 'modern-idoc'
 import { measureText } from 'modern-text'
 import { getImageSizeFromUrl } from './image'
+import { CELL_BACKGROUND, CELL_BORDER_STYLE, defaultTextStyle } from './table'
 
 // A unit rectangle path; the shape is scaled to fill the element's box, so the
 // exact coordinates don't matter — only that it draws a full rectangle.
@@ -225,21 +226,21 @@ export interface CreateTableElementOptions {
 /** A grid table backed by the native `table` element property; first row is a header. */
 export function createTableElement(rows = 3, cols = 3, options: CreateTableElementOptions = {}): Element {
   const { width = 360, height = 160 } = options
+  const colWidth = width / cols
+  const rowHeight = height / rows
   const cells: TableCellObject[] = []
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       cells.push({
         row: r,
         col: c,
+        // White fill + a 1px border so the canvas renders a solid, lined table.
+        background: CELL_BACKGROUND,
+        style: { ...CELL_BORDER_STYLE },
         children: [
           {
-            style: {
-              fontSize: 13,
-              color: '#333333',
-              textAlign: 'center',
-              verticalAlign: 'middle',
-              fontWeight: r === 0 ? 700 : 400,
-            },
+            // Sizing the child to the cell lets `verticalAlign` center the text.
+            style: { ...defaultTextStyle(r === 0), width: colWidth, height: rowHeight },
             text: { content: normalizeTextContent(r === 0 ? `列 ${c + 1}` : '') },
             meta: { inCanvasIs: 'Element2D' },
           },
@@ -250,8 +251,8 @@ export function createTableElement(rows = 3, cols = 3, options: CreateTableEleme
   return {
     style: { width, height },
     table: {
-      columns: Array.from({ length: cols }, () => ({ width: width / cols })),
-      rows: Array.from({ length: rows }, () => ({ height: height / rows })),
+      columns: Array.from({ length: cols }, () => ({ width: colWidth })),
+      rows: Array.from({ length: rows }, () => ({ height: rowHeight })),
       cells,
     },
     meta: { inPptIs: 'Shape', inCanvasIs: 'Element2D', inEditorIs: 'Table' },

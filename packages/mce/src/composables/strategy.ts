@@ -47,6 +47,24 @@ export const makeMceStrategyProps = propsFactory({
   hoverStrategy: Function as PropType<HoverStrategy>,
 }, 'makeMceStrategyProps')
 
+// Table cells render as Element2D nodes parented to the table element (in its
+// internal back layer), so a raw hit-test lands on a cell. Cells are managed by
+// the table and must never be selected on their own — redirect any cell hit to
+// its owning table element so clicks/hover always act on the table as a whole
+// (and double-click enters table editing).
+function redirectTableCell(
+  node: Element2D | undefined,
+  isElement: Editor['isElement'],
+): Element2D | undefined {
+  if (!node) {
+    return node
+  }
+  const owner = node.findAncestor<Element2D>(
+    n => isElement(n) && Boolean((n as Element2D).table?.isValid?.()),
+  )
+  return owner ?? node
+}
+
 export const defaultActiveStrategy: ActiveStrategy = (context) => {
   const { element, editor } = context
 
@@ -79,11 +97,8 @@ export const defaultActiveStrategy: ActiveStrategy = (context) => {
     return false
   }
 
-  if (cb(element)) {
-    return element
-  }
-
-  return element.findAncestor<Element2D>(cb)
+  const resolved = cb(element) ? element : element.findAncestor<Element2D>(cb)
+  return redirectTableCell(resolved, isElement)
 }
 
 export const defaultDoubleclickStrategy: DoubleclickStrategy = (context) => {
@@ -122,9 +137,6 @@ export const defaultHoverStrategy: HoverStrategy = (context) => {
     return false
   }
 
-  if (cb(element)) {
-    return element
-  }
-
-  return element.findAncestor<Element2D>(cb)
+  const resolved = cb(element) ? element : element.findAncestor<Element2D>(cb)
+  return redirectTableCell(resolved, isElement)
 }

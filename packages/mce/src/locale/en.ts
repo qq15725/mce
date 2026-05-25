@@ -8,6 +8,7 @@ export default {
   'painting': 'Painting',
   'selecting': 'Selecting',
   'cropping': 'Cropping',
+  'tableEditing': 'Editing table',
   'selectObject': 'Select object',
   'commitChanges': 'Commit changes',
   'extend': 'Extend',

@@ -588,7 +588,7 @@ const slotProps = {
         />
 
         <Floatbar
-          v-if="slots['floatbar-top'] || slots.floatbar"
+          v-if="(slots['floatbar-top'] || slots.floatbar) && state !== 'tableEditing'"
           location="top-start"
           :target="state === 'typing'
             ? (componentRefs['mce:text']?.[0] as any)?.textEditor
@@ -600,7 +600,7 @@ const slotProps = {
         </Floatbar>
 
         <Floatbar
-          v-if="slots['floatbar-bottom']"
+          v-if="slots['floatbar-bottom'] && state !== 'tableEditing'"
           location="bottom-start"
           :target="(componentRefs['mce:selection']?.[0] as any)?.transform?.$el"
           :middlewares="['offset', 'shift']"

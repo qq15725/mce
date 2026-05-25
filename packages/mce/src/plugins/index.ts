@@ -31,6 +31,7 @@ import _smartGuides from './smartGuides'
 import _smartSelection from './smartSelection'
 import _state from './state'
 import _statusbar from './statusbar'
+import _table from './table'
 import _test from './test'
 import _timeline from './timeline'
 import _tool from './tool'
@@ -72,6 +73,7 @@ export const plugins = [
   _smartSelection,
   _state,
   _statusbar,
+  _table,
   _test,
   _timeline,
   _tool,

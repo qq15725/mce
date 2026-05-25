@@ -44,6 +44,7 @@ declare global {
         | 'moving'
         | 'transforming'
         | 'typing'
+        | 'tableEditing'
         | 'cropping'
         | 'pathEditing'
         | 'imageReplacing'
