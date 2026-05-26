@@ -1,3 +1,17 @@
+# [0.20.0](https://github.com/qq15725/mce/compare/v0.19.2...v0.20.0) (2026-05-26)
+
+
+### Bug Fixes
+
+* **crdt:** sync table/chart sub-objects to the doc ([3f3c5ec](https://github.com/qq15725/mce/commit/3f3c5ec3b044e9be7545dece95ea66f3b3edb80a))
+* **table:** correct cell-edit alignment and lock resize while editing ([de7aaed](https://github.com/qq15725/mce/commit/de7aaed0e8f25ea558d915598f26c60494c7ee00))
+* **table:** show caret when editing an empty cell ([bf3e761](https://github.com/qq15725/mce/commit/bf3e7612628542bdfdc77112888d684da55c7486))
+
+
+### Features
+
+* **table:** add table editing interactions ([31c0857](https://github.com/qq15725/mce/commit/31c085799a47b1ba87077cf463d754ef65d91260))
+
 ## [0.19.2](https://github.com/qq15725/mce/compare/v0.19.1...v0.19.2) (2026-05-25)
 
 
