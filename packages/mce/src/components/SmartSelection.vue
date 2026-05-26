@@ -356,7 +356,23 @@ function onRingDrag(event: PointerEvent, item: any) {
       const center = el.globalAabb.getCenter()
       switch (direction) {
         case 'horizontal': {
+          // Dragged left past the previous item → swap with prev; dragged right
+          // past the next item → swap with next (matches the vertical case).
           if (center.x < min) {
+            if (prev) {
+              // TODO 旋转
+              let left = elAabb.right - prev.globalAabb.width
+              elAabb.x = prev.globalAabb.left
+              const parentAabb = prev.getParent<Element2D>()?.globalAabb
+              if (parentAabb) {
+                left -= parentAabb.x
+              }
+              prev.style.left = left
+              prev.updateGlobalTransform()
+              update()
+            }
+          }
+          else if (center.x > max) {
             if (next) {
               // TODO 旋转
               const left = next.globalAabb.right - elAabb.width
@@ -368,20 +384,6 @@ function onRingDrag(event: PointerEvent, item: any) {
               next.style.left = _left
               elAabb.x = left
               next.updateGlobalTransform()
-              update()
-            }
-          }
-          else if (center.x > max) {
-            if (prev) {
-              // TODO 旋转
-              let left = elAabb.right - prev.globalAabb.width
-              elAabb.x = prev.globalAabb.left
-              const parentAabb = prev.getParent<Element2D>()?.globalAabb
-              if (parentAabb) {
-                left -= parentAabb.x
-              }
-              prev.style.left = left
-              prev.updateGlobalTransform()
               update()
             }
           }
