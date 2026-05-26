@@ -298,6 +298,10 @@ export default definePlugin((editor) => {
             if (
               isElement(ancestor)
               && !inEditorIs(ancestor, 'Frame')
+              // Flex/auto-layout containers are sized by the layout engine;
+              // obbToFit would force a relayout through the reactive node and
+              // throw a yoga embind Proxy error.
+              && (ancestor.style as any).display !== 'flex'
             ) {
               obbToFit(ancestor)
             }

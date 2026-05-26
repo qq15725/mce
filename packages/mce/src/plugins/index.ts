@@ -7,6 +7,7 @@ import _autoNest from './autoNest'
 import _clipboard from './clipboard'
 import _doc from './doc'
 import _edit from './edit'
+import _flexLayout from './flexLayout'
 import _formatPaint from './formatPaint'
 import _frame from './frame'
 import _history from './history'
@@ -49,6 +50,7 @@ export const plugins = [
   _clipboard,
   _doc,
   _edit,
+  _flexLayout,
   _formatPaint,
   _frame,
   _history,

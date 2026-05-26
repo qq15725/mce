@@ -189,6 +189,17 @@ export default definePlugin((editor) => {
     const els = elementSelection.value
     const isMultiple = els.length > 1
 
+    // A child of a flex/auto-layout container is positioned by the layout
+    // engine, so dragging it must reorder it among its siblings rather than set
+    // left/top. The reordering + insertion indicator live in the flexLayout
+    // plugin; here we just skip the absolute move.
+    if (type === 'move' && els.length === 1) {
+      const parent = els[0].getParent<Element2D>()
+      if (parent && (parent.style as any)?.display === 'flex') {
+        return
+      }
+    }
+
     if (type === 'move') {
       transform.left = Math.round(transform.left)
       transform.top = Math.round(transform.top)
