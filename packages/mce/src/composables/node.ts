@@ -44,6 +44,12 @@ export function useNode(
     const node = nodeRef.value
     let value = node.name
     if (!value || value[0] === '@') {
+      // 工作流节点（inEditorIs = Workflow<Type>）的图层名走 i18n，
+      // 这样切换语言能即时生效；用户显式重命名后 node.name 非空则优先用它。
+      const inEditor = (node as any).meta?.inEditorIs
+      if (typeof inEditor === 'string' && inEditor.startsWith('Workflow')) {
+        return t(`workflow:${inEditor.slice('Workflow'.length).toLowerCase()}`)
+      }
       if (inEditorIs(node, 'Frame')) {
         return t('frame')
       }

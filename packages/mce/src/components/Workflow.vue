@@ -15,12 +15,13 @@ const {
   root,
   isElement,
   exec,
+  t,
 } = useEditor()
 
 const NODE_TYPES = [
-  { type: 'text', label: '文字生成', kbd: '⇧T' },
-  { type: 'image', label: '图片生成', kbd: '⇧I' },
-  { type: 'video', label: '视频生成', kbd: '⇧V' },
+  { type: 'text', icon: '$text', kbd: '⇧T' },
+  { type: 'image', icon: '$image', kbd: '⇧I' },
+  { type: 'video', icon: '$video', kbd: '⇧V' },
 ]
 
 type PortKind = 'input' | 'output'
@@ -205,7 +206,7 @@ function portStyle(p: ScreenPort): Record<string, string> {
       <div class="m-workflow__backdrop" @pointerdown="closeMenu" />
       <div class="m-workflow__menu" :style="{ left: `${menu.x}px`, top: `${menu.y}px` }">
         <div class="m-workflow__menu-title">
-          新增节点
+          {{ t('creator') }}
         </div>
         <button
           v-for="n in NODE_TYPES"
@@ -214,7 +215,10 @@ function portStyle(p: ScreenPort): Record<string, string> {
           class="m-workflow__menu-item"
           @click="chooseNodeType(n.type)"
         >
-          <span>{{ n.label }}</span>
+          <span class="m-workflow__menu-item-main">
+            <Icon :icon="n.icon" />
+            {{ t(`workflow:${n.type}`) }}
+          </span>
           <span class="m-workflow__menu-kbd">{{ n.kbd }}</span>
         </button>
       </div>
@@ -300,6 +304,17 @@ function portStyle(p: ScreenPort): Record<string, string> {
 
     &:hover {
       background: #f3f4f6;
+    }
+  }
+
+  &__menu-item-main {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .m-icon {
+      font-size: 18px;
+      color: #6b7280;
     }
   }
 

@@ -7,12 +7,20 @@ import { getWorkflowPorts, toConnectionPoints } from '../utils/workflow'
 declare global {
   namespace Mce {
     interface WorkflowNodeTemplate {
-      /** Layer-panel name (and header label). */
+      /**
+       * 覆盖节点名（写入 node.name）。不设时图层名走 i18n（key：workflow:<type>），
+       * 切换语言即时生效；菜单项始终走 i18n。
+       */
       label?: string
       /** Bold first line shown inside the node. */
       title?: string
       /** Gray hint paragraphs under the title. */
       body?: string[]
+      /**
+       * 默认占位图。设置后节点渲染这张图片而非 title/body 文字
+       * （图片/视频生成节点用它呈现一张默认图）。
+       */
+      image?: string
     }
 
     interface Options {
@@ -32,25 +40,40 @@ declare global {
   }
 }
 
+// 图片/视频节点的默认占位图：内联 SVG（浅灰圆角底 + 居中图标），无需外部资源。
+function placeholderImage(svg: string): string {
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`
+}
+
+const IMAGE_PLACEHOLDER = placeholderImage(
+  `<svg xmlns="http://www.w3.org/2000/svg" width="380" height="280" viewBox="0 0 380 280" fill="none">`
+  + `<rect width="380" height="280" rx="20" fill="#f3f4f6"/>`
+  + `<rect x="124" y="92" width="132" height="96" rx="12" stroke="#c8ccd4" stroke-width="6" stroke-linejoin="round"/>`
+  + `<circle cx="156" cy="124" r="12" fill="#c8ccd4"/>`
+  + `<path d="M132 184l40-40 26 26 22-22 36 36" stroke="#c8ccd4" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>`
+  + `</svg>`,
+)
+
+const VIDEO_PLACEHOLDER = placeholderImage(
+  `<svg xmlns="http://www.w3.org/2000/svg" width="380" height="280" viewBox="0 0 380 280" fill="none">`
+  + `<rect width="380" height="280" rx="20" fill="#f3f4f6"/>`
+  + `<circle cx="190" cy="140" r="48" stroke="#c8ccd4" stroke-width="6"/>`
+  + `<path d="M178 116l40 24-40 24z" fill="#c8ccd4"/>`
+  + `</svg>`,
+)
+
 // Built-in templates; overridable per type via the `workflowNodes` editor option.
+// 文字节点显示标题 + 提示文案；图片/视频节点只显示一张默认占位图（image 字段），不放文字。
 const DEFAULT_NODES: Record<string, Mce.WorkflowNodeTemplate> = {
   text: {
-    label: '文字生成',
-    title: '✍️ 双击此处输入文字..',
-    body: [
-      '可以在此输入提示词，比如画面描述、产品卖点、活动主题、场景描述、品牌 slogan 等内容。若暂时没有明确内容，也可先输入关键词或草稿，后续随时修改优化哦！',
-      '也可以在底部输入框输入需求，让 AI 自动完成文字生成。',
-    ],
+    title: '✍️ Double-click to add text',
+    body: ['Or describe it below and let AI write for you.'],
   },
   image: {
-    label: '图片生成',
-    title: '🖼️ 双击此处描述画面..',
-    body: ['输入画面描述、风格、主体等内容，让 AI 自动完成图片生成。'],
+    image: IMAGE_PLACEHOLDER,
   },
   video: {
-    label: '视频生成',
-    title: '🎬 双击此处描述视频..',
-    body: ['输入分镜、动作、风格等内容，让 AI 自动完成视频生成。'],
+    image: VIDEO_PLACEHOLDER,
   },
 }
 
@@ -71,26 +94,35 @@ export default definePlugin((editor, options) => {
 
   function createWorkflowNode(type: string): Element {
     const t = getTemplate(type)
-    return {
-      name: t.label ?? type,
-      // 用 style 渲染圆角卡片（背景 + 边框），不提供 shape——shape 的 outline 会与
-      // style.border 冲突。连接点由 materializePorts 在首次连线时懒挂到节点 shape 上。
+    // 用 style 渲染圆角卡片（背景/占位图 + 边框），不提供 shape——shape 的 outline 会与
+    // style.border 冲突。连接点由 materializePorts 在首次连线时懒挂到节点 shape 上。
+    const node: Element = {
+      name: t.label,
       style: {
         width: 380,
         height: 280,
         borderRadius: 20,
-        padding: 28,
-        fontSize: 16,
-        lineHeight: 1.6,
-        backgroundColor: '#ffffff',
         borderColor: '#ececf0',
         borderWidth: 1,
       },
-      text: { content: buildContent(t) },
       // workflow 节点是 graph 节点，用 inEditorIs 标记为 Workflow<Type>（如 WorkflowText），
       // autoNest 据此让它始终独立于画板（Frame）
       meta: { inPptIs: 'Shape', inCanvasIs: 'Element2D', inEditorIs: `Workflow${type.charAt(0).toUpperCase()}${type.slice(1)}` },
     }
+    if (t.image) {
+      // 图片/视频节点：整块默认占位图，不放文字。
+      node.foreground = { image: t.image }
+    }
+    else {
+      Object.assign(node.style!, {
+        padding: 28,
+        fontSize: 16,
+        lineHeight: 1.6,
+        backgroundColor: '#ffffff',
+      })
+      node.text = { content: buildContent(t) }
+    }
+    return node
   }
 
   function addWorkflowNode(type: string, position?: Mce.AddElementPosition): Element2D {
