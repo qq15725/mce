@@ -71,7 +71,7 @@
     "@vueuse/core": "^14.3.0",
     "diff": "^9.0.0",
     "lodash-es": "^4.18.1",
-    "modern-canvas": "^0.20.1",
+    "modern-canvas": "^0.21.2",
     "modern-font": "^0.6.0",
     "modern-idoc": "^0.11.8",
     "modern-text": "^2.0.3",
@@ -79,6 +79,7 @@
     "yjs": "^13.6.30"
   },
   "peerDependencies": {
+    "echarts": "^5 || ^6",
     "lottie-web": "^5",
     "modern-gif": "^2",
     "typescript": ">=4.7",
@@ -86,6 +87,9 @@
     "yoga-layout": "^3"
   },
   "peerDependenciesMeta": {
+    "echarts": {
+      "optional": true
+    },
     "lottie-web": {
       "optional": true
     },
