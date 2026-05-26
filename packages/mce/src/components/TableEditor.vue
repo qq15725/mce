@@ -321,12 +321,18 @@ function startEdit(pos: CellPos): void {
   if (!child) {
     return
   }
+  // Empty text lays out no characters, so the editor can't place a caret —
+  // seed a placeholder space (select-all replaces it on first keystroke and a
+  // whitespace-only result is stored as empty on commit).
+  const isEmpty = !getCellText(cell)
   editingChild.value = child
   editingPos.value = { row: cell.row, col: cell.col }
   nextTick(() => {
     const editor = textEditorEl
     if (!editor || editingChild.value !== child)
       return
+    if (isEmpty)
+      child.text.setContent(' ')
     child.text.update()
     editor.set(child.text.base)
     editor.selectAll()
@@ -349,7 +355,14 @@ function commitEdit(): void {
   const cell = getCellAt(m, pos.row, pos.col)
   if (cell) {
     const content = (child.text?.base as any)?.content
-    if (content) {
+    const plain = Array.isArray(content)
+      ? content.flatMap((p: any) => (p.fragments ?? []).map((f: any) => f.content)).join('')
+      : ''
+    if (plain.trim() === '') {
+      // Whitespace-only (e.g. the untouched placeholder) → store as empty.
+      setCellText(cell, '')
+    }
+    else if (content) {
       if (!cell.children?.length)
         cell.children = [{ text: {}, meta: { inCanvasIs: 'Element2D' } }]
       if (!cell.children[0].text)
