@@ -435,6 +435,8 @@ export class YDoc extends Observable {
           'text',
           'foreground',
           'shadow',
+          'table',
+          'chart',
         ].forEach((key) => {
           let yMap = yNode.get(key) as Y.Map<any> | undefined
           if (!yMap || !(yMap instanceof Y.Map)) {
