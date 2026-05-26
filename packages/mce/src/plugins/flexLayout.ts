@@ -10,11 +10,13 @@ import { definePlugin } from '../plugin'
  * order with its siblings as its centre crosses theirs, and on release drop
  * the offset so it snaps back into its (new) slot.
  *
- * The slot position and sibling centres are cached and only recomputed on an
- * actual reorder — reading them every frame would force a yoga relayout per
- * pointermove and make the element jitter. Structural changes run on the raw
- * (non-reactive) nodes: a Vue-reactive node makes the canvas hand a Proxy to
- * yoga's embind, which throws a Proxy-invariant error and drops the child.
+ * The sibling layout is derived analytically from sizes/gap captured once at
+ * drag start + the current children order (the order array updates
+ * synchronously on `moveChild`, but the rendered transforms only catch up on
+ * the next tick — so reading them back with `getObb` mid-drag is stale and
+ * makes the swap oscillate at the boundary). Structural changes run on the raw
+ * (non-reactive) nodes, else the canvas hands a Proxy to yoga's embind which
+ * throws a Proxy-invariant error and drops the child.
  */
 export default definePlugin((editor) => {
   const {
@@ -28,9 +30,11 @@ export default definePlugin((editor) => {
     parent: Element2D
     horizontal: boolean
     reverse: boolean
-    index: number
-    slot: { left: number, top: number }
-    siblingCenters: number[]
+    gap: number
+    contentStart: number
+    crossSlot: number
+    /** main-axis size by instanceId (captured once; sizes don't change) */
+    size: Map<number, number>
   }
   let drag: Drag | undefined
 
@@ -41,17 +45,24 @@ export default definePlugin((editor) => {
       : undefined
   }
 
-  /** Cache el's flow-slot position and the siblings' main-axis centres. */
-  function recompute(d: Drag): void {
-    const { el, parent, horizontal } = d
-    const obb = getObb(el)
-    d.slot = { left: obb.left - el.style.left, top: obb.top - el.style.top }
-    const siblings = parent.children.filter(c => isElement(c) && !c.equal(el)) as Element2D[]
-    d.siblingCenters = siblings.map((s) => {
-      const o = getObb(s)
-      return horizontal ? o.left + o.width / 2 : o.top + o.height / 2
-    })
-    d.index = el.getIndex()
+  function elementChildren(parent: Element2D): Element2D[] {
+    return parent.children.filter(c => isElement(c)) as Element2D[]
+  }
+
+  /** el's slot main-start and the siblings' main-axis centres, for one order. */
+  function layout(d: Drag, order: Element2D[]): { elStart: number, centers: number[] } {
+    let pos = d.contentStart
+    let elStart = pos
+    const centers: number[] = []
+    for (const c of order) {
+      const s = d.size.get(c.instanceId) ?? 0
+      if (c.equal(d.el))
+        elStart = pos
+      else
+        centers.push(pos + s / 2)
+      pos += s + d.gap
+    }
+    return { elStart, centers }
   }
 
   function start(): void {
@@ -63,35 +74,57 @@ export default definePlugin((editor) => {
     if (!parent)
       return
     const dir = (parent.style as any).flexDirection ?? 'row'
+    const horizontal = dir === 'row' || dir === 'row-reverse'
+    const children = elementChildren(parent)
+    const main = (o: any) => (horizontal ? o.left : o.top)
+    const mainSize = (o: any) => (horizontal ? o.width : o.height)
+
+    const size = new Map<number, number>()
+    children.forEach(c => size.set(c.instanceId, mainSize(getObb(c))))
+    const first = getObb(children[0])
+    // Infer the gap from the first two slots (avoids parsing style units).
+    const gap = children[1]
+      ? main(getObb(children[1])) - (main(first) + mainSize(first))
+      : 0
+    const elObb = getObb(el)
+
     drag = {
       el,
       parent,
-      horizontal: dir === 'row' || dir === 'row-reverse',
+      horizontal,
       reverse: typeof dir === 'string' && dir.endsWith('-reverse'),
-      index: 0,
-      slot: { left: 0, top: 0 },
-      siblingCenters: [],
+      gap,
+      contentStart: main(first),
+      crossSlot: horizontal ? elObb.top : elObb.left,
+      size,
     }
-    recompute(drag)
   }
 
   function move(value: Mce.TransformValue): void {
     if (!drag)
       return
     const d = drag
-
-    // Swap order only when the drag centre crosses into a new slot.
     const dragMain = d.horizontal ? value.left + value.width / 2 : value.top + value.height / 2
-    const before = d.siblingCenters.filter(c => c < dragMain).length
-    const index = d.reverse ? d.siblingCenters.length - before : before
-    if (index !== d.index) {
+
+    let order = elementChildren(d.parent)
+    let { elStart, centers } = layout(d, order)
+    const before = centers.filter(c => c < dragMain).length
+    const index = d.reverse ? centers.length - before : before
+    if (index !== order.findIndex(c => c.equal(d.el))) {
       toRaw(d.parent).moveChild(toRaw(d.el), index)
-      recompute(d)
+      order = elementChildren(d.parent)
+      ;({ elStart } = layout(d, order))
     }
 
-    // Follow the cursor via an offset over the (cached) flow slot.
-    d.el.style.left = value.left - d.slot.left
-    d.el.style.top = value.top - d.slot.top
+    // Follow the cursor: offset over the (analytically derived) flow slot.
+    if (d.horizontal) {
+      d.el.style.left = value.left - elStart
+      d.el.style.top = value.top - d.crossSlot
+    }
+    else {
+      d.el.style.top = value.top - elStart
+      d.el.style.left = value.left - d.crossSlot
+    }
   }
 
   function end(): void {
