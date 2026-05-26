@@ -1,3 +1,18 @@
+# [0.21.0](https://github.com/qq15725/mce/compare/v0.20.0...v0.21.0) (2026-05-26)
+
+
+### Bug Fixes
+
+* **flexLayout:** stop drag jitter by caching slot/sibling positions ([fdc8cc8](https://github.com/qq15725/mce/commit/fdc8cc8e42afe291a92179f53bcf541e899b22e3))
+* **flexLayout:** stop swap oscillation at the boundary ([1163ee6](https://github.com/qq15725/mce/commit/1163ee64f793e0dbec7e15810e56627e754ca360))
+* **smartSelection:** correct horizontal reorder swap direction ([3f7e258](https://github.com/qq15725/mce/commit/3f7e258cec7b2f5438583f804094ad531dcc2bff))
+
+
+### Features
+
+* **flexLayout:** drag-to-reorder children of auto-layout containers ([c123236](https://github.com/qq15725/mce/commit/c12323667d9d8a198b6db28cf8b5573122bc7272))
+* **flexLayout:** lift-and-swap drag for auto-layout children ([b1fa72f](https://github.com/qq15725/mce/commit/b1fa72f2231c855157baa68a86b415ac928df74b))
+
 # [0.20.0](https://github.com/qq15725/mce/compare/v0.19.2...v0.20.0) (2026-05-26)
 
 
