@@ -59,8 +59,8 @@ const focus = ref<CellPos>({ row: 0, col: 0 })
 const editingPos = ref<CellPos | null>(null)
 const selecting = ref(false)
 const menu = ref<{ x: number, y: number } | null>(null)
-// The reused modern-text editor (created imperatively to avoid Vue's custom
-// element resolution) and the live cell child element it edits.
+// The reused mce TextEditor web component (created imperatively to avoid Vue's
+// custom element resolution) and the live cell child element it edits.
 const textHost = ref<HTMLElement>()
 let textEditorEl: TextEditorElement | undefined
 const editingChild = ref<Element2D>()
@@ -314,8 +314,8 @@ function startEdit(pos: CellPos): void {
     return
   anchor.value = { row: cell.row, col: cell.col }
   focus.value = { row: cell.row, col: cell.col }
-  // Edit the live, canvas-rendered cell node directly via the modern-text
-  // editor: keystrokes update its text and the canvas re-renders in place.
+  // Edit the live, canvas-rendered cell node directly via the mce TextEditor:
+  // keystrokes update its text and the canvas re-renders in place.
   const node = (el.table as any)._cellNodes?.get(`${cell.row}:${cell.col}`)
   const child = node?.children?.[0] as Element2D | undefined
   if (!child) {
@@ -771,7 +771,7 @@ onBeforeUnmount(() => {
       />
     </div>
 
-    <!-- cell text editor host: the reused modern-text editor (created in JS) is
+    <!-- cell text editor host: the reused mce TextEditor (created in JS) is
          mounted here, pointed at the live cell node — the canvas renders the
          text and this only adds the caret / selection / input. -->
     <div
