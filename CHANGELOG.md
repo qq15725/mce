@@ -1,3 +1,10 @@
+# [0.22.0](https://github.com/qq15725/mce/compare/v0.21.0...v0.22.0) (2026-05-26)
+
+
+### Features
+
+* **workflow:** default image/video placeholder, i18n node names & menu icons ([ca8a186](https://github.com/qq15725/mce/commit/ca8a1864ae4860bdc0a426153283b8cb4f97185c))
+
 # [0.21.0](https://github.com/qq15725/mce/compare/v0.20.0...v0.21.0) (2026-05-26)
 
 
