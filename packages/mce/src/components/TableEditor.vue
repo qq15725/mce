@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { Element2D } from 'modern-canvas'
 import type { CellPos, CellRange, TableModel, TableModelCell } from '../utils/table'
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeMount, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useEditor } from '../composables/editor'
 import {
   cellRange,
@@ -24,6 +24,9 @@ import {
   setCellText,
   splitCell,
 } from '../utils/table'
+// Aliased so the binding name doesn't match the `<text-editor>` tag — otherwise
+// Vue resolves the tag to this class and tries to render it as a component.
+import { TextEditor as TextEditorElement } from '../web-components'
 
 const {
   elementSelection,
@@ -56,7 +59,11 @@ const focus = ref<CellPos>({ row: 0, col: 0 })
 const editingPos = ref<CellPos | null>(null)
 const selecting = ref(false)
 const menu = ref<{ x: number, y: number } | null>(null)
-const editBox = ref<HTMLElement>()
+// The reused modern-text editor (created imperatively to avoid Vue's custom
+// element resolution) and the live cell child element it edits.
+const textHost = ref<HTMLElement>()
+let textEditorEl: TextEditorElement | undefined
+const editingChild = ref<Element2D>()
 
 // Internal clipboard for cell regions (text matrix).
 let clipboard: { rows: number, cols: number, texts: string[][] } | null = null
@@ -153,26 +160,6 @@ function isRowActive(ri: number): boolean {
   return ri >= r.minRow && ri <= r.maxRow
 }
 
-const editingCell = computed(() => {
-  const m = model.value
-  const pos = editingPos.value
-  return m && pos ? getCellAt(m, pos.row, pos.col) : undefined
-})
-
-const editingRectStyle = computed(() => {
-  const m = model.value
-  const cell = editingCell.value
-  if (!m || !cell)
-    return { display: 'none' }
-  const rect = getCellRect(m, cell)
-  return {
-    left: `${rect.left}px`,
-    top: `${rect.top}px`,
-    width: `${rect.width}px`,
-    height: `${rect.height}px`,
-  }
-})
-
 const selectedAnchorMerged = computed(() => {
   const m = model.value
   if (!m)
@@ -181,28 +168,19 @@ const selectedAnchorMerged = computed(() => {
   return cell ? isMergedCell(cell) : false
 })
 
-// Flex alignment for the edit wrapper, mirroring the cell's text/vertical align
-// so the editing caret sits where the committed (canvas-rendered) text will.
-const editingAlign = computed(() => {
-  const s = editingCell.value?.children?.[0]?.style ?? {}
-  const align = s.textAlign ?? 'center'
-  const valign = s.verticalAlign ?? 'middle'
-  return {
-    display: 'flex',
-    justifyContent: align === 'left' ? 'flex-start' : align === 'right' ? 'flex-end' : 'center',
-    alignItems: valign === 'top' ? 'flex-start' : valign === 'bottom' ? 'flex-end' : 'center',
+// Position the text editor at the cell child's world rect (+ its text box
+// offset), same as the standalone TextEditor overlay does for a text element.
+const editingChildStyle = computed(() => {
+  const child = editingChild.value
+  if (!child)
+    return { display: 'none' }
+  const obb = getObb(child)
+  const textBox = child.text?.base?.boundingBox
+  if (textBox) {
+    obb.left += textBox.left
+    obb.top += textBox.top
   }
-})
-
-const editingTextStyle = computed(() => {
-  const s = editingCell.value?.children?.[0]?.style ?? {}
-  return {
-    fontSize: `${s.fontSize ?? 13}px`,
-    color: s.color ?? '#333333',
-    fontWeight: String(s.fontWeight ?? 400),
-    textAlign: s.textAlign ?? 'center',
-    maxWidth: '100%',
-  }
+  return obb.toCssStyle()
 })
 
 // ── enter / exit ─────────────────────────────────────────────────────────────
@@ -328,47 +306,81 @@ function selectAll(): void {
 
 // ── cell text editing ─────────────────────────────────────────────────────────
 
-function startEdit(pos: CellPos, initial?: string): void {
+function startEdit(pos: CellPos): void {
   const m = model.value!
+  const el = editingEl.value
   const cell = getCellAt(m, pos.row, pos.col)
-  if (!cell)
+  if (!cell || !el)
     return
   anchor.value = { row: cell.row, col: cell.col }
   focus.value = { row: cell.row, col: cell.col }
+  // Edit the live, canvas-rendered cell node directly via the modern-text
+  // editor: keystrokes update its text and the canvas re-renders in place.
+  const node = (el.table as any)._cellNodes?.get(`${cell.row}:${cell.col}`)
+  const child = node?.children?.[0] as Element2D | undefined
+  if (!child) {
+    return
+  }
+  editingChild.value = child
   editingPos.value = { row: cell.row, col: cell.col }
   nextTick(() => {
-    const box = editBox.value
-    if (!box)
+    const editor = textEditorEl
+    if (!editor || editingChild.value !== child)
       return
-    box.textContent = initial ?? getCellText(cell)
-    box.focus()
-    const sel = window.getSelection()
-    const range = document.createRange()
-    range.selectNodeContents(box)
-    range.collapse(false)
-    sel?.removeAllRanges()
-    sel?.addRange(range)
+    child.text.update()
+    editor.set(child.text.base)
+    editor.selectAll()
+    // A trailing mousedown can steal focus to <body>; re-select next frame.
+    requestAnimationFrame(() => {
+      if (editingChild.value === child)
+        editor.selectAll()
+    })
   })
 }
 
 function commitEdit(): void {
   const pos = editingPos.value
-  const box = editBox.value
+  const child = editingChild.value
   const m = model.value
-  if (!pos || !box || !m) {
-    editingPos.value = null
-    return
-  }
-  const cell = getCellAt(m, pos.row, pos.col)
   editingPos.value = null
+  editingChild.value = undefined
+  if (!pos || !child || !m)
+    return
+  const cell = getCellAt(m, pos.row, pos.col)
   if (cell) {
-    setCellText(cell, (box.textContent ?? '').replace(/\n$/, ''))
+    const content = (child.text?.base as any)?.content
+    if (content) {
+      if (!cell.children?.length)
+        cell.children = [{ text: {}, meta: { inCanvasIs: 'Element2D' } }]
+      if (!cell.children[0].text)
+        cell.children[0].text = {}
+      cell.children[0].text.content = JSON.parse(JSON.stringify(content))
+    }
     flush()
   }
 }
 
-function onEditBlur(): void {
-  commitEdit()
+// Discard the in-progress edit. The editor mutates the live cell node directly
+// while the model still holds the pre-edit content, and setProperties skips
+// unchanged cells — so restore the live node's text from the model explicitly.
+function cancelEdit(): void {
+  const child = editingChild.value
+  const pos = editingPos.value
+  const m = model.value
+  editingPos.value = null
+  editingChild.value = undefined
+  if (child && pos && m) {
+    const content = getCellAt(m, pos.row, pos.col)?.children?.[0]?.text?.content
+    ;(child.text.base as any).content = content ? JSON.parse(JSON.stringify(content)) : []
+    child.text.update()
+    editingEl.value?.requestRender?.()
+  }
+}
+
+// The editor mutates the live cell node's text in place, so the canvas already
+// re-renders; just nudge the element to repaint promptly.
+function onTextUpdate(): void {
+  editingEl.value?.requestRender?.()
 }
 
 // ── structural ops ──────────────────────────────────────────────────────────
@@ -557,19 +569,24 @@ function onKeydown(e: KeyboardEvent): void {
   if (!active.value)
     return
 
-  // While typing inside a cell, only intercept commit / cancel keys.
+  // While typing inside a cell, intercept commit / cancel keys before they
+  // reach the editor's textarea (stopPropagation), and let everything else
+  // through to it.
   if (editingPos.value) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
+      e.stopPropagation()
       commitEdit()
       moveFocus(1, 0)
     }
     else if (e.key === 'Escape') {
       e.preventDefault()
-      editingPos.value = null
+      e.stopPropagation()
+      cancelEdit()
     }
     else if (e.key === 'Tab') {
       e.preventDefault()
+      e.stopPropagation()
       commitEdit()
       moveFocus(0, e.shiftKey ? -1 : 1)
     }
@@ -634,16 +651,24 @@ function onKeydown(e: KeyboardEvent): void {
       e.preventDefault()
       moveFocus(0, 1, e.shiftKey)
       break
-    default:
-      // Printable character → start editing, replacing content.
-      if (e.key.length === 1 && !e.altKey) {
-        startEdit(focus.value, '')
-      }
-      break
   }
 }
 
+onBeforeMount(() => {
+  TextEditorElement.register()
+})
+
 onMounted(() => {
+  // Create the editor element ourselves and mount it into the host, so it is
+  // always the upgraded custom element regardless of the template compiler's
+  // isCustomElement config.
+  const el = document.createElement('text-editor') as TextEditorElement
+  el.className = 'm-table-editor__text-editor'
+  el.style.setProperty('--color', 'var(--m-theme-primary)')
+  el.addEventListener('update', onTextUpdate)
+  el.addEventListener('submit', () => commitEdit())
+  textHost.value?.appendChild(el)
+  textEditorEl = el
   window.addEventListener('keydown', onKeydown, true)
   window.addEventListener('pointerup', onWindowPointerup)
 })
@@ -744,26 +769,19 @@ onBeforeUnmount(() => {
         :class="{ 'm-table-editor__selection--range': !isSingleSelection }"
         :style="selectionRectStyle"
       />
-
-      <!-- single cell text editor, positioned over the editing cell. The flex
-           wrapper centers the inner editable item so the caret stays centered
-           even when the cell is empty (a flex contenteditable would not). -->
-      <div
-        v-if="editingCell"
-        class="m-table-editor__edit-wrapper"
-        :style="{ ...editingRectStyle, ...editingAlign }"
-        @pointerdown.stop
-        @dblclick.stop
-      >
-        <div
-          ref="editBox"
-          class="m-table-editor__edit-input"
-          contenteditable="true"
-          :style="editingTextStyle"
-          @blur="onEditBlur"
-        />
-      </div>
     </div>
+
+    <!-- cell text editor host: the reused modern-text editor (created in JS) is
+         mounted here, pointed at the live cell node — the canvas renders the
+         text and this only adds the caret / selection / input. -->
+    <div
+      v-show="editingChild"
+      ref="textHost"
+      class="m-table-editor__text"
+      :style="editingChildStyle"
+      @pointerdown.stop
+      @dblclick.stop
+    />
 
     <!-- context menu: teleported to body so the camera transform on the root
          doesn't distort its fixed positioning -->
@@ -869,22 +887,15 @@ onBeforeUnmount(() => {
     cursor: cell;
   }
 
-  &__edit-wrapper {
+  &__text {
     position: absolute;
     z-index: 4;
-    box-sizing: border-box;
-    overflow: hidden;
-    cursor: text;
-    background: rgb(var(--m-theme-background, 255 255 255));
-    outline: 2px solid rgb(var(--m-theme-primary));
+    pointer-events: auto;
   }
 
-  &__edit-input {
-    outline: none;
-    padding: 0 4px;
-    white-space: pre-wrap;
-    word-break: break-word;
-    line-height: 1.2;
+  &__text-editor {
+    pointer-events: auto !important;
+    cursor: text;
   }
 
   &__selection {
