@@ -80,12 +80,16 @@
   },
   "peerDependencies": {
     "lottie-web": "^5",
+    "modern-gif": "^2",
     "typescript": ">=4.7",
     "vue": "^3.5.0",
     "yoga-layout": "^3"
   },
   "peerDependenciesMeta": {
     "lottie-web": {
+      "optional": true
+    },
+    "modern-gif": {
       "optional": true
     },
     "typescript": {
