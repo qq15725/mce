@@ -40,41 +40,41 @@ declare global {
   }
 }
 
-// 图片/视频节点的默认占位图：内联 SVG（浅灰圆角底 + 居中图标），无需外部资源。
+// 图片/视频节点的默认占位图：内联 SVG（主题 surface 圆角底 + on-surface 反色图标）。
+// 颜色在「插入节点时」从主题 CSS 变量解析后烤进 data URI——SVG data URI 是独立文档，
+// 无法直接 var(--m-theme-*)，只能运行时注入（已插入节点不随后续主题切换更新）。
 function placeholderImage(svg: string): string {
   return `data:image/svg+xml,${encodeURIComponent(svg)}`
 }
 
-const IMAGE_PLACEHOLDER = placeholderImage(
-  `<svg xmlns="http://www.w3.org/2000/svg" width="380" height="280" viewBox="0 0 380 280" fill="none">`
-  + `<rect width="380" height="280" rx="20" fill="#f3f4f6"/>`
-  + `<rect x="124" y="92" width="132" height="96" rx="12" stroke="#c8ccd4" stroke-width="6" stroke-linejoin="round"/>`
-  + `<circle cx="156" cy="124" r="12" fill="#c8ccd4"/>`
-  + `<path d="M132 184l40-40 26 26 22-22 36 36" stroke="#c8ccd4" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>`
-  + `</svg>`,
-)
+// 图标用主题反色（on-surface）配中等强调透明度，在 surface 底色上呈现为中灰。
+const PLACEHOLDER_ICON_OPACITY = 0.4
 
-const VIDEO_PLACEHOLDER = placeholderImage(
-  `<svg xmlns="http://www.w3.org/2000/svg" width="380" height="280" viewBox="0 0 380 280" fill="none">`
-  + `<rect width="380" height="280" rx="20" fill="#f3f4f6"/>`
-  + `<circle cx="190" cy="140" r="48" stroke="#c8ccd4" stroke-width="6"/>`
-  + `<path d="M178 116l40 24-40 24z" fill="#c8ccd4"/>`
-  + `</svg>`,
-)
+const PLACEHOLDER_BUILDERS: Record<string, (bg: string, icon: string) => string> = {
+  image: (bg, icon) =>
+    `<svg xmlns="http://www.w3.org/2000/svg" width="380" height="280" viewBox="0 0 380 280" fill="none">`
+    + `<rect width="380" height="280" rx="20" fill="${bg}"/>`
+    + `<rect x="124" y="92" width="132" height="96" rx="12" stroke="${icon}" stroke-opacity="${PLACEHOLDER_ICON_OPACITY}" stroke-width="6" stroke-linejoin="round"/>`
+    + `<circle cx="156" cy="124" r="12" fill="${icon}" fill-opacity="${PLACEHOLDER_ICON_OPACITY}"/>`
+    + `<path d="M132 184l40-40 26 26 22-22 36 36" stroke="${icon}" stroke-opacity="${PLACEHOLDER_ICON_OPACITY}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>`
+    + `</svg>`,
+  video: (bg, icon) =>
+    `<svg xmlns="http://www.w3.org/2000/svg" width="380" height="280" viewBox="0 0 380 280" fill="none">`
+    + `<rect width="380" height="280" rx="20" fill="${bg}"/>`
+    + `<circle cx="190" cy="140" r="48" stroke="${icon}" stroke-opacity="${PLACEHOLDER_ICON_OPACITY}" stroke-width="6"/>`
+    + `<path d="M178 116l40 24-40 24z" fill="${icon}" fill-opacity="${PLACEHOLDER_ICON_OPACITY}"/>`
+    + `</svg>`,
+}
 
 // Built-in templates; overridable per type via the `workflowNodes` editor option.
-// 文字节点显示标题 + 提示文案；图片/视频节点只显示一张默认占位图（image 字段），不放文字。
+// 文字节点显示标题 + 提示文案；图片/视频节点的占位图按主题色在插入时生成（见 createWorkflowNode）。
 const DEFAULT_NODES: Record<string, Mce.WorkflowNodeTemplate> = {
   text: {
     title: '✍️ Double-click to add text',
     body: ['Or describe it below and let AI write for you.'],
   },
-  image: {
-    image: IMAGE_PLACEHOLDER,
-  },
-  video: {
-    image: VIDEO_PLACEHOLDER,
-  },
+  image: {},
+  video: {},
 }
 
 export default definePlugin((editor, options) => {
@@ -83,6 +83,21 @@ export default definePlugin((editor, options) => {
   // Per-field merge: user templates override the defaults, missing fields fall back.
   function getTemplate(type: string): Mce.WorkflowNodeTemplate {
     return { ...DEFAULT_NODES[type], ...options.workflowNodes?.[type] }
+  }
+
+  // 读主题 CSS 变量（RGB 三元组，如 "30, 30, 30"）拼成 rgb(...)；读不到时用 fallback。
+  // 取 drawboardDom（.m-editor 子节点，继承主题变量）做 getComputedStyle。
+  function themeRgb(name: string, fallback: string): string {
+    const el = editor.drawboardDom.value
+    const raw = el && getComputedStyle(el).getPropertyValue(name).trim()
+    return `rgb(${raw || fallback})`
+  }
+
+  function buildPlaceholder(type: string): string {
+    return placeholderImage(PLACEHOLDER_BUILDERS[type](
+      themeRgb('--m-theme-surface', '255, 255, 255'),
+      themeRgb('--m-theme-on-surface', '30, 30, 30'),
+    ))
   }
 
   function buildContent(t: Mce.WorkflowNodeTemplate): any {
@@ -94,6 +109,8 @@ export default definePlugin((editor, options) => {
 
   function createWorkflowNode(type: string): Element {
     const t = getTemplate(type)
+    // 占位图：用户未通过 workflowNodes 覆盖 image 且该类型有内置占位时，按当前主题反色生成。
+    const image = t.image ?? (type in PLACEHOLDER_BUILDERS ? buildPlaceholder(type) : undefined)
     // 用 style 渲染圆角卡片（背景/占位图 + 边框），不提供 shape——shape 的 outline 会与
     // style.border 冲突。连接点由 materializePorts 在首次连线时懒挂到节点 shape 上。
     const node: Element = {
@@ -109,9 +126,9 @@ export default definePlugin((editor, options) => {
       // autoNest 据此让它始终独立于画板（Frame）
       meta: { inPptIs: 'Shape', inCanvasIs: 'Element2D', inEditorIs: `Workflow${type.charAt(0).toUpperCase()}${type.slice(1)}` },
     }
-    if (t.image) {
+    if (image) {
       // 图片/视频节点：整块默认占位图，不放文字。
-      node.foreground = { image: t.image }
+      node.foreground = { image }
     }
     else {
       Object.assign(node.style!, {
