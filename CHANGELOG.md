@@ -1,3 +1,10 @@
+## [0.22.2](https://github.com/qq15725/mce/compare/v0.22.1...v0.22.2) (2026-05-27)
+
+
+### Bug Fixes
+
+* **workflow:** theme-aware image/video placeholder colors ([142c3c1](https://github.com/qq15725/mce/commit/142c3c16617be7825bdd32405bfd938a2a2cd66e))
+
 ## [0.22.1](https://github.com/qq15725/mce/compare/v0.22.0...v0.22.1) (2026-05-26)
 
 # [0.22.0](https://github.com/qq15725/mce/compare/v0.21.0...v0.22.0) (2026-05-26)
