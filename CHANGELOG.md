@@ -1,3 +1,10 @@
+# [0.23.0](https://github.com/qq15725/mce/compare/v0.22.2...v0.23.0) (2026-05-28)
+
+
+### Features
+
+* **smartGuides:** resize & canvas-edge snapping, gutter snap, distance lines ([92e0a1e](https://github.com/qq15725/mce/commit/92e0a1e0285bc2e2a678fe156c0554b220e0450c))
+
 ## [0.22.2](https://github.com/qq15725/mce/compare/v0.22.1...v0.22.2) (2026-05-27)
 
 
