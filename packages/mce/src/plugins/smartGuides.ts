@@ -1,3 +1,20 @@
+/**
+ * # 辅助线
+ * 一个辅助对齐插件
+ * ## Feature
+ * - 显示对齐辅助
+ *   - 对齐线 √
+ *   - 距离线 √（移动盒子中线到最近兄弟盒子，带像素值）
+ *   - 间距线 √（以带数值的等距间距块呈现）
+ *   - 间距块 √
+ * - 自动吸附
+ *   - 对齐时吸附 √
+ *   - 减少距离时（如 4/8/12/16）吸附 √（gutter 卡点，对齐优先、间距卡点次之）
+ *   - 调整大小时吸附 √（仅单边手柄）
+ *   - 画板边界吸附 √（仅真实画板 Frame）
+ * 参考资料:
+ * @link https://zhuanlan.zhihu.com/p/92469406 《云凤蝶如何打造媲美 sketch 的自由画布》
+ */
 import type { Node } from 'modern-canvas'
 import { Aabb2D } from 'modern-canvas'
 import { computed, h, ref } from 'vue'
@@ -47,6 +64,7 @@ export default definePlugin((editor) => {
   const {
     isNode,
     isElement,
+    isFrameNode,
     elementSelection,
     selectionAabb,
     getAabb,
@@ -91,6 +109,18 @@ export default definePlugin((editor) => {
     box.hl = createLine(left, 'hl', box)
     box.hm = createLine(left + width / 2, 'hm', box)
     box.hr = createLine(left + width, 'hr', box)
+    return box
+  }
+
+  // 画板（Frame）边界作为吸附目标：把它的 6 条线（边 + 中线）标记为 canvas line（id=-1），
+  // 让元素能对齐到画板边/中线、或相对画板两边等距。仅对真实画板生效——root 无限画布无边界。
+  function createCanvasBox(): Box | undefined {
+    const p = parent.value
+    if (!isNode(p) || !isFrameNode(p))
+      return undefined
+    const box = createBox(p)
+    if (box)
+      box.id = -1
     return box
   }
 
@@ -190,10 +220,65 @@ export default definePlugin((editor) => {
     return areas
   }
 
-  const linePairs = ref<LinePair[]>([])
+  // 距离线：从移动盒子中线出发，到「同向有重叠、之间有正间距」的最近兄弟盒子，每轴最多 1 条。
+  // 不含画板边界（容器是包含关系，非相邻间距）。
+  function findDistancePairs(box: Box, boxes: Box[]): LinePair[] {
+    const moving = toBoundingBox(box)
+    let bestV: { gap: number, below: boolean, nb: Box } | undefined
+    let bestH: { gap: number, after: boolean, nb: Box } | undefined
+    for (const nb of boxes) {
+      if (nb.id === -1)
+        continue
+      const b = toBoundingBox(nb)
+      if (moving.overlap(b, 'x')) {
+        const below = nb.vt.pos - box.vb.pos
+        const above = box.vt.pos - nb.vb.pos
+        if (below > 0 && (!bestV || below < bestV.gap))
+          bestV = { gap: below, below: true, nb }
+        if (above > 0 && (!bestV || above < bestV.gap))
+          bestV = { gap: above, below: false, nb }
+      }
+      if (moving.overlap(b, 'y')) {
+        const after = nb.hl.pos - box.hr.pos
+        const before = box.hl.pos - nb.hr.pos
+        if (after > 0 && (!bestH || after < bestH.gap))
+          bestH = { gap: after, after: true, nb }
+        if (before > 0 && (!bestH || before < bestH.gap))
+          bestH = { gap: before, after: false, nb }
+      }
+    }
+    const pairs: LinePair[] = []
+    if (bestV) {
+      pairs.push({
+        source: bestV.below ? box.vb : box.vt,
+        target: bestV.below ? bestV.nb.vt : bestV.nb.vb,
+        type: 'distance',
+        distance: bestV.gap,
+      })
+    }
+    if (bestH) {
+      pairs.push({
+        source: bestH.after ? box.hr : box.hl,
+        target: bestH.after ? bestH.nb.hl : bestH.nb.hr,
+        type: 'distance',
+        distance: bestH.gap,
+      })
+    }
+    return pairs
+  }
 
-  function updateSmartGuides() {
+  const linePairs = ref<LinePair[]>([])
+  // 间距卡点候选：邻居边按这些间距偏移后的位置，作为吸附次选（“减少距离时吸附”，Ant Gutter 思路）。
+  const gutterPoints = ref<{ x: number[], y: number[] }>({ x: [], y: [] })
+  const GUTTERS = [4, 8, 12, 16]
+
+  function updateSmartGuides(handle = 'move') {
     const _linePairs: LinePair[] = []
+    const _gutterX: number[] = []
+    const _gutterY: number[] = []
+    // resize 时只用被拖动的边作对齐源：每轴最终只保留“最近的一条”对齐线，若沿用全部 6 条边，
+    // 保留的那条可能落在未拖动的边上，导致吸附目标与实际在动的边错配。
+    const resizeDir = handle.startsWith('resize') ? handle.split('-')[1] ?? '' : ''
 
     const box = createBox(selectionAabb.value)
 
@@ -211,6 +296,11 @@ export default definePlugin((editor) => {
         .map(node => createBox(node)!)
         .filter(Boolean) as Box[]
 
+      // 画板边界线追加在兄弟元素之后（BSTree.add 按 pos 去重，同位置时保留先加入的元素线）。
+      const canvasBox = createCanvasBox()
+      if (canvasBox)
+        boxes.push(canvasBox)
+
       const { vLines, hLines } = boxes.reduce(
         (store, box) => {
           [box.vt, box.vm, box.vb].forEach(val => store.vLines.add(val));
@@ -223,6 +313,18 @@ export default definePlugin((editor) => {
         },
       )
 
+      // 间距卡点候选 = 每条邻居边按 ±GUTTERS 偏移；中线(hm/vm)不参与（间距卡点只针对边）。
+      hLines.inorderTraversal((line) => {
+        if (line.type === 'hm')
+          return
+        for (const g of GUTTERS) _gutterX.push(line.pos + g, line.pos - g)
+      })
+      vLines.inorderTraversal((line) => {
+        if (line.type === 'vm')
+          return
+        for (const g of GUTTERS) _gutterY.push(line.pos + g, line.pos - g)
+      })
+
       const areaLine: Record<'vt' | 'vb' | 'hl' | 'hr', Line[]> = {
         vt: [],
         vb: [],
@@ -231,8 +333,18 @@ export default definePlugin((editor) => {
       }
 
       const alignmentItems = [
-        { sources: [box.vt, box.vm, box.vb], targets: vLines },
-        { sources: [box.hl, box.hm, box.hr], targets: hLines },
+        {
+          sources: resizeDir
+            ? [resizeDir.includes('t') && box.vt, resizeDir.includes('b') && box.vb].filter(Boolean) as Line[]
+            : [box.vt, box.vm, box.vb],
+          targets: vLines,
+        },
+        {
+          sources: resizeDir
+            ? [resizeDir.includes('l') && box.hl, resizeDir.includes('r') && box.hr].filter(Boolean) as Line[]
+            : [box.hl, box.hm, box.hr],
+          targets: hLines,
+        },
       ]
       alignmentItems.forEach(({ targets, sources }) => {
         const items: LinePair[] = []
@@ -269,10 +381,13 @@ export default definePlugin((editor) => {
       areaLine.hl = areaLine.hl.sort((a, b) => b.pos - a.pos)
 
       // TODO 两边区域相等时，同方向区域相等也应该可以显示
-      const areaItems = [
-        { targets: [areaLine.vt, areaLine.vb], sources: [box.vt, box.vb] },
-        { targets: [areaLine.hl, areaLine.hr], sources: [box.hl, box.hr] },
-      ]
+      // resize 只做被拖动边的对齐吸附，不计算等距区域（area）。
+      const areaItems = resizeDir
+        ? []
+        : [
+            { targets: [areaLine.vt, areaLine.vb], sources: [box.vt, box.vb] },
+            { targets: [areaLine.hl, areaLine.hr], sources: [box.hl, box.hr] },
+          ]
       areaItems.forEach(({ sources, targets }) => {
         const targetA = targets[0][0]
         const sourceA = sources[0]
@@ -314,9 +429,22 @@ export default definePlugin((editor) => {
           }
         }
       })
+
+      // 距离线（仅移动时）：最低优先级，仅在该方向尚无对齐线/间距块时出现，
+      // 避免同一方向重复出现多条（距离线与 area 表达的是同一段间距）。
+      if (!resizeDir) {
+        const isV = (t: LineType): boolean => t === 'vt' || t === 'vm' || t === 'vb'
+        const hasV = _linePairs.some(p => isV(p.target.type))
+        const hasH = _linePairs.some(p => !isV(p.target.type))
+        for (const pair of findDistancePairs(box, boxes)) {
+          if (isV(pair.target.type) ? !hasV : !hasH)
+            _linePairs.push(pair)
+        }
+      }
     }
 
     linePairs.value = _linePairs
+    gutterPoints.value = { x: _gutterX, y: _gutterY }
   }
 
   const snapLines = computed(() => {
@@ -398,6 +526,32 @@ export default definePlugin((editor) => {
               height: scaleY(bottom - top),
             }
           }
+          // 间距块上标注间距像素值（即“间距线 / spacing”的数值反馈）。
+          itemProps.label = String(Math.round(linePair.distance))
+          break
+        }
+        case 'distance': {
+          itemProps.class = ['distance']
+          if (vertical) {
+            itemProps.class.push('distance--vertical')
+            const top = Math.min(source.pos, target.pos)
+            itemProps.style = {
+              left: scaleX(boxSource.hm.pos) - position.left,
+              top: scaleY(top) - position.top,
+              width: 1,
+              height: scaleY(linePair.distance),
+            }
+          }
+          else {
+            const left = Math.min(source.pos, target.pos)
+            itemProps.style = {
+              left: scaleX(left) - position.left,
+              top: scaleY(boxSource.vm.pos) - position.top,
+              width: scaleX(linePair.distance),
+              height: 1,
+            }
+          }
+          itemProps.label = String(Math.round(linePair.distance))
           break
         }
       }
@@ -444,6 +598,8 @@ export default definePlugin((editor) => {
       return {
         xLines: lines.x,
         yLines: lines.y,
+        xGutters: gutterPoints.value.x,
+        yGutters: gutterPoints.value.y,
       }
     },
   })
@@ -452,16 +608,14 @@ export default definePlugin((editor) => {
     name: 'mce:smartGuides',
     events: {
       selectionTransformed: ({ handle }) => {
-        if (
-          handle === 'move'
-          // TODO
-          // || handle.startsWith('resize')
-        ) {
-          updateSmartGuides()
+        // move 与单边 resize（resize-t/l/r/b）显示参考线；角手柄常锁宽高比，暂不处理。
+        if (handle === 'move' || /^resize-[tlrb]$/.test(handle)) {
+          updateSmartGuides(handle)
         }
       },
       selectionTransformEnded: () => {
         linePairs.value = []
+        gutterPoints.value = { x: [], y: [] }
       },
     },
     components: [

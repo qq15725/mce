@@ -9,7 +9,7 @@ import svg from '@mce/svg'
 import { Editor, EditorLayers, EditorLayout, EditorLayoutItem } from 'mce'
 import gifWorkerUrl from 'modern-gif/worker?url'
 import { computed } from 'vue'
-import { loadAnimationDemo, loadConnectionDemo, loadGifDemo, loadLayoutDemo, loadVideoDemo } from './demos'
+import { loadAnimationDemo, loadConnectionDemo, loadGifDemo, loadLayoutDemo, loadSmartGuidesDemo, loadVideoDemo } from './demos'
 import 'mce/styles'
 
 const editorOptions = {
@@ -78,6 +78,9 @@ else if (demo === 'gif') {
 else if (demo === 'video') {
   loadVideoDemo(editor)
 }
+else if (demo === 'smartGuides') {
+  loadSmartGuidesDemo(editor)
+}
 
 const element = computed(() => editor.elementSelection.value[0])
 </script>
@@ -139,6 +142,9 @@ const element = computed(() => editor.elementSelection.value[0])
           </button>
           <button @click="() => loadVideoDemo(editor)">
             视频示例
+          </button>
+          <button @click="() => loadSmartGuidesDemo(editor)">
+            参考线示例
           </button>
         </div>
       </template>

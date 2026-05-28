@@ -46,6 +46,8 @@ declare global {
     interface TransformOptions {
       event?: MouseEvent
       isCorner?: boolean
+      /** resize 时被拖动的方向（t/l/r/b/tl/...），用于缩放吸附定位被拖动的边。 */
+      direction?: string
     }
 
     interface Commands {
@@ -87,6 +89,7 @@ export default definePlugin((editor) => {
     state,
     registerConfig,
     snap,
+    snapResize,
   } = editor
 
   registerConfig<Mce.TransformConfig>('interaction.transform', {
@@ -174,7 +177,7 @@ export default definePlugin((editor) => {
   }
 
   const setTransform: Mce.Commands['setTransform'] = (type, value, options = {}) => {
-    const { event, isCorner } = options
+    const { event, isCorner, direction = '' } = options
 
     if (!context) {
       initContext()
@@ -228,6 +231,10 @@ export default definePlugin((editor) => {
       if (!transform.rotate) {
         snap(transform)
       }
+    }
+    else if (type === 'resize' && !transform.rotate && !isMultiple) {
+      // 单选、未旋转时缩放吸附：把被拖动的边对齐到吸附线（角手柄由 snapResize 内部跳过）。
+      snapResize(transform, direction)
     }
 
     const offsetStyle = {
@@ -404,6 +411,7 @@ export default definePlugin((editor) => {
         setTransform(type as Mce.TransformType, value, {
           event,
           isCorner,
+          direction,
         })
       },
       selectionTransformEnded: () => {

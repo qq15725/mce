@@ -26,7 +26,9 @@ const {
           width: `${item.style.width}px`,
           height: `${item.style.height}px`,
         }"
-      />
+      >
+        <span v-if="item.label" class="m-smart-guides__label">{{ item.label }}</span>
+      </div>
     </template>
   </div>
 </template>
@@ -45,6 +47,64 @@ const {
       background-color: rgb(var(--m-theme-secondary));
       height: 1px;
       width: 1px;
+    }
+
+    &__distance {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: rgb(var(--m-theme-primary));
+
+      // 两端把手：垂直于线方向的小帽。水平线 → 左右竖帽；竖直线(--vertical) → 上下横帽。
+      // inset 简写(top right bottom left)一并复位四向偏移，避免横/竖样式互相残留。
+      &::before,
+      &::after {
+        content: '';
+        position: absolute;
+        background-color: rgb(var(--m-theme-primary));
+      }
+
+      &::before {
+        inset: 50% auto auto 0;
+        width: 1px;
+        height: 8px;
+        transform: translateY(-50%);
+      }
+
+      &::after {
+        inset: 50% 0 auto auto;
+        width: 1px;
+        height: 8px;
+        transform: translateY(-50%);
+      }
+
+      &--vertical::before {
+        inset: 0 auto auto 50%;
+        width: 8px;
+        height: 1px;
+        transform: translateX(-50%);
+      }
+
+      &--vertical::after {
+        inset: auto auto 0 50%;
+        width: 8px;
+        height: 1px;
+        transform: translateX(-50%);
+      }
+    }
+
+    &__label {
+      position: absolute;
+      padding: 1px 5px;
+      border-radius: 8px;
+      font-size: 10px;
+      font-weight: 600;
+      line-height: 1.4;
+      white-space: nowrap;
+      color: rgb(var(--m-theme-on-primary));
+      background-color: rgb(var(--m-theme-primary));
+      pointer-events: none;
     }
 
     &__area {
