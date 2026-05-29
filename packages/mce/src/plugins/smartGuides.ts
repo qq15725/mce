@@ -453,7 +453,7 @@ export default definePlugin((editor) => {
     const scaleX = (v: number) => v * zoom.x
     const scaleY = (v: number) => v * zoom.y
 
-    return linePairs.value.map((linePair) => {
+    return linePairs.value.flatMap((linePair) => {
       const { target, source, type } = linePair
 
       const boxSource = source.box!
@@ -461,6 +461,8 @@ export default definePlugin((editor) => {
       const vertical = ['vt', 'vm', 'vb'].includes(target.type)
 
       const itemProps: Record<string, any> = {}
+      // 一个 linePair 可产出多个可视元素（如距离线 + 间距辅助虚线）。
+      const extra: Record<string, any>[] = []
 
       switch (type) {
         case 'alignment': {
@@ -541,6 +543,18 @@ export default definePlugin((editor) => {
               width: 1,
               height: scaleY(linePair.distance),
             }
+            // 间距辅助虚线：在目标边(target.pos)沿水平方向贯穿源/目标盒，标示间距量到的那条边。
+            const auxLeft = Math.min(boxSource.hl.pos, boxTarget.hl.pos)
+            const auxRight = Math.max(boxSource.hr.pos, boxTarget.hr.pos)
+            extra.push({
+              class: ['dashed'],
+              style: {
+                left: scaleX(auxLeft) - position.left,
+                top: scaleY(target.pos) - position.top,
+                width: scaleX(auxRight - auxLeft),
+                height: 1,
+              },
+            })
           }
           else {
             const left = Math.min(source.pos, target.pos)
@@ -550,13 +564,24 @@ export default definePlugin((editor) => {
               width: scaleX(linePair.distance),
               height: 1,
             }
+            const auxTop = Math.min(boxSource.vt.pos, boxTarget.vt.pos)
+            const auxBottom = Math.max(boxSource.vb.pos, boxTarget.vb.pos)
+            extra.push({
+              class: ['dashed', 'dashed--vertical'],
+              style: {
+                left: scaleX(target.pos) - position.left,
+                top: scaleY(auxTop) - position.top,
+                width: 1,
+                height: scaleY(auxBottom - auxTop),
+              },
+            })
           }
           itemProps.label = String(Math.round(linePair.distance))
           break
         }
       }
 
-      return itemProps
+      return [itemProps, ...extra]
     })
   })
 

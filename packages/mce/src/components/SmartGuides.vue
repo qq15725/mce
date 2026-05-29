@@ -49,6 +49,24 @@ const {
       width: 1px;
     }
 
+    // 间距辅助虚线：标示距离线量到的目标边，同色低透明度，repeating-gradient 画虚线。
+    &__dashed {
+      position: absolute;
+      background-image: repeating-linear-gradient(
+        to right,
+        rgba(var(--m-theme-secondary), .6) 0 4px,
+        transparent 4px 7px
+      );
+    }
+
+    &__dashed--vertical {
+      background-image: repeating-linear-gradient(
+        to bottom,
+        rgba(var(--m-theme-secondary), .6) 0 4px,
+        transparent 4px 7px
+      );
+    }
+
     &__distance {
       position: absolute;
       display: flex;
