@@ -1,3 +1,11 @@
+# [0.24.0](https://github.com/qq15725/mce/compare/v0.23.0...v0.24.0) (2026-05-29)
+
+
+### Features
+
+* **editor:** support initial mode via options ([c2c21b7](https://github.com/qq15725/mce/commit/c2c21b76ab6a6e4ed49d46a0efa38f40cabda805))
+* **smartGuides:** dashed spacing helper line for distance guides ([afc7fae](https://github.com/qq15725/mce/commit/afc7fae14501d4def8bca74c9ed24c40622f70cc))
+
 # [0.23.0](https://github.com/qq15725/mce/compare/v0.22.2...v0.23.0) (2026-05-28)
 
 
