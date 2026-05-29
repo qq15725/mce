@@ -28,7 +28,8 @@ declare global {
     interface Exporters {}
     interface Config {}
     interface Options extends DeepMaybe<Config> {
-      //
+      /** 编辑器初始模式，默认 'canvas'。见 {@link Mode}。 */
+      mode?: Mode
     }
 
     // Persistent editor mode, orthogonal to the transient `State`. 'canvas' is

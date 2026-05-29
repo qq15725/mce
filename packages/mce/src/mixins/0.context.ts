@@ -109,7 +109,7 @@ export default defineMixin((editor, options) => {
   const textSelection = ref<any[]>()
   const hoverElement = ref<Element2D>()
   const state = ref<Mce.State>()
-  const mode = ref<Mce.Mode>('canvas')
+  const mode = ref<Mce.Mode>(options.mode ?? 'canvas')
 
   function setCursor(mode: Cursor | undefined): void {
     renderEngine.value.input.setCursor(mode)
