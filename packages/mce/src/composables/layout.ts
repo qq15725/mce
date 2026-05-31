@@ -22,7 +22,7 @@ import {
   useId,
 } from 'vue'
 
-import { consoleWarn, convertToUnit, findChildrenWithProvide } from '../utils'
+import { convertToUnit, findChildrenWithProvide, logger } from '../utils'
 
 import { useResizeObserver } from './resizeObserver'
 
@@ -309,7 +309,7 @@ export function createLayout(props: { overlaps?: string[], fullHeight?: boolean 
         const item = items.value[index.value]
 
         if (!item)
-          consoleWarn(`[mce] Could not find layout item "${id}"`)
+          logger.warn(`Could not find layout item "${id}"`)
 
         const overlap = computedOverlaps.value.get(id)
         if (overlap) {

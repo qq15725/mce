@@ -12,6 +12,7 @@ import { Observable } from 'modern-idoc'
 import { computed, effectScope, reactive, ref, shallowRef } from 'vue'
 import { mixins as presetMixins } from './mixins'
 import { plugins as presetPlugins } from './plugins'
+import { logger, setDebug } from './utils/console'
 
 export interface Options extends Mce.Options {
   debug?: boolean
@@ -97,10 +98,9 @@ export class Editor extends Observable<Events> {
     this.emit = this.emit.bind(this)
   }
 
+  // 向后兼容的 trace 入口，转发到 logger.debug（受 options.debug 控制；不再手动加时间戳前缀）。
   log = (...args: any[]): void => {
-    if (this.debug.value) {
-      console.warn(`[mce][${new Date().toLocaleTimeString()}]`, ...args)
-    }
+    logger.debug(...args)
   }
 
   emit = <K extends keyof Events & string>(event: K, ...args: Events[K]): this => {
@@ -116,6 +116,7 @@ export class Editor extends Observable<Events> {
     } = options
 
     this.debug.value = debug
+    setDebug(debug)
     this.config = configCacheInLocal
       ? useLocalStorage<Mce.Config>('config', () => ({} as any))
       : ref({} as any)
@@ -140,7 +141,7 @@ export class Editor extends Observable<Events> {
           this.mixin(item, options)
         }
         catch (err: any) {
-          console.error(`Failed to use mixin`, err)
+          logger.error(`Failed to use mixin`, err)
         }
       })
     }
@@ -172,7 +173,7 @@ export class Editor extends Observable<Events> {
           this.use(p, options)
         }
         catch (err: any) {
-          console.error(`Failed to use plugin`, err)
+          logger.error(`Failed to use plugin`, err)
         }
       })
     }
@@ -255,7 +256,7 @@ export class Editor extends Observable<Events> {
             await setup()
           }
           catch (err: any) {
-            console.error(`Failed to setup mixin`, err)
+            logger.error(`Failed to setup mixin`, err)
           }
         }),
         ...Object.values(this.setups).map(async (setup) => {
@@ -263,7 +264,7 @@ export class Editor extends Observable<Events> {
             await setup()
           }
           catch (err: any) {
-            console.error(`Failed to setup plugin`, err)
+            logger.error(`Failed to setup plugin`, err)
           }
         }),
       ])

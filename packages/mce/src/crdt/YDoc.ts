@@ -5,6 +5,7 @@ import { Element2D, Node } from 'modern-canvas'
 import { idGenerator, Observable } from 'modern-idoc'
 import { isReactive, markRaw, reactive } from 'vue'
 import * as Y from 'yjs'
+import { logger } from '../utils/console'
 import { IndexeddbProvider } from './providers'
 
 export type YNode = Y.Map<unknown> & {
@@ -92,7 +93,7 @@ export class YDoc extends Observable {
 
   async loadIndexeddb(): Promise<void> {
     this.indexeddb = await new IndexeddbProvider(this._yDoc.guid, this._yDoc).whenSynced
-    console.info('loaded data from indexed db')
+    logger.info('loaded data from indexed db')
   }
 
   load(): void {
@@ -112,8 +113,8 @@ export class YDoc extends Observable {
           result = fn()
         }
         catch (e) {
-          console.error(`An error occurred while Y.doc ${doc.guid} transacting:`)
-          console.error(e)
+          logger.error(`An error occurred while Y.doc ${doc.guid} transacting:`)
+          logger.error(e)
         }
       },
       should ? doc.clientID : null,
@@ -123,7 +124,7 @@ export class YDoc extends Observable {
   }
 
   protected _debug(..._args: any[]) {
-    // console.log(..._args)
+    // logger.debug(..._args)
   }
 
   protected _yChildrenChange(

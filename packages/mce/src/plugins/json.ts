@@ -2,6 +2,7 @@ import type { Element2D } from 'modern-canvas'
 import type { NormalizedElement } from 'modern-idoc'
 import { idGenerator } from 'modern-idoc'
 import { definePlugin } from '../plugin'
+import { logger } from '../utils/console'
 
 declare global {
   namespace Mce {
@@ -66,7 +67,7 @@ export default definePlugin((editor) => {
             && 'elements' in json
           ) {
             // TODO gd
-            console.log(json)
+            logger.debug(json)
           }
 
           return json

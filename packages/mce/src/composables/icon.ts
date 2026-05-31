@@ -1,6 +1,7 @@
 import type { Component, MaybeRefOrGetter } from 'vue'
 import { computed, inject, toValue } from 'vue'
 import { ComponentIcon, SvgIcon } from '../components/icon'
+import { logger } from '../utils/console'
 import { IconsSymbol } from './icons'
 
 export type IconValue = string | (string | [path: string, opacity: number])[] | Component
@@ -25,7 +26,7 @@ export function useIcon(props: MaybeRefOrGetter<IconValue | undefined>) {
       }
     }
     if (!icon)
-      console.warn(`Could not find aliased icon "${iconAlias}"`)
+      logger.warn(`Could not find aliased icon "${iconAlias}"`)
     if (Array.isArray(icon)) {
       return {
         component: SvgIcon,

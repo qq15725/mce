@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import en from '../locale/en'
 import zhHans from '../locale/zh-Hans'
 import { defineMixin } from '../mixin'
+import { logger } from '../utils/console'
 
 declare global {
   namespace Mce {
@@ -74,7 +75,7 @@ export default defineMixin((editor, options) => {
       ?? fallbackMessages?.[fallback ?? -1]
 
     if (value === undefined) {
-      console.warn(`[mce] Not found '${key}' key in '${locale}' locale messages.`)
+      logger.warn(`[mce] Not found '${key}' key in '${locale}' locale messages.`)
     }
 
     return value ?? key ?? fallback ?? ''

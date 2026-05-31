@@ -4,6 +4,7 @@ import { getObjectValueByPath, setObjectValueByPath } from 'modern-idoc'
 import { computed } from 'vue'
 import { defineMixin } from '../mixin'
 import { saveAs } from '../utils'
+import { logger } from '../utils/console'
 
 declare global {
   namespace Mce {
@@ -89,7 +90,7 @@ export default defineMixin((editor) => {
           resolve(config.value)
         }
         catch {
-          console.warn('[mce] Failed to parse config file')
+          logger.warn('[mce] Failed to parse config file')
           resolve(undefined)
         }
       })

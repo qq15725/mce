@@ -6,6 +6,7 @@ import { Element2D } from 'modern-canvas'
 import { onMounted, onScopeDispose, ref } from 'vue'
 import { definePlugin } from '../plugin'
 import { isInputEvent, SUPPORTS_CLIPBOARD } from '../utils'
+import { logger } from '../utils/console'
 
 declare global {
   namespace Mce {
@@ -264,7 +265,7 @@ export default definePlugin((editor, options) => {
           break
         }
         else {
-          console.warn(`Unhandled clipboard ${blob.type}`, await blob.text())
+          logger.warn(`Unhandled clipboard ${blob.type}`, await blob.text())
         }
       }
     }

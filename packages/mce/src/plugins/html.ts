@@ -1,4 +1,5 @@
 import { definePlugin } from '../plugin'
+import { logger } from '../utils/console'
 
 export default definePlugin((editor) => {
   const {
@@ -32,7 +33,7 @@ export default definePlugin((editor) => {
             return await load(dom)
           }
           catch (err) {
-            console.error(err)
+            logger.error(err)
             return []
           }
         },
