@@ -10,6 +10,7 @@
     "build:doc": "pnpm -F mce build:doc",
     "test": "pnpm -r test",
     "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
     "dev": "MODE=local pnpm -F playground dev",
     "publish": "pnpm -r publish --no-git-checks --access public",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
