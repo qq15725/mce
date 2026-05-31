@@ -44,6 +44,24 @@ declare global {
   }
 }
 
+// 模块级导出，方便单测：在 threshold 内找离 position 最近的吸附线，超出阈值或无线时返回 undefined。
+export function closestLine(
+  lines: Iterable<number>,
+  position: number,
+  threshold: number,
+): number | undefined {
+  let closest: number | undefined
+  let minDist = Infinity
+  for (const num of lines) {
+    const absDist = Math.abs(num - position)
+    if (absDist < minDist) {
+      minDist = absDist
+      closest = num
+    }
+  }
+  return minDist < threshold ? closest : undefined
+}
+
 export default defineMixin((editor) => {
   const {
     camera,
@@ -81,20 +99,6 @@ export default defineMixin((editor) => {
     return { axisX, axisY, gutterX, gutterY }
   }
 
-  // 在阈值内找离 position 最近的吸附线；超出阈值或无线时返回 undefined。
-  function closestLine(lines: Set<number>, position: number): number | undefined {
-    let closest: number | undefined
-    let minDist = Infinity
-    for (const num of lines) {
-      const absDist = Math.abs(num - position)
-      if (absDist < minDist) {
-        minDist = absDist
-        closest = num
-      }
-    }
-    return minDist < snapThreshold.value ? closest : undefined
-  }
-
   const snap: Mce.Editor['snap'] = (box) => {
     const { axisX, axisY, gutterX, gutterY } = getSnapAxes()
 
@@ -112,9 +116,9 @@ export default defineMixin((editor) => {
       const [offset, axis, isEdge] = posList[i]
       const position = (axis === 'x' ? box.left : box.top) + offset
       // 先吸主线(对齐/区域，间距0)，未命中且是边时再尝试间距卡点，避免 gutter 干扰对齐。
-      let closest = closestLine(axis === 'x' ? axisX : axisY, position)
+      let closest = closestLine(axis === 'x' ? axisX : axisY, position, snapThreshold.value)
       if (closest === undefined && isEdge) {
-        closest = closestLine(axis === 'x' ? gutterX : gutterY, position)
+        closest = closestLine(axis === 'x' ? gutterX : gutterY, position, snapThreshold.value)
       }
       if (closest === undefined) {
         continue
@@ -136,7 +140,7 @@ export default defineMixin((editor) => {
     const { axisX, axisY, gutterX, gutterY } = getSnapAxes()
     // 边吸附：先对齐线(间距0)，未命中再间距卡点。
     const snapEdge = (main: Set<number>, gutter: Set<number>, pos: number): number | undefined => {
-      return closestLine(main, pos) ?? closestLine(gutter, pos)
+      return closestLine(main, pos, snapThreshold.value) ?? closestLine(gutter, pos, snapThreshold.value)
     }
     const right = box.left + box.width
     const bottom = box.top + box.height

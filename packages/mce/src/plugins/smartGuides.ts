@@ -16,49 +16,21 @@
  * @link https://zhuanlan.zhihu.com/p/92469406 《云凤蝶如何打造媲美 sketch 的自由画布》
  */
 import type { Node } from 'modern-canvas'
-import { Aabb2D } from 'modern-canvas'
+import type { BoundingBox, Box, Line, LinePair, LineType } from '../utils/smartGuides-geometry'
 import { computed, h, ref } from 'vue'
 import SmartGuides from '../components/SmartGuides.vue'
 import { definePlugin } from '../plugin'
 import { BSTree } from '../utils/BSTree'
+import {
+  createLine,
+  findDistancePairs,
+  flipType,
+  isLeftTopLine,
+  toBoundingBox,
+} from '../utils/smartGuides-geometry'
 
-type LineType = 'vt' | 'vm' | 'vb' | 'hl' | 'hm' | 'hr'
-
-interface Line {
-  pos: number
-  type: LineType
-  box?: Box
-}
-
-interface Box {
-  id: number | string
-  vt: Line
-  vm: Line
-  vb: Line
-  hl: Line
-  hm: Line
-  hr: Line
-  // node: HTMLElement;
-  // instance: ComponentInstance;
-}
-
-type LinePairType = 'distance' | 'alignment' | 'spacing' | 'area'
-
-interface LinePair {
-  source: Line
-  target: Line
-  type: LinePairType
-  distance: number
-  _ctx?: Record<string, any>
-}
-
-interface BoundingBox {
-  left: number
-  top: number
-  width: number
-  height: number
-  rotate?: number
-}
+export type { BoundingBox, Box, Line, LinePair, LinePairType, LineType } from '../utils/smartGuides-geometry'
+export { createLine, findDistancePairs, flipType, isLeftTopLine, toBoundingBox } from '../utils/smartGuides-geometry'
 
 export default definePlugin((editor) => {
   const {
@@ -218,53 +190,6 @@ export default definePlugin((editor) => {
         : closestPos - prevDistance,
     }
     return areas
-  }
-
-  // 距离线：从移动盒子中线出发，到「同向有重叠、之间有正间距」的最近兄弟盒子，每轴最多 1 条。
-  // 不含画板边界（容器是包含关系，非相邻间距）。
-  function findDistancePairs(box: Box, boxes: Box[]): LinePair[] {
-    const moving = toBoundingBox(box)
-    let bestV: { gap: number, below: boolean, nb: Box } | undefined
-    let bestH: { gap: number, after: boolean, nb: Box } | undefined
-    for (const nb of boxes) {
-      if (nb.id === -1)
-        continue
-      const b = toBoundingBox(nb)
-      if (moving.overlap(b, 'x')) {
-        const below = nb.vt.pos - box.vb.pos
-        const above = box.vt.pos - nb.vb.pos
-        if (below > 0 && (!bestV || below < bestV.gap))
-          bestV = { gap: below, below: true, nb }
-        if (above > 0 && (!bestV || above < bestV.gap))
-          bestV = { gap: above, below: false, nb }
-      }
-      if (moving.overlap(b, 'y')) {
-        const after = nb.hl.pos - box.hr.pos
-        const before = box.hl.pos - nb.hr.pos
-        if (after > 0 && (!bestH || after < bestH.gap))
-          bestH = { gap: after, after: true, nb }
-        if (before > 0 && (!bestH || before < bestH.gap))
-          bestH = { gap: before, after: false, nb }
-      }
-    }
-    const pairs: LinePair[] = []
-    if (bestV) {
-      pairs.push({
-        source: bestV.below ? box.vb : box.vt,
-        target: bestV.below ? bestV.nb.vt : bestV.nb.vb,
-        type: 'distance',
-        distance: bestV.gap,
-      })
-    }
-    if (bestH) {
-      pairs.push({
-        source: bestH.after ? box.hr : box.hl,
-        target: bestH.after ? bestH.nb.hl : bestH.nb.hr,
-        type: 'distance',
-        distance: bestH.gap,
-      })
-    }
-    return pairs
   }
 
   const linePairs = ref<LinePair[]>([])
@@ -652,32 +577,4 @@ export default definePlugin((editor) => {
   }
 })
 
-function createLine(pos: number, type: LineType, box?: Box): Line {
-  return { pos, type, box }
-}
-
-function toBoundingBox(value: Line | Box): Aabb2D {
-  const box = ('box' in value ? value.box : value) as Box
-  return new Aabb2D({
-    x: box.hl.pos,
-    y: box.vt.pos,
-    width: box.hr.pos - box.hl.pos,
-    height: box.vb.pos - box.vt.pos,
-  })
-}
-
-function flipType(type: string): LineType {
-  if (type === 'vt')
-    return 'vb'
-  if (type === 'vb')
-    return 'vt'
-  if (type === 'hl')
-    return 'hr'
-  if (type === 'hr')
-    return 'hl'
-  return type as LineType
-}
-
-function isLeftTopLine(line: Line) {
-  return ['vt', 'hl'].includes(line.type)
-}
+// 纯几何类型与函数已迁出到 ./smartGuides.geometry（见顶部 re-export）。
