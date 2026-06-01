@@ -60,6 +60,7 @@
     "build:preset": "jiti ./scripts/preset.ts",
     "build:dts": "jiti ./scripts/dts.ts",
     "build:doc": "typedoc",
+    "build:doc:html": "typedoc --options typedoc.html.json",
     "build": "pnpm build:code && pnpm build:tsc && pnpm build:dts",
     "lint": "eslint src",
     "test": "vitest",

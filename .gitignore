@@ -2,6 +2,7 @@
 .env
 node_modules/
 dist/
+html-docs/
 
 # Lock
 package-lock.json
