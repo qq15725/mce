@@ -20,6 +20,12 @@
 
 <p align="center">A headless infinite canvas editor framework built on WebGL rendering, supports exporting to image, video, and PPT. Only the ESM.</p>
 
+<p align="center">
+  <a href="https://qq15725.github.io/mce/">📚 Documentation</a>
+  &nbsp;·&nbsp;
+  <a href="https://codesandbox.io/p/github/qq15725/mce/main">🎮 Try in CodeSandbox</a>
+</p>
+
 ## 📦 Install
 
 ```shell
