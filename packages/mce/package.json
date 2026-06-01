@@ -60,7 +60,6 @@
     "build:preset": "jiti ./scripts/preset.ts",
     "build:dts": "jiti ./scripts/dts.ts",
     "build:doc": "typedoc",
-    "build:doc:html": "typedoc --options typedoc.html.json",
     "build": "pnpm build:code && pnpm build:tsc && pnpm build:dts",
     "lint": "eslint src",
     "test": "vitest",
@@ -109,7 +108,6 @@
     "@vitejs/plugin-vue": "^6.0.7",
     "jiti": "^2.7.0",
     "sass-embedded": "^1.100.0",
-    "typedoc": "^0.28.19",
-    "typedoc-plugin-markdown": "^4.11.0"
+    "typedoc": "^0.28.19"
   }
 }

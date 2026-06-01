@@ -30,7 +30,7 @@ jobs:
           node-version: lts/*
           cache: pnpm
       - run: pnpm install
-      - run: pnpm -F mce build:doc:html
+      - run: pnpm -F mce build:doc
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

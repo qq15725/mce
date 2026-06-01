@@ -1,11 +1,13 @@
 {
+  "$schema": "https://typedoc.org/schema.json",
   "entryPoints": ["src/typed-global.d.ts"],
-  "out": "docs",
+  "out": "html-docs",
   "exclude": ["**/*.vue", "node_modules/**/*"],
   "excludePrivate": true,
   "excludeProtected": true,
   "excludeInternal": true,
   "excludeReferences": true,
   "readme": "none",
-  "plugin": ["typedoc-plugin-markdown"]
+  "name": "mce",
+  "hideGenerator": false
 }
