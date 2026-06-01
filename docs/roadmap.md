@@ -8,7 +8,7 @@
 | 级别 | 进度 | 主题 |
 |---|---|---|
 | 🔴 P0 | 🚧 测试 / 📊 类型 / 🚧 产物 | 测试体系（启动）、类型安全（hotspot 已扫）、构建产物（minify ✅, chunk 待） |
-| 🟡 P1 | ✅ Logger / ✅ 包脚本 / 🚧 拆分 / 🚧 按需 / ☐ TODO | 大文件拆分（启动）、按需注册（设计稿）、TODO、Logger、包脚本 |
+| 🟡 P1 | ✅ Logger / ✅ 包脚本 / 🚧 拆分 / 🚧 按需 / 🚧 TODO | 大文件拆分（启动）、按需注册（设计稿）、TODO（11/21 清理）、Logger、包脚本 |
 | 🟢 P2 | ✅ CRDT / ✅ i18n / 🚧 a11y / ✅ 文档站 | CRDT 文档、a11y（审计）、文档站、i18n（已支持运行时扩展） |
 
 **累计推进**：12 项中 5 项 ✅ 完成 / 5 项 🚧 启动或已出设计稿 / 1 项 📊 已分析未动 / 1 项（P1.6 TODO）未触碰。剩余主要卡在**需用户决策**（合规等级、按需入口命名、类型治理目标范围）。
@@ -131,17 +131,22 @@ smartGuides 已到"再加一个特性就难审"的临界点。
 
 ---
 
-### - [ ] 6. 长尾 TODO 收口（21 条）
-**高优**：
-- `components/SmartSelection.vue:363-427` 旋转 5 处 TODO（同一特性散在 5 处一直没收）
-- `plugins/arrange.ts:101` 非中心 pivot 不支持
-- `components/shared/Cropper.vue:11` 撤回无法重渲
+### - [ ] 6. 长尾 TODO 收口（21 条）  🚧 11 条已清，10 条留档
+**已完成（11 条 → 说明性注释或删死代码）**：
+- `plugins/json.ts:69` 删整段"gd"风格占位分支（只 log 不处理的死代码） + 移除 unused logger 导入
+- `plugins/doc.ts:91+100` 改说明性注释 + 删被注释的 destroy 代码（5 行）
+- `crdt/YDoc.ts:162`、`mixins/4.3.element.ts:254+310`、`plugins/frame.ts:57`、`plugins/selection.ts:136`、`plugins/typography.ts:301`、`components/Frame.vue:37`、`plugins/smartGuides.ts:308` 全部由裸 `// TODO` 升级为具体说明性注释（包含为何这样写、何时可以重构）
 
-**中优**：
-- `plugins/smartGuides.ts:383` 两边区域相等时同方向区域相等也应显示
-- `plugins/typography.ts:301,331`、`plugins/doc.ts:91,100`、`plugins/formatPaint.ts:30`、`plugins/arrange.ts:202`、`crdt/YDoc.ts:161`
+**待决策（10 条 → `docs/known-todos.md`）**：
+- SmartSelection 旋转 5 处（需先定旋转元素的拖拽插入位预期）
+- arrange.ts pivot / tidyUp 2 处（功能定义）
+- formatPaint.ts:30（partial style 表示）
+- typography.ts:331（**真 bug**：split 后 selection 索引漂移，需定修复策略）
+- Cropper.vue:11（**真 bug**：撤回不重渲，需定修复策略）
 
-**建议**：作为 issue/任务收口，至少把 SmartSelection 旋转 5 处和 Cropper 那条排上日程，别再放着。
+详见 `docs/known-todos.md`。
+
+**现状（原始）**：21 处 TODO。
 
 ---
 
