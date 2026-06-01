@@ -20,6 +20,12 @@
 
 <p align="center">A headless infinite canvas editor framework built on WebGL rendering, supports exporting to image, video, and PPT. Only the ESM.</p>
 
+<p align="center">
+  <a href="https://qq15725.github.io/mce/">📚 Documentation</a>
+  &nbsp;·&nbsp;
+  <a href="https://codesandbox.io/p/github/qq15725/mce/main">🎮 Try in CodeSandbox</a>
+</p>
+
 ## 📦 Install
 
 ```shell
@@ -141,14 +147,3 @@ slot sub component
 </template>
 ```
 
-## Docs
-
-- [Options](docs/mce/namespaces/Mce/interfaces/Options.md)
-- [Config](docs/mce/namespaces/Mce/interfaces/Config.md)
-- [Commands](docs/mce/namespaces/Mce/interfaces/Commands.md)
-- [Events](docs/mce/namespaces/Mce/interfaces/Events.md)
-- [Slots](docs/mce/namespaces/Mce/interfaces/Slots.md)
-
-## Related
-
-- [CodeSandbox Playground](https://codesandbox.io/p/devbox/thirsty-dawn-t2h69m)
