@@ -6,7 +6,9 @@ on:
   workflow_dispatch:
 
 # 用 GitHub Pages "GitHub Actions" 源（非 gh-pages 分支）。
-# 首次启用：仓库 Settings → Pages → Build and deployment → Source: GitHub Actions。
+# `actions/configure-pages` 的 `enablement: true` 会在仓库未启用 Pages 时自动启用，
+# 免去手动到 Settings → Pages 点击的步骤（需要 GITHUB_TOKEN 有仓库 admin 权限，
+# 同仓 workflow 默认满足）。
 permissions:
   contents: read
   pages: write
@@ -31,6 +33,8 @@ jobs:
       - run: pnpm install
       - run: pnpm -F mce build:doc:html
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ./packages/mce/html-docs
