@@ -298,7 +298,8 @@ export default definePlugin((editor) => {
       }
     }
     else {
-      // TODO
+      // 无 textSelection（整体选中文本元素）：聚合当前元素全部片段的样式值。
+      // fontSize 取最大值（最显眼），其他字段仅当全篇唯一片段时返回，否则 fallback。
       const content = el.text.content
       switch (key) {
         case 'fontSize':

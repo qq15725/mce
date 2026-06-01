@@ -34,7 +34,8 @@ async function onDblclick() {
 
 async function onPointerdown(event: PointerEvent) {
   if (!editing.value) {
-    // TODO
+    // 借用 modern-canvas 私有 API `_clonePointerEvent` 转发指针事件到画板内部命中——
+    // 缺一个公开的 forwardPointer/cloneEvent API；等 modern-canvas 暴露后改。
     const cloend = (renderEngine.value.input as any)._clonePointerEvent(event)
     cloend.srcElement = drawboardDom.value
     cloend.target = frame.value

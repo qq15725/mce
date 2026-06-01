@@ -88,7 +88,9 @@ export default definePlugin((editor, options) => {
     fonts.clear()
     const oldDoc = root.value
     const doc = source instanceof Doc ? source : new Doc(source)
-    // TODO gc
+    // 释放旧文档的纹理 / 动画纹理（GC），避免切换文档时显存泄漏。
+    // 注：fillStyle / strokeStyle 是否需要 destroy 取决于 modern-canvas 实现——
+    // 等其暴露统一 dispose 接口后在此处补上。
     oldDoc.findOne((node) => {
       if (node instanceof Element2D) {
         node.foreground.texture?.destroy()
@@ -97,13 +99,6 @@ export default definePlugin((editor, options) => {
         node.fill.animatedTexture?.destroy()
         node.background.texture?.destroy()
         node.background.animatedTexture?.destroy()
-        // TODO
-        // if (node.context.fillStyle && 'destroy' in node.context.fillStyle) {
-        //   node.context.fillStyle.destroy()
-        // }
-        // if (node.context.strokeStyle && 'destroy' in node.context.strokeStyle) {
-        //   node.context.strokeStyle.destroy()
-        // }
       }
       return false
     })

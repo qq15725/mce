@@ -305,8 +305,9 @@ export default definePlugin((editor) => {
       areaLine.vt = areaLine.vt.sort((a, b) => b.pos - a.pos)
       areaLine.hl = areaLine.hl.sort((a, b) => b.pos - a.pos)
 
-      // TODO 两边区域相等时，同方向区域相等也应该可以显示
       // resize 只做被拖动边的对齐吸附，不计算等距区域（area）。
+      // 已知增强：两侧 area 相等命中时直接 return，会跳过同侧 findAreas（等距分布），
+      // 修复需权衡视觉简洁度——见 docs/known-todos.md。
       const areaItems = resizeDir
         ? []
         : [

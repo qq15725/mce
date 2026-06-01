@@ -2,7 +2,6 @@ import type { Element2D } from 'modern-canvas'
 import type { NormalizedElement } from 'modern-idoc'
 import { idGenerator } from 'modern-idoc'
 import { definePlugin } from '../plugin'
-import { logger } from '../utils/console'
 
 declare global {
   namespace Mce {
@@ -61,15 +60,8 @@ export default definePlugin((editor) => {
         },
         load: async (source: File | Blob) => {
           const json = JSON.parse(await source.text())
-
-          if (
-            'version' in json
-            && 'elements' in json
-          ) {
-            // TODO gd
-            logger.debug(json)
-          }
-
+          // 旧的「gaoding 风格 schema (version + elements)」识别分支只 logger.debug 不做实际转换，
+          // 属于占位死代码，删除；若日后真要支持，应在此处接 schema 适配器再返回。
           return json
         },
       },

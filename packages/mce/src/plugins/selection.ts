@@ -133,7 +133,8 @@ export default definePlugin((editor) => {
   }
 
   function marqueeSelect(marquee = selectionMarquee.value): void {
-    const area = new Obb2D(marquee) // TODO
+    // 把矩形选区包装为 OBB 便于 contains 测试；后续若支持旋转 marquee 也可在此处替换。
+    const area = new Obb2D(marquee)
     // 每个节点的 obb 在本次框选中最多算一次（flatMap 与 filter 复用），
     // 避免对 frame 等节点重复调 getObb。
     const obbCache = new Map<Element2D, Obb2D>()

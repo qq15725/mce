@@ -54,7 +54,7 @@ export default definePlugin((editor) => {
             position: start,
             active: true,
           })
-          // TODO
+          // 创建时先给 1×1 占位，move 阶段按拖动距离更新到实际大小（避免新建瞬间出现 0×0 闪屏）
           el.style.width = 1
           el.style.height = 1
           el.style.backgroundColor = '#ffffff'

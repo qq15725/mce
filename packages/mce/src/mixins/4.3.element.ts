@@ -251,7 +251,8 @@ export default defineMixin((editor) => {
       return elements
     })
 
-    // TODO
+    // 主动同步 globalTransform：父级 transform 改动后 reactive 调度时机有时晚于下面
+    // selection 读取 globalAabb，提前 update 一次保证后续读到的是最新值。
     elements.forEach(el => el.updateGlobalTransform())
 
     if (active) {
@@ -307,7 +308,8 @@ export default defineMixin((editor) => {
       }
       style.width *= scaleX
       style.height *= scaleY
-      el?.requestRender?.() // TODO
+      // style 标量写入不一定走自动渲染调度，强制触发一次。
+      el?.requestRender?.()
     }
 
     handle(el)

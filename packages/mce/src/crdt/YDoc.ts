@@ -159,7 +159,7 @@ export class YDoc extends Observable {
     this._yChildren.clear()
     this._yChildrenIds.delete(0, this._yChildrenIds.length)
     this._nodeMap.forEach((node) => {
-      // TODO
+      // 跳过本身是 YDoc 的节点（子 yjs 文档由各自 provider 管理生命周期），其余销毁。
       if (!('_yDoc' in node)) {
         node.destroy()
       }
