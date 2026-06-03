@@ -1,3 +1,5 @@
+## [0.24.1](https://github.com/qq15725/mce/compare/v0.24.0...v0.24.1) (2026-06-03)
+
 # [0.24.0](https://github.com/qq15725/mce/compare/v0.23.0...v0.24.0) (2026-05-29)
 
 
