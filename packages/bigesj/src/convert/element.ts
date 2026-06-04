@@ -8,7 +8,7 @@ import { croppingToCropRect } from './cropping'
 import { convertShapeElementToSvg } from './shape'
 import { getStyle } from './style'
 import { convertSvgElementToUrl } from './svg'
-import { convertTextContent, convertTextEffects, convertTextStyle } from './text'
+import { convertTextContent, convertTextDeformation, convertTextEffects, convertTextStyle } from './text'
 import { transformToCropRect } from './transform'
 
 const matrixRex = /matrix\(([^)]+)\)/
@@ -161,7 +161,7 @@ export async function convertElement(
       element.text = clearUndef({
         content: convertTextContent(el),
         effects: await convertTextEffects(el),
-        // plugins: [deformation(el.deformation?.type?.endsWith("byWord") ? -1 : 999, () => el.deformation)],
+        deformation: convertTextDeformation(el),
       } as any)
 
       meta.textEffectsId = el.effectId

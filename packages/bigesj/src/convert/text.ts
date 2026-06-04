@@ -1,4 +1,4 @@
-import type { NormalizedParagraph, NormalizedTextContent, StyleObject } from 'modern-idoc'
+import type { NormalizedParagraph, NormalizedTextContent, StyleObject, TextDeformation } from 'modern-idoc'
 import type { BigeElement } from './types'
 import { normalizeCRLF } from 'modern-idoc'
 import { getStyle } from './style'
@@ -93,6 +93,28 @@ export async function convertTextEffects(el: BigeElement): Promise<Partial<Style
       return result
     }),
   )
+}
+
+// 老项目用 camelCase 变形类型名（`archCurve`、`ellipse-byWord`、`textCircle-byPpt`），
+// 新内核 modern-text 用 kebab-case（`arch-curve`、`ellipse-by-word`）。
+// 新内核是老内核的忠实移植，各类型的 intensities 顺序完全一致，因此只需转换类型名，
+// 强度值（intensities）可直接沿用。
+// 注：`-byPpt`（PPT 预设变形）新内核暂无对应引擎，转换后的名字不会命中注册表，渲染时被忽略。
+export function convertDeformationType(oldType: string): string {
+  return oldType
+    .replace(/([A-Z])/g, (_, c: string) => `-${c.toLowerCase()}`)
+    .replace(/^-/, '')
+}
+
+export function convertTextDeformation(el: BigeElement): TextDeformation | undefined {
+  const deformation = el.deformation
+  if (!deformation?.type) {
+    return undefined
+  }
+  return {
+    ...deformation,
+    type: convertDeformationType(deformation.type),
+  }
 }
 
 export function getTextContents(el: BigeElement): BigeElement['contents'] {
