@@ -53,7 +53,7 @@
     "typecheck": "tsc --noEmit --project tsconfig.json"
   },
   "dependencies": {
-    "modern-idoc-svg": "^0.3.3",
+    "modern-idoc-svg": "^0.3.4",
     "modern-path2d": "^1.8.5"
   },
   "devDependencies": {
