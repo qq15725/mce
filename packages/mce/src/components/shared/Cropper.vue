@@ -4,6 +4,7 @@ import { vResizeObserver } from '@vueuse/components'
 import { useImage } from '@vueuse/core'
 import { cloneDeep, isEqual } from 'lodash-es'
 import { computed, onBeforeMount, onBeforeUnmount, ref, useTemplateRef, watch } from 'vue'
+import { closestLine } from '../../mixins/snapper'
 import { boundingBoxToStyle } from '../../utils'
 import Transform from './Transform.vue'
 
@@ -105,6 +106,49 @@ const sourceTransform = computed({
     internalValue.value = { left, top, right, bottom }
   },
 })
+
+// 拖动图片时，将 source 的边/中线吸附到裁剪窗口(rootBox)的边/中线，并显示参考线。
+// 阈值为裁剪层渲染像素(rootBox 来自 ResizeObserver，已是屏幕像素)，固定值即可。
+const SNAP_THRESHOLD = 6
+const snapGuides = ref<{ x?: number, y?: number }>({})
+
+// 在 lines 中为 base 加各 offset 后寻找命中线：返回吸附后的基准坐标与命中线位置。
+function snapAxis(lines: number[], offsets: number[], base: number): { value?: number, line?: number } {
+  for (const offset of offsets) {
+    const line = closestLine(lines, base + offset, SNAP_THRESHOLD)
+    if (line !== undefined) {
+      return { value: line - offset, line }
+    }
+  }
+  return {}
+}
+
+function onTransformMove(ctx: Mce.TransformContext) {
+  if (ctx.handle !== 'move') {
+    snapGuides.value = {}
+    return
+  }
+  const { width: rw, height: rh } = rootBox.value
+  // 用 Transform 提供的未吸附位置 ctx.value 计算吸附：它直接跟随光标，能正确穿越吸附线。
+  // 不能回读 sourceTransform.value —— 它经 cropRect 的 defineModel 往返父组件，同步读取仍是旧值。
+  const v = ctx.value
+  // 候选 offset：左/右边与水平中线；上/下边与垂直中线。
+  const x = snapAxis([0, rw / 2, rw], [0, v.width / 2, v.width], v.left)
+  const y = snapAxis([0, rh / 2, rh], [0, v.height / 2, v.height], v.top)
+  snapGuides.value = { x: x.line, y: y.line }
+  if (x.value !== undefined || y.value !== undefined) {
+    sourceTransform.value = {
+      width: v.width,
+      height: v.height,
+      left: x.value ?? v.left,
+      top: y.value ?? v.top,
+    }
+  }
+}
+
+function onTransformEnd() {
+  snapGuides.value = {}
+}
 
 // 外部view变化需要通过调整cropRect保持source视觉位置尺寸不变
 const viewEffect = watch(view, (val, old) => {
@@ -234,9 +278,22 @@ onBeforeUnmount(() => emit('end'))
       v-model="sourceTransform"
       class="m-cropper__transform"
       :rotatable="false"
+      @move="onTransformMove"
+      @end="onTransformEnd"
     >
       <div class="m-cropper__transform_rect" v-bind="slotProps" />
     </Transform>
+
+    <div
+      v-if="snapGuides.x !== undefined"
+      class="m-cropper__guide m-cropper__guide--x"
+      :style="{ left: `${snapGuides.x}px` }"
+    />
+    <div
+      v-if="snapGuides.y !== undefined"
+      class="m-cropper__guide m-cropper__guide--y"
+      :style="{ top: `${snapGuides.y}px` }"
+    />
 
     <slot
       :scale="scale"
@@ -279,6 +336,24 @@ onBeforeUnmount(() => emit('end'))
     &__transform_rect {
       width: 100%;
       height: 100%;
+    }
+
+    &__guide {
+      position: absolute;
+      pointer-events: none;
+      background-color: rgb(var(--m-theme-primary));
+
+      &--x {
+        top: 0;
+        width: 1px;
+        height: 100%;
+      }
+
+      &--y {
+        left: 0;
+        width: 100%;
+        height: 1px;
+      }
     }
   }
 </style>
