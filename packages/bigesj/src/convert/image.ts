@@ -1,4 +1,75 @@
+import type { Effect } from 'modern-idoc'
+import type { BigeElement } from './types'
 import { assets } from 'modern-canvas'
+
+// bige「图片样式」(imageEffects) → 前景 effects（声明式叠层，由 modern-canvas 的 bakeImageEffects 烘焙）。
+// 每个 imageEffect 是图片 alpha 轮廓的一个副本：filling 重新着色、stroke 描边、offset 位移。
+//
+// 对齐 bakeImageEffects 的合成模型：
+// - 每层从原图出发：fill 用纯色/渐变/图案重上色轮廓 → outline 沿轮廓描边（已自带原图叠在描边上）；
+// - 带 translate 的层 source-over 画在上面，不带的层 destination-over 落到背后；
+// - 烘焙不会自动叠加原图，需要时用空 `{}` 层补一张原图。
+//
+// 映射：filling.color → fill.color、filling.imageContent.image → fill.image、
+//       stroke[] → 每条一层 outline（多重描边 = 多层）、offset → transform translate(px)。
+// 描边粗细与位移距离沿用 bige 渲染端缩放公式，基于 imageEffectsRatio（默认 50）。
+export function convertImageEffects(el: BigeElement): Effect[] | undefined {
+  const imageEffects = el.imageEffects ?? []
+  if (!imageEffects.length) {
+    return undefined
+  }
+  const ratio = el.imageEffectsRatio ?? 50
+  const effects: Effect[] = []
+  // 是否存在位移层（重影）：是则末尾补一张原图，露出被重影遮挡处（对应官方 [{fill,transform},{}]）。
+  let needsBase = false
+  for (const effect of imageEffects) {
+    const { filling, offset, stroke } = effect
+    // translate 需用无单位形式，bakeImageEffects 的 parseTranslate 才解析得到。
+    const transform = offset
+      ? `translate(${(offset.x / 50) * ratio * 200}, ${(offset.y / 50) * ratio * 200})`
+      : undefined
+    if (offset) {
+      needsBase = true
+    }
+
+    let fill: Effect['fill']
+    if (filling?.color) {
+      fill = { color: filling.color }
+    }
+    else if (filling?.imageContent?.image) {
+      fill = { image: filling.imageContent.image }
+    }
+
+    const strokes: { width: number, color: string }[] = Array.isArray(stroke)
+      ? stroke
+      : stroke
+        ? [stroke]
+        : []
+
+    if (strokes.length) {
+      // 第一条描边并入携带 fill 的层（先重上色再描边，与 bakeImageEffects 同序）；其余各自成层。
+      strokes.forEach((s, i) => {
+        effects.push({
+          ...(transform ? { transform } : {}),
+          ...(i === 0 && fill ? { fill } : {}),
+          outline: { color: s.color, width: (s.width / 50) * ratio },
+        })
+      })
+    }
+    else if (fill) {
+      effects.push({ ...(transform ? { transform } : {}), fill })
+    }
+    else if (transform) {
+      // 仅位移、无重上色：原图的纯重影副本。
+      effects.push({ transform })
+    }
+  }
+
+  if (needsBase && effects.length) {
+    effects.push({})
+  }
+  return effects.length ? effects : undefined
+}
 
 // 按 url 缓存 blob（assets.loadBy 负责去重/复用），再每次解码出独立 ImageBitmap。
 // 不能缓存 bitmap 本身——调用方用完会 close()。仅缓存 http 资源，其余走原路径。

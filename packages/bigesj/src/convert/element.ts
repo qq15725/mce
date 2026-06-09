@@ -5,6 +5,7 @@ import { svgToPath2DSet } from 'modern-path2d'
 import { parseAnimations } from './animation'
 import { convertBackground } from './background'
 import { croppingToCropRect } from './cropping'
+import { convertImageEffects } from './image'
 import { convertShapeElementToSvg } from './shape'
 import { getStyle } from './style'
 import { convertSvgElementToUrl } from './svg'
@@ -107,6 +108,7 @@ export async function convertElement(
         enabled: true,
         image: el.clipUrl || el.url,
         fillWithShape: true,
+        effects: convertImageEffects(el) as any,
       }
 
       if (el.clipUrl) {
