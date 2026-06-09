@@ -1,3 +1,13 @@
+## [0.24.2](https://github.com/qq15725/mce/compare/v0.24.1...v0.24.2) (2026-06-09)
+
+
+### Features
+
+* **bigesj:** 兼容老版本文字变形数据(type 转 kebab-case) ([5b276ad](https://github.com/qq15725/mce/commit/5b276adb39e7ea5175898cb52b40a7e4742155c0))
+* **bigesj:** convert image styles to foreground.effects ([3d7b170](https://github.com/qq15725/mce/commit/3d7b170ef2889ce10eca07cd56262f9af99eb15a))
+* **cropper:** snap source image to crop frame edges/center while dragging ([7daeba5](https://github.com/qq15725/mce/commit/7daeba5d1d555d4560d4800436bdaa3439d2f047))
+* **playground:** add image effects demo ([c042d42](https://github.com/qq15725/mce/commit/c042d4226df2324f361b549e604d08017ccd9290))
+
 ## [0.24.1](https://github.com/qq15725/mce/compare/v0.24.0...v0.24.1) (2026-06-03)
 
 # [0.24.0](https://github.com/qq15725/mce/compare/v0.23.0...v0.24.0) (2026-05-29)
