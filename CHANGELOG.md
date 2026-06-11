@@ -1,3 +1,10 @@
+## [0.24.3](https://github.com/qq15725/mce/compare/v0.24.2...v0.24.3) (2026-06-11)
+
+
+### Bug Fixes
+
+* **bigesj:** align image-style conversion with bakeImageEffects compositing ([d7b7c18](https://github.com/qq15725/mce/commit/d7b7c182432bb257b9a16992764f09a6b34bf5ff))
+
 ## [0.24.2](https://github.com/qq15725/mce/compare/v0.24.1...v0.24.2) (2026-06-09)
 
 
