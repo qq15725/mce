@@ -1,6 +1,5 @@
 import type { DocxMeta, PptxMeta, XlsxMeta } from 'modern-openxml'
 import { definePlugin } from 'mce'
-import { docToDocx, docToPptx, docToXlsx, docxToDoc, pptxToDoc, xlsxToDoc } from 'modern-openxml'
 
 declare global {
   namespace Mce {
@@ -61,7 +60,11 @@ export function plugin() {
             return false
           },
           load: async (source: File | Blob) => {
-            const presetShapeDefinitions = await import('modern-openxml/presetShapeDefinitions').then(rep => rep.default)
+            // 重依赖 modern-openxml 按需加载：插件注册保持轻量，导入/导出代码仅首次用到时加载
+            const [{ pptxToDoc }, presetShapeDefinitions] = await Promise.all([
+              import('modern-openxml'),
+              import('modern-openxml/presetShapeDefinitions').then(rep => rep.default),
+            ])
 
             const doc = await pptxToDoc(await source.arrayBuffer(), {
               presetShapeDefinitions,
@@ -115,6 +118,7 @@ export function plugin() {
             return false
           },
           load: async (source: File | Blob) => {
+            const { xlsxToDoc } = await import('modern-openxml')
             const doc = await xlsxToDoc(await source.arrayBuffer())
             doc.name = (source as any).name
             ;(doc.meta as any).inEditorIs = 'Doc'
@@ -134,6 +138,7 @@ export function plugin() {
             return false
           },
           load: async (source: File | Blob) => {
+            const { docxToDoc } = await import('modern-openxml')
             const doc = await docxToDoc(await source.arrayBuffer())
             doc.name = (source as any).name
             ;(doc.meta as any).inEditorIs = 'Doc'
@@ -146,6 +151,7 @@ export function plugin() {
           name: 'pptx',
           saveAs: true,
           handle: async (options) => {
+            const { docToPptx } = await import('modern-openxml')
             const { pptx: pptxOptions, ...jsonOptions } = options
 
             const doc = await to('json', jsonOptions)
@@ -170,6 +176,7 @@ export function plugin() {
           name: 'xlsx',
           saveAs: true,
           handle: async (options) => {
+            const { docToXlsx } = await import('modern-openxml')
             const { xlsx: xlsxOptions, ...jsonOptions } = options
             const doc = await to('json', jsonOptions)
             const xlsx = await docToXlsx({
@@ -185,6 +192,7 @@ export function plugin() {
           name: 'docx',
           saveAs: true,
           handle: async (options) => {
+            const { docToDocx } = await import('modern-openxml')
             const { docx: docxOptions, ...jsonOptions } = options
             const doc = await to('json', jsonOptions)
             const docx = await docToDocx({

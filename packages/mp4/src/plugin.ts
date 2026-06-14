@@ -1,6 +1,5 @@
 import { definePlugin } from 'mce'
 import { render } from 'modern-canvas'
-import { MP4Encoder } from 'modern-mp4'
 
 declare global {
   namespace Mce {
@@ -29,6 +28,8 @@ export function plugin() {
           name: 'mp4',
           saveAs: true,
           handle: async (options) => {
+            // 重依赖 modern-mp4 按需加载：仅在真正导出 MP4 时才拉取编码器
+            const { MP4Encoder } = await import('modern-mp4')
             const { onProgress, ...restOptions } = options
             const data = to('json', restOptions)
             const { startTime, endTime } = data.meta

@@ -1,6 +1,4 @@
 import { definePlugin } from 'mce'
-import { docToSvgString } from 'modern-idoc-svg'
-import { svgToPath2DSet } from 'modern-path2d'
 
 declare global {
   namespace Mce {
@@ -43,6 +41,8 @@ export function plugin() {
             return false
           },
           load: async (source: File | Blob) => {
+            // 重依赖按需加载：仅在真正导入 SVG 时才拉取 modern-path2d
+            const { svgToPath2DSet } = await import('modern-path2d')
             const svg = await source.text()
             const set = svgToPath2DSet(svg)
             const box = set.getBoundingBox()
@@ -74,6 +74,8 @@ export function plugin() {
           ],
           saveAs: svgString => new Blob([svgString], { type: 'image/svg+xml' }),
           handle: async (options) => {
+            // 重依赖按需加载：仅在真正导出 SVG 时才拉取 modern-idoc-svg
+            const { docToSvgString } = await import('modern-idoc-svg')
             const doc = await to('json', options)
             return await docToSvgString({ ...doc, fonts } as any)
           },
