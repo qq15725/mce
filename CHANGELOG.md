@@ -1,3 +1,10 @@
+## [0.24.4](https://github.com/qq15725/mce/compare/v0.24.3...v0.24.4) (2026-06-14)
+
+
+### Performance Improvements
+
+* **plugins:** lazy-load heavy export deps via dynamic import ([b31c39a](https://github.com/qq15725/mce/commit/b31c39a54b6f66bd7e68d758710a97f2eb5188c4))
+
 ## [0.24.3](https://github.com/qq15725/mce/compare/v0.24.2...v0.24.3) (2026-06-11)
 
 
