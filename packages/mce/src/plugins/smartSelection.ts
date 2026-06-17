@@ -22,6 +22,10 @@ export default definePlugin((_editor) => {
         handle: el => currentElement.value = el,
       },
     ],
+    events: {
+      // 切文档时清掉本插件持有的节点引用，避免指向已销毁的旧节点。
+      docSet: () => currentElement.value = undefined,
+    },
     components: [
       {
         type: 'overlay',

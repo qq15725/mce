@@ -4,24 +4,6 @@ import { Flexbox } from 'modern-canvas'
 
 // 通过 URL 参数加载时，时间轴插件的 immediate watcher 会在挂载后把 paused 重置为
 // 面板可见状态，所以延迟到挂载之后再 play，按钮点击场景也兼容。
-// setDoc 不像 loadDoc 那样等字体；URL 触发的 demo 又跑在 setup() 里、早于默认字体加载完成，
-// 此时文字按 0 宽 glyph 测量会挤成一坨（表格单元格在 back 层，事后重排也够不到）。默认字体由 bigesj
-// 异步加载、不经 editor.loadFont（不触发 fontLoaded），waitUntilFontLoad 也会过早返回。可靠信号是
-// fonts.fallbackFont 就绪——轮询它，到位后再 setDoc（与点按钮的「热路径」一致，所有文字一次测量正确）。
-function whenFontReady(editor: Editor, render: () => void): void {
-  if ((editor.fonts as any)?.fallbackFont) {
-    render()
-    return
-  }
-  let tries = 0
-  const id = setInterval(() => {
-    if ((editor.fonts as any)?.fallbackFont || ++tries > 50) {
-      clearInterval(id)
-      render()
-    }
-  }, 100)
-}
-
 function fitAndPlay(editor: Editor, delay: number): void {
   setTimeout(() => {
     editor.exec('zoomToFit')
@@ -330,10 +312,8 @@ export function loadShapesDemo(editor: Editor): void {
       meta: { inCanvasIs: 'Element2D' },
     })
   })
-  whenFontReady(editor, () => {
-    editor.setDoc(nodes as any)
-    editor.exec('zoomToFit')
-  })
+  editor.setDoc(nodes as any)
+  setTimeout(() => editor.exec('zoomToFit'), 100)
 }
 
 // 文字排版特性：字号 / 字重 / 斜体 / 颜色 / 对齐 / 字间距 / 行高 / 装饰线。
@@ -360,10 +340,8 @@ export function loadTextDemo(editor: Editor): void {
     top += height + 12
     return node
   })
-  whenFontReady(editor, () => {
-    editor.setDoc(nodes as any)
-    editor.exec('zoomToFit')
-  })
+  editor.setDoc(nodes as any)
+  setTimeout(() => editor.exec('zoomToFit'), 100)
 }
 
 // 填充 / 描边 / 阴影 / 透明度：纯色、线性渐变、径向渐变、图片填充、虚线描边、外阴影等。
@@ -400,21 +378,17 @@ export function loadFillStrokeDemo(editor: Editor): void {
       meta: { inCanvasIs: 'Element2D' },
     })
   })
-  whenFontReady(editor, () => {
-    editor.setDoc(nodes as any)
-    editor.exec('zoomToFit')
-  })
+  editor.setDoc(nodes as any)
+  setTimeout(() => editor.exec('zoomToFit'), 100)
 }
 
 // 表格：复用 mce 内建 table 元素（首行表头）。
 export function loadTableDemo(editor: Editor): void {
-  whenFontReady(editor, () => {
-    const table: any = createTableElement(4, 4, { width: 480, height: 240 })
-    table.id = 'table-demo'
-    table.style = { ...table.style, left: 0, top: 0 }
-    editor.setDoc([table] as any)
-    editor.exec('zoomToFit')
-  })
+  const table: any = createTableElement(4, 4, { width: 480, height: 240 })
+  table.id = 'table-demo'
+  table.style = { ...table.style, left: 0, top: 0 }
+  editor.setDoc([table] as any)
+  setTimeout(() => editor.exec('zoomToFit'), 120)
 }
 
 // 图表：复用 mce 内建 chart 元素（柱状 / 折线 / 饼图 / 条形）。需要可选依赖 echarts。

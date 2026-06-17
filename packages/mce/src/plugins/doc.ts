@@ -3,6 +3,7 @@ import type * as Y from 'yjs'
 import { Element2D } from 'modern-canvas'
 import { definePlugin } from '../plugin'
 import { Doc } from '../scene'
+import { eachElement } from '../utils'
 
 declare global {
   namespace Mce {
@@ -82,6 +83,45 @@ export default definePlugin((editor, options) => {
 
   function onHistoryChanged(arg0: Y.UndoManager) {
     emit('historyChanged', arg0)
+  }
+
+  // setDoc 不像 loadDoc 那样等字体；字体就绪前创建的文字会按 0 宽 glyph 测量挤成一坨。
+  // 字体到位后需重排全部文字——eachElement 走 getChildren(true)，覆盖表格 back 层单元格。
+  // 同一 tick 内多次触发合并为一次。
+  let remeasureScheduled = false
+  function scheduleTextRemeasure() {
+    if (remeasureScheduled) {
+      return
+    }
+    remeasureScheduled = true
+    queueMicrotask(() => {
+      remeasureScheduled = false
+      eachElement(root.value, (node: any) => {
+        node.text?.update?.()
+        node.requestRender?.()
+      })
+    })
+  }
+
+  // fontLoaded 事件不可靠（默认字体常在 doc 插件订阅前就已加载完、或经第三方字体插件加载而不 emit），
+  // 唯一可靠的「就绪」信号是 fonts.fallbackFont。切文档后先重排一次（热路径即生效），未就绪则轮询到位再补排。
+  let fontPollId: any = null
+  function remeasureWhenFontReady() {
+    scheduleTextRemeasure()
+    if ((fonts as any).fallbackFont) {
+      return
+    }
+    if (fontPollId) {
+      clearInterval(fontPollId)
+    }
+    let tries = 0
+    fontPollId = setInterval(() => {
+      if ((fonts as any).fallbackFont || ++tries > 50) {
+        clearInterval(fontPollId)
+        fontPollId = null
+        scheduleTextRemeasure()
+      }
+    }, 100)
   }
 
   const setDoc: Mce.Editor['setDoc'] = (source) => {
@@ -176,6 +216,10 @@ export default definePlugin((editor, options) => {
       { command: 'newDoc', key: 'Alt+CmdOrCtrl+Dead' },
       { command: 'openDoc', key: 'CmdOrCtrl+O' },
     ],
+    events: {
+      fontLoaded: scheduleTextRemeasure,
+      docSet: remeasureWhenFontReady,
+    },
     setup: async () => {
       const {
         doc: source,

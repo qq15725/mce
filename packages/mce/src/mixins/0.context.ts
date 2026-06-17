@@ -277,6 +277,11 @@ export default defineMixin((editor, options) => {
 
     function onSetDoc() {
       updateNodes()
+      // 切文档：旧节点已随旧 doc destroy，集中清掉所有指向节点的共享态，避免野指针 / 残留 UI。
+      // 这是「切文档统一清理」的单一入口，新增节点态请在此一并清，不要再各插件各记各的。
+      selection.value = []
+      hoverElement.value = undefined
+      textSelection.value = undefined
     }
 
     if (options.debug) {
