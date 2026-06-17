@@ -52,7 +52,7 @@ export function storeState(
 ): Promise<void> {
   return fetchUpdates(idbPersistence)
     .then((updatesStore) => {
-      if (forceStore || idbPersistence._dbsize >= PREFERRED_TRIM_SIZE) {
+      if (forceStore || idbPersistence._dbsize >= idbPersistence.trimSize) {
         idb.addAutoKey(updatesStore, Y.encodeStateAsUpdate(idbPersistence.doc))
           .then(() => idb.del(
             updatesStore,
@@ -83,12 +83,16 @@ export class IndexeddbProvider extends Observable<IndexeddbProviderEvents> {
   _storeTimeout = 1000
   _storeTimeoutId: any = null
   _storeUpdate: (update: Uint8Array, origin: any) => void
+  /** 累积多少条增量后做一次全量快照压缩（compaction）。越小库越小但全量重写越频繁。 */
+  trimSize: number
 
   constructor(
     public name: string,
     public doc: Y.Doc,
+    trimSize: number = PREFERRED_TRIM_SIZE,
   ) {
     super()
+    this.trimSize = trimSize
 
     this._db = idb.openDB(name, (db) => {
       idb.createStores(db, [
@@ -125,7 +129,7 @@ export class IndexeddbProvider extends Observable<IndexeddbProviderEvents> {
       if (this.db && origin !== this) {
         const [updatesStore] = idb.transact(this.db, [updatesStoreName])
         idb.addAutoKey(updatesStore, update)
-        if (++this._dbsize >= PREFERRED_TRIM_SIZE) {
+        if (++this._dbsize >= this.trimSize) {
           // debounce store call
           if (this._storeTimeoutId !== null) {
             clearTimeout(this._storeTimeoutId)

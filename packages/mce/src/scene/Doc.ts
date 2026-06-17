@@ -1,9 +1,9 @@
 import type { NodeEvents } from 'modern-canvas'
 import type { Document } from 'modern-idoc'
-import type * as Y from 'yjs'
-import { throttle } from 'lodash-es'
 import { Node } from 'modern-canvas'
+import * as Y from 'yjs'
 import { YDoc } from '../crdt'
+import { vueReactivity } from '../crdt/vueReactivity'
 
 export interface DocEvents extends NodeEvents {
   update: [update: Uint8Array, origin: any]
@@ -20,6 +20,12 @@ export interface Doc {
 export class Doc extends Node {
   _yDoc: YDoc
   protected _source: any
+
+  // 注意：成员名带 Y 前缀，避免与 modern-idoc 基类的 _enqueueUpdate / 更新调度内部成员冲突。
+  /** 同一同步批次内累积的增量，flush 时用 Y.mergeUpdates 合并为一条转发——零丢失替代旧的 throttle。 */
+  protected _pendingYUpdates: Uint8Array[] = []
+  protected _pendingYOrigin: any
+  protected _yFlushScheduled = false
 
   constructor(
     source?: Mce.DocumentSource,
@@ -51,19 +57,45 @@ export class Doc extends Node {
       }
     }
 
-    const _doc = new YDoc(id)
+    const _doc = new YDoc(id, vueReactivity)
     _doc._yProps.set('id', this.id)
     _doc._yProps.set('name', this.name)
-    _doc.on(
-      'update',
-      throttle((update, origin) => this.emit('update', update, origin), 200),
-    )
+    _doc.on('update', (update, origin) => this._enqueueYUpdate(update, origin))
     _doc.on('history', um => this.emit('history', um))
     _doc._proxyRoot(this)
     _doc.load()
 
     this._yDoc = _doc
     this._source = _source
+  }
+
+  /**
+   * 累积增量并安排一个 microtask 合并转发。
+   * - 零丢失：同步批次内的每条增量都进入缓冲，绝不丢弃（旧 throttle 会丢中间增量导致两端发散）。
+   * - 合并：一个事件处理器里产生的多个事务在 microtask 边界前合并成一条，降低网络包数。
+   * - origin 纯净：origin 变化时先 flush 旧批，避免本地 / 远端增量被合进同一条而丢失来源。
+   */
+  protected _enqueueYUpdate(update: Uint8Array, origin: any): void {
+    if (this._pendingYUpdates.length > 0 && origin !== this._pendingYOrigin) {
+      this._flushYUpdates()
+    }
+    this._pendingYOrigin = origin
+    this._pendingYUpdates.push(update)
+    if (!this._yFlushScheduled) {
+      this._yFlushScheduled = true
+      queueMicrotask(() => this._flushYUpdates())
+    }
+  }
+
+  protected _flushYUpdates(): void {
+    this._yFlushScheduled = false
+    if (this._pendingYUpdates.length === 0) {
+      return
+    }
+    const updates = this._pendingYUpdates
+    this._pendingYUpdates = []
+    const merged = updates.length === 1 ? updates[0] : Y.mergeUpdates(updates)
+    this.emit('update', merged, this._pendingYOrigin)
   }
 
   transact = <T>(fn: () => T, should = true): T => this._yDoc.transact(fn, should)
@@ -109,6 +141,7 @@ export class Doc extends Node {
   }
 
   destroy = () => {
+    this._flushYUpdates()
     super.destroy()
     this._yDoc.destroy()
   }

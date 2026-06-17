@@ -1,12 +1,23 @@
 import type { CoreObject } from 'modern-canvas'
 import type { ObservableEvents, PropertyAccessor } from 'modern-idoc'
 import type { Transaction, YArrayEvent, YMapEvent } from 'yjs'
+import type { Reactivity } from './reactivity'
 import { Element2D, Node } from 'modern-canvas'
 import { idGenerator, Observable } from 'modern-idoc'
-import { isReactive, markRaw, reactive } from 'vue'
 import * as Y from 'yjs'
 import { logger } from '../utils/console'
 import { IndexeddbProvider } from './providers'
+import { rawReactivity } from './reactivity'
+
+/**
+ * 本地编辑产生的事务来源：进入 UndoManager，并向远端广播。
+ */
+export const LOCAL_ORIGIN = Symbol.for('mce.crdt.local')
+/**
+ * 内部回放（把远端 / 撤销变更应用到视图）产生的事务来源：不进入 UndoManager，
+ * observe 回调据此跳过回写，避免本地↔yjs 回环。
+ */
+export const INTERNAL_ORIGIN = Symbol.for('mce.crdt.internal')
 
 export type YNode = Y.Map<unknown> & {
   get:
@@ -45,17 +56,23 @@ export class YDoc extends Observable {
   _yChildren: Y.Map<YNode>
   _yChildrenIds: Y.Array<string>
   _nodeMap = new Map<string, Node>()
+  /** 远端子节点顺序变更先于节点创建到达时，挂起的 move 操作，按 childId 暂存。 */
+  _pendingInserts = new Map<string, Set<() => void>>()
   indexeddb?: IndexeddbProvider
   declare undoManager: Y.UndoManager
+  /** 响应式适配器：解耦 Vue。运行时由上层注入 Vue 实现，测试 / headless 用 rawReactivity。 */
+  protected _rx: Reactivity
 
   constructor(
     public id = idGenerator(),
+    reactivity: Reactivity = rawReactivity,
   ) {
     super()
-    this._yDoc = markRaw(new Y.Doc({ guid: id }))
-    this._yProps = markRaw(this._yDoc.getMap('props'))
-    this._yChildren = markRaw(this._yDoc.getMap('children'))
-    this._yChildrenIds = markRaw(this._yDoc.getArray('childrenIds') as Y.Array<string>)
+    this._rx = reactivity
+    this._yDoc = this._rx.markRaw(new Y.Doc({ guid: id }))
+    this._yProps = this._rx.markRaw(this._yDoc.getMap('props'))
+    this._yChildren = this._rx.markRaw(this._yDoc.getMap('children'))
+    this._yChildrenIds = this._rx.markRaw(this._yDoc.getArray('childrenIds') as Y.Array<string>)
     this._initUndoManager([
       this._yChildren,
       this._yChildrenIds,
@@ -66,7 +83,7 @@ export class YDoc extends Observable {
 
   protected _isSelfTransaction(transaction?: Y.Transaction): boolean {
     if (transaction) {
-      return !transaction.origin || transaction.origin === this._yDoc.clientID
+      return transaction.origin === LOCAL_ORIGIN || transaction.origin === INTERNAL_ORIGIN
     }
     else {
       return this._transacting === false
@@ -74,11 +91,11 @@ export class YDoc extends Observable {
   }
 
   protected _initUndoManager(typeScope: any[] = []): void {
-    const um = markRaw(new Y.UndoManager([
+    const um = this._rx.markRaw(new Y.UndoManager([
       this._yProps,
       ...typeScope,
     ], {
-      trackedOrigins: new Set([this._yDoc.clientID]),
+      trackedOrigins: new Set([LOCAL_ORIGIN]),
     }))
     um.trackedOrigins.add(um)
     const onHistory = (): void => {
@@ -117,7 +134,7 @@ export class YDoc extends Observable {
           logger.error(e)
         }
       },
-      should ? doc.clientID : null,
+      should ? LOCAL_ORIGIN : INTERNAL_ORIGIN,
     )
     this._transacting = undefined
     return result!
@@ -165,6 +182,7 @@ export class YDoc extends Observable {
       }
     })
     this._nodeMap.clear()
+    this._pendingInserts.clear()
     this.undoManager.clear()
     this.indexeddb?.clearData()
     return this
@@ -204,7 +222,7 @@ export class YDoc extends Observable {
       yMap.forEach((_value, key) => {
         oldValues[key] = obj.getProperty(key)
       })
-      ;(obj as any)._propertyAccessor = markRaw(accessor)
+      ;(obj as any)._propertyAccessor = this._rx.markRaw(accessor)
       yMap.forEach((_value, key) => {
         const newValue = obj.getProperty(key)
         const oldValue = oldValues[key]
@@ -247,9 +265,9 @@ export class YDoc extends Observable {
         })
       }, false)
     }
-    ;(obj as any)._yMap = markRaw(yMap)
+    ;(obj as any)._yMap = this._rx.markRaw(yMap)
     ;(obj as any)._yMapObserveFn && yMap.unobserve((obj as any)._yMapObserveFn)
-    ;(obj as any)._yMapObserveFn = markRaw(observeFn)
+    ;(obj as any)._yMapObserveFn = this._rx.markRaw(observeFn)
     yMap.observe(observeFn)
   }
 
@@ -331,21 +349,31 @@ export class YDoc extends Observable {
 
           if (!skip) {
             insert.forEach((id, index) => {
-              let child = this._nodeMap.get(id)
-              const cb = (child: Node): void => {
+              // 固化目标位置：retain 在本轮 forEach 后会自增，闭包不能引用它（原 setTimeout 版会取到错位的 index）。
+              const targetIndex = retain + index
+              const run = (child: Node): void => {
                 this.transact(() => {
-                  node.moveChild(child, retain + index)
-                  this._debug(`[childrenIds][insert][${id}]`, retain + index)
+                  node.moveChild(child, targetIndex)
+                  this._debug(`[childrenIds][insert][${id}]`, targetIndex)
                 }, false)
               }
+              const child = this._nodeMap.get(id)
               if (child) {
-                cb(child)
+                run(child)
               }
               else {
-                setTimeout(() => {
-                  child = this._nodeMap.get(id)
-                  child && cb(child)
-                }, 0)
+                // 节点尚未创建（创建增量更晚到达）：登记挂起，待 _proxyNode 就绪后由 _flushPendingInserts 消费。
+                let pending = this._pendingInserts.get(id)
+                if (!pending) {
+                  pending = new Set()
+                  this._pendingInserts.set(id, pending)
+                }
+                pending.add(() => {
+                  const c = this._nodeMap.get(id)
+                  if (c) {
+                    run(c)
+                  }
+                })
               }
             })
           }
@@ -356,9 +384,9 @@ export class YDoc extends Observable {
         }
       })
     }
-    ;(node as any)._childrenIds = markRaw(childrenIds)
+    ;(node as any)._childrenIds = this._rx.markRaw(childrenIds)
     ;(node as any)._childrenIdsObserveFn && childrenIds.unobserve((node as any)._childrenIdsObserveFn)
-    ;(node as any)._childrenIdsObserveFn = markRaw(observeFn)
+    ;(node as any)._childrenIdsObserveFn = this._rx.markRaw(observeFn)
     childrenIds.observe(observeFn)
   }
 
@@ -388,11 +416,11 @@ export class YDoc extends Observable {
       node = _node
     }
     else {
-      if (!isReactive(node)) {
+      if (!this._rx.isReactive(node)) {
         const handle = (node: Node) => {
           if (node instanceof Element2D) {
             if (!(node.text.base as any).__markRaw__) {
-              const base = markRaw(node.text.base)
+              const base = this._rx.markRaw(node.text.base)
               ;(base as any).__markRaw__ = true
               base.setPropertyAccessor(node.text)
               ;(node.text.base as any) = base
@@ -404,13 +432,14 @@ export class YDoc extends Observable {
           handle(child)
           return false
         })
-        node = reactive(node) as any
+        node = this._rx.reactive(node) as any
         if (node.parent) {
           node.parent.children[node.getIndex()] = node
         }
       }
 
       this._nodeMap.set(id, node)
+      this._flushPendingInserts(id)
 
       yNode.set('parentId', node.parent?.id)
       node.on('parented', () => {
@@ -480,5 +509,32 @@ export class YDoc extends Observable {
       this._nodeMap.set(id, node)
     }
     return node
+  }
+
+  /** 节点就绪后消费此前因节点缺失而挂起的 move 操作。 */
+  protected _flushPendingInserts(id: string): void {
+    const pending = this._pendingInserts.get(id)
+    if (pending) {
+      this._pendingInserts.delete(id)
+      pending.forEach(run => run())
+    }
+  }
+
+  /**
+   * 应用远端增量。origin 必须区别于 LOCAL/INTERNAL，使变更刷新到视图且不进入本端 undo 栈；
+   * 默认用 provider/调用方实例做 origin（这里用 this 兜底）。
+   */
+  applyUpdate(update: Uint8Array, origin: unknown = this): void {
+    Y.applyUpdate(this._yDoc, update, origin)
+  }
+
+  /** 导出相对 targetStateVector 的差量（不传则全量），用于新端初始同步握手。 */
+  encodeStateAsUpdate(targetStateVector?: Uint8Array): Uint8Array {
+    return Y.encodeStateAsUpdate(this._yDoc, targetStateVector)
+  }
+
+  /** 导出本端状态向量，与对端交换以计算差量。 */
+  encodeStateVector(): Uint8Array {
+    return Y.encodeStateVector(this._yDoc)
   }
 }
