@@ -292,6 +292,9 @@ export default definePlugin((editor) => {
       { command: 'lockOrUnlockSelection', key: 'Shift+CmdOrCtrl+L' },
     ],
     events: {
+      // 切换 / 清空文档时清掉选区：旧节点已随旧 doc 销毁，否则选框会残留在画布上。
+      // docSet 覆盖 setDoc / loadDoc / newDoc 全部切换路径；docCleared 仅显式清空时额外触发。
+      docSet: () => select('none'),
       docCleared: () => select('none'),
       selectionTransformed: () => {
         elementSelection.value.forEach((el) => {
