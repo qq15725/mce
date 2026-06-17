@@ -95,11 +95,11 @@ importers:
         specifier: ^5
         version: 5.13.0
       modern-canvas:
-        specifier: ^0.23.8
-        version: 0.23.8(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1)
+        specifier: ^0.23.11
+        version: 0.23.11(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1)
       modern-font:
-        specifier: ^0.6.0
-        version: 0.6.0
+        specifier: ^0.6.1
+        version: 0.6.1
       modern-gif:
         specifier: ^2
         version: 2.1.0
@@ -2306,8 +2306,8 @@ packages:
   mlly@1.8.2:
     resolution: {integrity: sha512-d+ObxMQFmbt10sretNDytwt85VrbkhhUA/JBGm1MPaWJ65Cl4wOgLaB1NYvJSZ0Ef03MMEU/0xpPMXUIQ29UfA==}
 
-  modern-canvas@0.23.8:
-    resolution: {integrity: sha512-jp02aMM/8uCTDaWv9NloQz+N2CW7aHXtbQeS9xXl/+2WUBBMeG72jFO+OqXSjXS87OCzgxTWXOMIXAmQE4FTzg==}
+  modern-canvas@0.23.11:
+    resolution: {integrity: sha512-EvyMKc3lnuq1lu3uKs58Z1k7ilAEVJlW67bWgmGvSV/kbFXBEnAYeA12vXQAQkgvb13WucHCEhcjHfx43ynpoA==}
     peerDependencies:
       echarts: ^5 || ^6
       lottie-web: ^5
@@ -2323,8 +2323,8 @@ packages:
       yoga-layout:
         optional: true
 
-  modern-font@0.6.0:
-    resolution: {integrity: sha512-+ONkM2v9nzULXa0GYFoLzlifjkrTDDABiboku68RbvuEm7jsMhd0hYOFFdiayCe64bcIfdi3TRe7xgTHPof1Tg==}
+  modern-font@0.6.1:
+    resolution: {integrity: sha512-CdNWv6p/Yr624oAG7JSwZdcQ+oKv3ZIy6diDOLwyJFi6zy+kJvLGinb6kRZF9k13KST2p8e0QgydLIGuNqAMMQ==}
 
   modern-gif@2.1.0:
     resolution: {integrity: sha512-9ZGD5b4jNUge0fvFP1bd9Hsqz5CSZI1al3EhCJ+WFkZgmn5NO1yvVwXJA/LTqro85l2Gt0+S0dDFgVYhYtLLWg==}
@@ -5390,11 +5390,11 @@ snapshots:
       pkg-types: 1.3.1
       ufo: 1.6.4
 
-  modern-canvas@0.23.8(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1):
+  modern-canvas@0.23.11(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1):
     dependencies:
       colord: 2.9.3
       earcut: 3.0.2
-      modern-font: 0.6.0
+      modern-font: 0.6.1
       modern-idoc: 0.11.9
       modern-path2d: 1.8.5
       modern-text: 2.0.6
@@ -5404,7 +5404,7 @@ snapshots:
       modern-gif: 2.1.0
       yoga-layout: 3.2.1
 
-  modern-font@0.6.0:
+  modern-font@0.6.1:
     dependencies:
       fflate: 0.8.3
 
@@ -5443,7 +5443,7 @@ snapshots:
     dependencies:
       colord: 2.9.3
       fflate: 0.8.3
-      modern-font: 0.6.0
+      modern-font: 0.6.1
       modern-idoc: 0.11.9
       modern-path2d: 1.8.5
       modern-text: 2.0.6
@@ -5451,7 +5451,7 @@ snapshots:
   modern-text@2.0.6:
     dependencies:
       diff: 9.0.0
-      modern-font: 0.6.0
+      modern-font: 0.6.1
       modern-idoc: 0.11.9
       modern-path2d: 1.8.5
 
