@@ -1,8 +1,27 @@
 import type { Editor } from 'mce'
+import { createChartElement, createTableElement } from 'mce'
 import { Flexbox } from 'modern-canvas'
 
 // 通过 URL 参数加载时，时间轴插件的 immediate watcher 会在挂载后把 paused 重置为
 // 面板可见状态，所以延迟到挂载之后再 play，按钮点击场景也兼容。
+// setDoc 不像 loadDoc 那样等字体；URL 触发的 demo 又跑在 setup() 里、早于默认字体加载完成，
+// 此时文字按 0 宽 glyph 测量会挤成一坨（表格单元格在 back 层，事后重排也够不到）。默认字体由 bigesj
+// 异步加载、不经 editor.loadFont（不触发 fontLoaded），waitUntilFontLoad 也会过早返回。可靠信号是
+// fonts.fallbackFont 就绪——轮询它，到位后再 setDoc（与点按钮的「热路径」一致，所有文字一次测量正确）。
+function whenFontReady(editor: Editor, render: () => void): void {
+  if ((editor.fonts as any)?.fallbackFont) {
+    render()
+    return
+  }
+  let tries = 0
+  const id = setInterval(() => {
+    if ((editor.fonts as any)?.fallbackFont || ++tries > 50) {
+      clearInterval(id)
+      render()
+    }
+  }, 100)
+}
+
 function fitAndPlay(editor: Editor, delay: number): void {
   setTimeout(() => {
     editor.exec('zoomToFit')
@@ -274,6 +293,146 @@ export function loadImageEffectsDemo(editor: Editor): void {
   })
   editor.setDoc(nodes as any)
   setTimeout(() => editor.exec('zoomToFit'), 100)
+}
+
+// 各种几何形状：shape.paths 的 path data 会被缩放铺满元素 box（坐标只需相对正确）。
+const SHAPES: { label: string, data: string, color: string }[] = [
+  { label: '矩形', data: 'M0 0H24V24H0Z', color: '#ef4444' },
+  { label: '圆形', data: 'M12 0A12 12 0 1 1 12 24A12 12 0 1 1 12 0Z', color: '#f59e0b' },
+  { label: '三角', data: 'M12 0L24 24H0Z', color: '#22c55e' },
+  { label: '菱形', data: 'M12 0L24 12L12 24L0 12Z', color: '#06b6d4' },
+  { label: '五边形', data: 'M12 0L24 9L19.5 24H4.5L0 9Z', color: '#3b82f6' },
+  { label: '六边形', data: 'M6 0H18L24 12L18 24H6L0 12Z', color: '#8b5cf6' },
+  { label: '五角星', data: 'M12 0L15 8.5H24L16.5 14L19.5 24L12 18L4.5 24L7.5 14L0 8.5H9Z', color: '#ec4899' },
+  { label: '箭头', data: 'M0 8H16V0L24 12L16 24V16H0Z', color: '#14b8a6' },
+]
+
+export function loadShapesDemo(editor: Editor): void {
+  const COLS = 4
+  const CELL = 180
+  const SIZE = 130
+  const nodes: any[] = []
+  SHAPES.forEach((s, i) => {
+    const x = (i % COLS) * CELL
+    const y = Math.floor(i / COLS) * CELL
+    nodes.push({
+      id: `shape-${i}`,
+      style: { left: x, top: y, width: SIZE, height: SIZE },
+      shape: [{ data: s.data }],
+      fill: s.color,
+      outline: { color: '#0f172a', width: 2 },
+      meta: { inPptIs: 'Shape', inCanvasIs: 'Element2D' },
+    })
+    nodes.push({
+      id: `shape-lbl-${i}`,
+      style: { left: x, top: y + SIZE + 4, width: SIZE, height: 22, fontSize: 14, color: '#1a1a2e', textAlign: 'center' },
+      text: s.label,
+      meta: { inCanvasIs: 'Element2D' },
+    })
+  })
+  whenFontReady(editor, () => {
+    editor.setDoc(nodes as any)
+    editor.exec('zoomToFit')
+  })
+}
+
+// 文字排版特性：字号 / 字重 / 斜体 / 颜色 / 对齐 / 字间距 / 行高 / 装饰线。
+export function loadTextDemo(editor: Editor): void {
+  const items: { text: string, style: Record<string, any> }[] = [
+    { text: '大标题 Heading', style: { fontSize: 40, fontWeight: 700, color: '#0f172a' } },
+    { text: '副标题 Subtitle', style: { fontSize: 26, fontWeight: 600, color: '#475569' } },
+    { text: '斜体强调 italic emphasis', style: { fontSize: 20, fontStyle: 'italic', color: '#7c3aed' } },
+    { text: '彩色 + 宽字距 letter spacing', style: { fontSize: 20, color: '#0ea5e9', letterSpacing: 4 } },
+    { text: '右对齐文本 right aligned', style: { fontSize: 20, color: '#1a1a2e', textAlign: 'right' } },
+    { text: '下划线 underline decoration', style: { fontSize: 20, color: '#16a34a', textDecoration: 'underline' } },
+    { text: '删除线 line-through', style: { fontSize: 20, color: '#dc2626', textDecoration: 'line-through' } },
+    { text: '两行文本演示\n行高 line-height 控制段间距', style: { fontSize: 18, color: '#334155', lineHeight: 1.8 } },
+  ]
+  let top = 0
+  const nodes = items.map((it, i) => {
+    const height = it.text.includes('\n') ? 80 : 56
+    const node = {
+      id: `text-${i}`,
+      style: { left: 0, top, width: 560, height, ...it.style },
+      text: it.text,
+      meta: { inCanvasIs: 'Element2D' },
+    }
+    top += height + 12
+    return node
+  })
+  whenFontReady(editor, () => {
+    editor.setDoc(nodes as any)
+    editor.exec('zoomToFit')
+  })
+}
+
+// 填充 / 描边 / 阴影 / 透明度：纯色、线性渐变、径向渐变、图片填充、虚线描边、外阴影等。
+export function loadFillStrokeDemo(editor: Editor): void {
+  const cards: { label: string, props: any }[] = [
+    { label: '纯色填充', props: { fill: '#3b82f6' } },
+    { label: '线性渐变', props: { fill: { linearGradient: { angle: 45, stops: [{ offset: 0, color: '#7c3aed' }, { offset: 1, color: '#ec4899' }] } } } },
+    { label: '径向渐变', props: { fill: { radialGradient: { stops: [{ offset: 0, color: '#fde047' }, { offset: 1, color: '#ea580c' }] } } } },
+    { label: '图片填充', props: { fill: { image: '/example.jpg' } } },
+    { label: '虚线描边', props: { fill: '#ffffff', outline: { color: '#0ea5e9', width: 3, style: 'dashed' } } },
+    { label: '粗描边+阴影', props: { fill: '#22c55e', outline: { color: '#064e3b', width: 5 }, shadow: { color: '#00000066', blur: 18, offsetX: 8, offsetY: 10 } } },
+    { label: '外阴影', props: { fill: '#f59e0b', shadow: { color: '#00000055', blur: 24, offsetX: 0, offsetY: 12 } } },
+    { label: '半透明', props: { fill: '#ef4444', style: { opacity: 0.45 } } },
+  ]
+  const COLS = 4
+  const CELL_W = 220
+  const CELL_H = 200
+  const TILE = 170
+  const nodes: any[] = []
+  cards.forEach((c, i) => {
+    const x = (i % COLS) * CELL_W
+    const y = Math.floor(i / COLS) * CELL_H
+    const { style: extraStyle, ...rest } = c.props
+    nodes.push({
+      id: `fs-${i}`,
+      style: { left: x, top: y, width: TILE, height: TILE - 30, borderRadius: 16, ...extraStyle },
+      ...rest,
+      meta: { inCanvasIs: 'Element2D' },
+    })
+    nodes.push({
+      id: `fs-lbl-${i}`,
+      style: { left: x, top: y + TILE - 24, width: TILE, height: 22, fontSize: 14, color: '#1a1a2e', textAlign: 'center' },
+      text: c.label,
+      meta: { inCanvasIs: 'Element2D' },
+    })
+  })
+  whenFontReady(editor, () => {
+    editor.setDoc(nodes as any)
+    editor.exec('zoomToFit')
+  })
+}
+
+// 表格：复用 mce 内建 table 元素（首行表头）。
+export function loadTableDemo(editor: Editor): void {
+  whenFontReady(editor, () => {
+    const table: any = createTableElement(4, 4, { width: 480, height: 240 })
+    table.id = 'table-demo'
+    table.style = { ...table.style, left: 0, top: 0 }
+    editor.setDoc([table] as any)
+    editor.exec('zoomToFit')
+  })
+}
+
+// 图表：复用 mce 内建 chart 元素（柱状 / 折线 / 饼图 / 条形）。需要可选依赖 echarts。
+export function loadChartDemo(editor: Editor): void {
+  const specs: { type: any, x: number, y: number, opts?: any }[] = [
+    { type: 'column', x: 0, y: 0 },
+    { type: 'line', x: 420, y: 0 },
+    { type: 'pie', x: 0, y: 300, opts: { categories: ['A', 'B', 'C', 'D'], series: [{ name: '占比', values: [35, 25, 22, 18] }] } },
+    { type: 'bar', x: 420, y: 300 },
+  ]
+  const nodes = specs.map((s, i) => {
+    const el: any = createChartElement(s.type, { width: 380, height: 260, ...s.opts })
+    el.id = `chart-${i}`
+    el.style = { ...el.style, left: s.x, top: s.y }
+    return el
+  })
+  editor.setDoc(nodes as any)
+  setTimeout(() => editor.exec('zoomToFit'), 150)
 }
 
 export async function loadVideoDemo(editor: Editor): Promise<void> {

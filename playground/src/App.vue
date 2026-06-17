@@ -9,7 +9,7 @@ import svg from '@mce/svg'
 import { Editor, EditorLayers, EditorLayout, EditorLayoutItem } from 'mce'
 import gifWorkerUrl from 'modern-gif/worker?url'
 import { computed } from 'vue'
-import { loadAnimationDemo, loadConnectionDemo, loadGifDemo, loadImageEffectsDemo, loadLayoutDemo, loadSmartGuidesDemo, loadVideoDemo } from './demos'
+import { loadAnimationDemo, loadChartDemo, loadConnectionDemo, loadFillStrokeDemo, loadGifDemo, loadImageEffectsDemo, loadLayoutDemo, loadShapesDemo, loadSmartGuidesDemo, loadTableDemo, loadTextDemo, loadVideoDemo } from './demos'
 import 'mce/styles'
 
 const editorOptions = {
@@ -84,6 +84,21 @@ else if (demo === 'smartGuides') {
 else if (demo === 'imageEffects') {
   loadImageEffectsDemo(editor)
 }
+else if (demo === 'shapes') {
+  loadShapesDemo(editor)
+}
+else if (demo === 'text') {
+  loadTextDemo(editor)
+}
+else if (demo === 'fillStroke') {
+  loadFillStrokeDemo(editor)
+}
+else if (demo === 'table') {
+  loadTableDemo(editor)
+}
+else if (demo === 'chart') {
+  loadChartDemo(editor)
+}
 
 const element = computed(() => editor.elementSelection.value[0])
 </script>
@@ -151,6 +166,21 @@ const element = computed(() => editor.elementSelection.value[0])
           </button>
           <button @click="() => loadImageEffectsDemo(editor)">
             图片样式示例
+          </button>
+          <button @click="() => loadShapesDemo(editor)">
+            形状示例
+          </button>
+          <button @click="() => loadTextDemo(editor)">
+            文字示例
+          </button>
+          <button @click="() => loadFillStrokeDemo(editor)">
+            填充描边示例
+          </button>
+          <button @click="() => loadTableDemo(editor)">
+            表格示例
+          </button>
+          <button @click="() => loadChartDemo(editor)">
+            图表示例
           </button>
         </div>
       </template>
