@@ -1,6 +1,34 @@
 import type { Element2D } from 'modern-canvas'
+import type { FlexDirection } from 'modern-idoc'
 import { toRaw } from 'vue'
 import { definePlugin } from '../plugin'
+
+declare global {
+  namespace Mce {
+    /** Container-level flex/auto-layout properties exposed to UI panels. */
+    type FlexStyleKey
+      = | 'flexDirection'
+        | 'flexWrap'
+        | 'justifyContent'
+        | 'alignItems'
+        | 'alignContent'
+        | 'gap'
+        | 'padding'
+        | 'paddingTop'
+        | 'paddingLeft'
+        | 'paddingRight'
+        | 'paddingBottom'
+
+    interface Commands {
+      enableFlexLayout: (direction?: FlexDirection) => void
+      disableFlexLayout: () => void
+      toggleFlexLayout: () => void
+      isFlexLayout: () => boolean
+      setFlexStyle: (key: FlexStyleKey, value: any) => void
+      getFlexStyle: (key: FlexStyleKey) => any
+    }
+  }
+}
 
 /**
  * Drag-to-reorder for children of a flex/auto-layout container.
@@ -136,8 +164,73 @@ export default definePlugin((editor) => {
     }
   }
 
+  // ── Container-level flex commands (UI builds panels on top of these,
+  // mirroring the setTextStyle/getTextStyle pattern in typography.ts). ──
+
+  /** The selected element, treated as a flex container. */
+  function container(): Element2D | undefined {
+    const el = elementSelection.value[0]
+    return el && isElement(el) ? el : undefined
+  }
+
+  function isFlexLayout(): boolean {
+    return (container()?.style as any)?.display === 'flex'
+  }
+
+  function enableFlexLayout(direction: FlexDirection = 'row'): void {
+    const el = container()
+    if (!el)
+      return
+    const s = el.style as any
+    s.display = 'flex'
+    s.flexDirection = direction
+    // Seed sensible defaults without clobbering values the user already set.
+    s.justifyContent ??= 'flex-start'
+    s.alignItems ??= 'flex-start'
+    s.gap ??= 0
+    el.requestDraw?.()
+  }
+
+  function disableFlexLayout(): void {
+    const el = container()
+    if (!el)
+      return
+    // 'freeform' restores absolute (left/top) positioning of children.
+    const s = el.style as any
+    s.display = 'freeform'
+    el.requestDraw?.()
+  }
+
+  function toggleFlexLayout(): void {
+    if (isFlexLayout())
+      disableFlexLayout()
+    else
+      enableFlexLayout()
+  }
+
+  function setFlexStyle(key: Mce.FlexStyleKey, value: any): void {
+    const el = container()
+    if (!el)
+      return
+    const s = el.style as any
+    s[key] = value
+    el.requestDraw?.()
+  }
+
+  function getFlexStyle(key: Mce.FlexStyleKey): any {
+    return (container()?.style as any)?.[key]
+  }
+
   return {
     name: 'mce:flexLayout',
+    commands: [
+      { command: 'enableFlexLayout', handle: enableFlexLayout },
+      { command: 'disableFlexLayout', handle: disableFlexLayout },
+      { command: 'toggleFlexLayout', handle: toggleFlexLayout },
+      { command: 'isFlexLayout', handle: isFlexLayout },
+      { command: 'setFlexStyle', handle: setFlexStyle },
+      { command: 'getFlexStyle', handle: getFlexStyle },
+    ],
     events: {
       selectionTransformStarted: start,
       selectionTransformed: (ctx) => {
