@@ -75,7 +75,7 @@ export default definePlugin((editor) => {
   }
 
   function addAnimationKeyframe(offset: number, props: Record<string, any>, node = elementSelection.value[0]): void {
-    mutateKeyframes(node, kfs => upsertKeyframe(kfs, { offset, props }))
+    mutateKeyframes(node, kfs => upsertKeyframe(kfs, { ...props, offset }))
   }
 
   function removeAnimationKeyframe(offset: number, node = elementSelection.value[0]): void {
@@ -138,7 +138,7 @@ export default definePlugin((editor) => {
               left: style.left ?? 0,
               top: style.top ?? 0,
               opacity: style.opacity ?? 1,
-              rotation: style.rotation ?? 0,
+              rotate: style.rotate ?? 0,
               scaleX: style.scaleX ?? 1,
               scaleY: style.scaleY ?? 1,
             },

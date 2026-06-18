@@ -1,3 +1,4 @@
+import type { Animation } from 'modern-canvas'
 import type { Ref } from 'vue'
 import { computed, onBeforeMount, onScopeDispose, ref, watch } from 'vue'
 import Timeline from '../components/timeline/Timeline.vue'
@@ -13,10 +14,19 @@ declare global {
       visible: boolean
     }
 
+    /** 正在轨道上编辑的关键帧（点击菱形时弹出浮层），null 表示未打开。 */
+    interface KeyframeEditing {
+      anim: Animation
+      offset: number
+      /** 锚点屏幕坐标（菱形中心顶端），供浮层定位。 */
+      target: { x: number, y: number }
+    }
+
     interface Editor {
       paused: Ref<boolean>
       fps: Ref<number>
       recomputeTimelineEndTime: () => Promise<void>
+      keyframeEditing: Ref<KeyframeEditing | null>
     }
 
     interface Commands {
@@ -54,6 +64,8 @@ export default definePlugin((editor) => {
   const paused = ref(true)
   const fps = ref(30)
 
+  const keyframeEditing = ref<Mce.KeyframeEditing | null>(null)
+
   async function recomputeTimelineEndTime() {
     await editor.renderEngine.value.nextTick()
     timeline.value.endTime = editor.root.value
@@ -61,7 +73,7 @@ export default definePlugin((editor) => {
       : 0
   }
 
-  Object.assign(editor, { paused, fps, recomputeTimelineEndTime })
+  Object.assign(editor, { paused, fps, recomputeTimelineEndTime, keyframeEditing })
 
   function play() {
     paused.value = false

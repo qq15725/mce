@@ -89,6 +89,8 @@ export default {
   'stepBackward': 'Previous Frame',
   'stepForward': 'Next Frame',
   'collapse': 'Collapse',
+  'removeKeyframe': 'Remove keyframe',
+  'custom': 'Custom',
   'statusbar': 'Statusbar',
   'creator': 'Create node',
   'workflow:text': 'Text',

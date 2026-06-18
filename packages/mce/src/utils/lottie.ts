@@ -1,6 +1,6 @@
 import type { Keyframe } from './keyframes'
 import { parseEasing } from './easing'
-import { sortKeyframes } from './keyframes'
+import { keyframeProps, sortKeyframes } from './keyframes'
 
 /**
  * 关键帧动画 → Lottie JSON 构建器（纯函数）。
@@ -14,9 +14,9 @@ export interface LottieLayerInput {
   name?: string
   width: number
   height: number
-  /** 关键帧 props 可含 left/top/opacity/rotation/scaleX/scaleY。 */
+  /** 关键帧可含 left/top/opacity/rotate/scaleX/scaleY 等扁平属性。 */
   keyframes: Keyframe[]
-  /** 未被关键帧覆盖的通道用此回退值（left/top/opacity/rotation/scaleX/scaleY）。 */
+  /** 未被关键帧覆盖的通道用此回退值（left/top/opacity/rotate/scaleX/scaleY）。 */
   base?: Record<string, number>
 }
 
@@ -46,7 +46,7 @@ function channel(
 ): LottieProp {
   const points: { offset: number, easing?: string, value: number | number[] }[] = []
   for (const kf of sortKeyframes(keyframes)) {
-    const value = pick(kf.props)
+    const value = pick(keyframeProps(kf))
     if (value !== undefined) {
       points.push({ offset: kf.offset, easing: kf.easing, value })
     }
@@ -91,7 +91,7 @@ function buildLayer(
     ao: 0,
     ks: {
       o: channel(kfs, totalFrames, p => (p.opacity != null ? [p.opacity * 100] : undefined), [(base.opacity ?? 1) * 100], custom),
-      r: channel(kfs, totalFrames, p => (p.rotation != null ? [p.rotation] : undefined), [base.rotation ?? 0], custom),
+      r: channel(kfs, totalFrames, p => (p.rotate != null ? [p.rotate] : undefined), [base.rotate ?? 0], custom),
       p: channel(
         kfs,
         totalFrames,

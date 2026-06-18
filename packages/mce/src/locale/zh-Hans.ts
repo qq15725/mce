@@ -90,6 +90,8 @@ export default {
   'stepBackward': '后退一帧',
   'stepForward': '前进一帧',
   'collapse': '折叠',
+  'removeKeyframe': '删除关键帧',
+  'custom': '自定义',
   'creator': '创建节点',
   'workflow:text': '文字生成',
   'workflow:image': '图片生成',

@@ -29,7 +29,7 @@ describe('buildLottie', () => {
       layers: [{
         width: 100,
         height: 100,
-        keyframes: [{ offset: 0, props: { opacity: 0.5 } }],
+        keyframes: [{ offset: 0, opacity: 0.5 }],
       }],
     })) as any
     expect(j.layers[0].ks.o).toEqual({ a: 0, k: [50] })
@@ -41,8 +41,8 @@ describe('buildLottie', () => {
         width: 100,
         height: 100,
         keyframes: [
-          { offset: 0, easing: 'ease-in', props: { left: 0, top: 0, opacity: 0 } },
-          { offset: 1, props: { left: 100, top: 50, opacity: 1 } },
+          { offset: 0, easing: 'ease-in', left: 0, top: 0, opacity: 0 },
+          { offset: 1, left: 100, top: 50, opacity: 1 },
         ],
       }],
     })) as any
@@ -63,10 +63,10 @@ describe('buildLottie', () => {
       layers: [{
         width: 100,
         height: 100,
-        base: { rotation: 45 },
+        base: { rotate: 45 },
         keyframes: [
-          { offset: 0, props: { opacity: 0 } },
-          { offset: 1, props: { opacity: 1 } },
+          { offset: 0, opacity: 0 },
+          { offset: 1, opacity: 1 },
         ],
       }],
     })) as any

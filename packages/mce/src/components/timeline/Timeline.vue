@@ -5,6 +5,7 @@ import { computed, onBeforeMount, onBeforeUnmount, ref, useTemplateRef } from 'v
 import { useEditor } from '../../composables'
 import { Icon } from '../icon'
 import Ruler from '../shared/Ruler.vue'
+import KeyframePopover from './KeyframePopover.vue'
 import Playhead from './Playhead.vue'
 import Segment from './Segment.vue'
 import Track from './Track.vue'
@@ -269,6 +270,8 @@ function rulerLabelFormat(f: number) {
         </div>
       </div>
     </div>
+
+    <KeyframePopover />
   </div>
 </template>
 

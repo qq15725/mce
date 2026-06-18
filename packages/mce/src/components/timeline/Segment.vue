@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import type { TimelineNode } from 'modern-canvas'
+import type { Keyframe } from '../../utils'
 import { Animation, Element2D, Video2D } from 'modern-canvas'
 import { computed } from 'vue'
 import { useEditor, useNode } from '../../composables'
+import { upsertKeyframe } from '../../utils'
 
 type BlockKind = 'animation' | 'media' | 'video'
 
@@ -26,7 +28,16 @@ const props = withDefaults(defineProps<{
 })
 
 const editor = useEditor()
-const { root, currentTime, fps, recomputeTimelineEndTime, selection } = editor
+const { root, currentTime, fps, recomputeTimelineEndTime, selection, keyframeEditing } = editor
+
+const CHANNEL_DEFAULTS: Record<string, number> = {
+  left: 0,
+  top: 0,
+  rotate: 0,
+  scaleX: 1,
+  scaleY: 1,
+  opacity: 1,
+}
 
 const { thumbnailName } = useNode(
   computed(() => props.node),
@@ -190,6 +201,107 @@ function onBlockDown(e: MouseEvent, block: BlockItem) {
   startDrag(e, block.anim ?? props.node, block.kind === 'animation')
 }
 
+function clamp(v: number, lo: number, hi: number): number {
+  return Math.min(hi, Math.max(lo, v))
+}
+
+function keyframesOf(block: BlockItem): Keyframe[] {
+  return (block.anim?.keyframes as unknown as Keyframe[] | undefined) ?? []
+}
+
+// Drag a keyframe marker along the animation block to change its offset (0..1).
+// Clamped strictly between neighbours so order/identity stays stable; a click
+// without movement seeks the playhead to that keyframe.
+function onKeyframeDown(e: MouseEvent, block: BlockItem, index: number) {
+  e.stopPropagation()
+  const anim = block.anim
+  if (!anim)
+    return
+  selection.value = [props.node]
+  const kfs = keyframesOf(block)
+  const kf = kfs[index]
+  if (!kf)
+    return
+
+  const markerEl = e.currentTarget as HTMLElement
+  const duration = anim.duration || (props.endTime - anim.delay) || 1
+  const startX = e.clientX
+  const initialOffset = kf.offset
+  const eps = 1e-3
+  const lo = index > 0 ? kfs[index - 1].offset + eps : 0
+  const hi = index < kfs.length - 1 ? kfs[index + 1].offset - eps : 1
+  const frameMs = 1000 / fps.value
+  let moved = false
+
+  function onMove(ev: MouseEvent) {
+    if (Math.abs(ev.clientX - startX) > 2)
+      moved = true
+    const deltaOffset = ((ev.clientX - startX) * props.msPerPx) / duration
+    // Frame-snap on the absolute timeline, then clamp between neighbours.
+    const timeMs = anim!.delay + (initialOffset + deltaOffset) * duration
+    const snappedMs = Math.round(timeMs / frameMs) * frameMs
+    const next = clamp((snappedMs - anim!.delay) / duration, lo, hi)
+    const arr = keyframesOf(block)
+    root.value?.transact(() => {
+      anim!.keyframes = arr.map((k, i) => (i === index ? { ...k, offset: next } : k)) as any
+    })
+  }
+
+  function onUp() {
+    window.removeEventListener('mousemove', onMove)
+    window.removeEventListener('mouseup', onUp)
+    if (moved)
+      return
+    // Click (no drag): seek the playhead and open the editing popover on this marker.
+    currentTime.value = anim!.delay + initialOffset * duration
+    const rect = markerEl.getBoundingClientRect()
+    keyframeEditing.value = {
+      anim: anim!,
+      offset: initialOffset,
+      target: { x: rect.left + rect.width / 2, y: rect.top },
+    }
+  }
+
+  window.addEventListener('mousemove', onMove)
+  window.addEventListener('mouseup', onUp)
+}
+
+function readChannels(node: Element2D): Record<string, number> {
+  const s = node.style as any
+  const out: Record<string, number> = {}
+  for (const key of Object.keys(CHANNEL_DEFAULTS)) {
+    const v = s?.[key]
+    out[key] = typeof v === 'number' ? v : CHANNEL_DEFAULTS[key]
+  }
+  return out
+}
+
+// Double-click empty area of an animation block to add a keyframe there
+// (snapshotting the element's current style), then open the popover on it.
+function onBlockDblClick(e: MouseEvent, block: BlockItem) {
+  if (block.kind !== 'animation' || !block.anim)
+    return
+  // Ignore double-clicks landing on an existing marker.
+  if (e.target !== e.currentTarget)
+    return
+  const anim = block.anim
+  const el = props.node
+  if (!(el instanceof Element2D))
+    return
+  const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+  const duration = anim.duration || (props.endTime - anim.delay) || 1
+  const frameMs = 1000 / fps.value
+  const rawMs = anim.delay + clamp((e.clientX - rect.left) / rect.width, 0, 1) * duration
+  const offset = clamp((Math.round(rawMs / frameMs) * frameMs - anim.delay) / duration, 0, 1)
+
+  selection.value = [el]
+  root.value?.transact(() => {
+    anim.keyframes = upsertKeyframe(keyframesOf(block), { offset, ...readChannels(el) }) as any
+  })
+  currentTime.value = anim.delay + offset * duration
+  keyframeEditing.value = { anim, offset, target: { x: e.clientX, y: rect.top } }
+}
+
 // Segment body / name handle: move the whole element track (shifts the element
 // and all its animations together). Blocks stop propagation so they take over.
 function onSegmentDown(e: MouseEvent) {
@@ -214,7 +326,18 @@ function onSegmentDown(e: MouseEvent) {
       :class="`m-segment__block--${block.kind}`"
       :style="blockStyle(block)"
       @mousedown="onBlockDown($event, block)"
-    />
+      @dblclick="onBlockDblClick($event, block)"
+    >
+      <button
+        v-for="(kf, ki) in (block.kind === 'animation' ? keyframesOf(block) : [])"
+        :key="ki"
+        type="button"
+        class="m-segment__kf"
+        :style="{ left: `${kf.offset * 100}%` }"
+        :title="`${Math.round(kf.offset * 100)}%`"
+        @mousedown="onKeyframeDown($event, block, ki)"
+      />
+    </div>
 
     <div v-if="active" class="m-segment__edge m-segment__edge--front" />
 
@@ -302,6 +425,8 @@ function onSegmentDown(e: MouseEvent) {
 
       &--animation {
         background-color: rgba(255, 255, 255, 0.18);
+        // Allow keyframe markers at offset 0 / 1 to render fully (not clipped).
+        overflow: visible;
 
         &:hover {
           background-color: rgba(255, 255, 255, 0.28);
@@ -322,6 +447,25 @@ function onSegmentDown(e: MouseEvent) {
         &:hover {
           background-color: rgba(116, 84, 196, 1);
         }
+      }
+    }
+
+    &__kf {
+      position: absolute;
+      top: 50%;
+      width: 8px;
+      height: 8px;
+      margin: 0;
+      padding: 0;
+      border: 1px solid rgba(0, 0, 0, 0.45);
+      border-radius: 1px;
+      background-color: #fff;
+      transform: translate(-50%, -50%) rotate(45deg);
+      cursor: ew-resize;
+      z-index: 2;
+
+      &:hover {
+        background-color: #ffe2a8;
       }
     }
   }
