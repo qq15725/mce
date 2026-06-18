@@ -45,7 +45,7 @@
 
 - **transaction origin 易错**：自定义事务务必通过 `Y.transact(doc, fn, origin)` 显式传 origin；不传时 origin 是 `null`，`_isSelfTransaction` 会判错。
 - **`_transacting` 标志**：内部批量更新用 `_transacting = true` 抑制中间事件，结束后才统一通知，避免半完成状态泄露。修改 `_yChildrenChange` 等同步逻辑时注意保持这个不变量。
-- **GC 未做**（`YDoc.ts:161` TODO）：长期编辑历史会一直累积，IndexedDB 体积单调增长。需要 GC 时参考 `Y.encodeStateAsUpdate` + 重建文档清理历史。
+- **GC / 历史压缩**：`Y.Doc` 显式开启 `gc: true`，已删除内容结构会被垃圾回收，文档不会随删除单调膨胀；离线增量日志由 `IndexeddbProvider` 按 `trimSize`（默认 500 条）做全量快照压实（见 `providers/indexeddb`）。`UndoManager` 的撤销栈长度可按需自行裁剪。
 - **节点删除**：从 `childrenIds` 移除 + 从 `children` 删 key + 递归处理子节点。`Y.UndoManager` 会把删除当作可恢复操作。
 - **`markRaw`**：所有 yjs 对象都做 `markRaw`，防止 Vue 响应式系统包装内部 Y.* 结构（会导致 yjs observer 接收响应式代理产生错乱）。
 

@@ -10,6 +10,12 @@ import Transform from './Transform.vue'
 
 /**
  * TODO 撤回无法重渲
+ *
+ * 根因（已复现确认）：下方 `viewEffect` watch 在 `view` 变化时反向补偿 `cropRect`
+ * 以保持 source 视觉不变。撤回会由 UndoManager 同时回退 `view` 与 `cropRect`，但该
+ * watch 监到 `view` 回退后又据旧值重算 `cropRect`，把撤回覆盖掉。
+ * 修复方向：撤回 / 重做前先退出 crop 态卸载本组件（注意卸载是异步的，需 nextTick 后再
+ * undo，否则 watch 仍在），或让 viewEffect 仅对用户拖拽产生的 view 变化补偿、忽略外部来源。
  */
 type View = Record<'left' | 'top' | 'width' | 'height' | 'scaleX' | 'scaleY', number>
 const props = defineProps<{
