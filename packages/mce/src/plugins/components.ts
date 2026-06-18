@@ -59,8 +59,8 @@ export default definePlugin((editor) => {
     }
   }
 
-  function findDef(componentId: string): ComponentDef | undefined {
-    return getComponents().find(d => d.id === componentId)
+  function findDef(componentId: string | undefined): ComponentDef | undefined {
+    return componentId ? getComponents().find(d => d.id === componentId) : undefined
   }
 
   function createComponent(node = elementSelection.value[0]): string | undefined {
@@ -91,16 +91,20 @@ export default definePlugin((editor) => {
     meta.inEditorIs = 'Instance'
     meta.componentId = componentId
     meta.overrides = {}
+    // master JSON 里可能携带嵌套实例（烘焙时的旧状态）——同步到各自组件当前 master。
+    resolveNestedInstances(el, new Set([componentId]))
     return el.id
   }
 
   /** 用 master + 实例自身 override 重建实例的子树与顶层样式。 */
-  function syncInstance(instanceNode: Element2D): void {
+  function syncInstance(instanceNode: Element2D, seen: Set<string> = new Set()): void {
     const meta = instanceNode.meta as any
-    const def = findDef(meta?.componentId)
-    if (!def) {
-      return
+    const componentId = meta?.componentId as string | undefined
+    const def = findDef(componentId)
+    if (!def || !componentId || seen.has(componentId)) {
+      return // 缺定义或检测到嵌套自引用环 → 停止递归
     }
+    seen.add(componentId)
     const overrides: InstanceOverrides = meta.overrides ?? {}
     const json = instantiateComponent(def, overrides)
     const node = instanceNode as any
@@ -130,6 +134,30 @@ export default definePlugin((editor) => {
     if (Array.isArray(json.children) && json.children.length) {
       addElement(json.children, { parent: instanceNode, regenId: true })
     }
+
+    // 嵌套实例：重建出的子树里若含其它实例，按各自组件 + override 再同步，
+    // 使其反映所属组件的当前 master。
+    resolveNestedInstances(instanceNode, seen)
+  }
+
+  /**
+   * 同步 node 子树内**最浅一层**的嵌套实例（不下钻进实例内部——交由 syncInstance 自身递归），
+   * 先全部收集再同步，避免在遍历过程中改动子树。带环保护（seen）。
+   */
+  function resolveNestedInstances(node: Element2D, seen: Set<string>): void {
+    const nested: Element2D[] = []
+    const collect = (n: Node): void => {
+      n.children.forEach((child) => {
+        if (isElement(child) && (child as any).meta?.inEditorIs === 'Instance') {
+          nested.push(child as Element2D)
+        }
+        else {
+          collect(child)
+        }
+      })
+    }
+    collect(node)
+    nested.forEach(inst => syncInstance(inst, new Set(seen)))
   }
 
   function setInstanceOverride(path: string, value: any, node = elementSelection.value[0]): void {

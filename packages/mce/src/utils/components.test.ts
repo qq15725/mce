@@ -38,6 +38,17 @@ describe('applyOverrides', () => {
     expect(r.children[0].text.content).toBe('Hello')
     expect(r.style.width).toBe(100) // 未覆盖项保留
   })
+
+  it('对象值与原值深合并（只覆盖部分字段，保留其余）', () => {
+    const r = applyOverrides(master, { style: { fill: '#000' } }) as any
+    expect(r.style.fill).toBe('#000')
+    expect(r.style.width).toBe(100) // 深合并 → 未覆盖字段仍在
+  })
+
+  it('基本类型整值替换', () => {
+    const r = applyOverrides(master, { 'style.width': 200 }) as any
+    expect(r.style.width).toBe(200)
+  })
 })
 
 describe('instantiateComponent', () => {

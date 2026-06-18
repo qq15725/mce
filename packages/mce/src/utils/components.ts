@@ -1,4 +1,4 @@
-import { cloneDeep, set } from 'lodash-es'
+import { cloneDeep, get, isPlainObject, merge, set } from 'lodash-es'
 
 /**
  * 组件 / 符号 / 实例系统的纯逻辑层（参考 Figma components：master + instances + overrides）。
@@ -38,11 +38,21 @@ export function stripNodeIds<T>(node: T): T {
   return clone
 }
 
-/** 按 path → value 应用一组覆盖（lodash set）。返回新对象，不改输入。 */
+/**
+ * 按 path → value 应用一组覆盖。返回新对象，不改输入。
+ * 值为普通对象时与原值**深合并**（便于只覆盖 `style` 的部分字段而不丢其余）；
+ * 基本类型 / 数组则整值替换。
+ */
 export function applyOverrides<T>(node: T, overrides: InstanceOverrides = {}): T {
   const clone = cloneDeep(node)
   for (const [path, value] of Object.entries(overrides)) {
-    set(clone as any, path, value)
+    if (isPlainObject(value)) {
+      const existing = get(clone, path)
+      set(clone as any, path, isPlainObject(existing) ? merge({}, existing, value) : cloneDeep(value))
+    }
+    else {
+      set(clone as any, path, value)
+    }
   }
   return clone
 }
