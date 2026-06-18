@@ -241,8 +241,6 @@ packages/
   pdf/        # PDF export  (@mce/pdf)
   svg/        # SVG export  (@mce/svg)
   openxml/    # PPTX/XLSX/DOCX  (@mce/openxml)
-  gaoding/    # Gaoding integration  (@mce/gaoding)
-  bigesj/     # Bigesj integration   (@mce/bigesj)
 playground/   # demo & test app
 ```
 
