@@ -8,7 +8,7 @@ import { measureText } from 'modern-text'
 import { computed, onBeforeMount } from 'vue'
 import VueTextEditor from '../components/TextEditor.vue'
 import { definePlugin } from '../plugin'
-import { createTextElement } from '../utils'
+import { createTextElement, remapTextSelection } from '../utils'
 import { TextEditor } from '../web-components'
 
 declare global {
@@ -329,7 +329,8 @@ export default definePlugin((editor) => {
       return
     }
 
-    // TODO 生成新片段后，textSelection未关联更新
+    // 片段重组前快照旧内容，用于事后把 textSelection 重映射到新片段结构。
+    const oldContent = el.text.content
     const newContent: NormalizedTextContent = []
     let newParagraph: NormalizedParagraph = { fragments: [] }
     let newFragment: NormalizedFragment | undefined
@@ -372,6 +373,12 @@ export default definePlugin((editor) => {
 
     if (newContent.length) {
       el.text = { ...el.text.toJSON(), content: newContent }
+      // 片段被重新分组后，旧 textSelection 的 fragmentIndex 失效；按段内绝对字符偏移重映射，
+      // 使后续基于选区的样式操作仍定位到正确字符（字形位置不变，故指针的渲染坐标仍有效）。
+      const sel = textSelection.value
+      if (sel && sel.length === 2) {
+        textSelection.value = remapTextSelection(oldContent, newContent, [sel[0], sel[1]])
+      }
     }
   }
 
