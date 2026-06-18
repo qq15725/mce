@@ -99,3 +99,72 @@ describe('yDoc 两端最终一致性', () => {
     b.destroy()
   })
 })
+
+describe('yDoc undo/redo 与来源隔离', () => {
+  it('本地编辑可撤销 / 重做，并同步到对端', async () => {
+    const a = new Doc([])
+    const b = new Doc([])
+    link(a, b)
+
+    const n = new Node({ name: 'u1' })
+    a.append(n)
+    await flush()
+    expect(childIds(b)).toEqual([n.id])
+
+    a._yDoc.undoManager.undo()
+    await flush()
+    expect(childIds(a)).toEqual([])
+    expect(childIds(b)).toEqual([])
+
+    a._yDoc.undoManager.redo()
+    await flush()
+    expect(childIds(a)).toEqual([n.id])
+    expect(childIds(b)).toEqual([n.id])
+
+    a.destroy()
+    b.destroy()
+  })
+
+  it('远端变更不进入本端 undo 栈（撤销不会回退他人的编辑）', async () => {
+    const a = new Doc([])
+    const b = new Doc([])
+    link(a, b)
+
+    const n = new Node({ name: 'fromA' })
+    a.append(n)
+    await flush()
+    expect(childIds(b)).toEqual([n.id])
+
+    // b 上这条来自远端（REMOTE origin），不应被 b 的 UndoManager 跟踪。
+    expect(b._yDoc.undoManager.canUndo()).toBe(false)
+    b._yDoc.undoManager.undo() // no-op
+    await flush()
+    expect(childIds(b)).toEqual([n.id])
+    expect(childIds(a)).toEqual([n.id])
+
+    a.destroy()
+    b.destroy()
+  })
+})
+
+describe('yDoc 快照恢复', () => {
+  it('全量快照可重建出等价文档（模拟离线恢复 / 迟到入会）', async () => {
+    const a = new Doc([])
+    const n1 = new Node({ name: 'n1' })
+    const n2 = new Node({ name: 'n2' })
+    a.append(n1)
+    a.append(n2)
+    n1.append(new Node({ name: 'c1' }))
+    await flush()
+
+    const restored = new Doc([])
+    restored._yDoc.applyUpdate(a._yDoc.encodeStateAsUpdate(), REMOTE)
+    await flush()
+
+    expect(childIds(restored)).toEqual(childIds(a))
+    expect(tree(restored)).toEqual(tree(a))
+
+    a.destroy()
+    restored.destroy()
+  })
+})

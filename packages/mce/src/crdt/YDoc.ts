@@ -69,7 +69,9 @@ export class YDoc extends Observable {
   ) {
     super()
     this._rx = reactivity
-    this._yDoc = this._rx.markRaw(new Y.Doc({ guid: id }))
+    // gc: true（Yjs 默认值，此处显式声明）——删除的内容结构会被垃圾回收，
+    // 避免文档随删除操作单调膨胀；离线增量日志由 IndexeddbProvider 按 trimSize 快照压实。
+    this._yDoc = this._rx.markRaw(new Y.Doc({ guid: id, gc: true }))
     this._yProps = this._rx.markRaw(this._yDoc.getMap('props'))
     this._yChildren = this._rx.markRaw(this._yDoc.getMap('children'))
     this._yChildrenIds = this._rx.markRaw(this._yDoc.getArray('childrenIds') as Y.Array<string>)
@@ -388,6 +390,38 @@ export class YDoc extends Observable {
     ;(node as any)._childrenIdsObserveFn && childrenIds.unobserve((node as any)._childrenIdsObserveFn)
     ;(node as any)._childrenIdsObserveFn = this._rx.markRaw(observeFn)
     childrenIds.observe(observeFn)
+
+    // 冷快照恢复 / 迟到入会：observe 只回调未来的 delta，不会回放快照里「出生即存在」
+    // 的 childrenIds 条目。顶层 childrenIds 是「空→delta」故 observer 会触发，但嵌套节点的
+    // childrenIds 在 applyUpdate 时已是满的，observer 永不触发 → 子树丢失。这里主动补挂：
+    // 已就位的（实时链路）跳过，缺失节点登记挂起，待其 _proxyNode 就绪后由 _flushPendingInserts 消费。
+    cachedChildrenIds.forEach((id, i) => {
+      const child = this._nodeMap.get(id)
+      if (child && child.parent?.equal(node) && child.getIndex() === i) {
+        return
+      }
+      const run = (c: Node): void => {
+        this.transact(() => {
+          node.moveChild(c, i)
+        }, false)
+      }
+      if (child) {
+        run(child)
+      }
+      else {
+        let pending = this._pendingInserts.get(id)
+        if (!pending) {
+          pending = new Set()
+          this._pendingInserts.set(id, pending)
+        }
+        pending.add(() => {
+          const c = this._nodeMap.get(id)
+          if (c) {
+            run(c)
+          }
+        })
+      }
+    })
   }
 
   _proxyNode(node: Node, yNode?: YNode, yChildrenIds?: Y.Array<string>): Node {
@@ -507,6 +541,9 @@ export class YDoc extends Observable {
       }) as Node
       node = this._proxyNode(node, yNode)
       this._nodeMap.set(id, node)
+      // _proxyNode 内部按节点初始（Node.parse 随机）id flush，而 childrenIds 里的挂起项是按
+      // yNode id 登记的；这里按 yNode id 再 flush 一次，冷快照恢复时父节点才能挂上本节点。
+      this._flushPendingInserts(id)
     }
     return node
   }
