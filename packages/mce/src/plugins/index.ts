@@ -6,6 +6,7 @@ import _ai from './ai'
 import _animate from './animate'
 import _arrange from './arrange'
 import _autoNest from './autoNest'
+import _chart from './chart'
 import _clipboard from './clipboard'
 import _components from './components'
 import _doc from './doc'
@@ -53,6 +54,7 @@ export const plugins = [
   _animate,
   _arrange,
   _autoNest,
+  _chart,
   _clipboard,
   _components,
   _doc,

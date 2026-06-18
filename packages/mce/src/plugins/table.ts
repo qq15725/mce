@@ -1,9 +1,51 @@
+import type { Element2D } from 'modern-canvas'
 import VueTableEditor from '../components/TableEditor.vue'
 import { definePlugin } from '../plugin'
 
-export default definePlugin(() => {
+declare global {
+  namespace Mce {
+    interface Commands {
+      /** 设置单元格 (row,col) 的样式（边框 / 对齐等，合并）。 */
+      setTableCellStyle: (row: number, col: number, style: Record<string, any>, node?: Element2D) => void
+      /** 设置单元格 (row,col) 的背景。 */
+      setTableCellBackground: (row: number, col: number, background: any, node?: Element2D) => void
+    }
+  }
+}
+
+export default definePlugin((editor) => {
+  const { elementSelection } = editor
+
+  /** 改写某单元格并整体回写 table 以触发重渲。 */
+  function patchCell(row: number, col: number, mutate: (cell: any) => void, node?: Element2D): void {
+    const el = (node ?? elementSelection.value[0]) as any
+    if (!el?.table) {
+      return
+    }
+    const data = el.table.toJSON?.() ?? el.table
+    const cell = data.cells?.find((c: any) => c.row === row && c.col === col)
+    if (!cell) {
+      return
+    }
+    mutate(cell)
+    el.table = data
+    el.requestDraw?.()
+  }
+
+  function setTableCellStyle(row: number, col: number, style: Record<string, any>, node?: Element2D): void {
+    patchCell(row, col, cell => (cell.style = { ...(cell.style ?? {}), ...style }), node)
+  }
+
+  function setTableCellBackground(row: number, col: number, background: any, node?: Element2D): void {
+    patchCell(row, col, cell => (cell.background = background), node)
+  }
+
   return {
     name: 'mce:table',
+    commands: [
+      { command: 'setTableCellStyle', handle: setTableCellStyle },
+      { command: 'setTableCellBackground', handle: setTableCellBackground },
+    ],
     messages: {
       en: {
         'table:insertRowAbove': 'Insert row above',
