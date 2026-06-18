@@ -40,6 +40,8 @@ declare global {
       zoomTo100: () => void
       zoomToFit: () => void
       zoomToSelection: (options?: ZoomToOptions) => void
+      zoomToNextFrame: (options?: ZoomToOptions) => void
+      zoomToPreviousFrame: (options?: ZoomToOptions) => void
     }
 
     interface Hotkeys {

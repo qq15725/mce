@@ -1,5 +1,6 @@
 import type { Element2D } from 'modern-canvas'
 import type { NormalizedStyle, NormalizedText } from 'modern-idoc'
+import { getDefaultTextStyle } from 'modern-idoc'
 import { definePlugin } from '../plugin'
 
 declare global {
@@ -22,21 +23,28 @@ export default definePlugin((editor) => {
   let source: NormalizedText | undefined
 
   function activateFormatPaint() {
-    if (!elementSelection.value?.[0]?.text?.textContent) {
+    const el = elementSelection.value?.[0]
+    if (!el?.text?.textContent) {
       return
     }
-    const text = elementSelection.value[0].text
+    const text = el.text
     const fill = exec('getTextFill')
-    // TODO 获取文本选区所有样式值
-    const excludes: (keyof NormalizedStyle)[] = ['left', 'top', 'width', 'height']
-    const fields = (Object.keys(text.style ?? {}) as (keyof NormalizedStyle)[]).filter(key => !excludes.includes(key))
-    const style = fields.reduce((acc, field) => ({ ...acc, [field]: exec('getTextStyle', field) }), {} as Partial<NormalizedStyle>)
+    // 文本样式的真值源是 el.style（getTextStyle/setTextStyle 均以此为准），
+    // 故以 getDefaultTextStyle() 的键集合作为字段白名单，逐项取其有效值
+    // （getTextStyle 已含文本选区/片段聚合逻辑），跳过未设置字段以免污染 source。
+    const style = (Object.keys(getDefaultTextStyle()) as (keyof NormalizedStyle)[])
+      .reduce((acc, field) => {
+        const value = exec('getTextStyle', field)
+        if (value !== undefined) {
+          acc[field] = value
+        }
+        return acc
+      }, {} as Partial<NormalizedStyle>)
     source = {
       ...text,
       fill,
       style,
     }
-    // console.info(text.toJSON(), source.fill, source.style)
     exec('setState', 'painting')
     elementSelection.value = []
   }

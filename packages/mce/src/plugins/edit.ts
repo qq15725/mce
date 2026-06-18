@@ -349,10 +349,10 @@ export default definePlugin((editor, options) => {
       selection.value.map((v) => {
         const el = v.toJSON()
         if (el.style) {
-          if (el.style.left) {
+          if (typeof el.style.left === 'number') {
             el.style.left += 20
           }
-          if (el.style.top) {
+          if (typeof el.style.top === 'number') {
             el.style.top += 20
           }
         }

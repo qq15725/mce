@@ -2,6 +2,18 @@ import type { Element2D } from 'modern-canvas'
 import { DrawboardEffect, render } from 'modern-canvas'
 import { definePlugin } from '../plugin'
 
+declare global {
+  namespace Mce {
+    interface Commands {
+      exportSlice: (options: ExportOptions) => Promise<HTMLCanvasElement | undefined>
+    }
+
+    interface Tools {
+      slice: []
+    }
+  }
+}
+
 export default definePlugin((editor) => {
   const {
     activateTool,

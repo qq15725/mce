@@ -176,7 +176,7 @@ export default definePlugin((editor, options) => {
       { command: 'openDoc', handle: openDoc },
     ],
     hotkeys: [
-      { command: 'newDoc', key: 'Alt+CmdOrCtrl+Dead' },
+      { command: 'newDoc', key: 'Alt+CmdOrCtrl+N' },
       { command: 'openDoc', key: 'CmdOrCtrl+O' },
     ],
     setup: async () => {
