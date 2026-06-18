@@ -1,6 +1,7 @@
 import type { Element2D, Node } from 'modern-canvas'
 import type { ComponentDef, InstanceOverrides } from '../utils'
 import { idGenerator } from 'modern-idoc'
+import ComponentsPanel from '../components/Components.vue'
 import { definePlugin } from '../plugin'
 import { instantiateComponent } from '../utils'
 
@@ -26,6 +27,10 @@ declare global {
       /** 把某组件的所有实例按 master + 各自 override 重建。 */
       syncInstancesOf: (componentId: string) => void
       getComponents: () => ComponentDef[]
+      /** 批量灌入预置组件（按 id 去重 / 覆盖），用于预设组件库 / 模板。 */
+      loadComponentPresets: (defs: ComponentDef[]) => void
+      /** 从组件库移除一个组件定义（已落地的实例不受影响）。 */
+      removeComponent: (componentId: string) => void
     }
   }
 }
@@ -169,8 +174,40 @@ export default definePlugin((editor) => {
     syncInstancesOf(componentId)
   }
 
+  function loadComponentPresets(defs: ComponentDef[]): void {
+    if (!Array.isArray(defs) || defs.length === 0) {
+      return
+    }
+    const byId = new Map(getComponents().map(d => [d.id, d]))
+    defs.forEach((d) => {
+      if (d?.id) {
+        byId.set(d.id, d)
+      }
+    })
+    setComponents([...byId.values()])
+  }
+
+  function removeComponent(componentId: string): void {
+    setComponents(getComponents().filter(d => d.id !== componentId))
+  }
+
   return {
     name: 'mce:components',
+    messages: {
+      en: { 'components.empty': 'No components' },
+      zhHans: { 'components.empty': '暂无组件' },
+    },
+    components: [
+      {
+        name: 'components',
+        type: 'panel',
+        position: 'float',
+        component: ComponentsPanel,
+      },
+    ],
+    hotkeys: [
+      { command: 'togglePanel:components', key: 'Alt+3' },
+    ],
     commands: [
       { command: 'createComponent', handle: createComponent },
       { command: 'createInstance', handle: createInstance },
@@ -179,6 +216,8 @@ export default definePlugin((editor) => {
       { command: 'updateComponent', handle: updateComponent },
       { command: 'syncInstancesOf', handle: syncInstancesOf },
       { command: 'getComponents', handle: getComponents },
+      { command: 'loadComponentPresets', handle: loadComponentPresets },
+      { command: 'removeComponent', handle: removeComponent },
     ],
   }
 })
