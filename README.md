@@ -60,22 +60,23 @@
 - 45+ built-in plugins; a plugin can contribute commands, tools, hotkeys, exporters, loaders, components and events
 - Unified command system, hotkeys, and i18n
 
-## 📤 Export formats
+## 📤 Import & export
 
-`PNG` · `JPEG` · `WebP` · `SVG` · `PDF` · `GIF` · `MP4` · `Lottie` · `PPTX` / `XLSX` / `DOCX` · `JSON`
+- **Export**: `PNG` · `JPEG` · `WebP` · `SVG` · `PDF` · `GIF` · `MP4` · `Lottie` · `PPTX` / `XLSX` / `DOCX` · `JSON`
+- **Import**: `PPTX` / `XLSX` / `DOCX` · `PSD` · images · `JSON`
 
-Format exporters ship as optional plugins:
+These ship as optional plugins; their heavy encoders / parsers are lazy-loaded on first use:
 
-| Package | Formats |
+| Package | Adds |
 | --- | --- |
-| `@mce/gif` | GIF |
-| `@mce/mp4` | MP4 |
-| `@mce/pdf` | PDF |
-| `@mce/svg` | SVG |
-| `@mce/openxml` | PPTX / XLSX / DOCX |
+| `@mce/gif` | GIF export |
+| `@mce/mp4` | MP4 export |
+| `@mce/pdf` | PDF export |
+| `@mce/svg` | SVG export |
+| `@mce/openxml` | PPTX / XLSX / DOCX import & export |
 | `@mce/psd` | PSD import (Photoshop layers → elements) |
 
-(`PNG` / `JPEG` / `WebP` / `JSON` / `Lottie` are built in.)
+(`PNG` / `JPEG` / `WebP` / `JSON` / `Lottie` export are built in.)
 
 ## 📦 Install
 
@@ -243,7 +244,8 @@ packages/
   mp4/        # MP4 export  (@mce/mp4)
   pdf/        # PDF export  (@mce/pdf)
   svg/        # SVG export  (@mce/svg)
-  openxml/    # PPTX/XLSX/DOCX  (@mce/openxml)
+  openxml/    # PPTX/XLSX/DOCX import & export  (@mce/openxml)
+  psd/        # PSD import  (@mce/psd)
 playground/   # demo & test app
 ```
 
