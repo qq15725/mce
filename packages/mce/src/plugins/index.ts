@@ -6,6 +6,7 @@ import _ai from './ai'
 import _arrange from './arrange'
 import _autoNest from './autoNest'
 import _clipboard from './clipboard'
+import _components from './components'
 import _doc from './doc'
 import _edit from './edit'
 import _flexLayout from './flexLayout'
@@ -41,6 +42,7 @@ import _toolbelt from './toolbelt'
 import _transform from './transform'
 import _typography from './typography'
 import _url from './url'
+import _variables from './variables'
 import _view from './view'
 import _workflow from './workflow'
 import _zoom from './zoom'
@@ -50,6 +52,7 @@ export const plugins = [
   _arrange,
   _autoNest,
   _clipboard,
+  _components,
   _doc,
   _edit,
   _flexLayout,
@@ -85,6 +88,7 @@ export const plugins = [
   _transform,
   _typography,
   _url,
+  _variables,
   _view,
   _workflow,
   _zoom,
