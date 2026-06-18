@@ -1,5 +1,6 @@
 import type { Element2D, Node } from 'modern-canvas'
 import type { VariablesState, VariableType, VariableValue } from '../utils'
+import { set } from 'lodash-es'
 import { idGenerator } from 'modern-idoc'
 import { definePlugin } from '../plugin'
 import {
@@ -14,7 +15,7 @@ import {
 
 declare global {
   namespace Mce {
-    /** 节点样式键 → 变量 id 的绑定，存于节点 meta.variableBindings。 */
+    /** 节点属性路径（如 'fill.color'、'style.opacity'）→ 变量 id 的绑定，存于节点 meta.variableBindings。 */
     type VariableBindings = Record<string, string>
 
     interface Commands {
@@ -44,8 +45,14 @@ export default definePlugin((editor) => {
     return root.value?.meta as any
   }
 
+  // 注意：Meta 的属性 getter / getProperty 不支持任意自定义键，自定义键只能经 toJSON 读回；
+  // 写入用属性赋值（会存进底层 Y.Map 并随 CRDT 同步）。
+  function readMeta<T>(key: string, fallback: T): T {
+    return rootMeta()?.toJSON?.()?.[key] ?? fallback
+  }
+
   function getState(): VariablesState {
-    return rootMeta()?.variables ?? createVariablesState()
+    return readMeta<VariablesState>('variables', createVariablesState())
   }
 
   function setState(state: VariablesState): void {
@@ -56,7 +63,7 @@ export default definePlugin((editor) => {
   }
 
   function getActiveModes(): Record<string, string> {
-    return rootMeta()?.variableActiveModes ?? {}
+    return readMeta<Record<string, string>>('variableActiveModes', {})
   }
 
   function setActiveModes(modes: Record<string, string>): void {
@@ -123,13 +130,13 @@ export default definePlugin((editor) => {
     root.value?.findOne((node: Node) => {
       const bindings = (node.meta as any)?.variableBindings as Mce.VariableBindings | undefined
       if (bindings && isElement(node)) {
-        const style = (node as Element2D).style as any
-        for (const [key, variableId] of Object.entries(bindings)) {
+        for (const [path, variableId] of Object.entries(bindings)) {
           const collection = getVariableCollection(state, variableId)
           const modeId = collection ? (activeModes[collection.id] ?? collection.defaultModeId) : undefined
           const value = resolveVariable(state, variableId, modeId)
           if (value !== undefined) {
-            style[key] = value
+            // path 是节点内的属性路径（如 'fill.color'、'style.opacity'）。
+            set(node as Element2D, path, value)
           }
         }
       }

@@ -43,7 +43,8 @@ export default definePlugin((editor) => {
   }
 
   function getComponents(): ComponentDef[] {
-    return rootMeta()?.components ?? []
+    // Meta 自定义键只能经 toJSON 读回（属性 getter 不支持任意键）。
+    return rootMeta()?.toJSON?.()?.components ?? []
   }
 
   function setComponents(defs: ComponentDef[]): void {
@@ -97,14 +98,27 @@ export default definePlugin((editor) => {
     }
     const overrides: InstanceOverrides = meta.overrides ?? {}
     const json = instantiateComponent(def, overrides)
+    const node = instanceNode as any
 
-    // 顶层样式 / 文本回写到实例节点本身（实例根 = master 根）。
-    if (json.style) {
-      Object.assign((instanceNode as any).style, json.style)
+    // 实例位置是实例自身属性，不应被 master 的 left/top 覆盖（除非 override 显式指定）。
+    const keepLeft = node.style?.left
+    const keepTop = node.style?.top
+
+    // 顶层可视属性回写到实例节点本身（实例根 = master 根）。
+    for (const key of ['style', 'fill', 'outline', 'background', 'shape', 'text', 'foreground', 'shadow'] as const) {
+      if (json[key] === undefined)
+        continue
+      if (key === 'style') {
+        Object.assign(node.style, json.style)
+      }
+      else {
+        node[key] = json[key]
+      }
     }
-    if (json.text) {
-      ;(instanceNode as any).text = json.text
-    }
+    if (!('style.left' in overrides) && keepLeft !== undefined)
+      node.style.left = keepLeft
+    if (!('style.top' in overrides) && keepTop !== undefined)
+      node.style.top = keepTop
 
     // 重建子树。
     ;[...instanceNode.children].forEach(child => child.remove())

@@ -44,8 +44,8 @@ export default definePlugin((editor) => {
     isElement,
     elementSelection,
     rootAabb,
-    fps,
   } = editor
+  // fps 由 timeline 插件提供，可能在本插件之后注册，故惰性读取避免解构到 undefined。
 
   function getAnimation(node: Element2D): Animation | undefined {
     return node.children.find((c): c is Animation => c instanceof Animation)
@@ -101,7 +101,8 @@ export default definePlugin((editor) => {
   }
 
   function getEasings(): Record<string, string> {
-    return rootMeta()?.easings ?? {}
+    // Meta 自定义键只能经 toJSON 读回（属性 getter 不支持任意键）。
+    return rootMeta()?.toJSON?.()?.easings ?? {}
   }
 
   function registerEasing(name: string, value: string): void {
@@ -115,7 +116,7 @@ export default definePlugin((editor) => {
     const aabb = rootAabb.value
     const width = options.width ?? aabb.width ?? 800
     const height = options.height ?? aabb.height ?? 600
-    const frameRate = options.fps ?? fps.value ?? 30
+    const frameRate = options.fps ?? (editor as any).fps?.value ?? 30
     const custom = getEasings()
 
     const layers: Parameters<typeof buildLottie>[0]['layers'] = []
