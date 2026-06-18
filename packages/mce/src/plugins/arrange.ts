@@ -198,9 +198,115 @@ export default definePlugin((editor) => {
     }
   }
 
+  // 参考 Figma「Tidy up」：将选中元素聚类成行/列，重排为间距统一的网格
+  // （单行退化为水平等距、单列退化为垂直等距）。
   function tidyUp() {
-    // TODO
-    distributeSpacing('vertical')
+    const els = elementSelection.value
+
+    if (els.length < 2) {
+      return
+    }
+
+    const DEFAULT_GAP = 20
+
+    const items = els.map((el) => {
+      const a = el.globalAabb
+      return {
+        el,
+        left: a.left,
+        top: a.top,
+        width: a.width,
+        height: a.height,
+        cx: a.left + a.width / 2,
+        cy: a.top + a.height / 2,
+      }
+    })
+
+    // 按垂直中心聚类成行：中心差值落在行内最高元素半高内即视为同一行。
+    const rows: (typeof items)[] = []
+    const byY = [...items].sort((a, b) => a.cy - b.cy)
+    let row = [byY[0]]
+    let rowSum = byY[0].cy
+    let rowMaxH = byY[0].height
+    for (let i = 1; i < byY.length; i++) {
+      const it = byY[i]
+      const mean = rowSum / row.length
+      const threshold = Math.max(rowMaxH, it.height) / 2
+      if (Math.abs(it.cy - mean) <= threshold) {
+        row.push(it)
+        rowSum += it.cy
+        rowMaxH = Math.max(rowMaxH, it.height)
+      }
+      else {
+        rows.push(row)
+        row = [it]
+        rowSum = it.cy
+        rowMaxH = it.height
+      }
+    }
+    rows.push(row)
+
+    // 行内按水平中心排序。
+    rows.forEach(r => r.sort((a, b) => a.cx - b.cx))
+
+    const colCount = Math.max(...rows.map(r => r.length))
+
+    // 每列宽 = 该列各行元素的最大宽；每行高 = 行内元素的最大高。
+    const colWidth = Array.from({ length: colCount }, () => 0)
+    rows.forEach(r => r.forEach((it, c) => {
+      colWidth[c] = Math.max(colWidth[c], it.width)
+    }))
+    const rowHeight = rows.map(r => Math.max(...r.map(it => it.height)))
+
+    // 统一间距取自当前布局中最小的正间距，无可用值时回退 DEFAULT_GAP。
+    const hGaps: number[] = []
+    rows.forEach((r) => {
+      for (let i = 1; i < r.length; i++) {
+        const g = r[i].left - (r[i - 1].left + r[i - 1].width)
+        if (g >= 0) {
+          hGaps.push(g)
+        }
+      }
+    })
+    const vGaps: number[] = []
+    for (let i = 1; i < rows.length; i++) {
+      const prevBottom = Math.max(...rows[i - 1].map(it => it.top + it.height))
+      const curTop = Math.min(...rows[i].map(it => it.top))
+      const g = curTop - prevBottom
+      if (g >= 0) {
+        vGaps.push(g)
+      }
+    }
+    const hGap = hGaps.length ? Math.min(...hGaps) : DEFAULT_GAP
+    const vGap = vGaps.length ? Math.min(...vGaps) : DEFAULT_GAP
+
+    // 锚定整体包围盒左上角，避免重排后整体漂移。
+    const originX = Math.min(...items.map(it => it.left))
+    const originY = Math.min(...items.map(it => it.top))
+
+    const colX: number[] = []
+    let x = originX
+    for (let c = 0; c < colCount; c++) {
+      colX[c] = x
+      x += colWidth[c] + hGap
+    }
+    const rowY: number[] = []
+    let y = originY
+    for (let r = 0; r < rows.length; r++) {
+      rowY[r] = y
+      y += rowHeight[r] + vGap
+    }
+
+    // 写回（沿用 distributeSpacing 的中心换算约定，逐元素按各自父级换算回本地坐标）。
+    rows.forEach((r, ri) => {
+      r.forEach((it, ci) => {
+        const centerX = colX[ci] + it.width / 2
+        const centerY = rowY[ri] + it.height / 2
+        const parentAabb = it.el.getParent<Element2D>()?.globalAabb
+        it.el.style.left = centerX - it.el.style.width / 2 - (parentAabb?.left ?? 0)
+        it.el.style.top = centerY - it.el.style.height / 2 - (parentAabb?.top ?? 0)
+      })
+    })
   }
 
   return {
