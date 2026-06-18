@@ -45,6 +45,7 @@ export default defineConfig(() => {
           '@mce/svg': fileURLToPath(new URL('../packages/svg/src/index.ts', import.meta.url)),
           '@mce/mp4': fileURLToPath(new URL('../packages/mp4/src/index.ts', import.meta.url)),
           '@mce/gif': fileURLToPath(new URL('../packages/gif/src/index.ts', import.meta.url)),
+          '@mce/psd': fileURLToPath(new URL('../packages/psd/src/index.ts', import.meta.url)),
           'mce/styles': fileURLToPath(new URL('../packages/mce/src/index.ts', import.meta.url)),
           'mce': fileURLToPath(new URL('../packages/mce/src/index.ts', import.meta.url)),
         },

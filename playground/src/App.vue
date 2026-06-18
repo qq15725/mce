@@ -5,6 +5,7 @@ import gif from '@mce/gif'
 import mp4 from '@mce/mp4'
 import openxml from '@mce/openxml'
 import pdf from '@mce/pdf'
+import psd from '@mce/psd'
 import svg from '@mce/svg'
 import { Editor, EditorLayers, EditorLayout, EditorLayoutItem } from 'mce'
 import { computed } from 'vue'
@@ -44,6 +45,7 @@ const editor = new Editor({
     svg(),
     mp4(),
     gif(),
+    psd(),
   ],
 })
 

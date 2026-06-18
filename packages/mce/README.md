@@ -73,6 +73,7 @@ Format exporters ship as optional plugins:
 | `@mce/pdf` | PDF |
 | `@mce/svg` | SVG |
 | `@mce/openxml` | PPTX / XLSX / DOCX |
+| `@mce/psd` | PSD import (Photoshop layers → elements) |
 
 (`PNG` / `JPEG` / `WebP` / `JSON` / `Lottie` are built in.)
 
