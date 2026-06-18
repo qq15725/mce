@@ -93,7 +93,6 @@ npm i mce
   import openxml from '@mce/openxml'
   import pdf from '@mce/pdf'
   import svg from '@mce/svg'
-  import gifWorkerUrl from 'modern-gif/worker?url'
 
   const editor = new Editor({
     plugins: [
@@ -103,7 +102,10 @@ npm i mce
       pdf(),
       openxml(),
     ],
-    gifWorkerUrl,
+    // @mce/gif bundles its encoding worker by default. To self-host it
+    // (e.g. under a strict CSP), pass `gifWorkerUrl` explicitly:
+    //   import gifWorkerUrl from 'modern-gif/worker?url'
+    //   ...new Editor({ gifWorkerUrl })
     locale: { locale: 'en' },
     viewport: {
       camera: { enabled: true },

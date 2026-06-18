@@ -23,7 +23,18 @@ export function plugin() {
       runExclusiveRender,
     } = editor
 
-    const gifWorkerUrl = options.gifWorkerUrl
+    // 默认自带 modern-gif 的 worker：`new URL(..., import.meta.url)` 是打包器通用写法，
+    // Vite / webpack5 / Rollup 会把 worker 文件作为 asset 产出，消费方无需再手动传 gifWorkerUrl。
+    // 显式传入时优先用传入值（便于自托管 / CDN）；解析失败时 modern-gif 会回退主线程编码。
+    let gifWorkerUrl = options.gifWorkerUrl
+    if (!gifWorkerUrl) {
+      try {
+        gifWorkerUrl = new URL('modern-gif/worker', import.meta.url).href
+      }
+      catch {
+        gifWorkerUrl = undefined
+      }
+    }
 
     assets.gifWorkerUrl = gifWorkerUrl
 

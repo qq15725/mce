@@ -7,7 +7,6 @@ import openxml from '@mce/openxml'
 import pdf from '@mce/pdf'
 import svg from '@mce/svg'
 import { Editor, EditorLayers, EditorLayout, EditorLayoutItem } from 'mce'
-import gifWorkerUrl from 'modern-gif/worker?url'
 import { computed } from 'vue'
 import { loadAnimationDemo, loadChartDemo, loadConnectionDemo, loadFillStrokeDemo, loadGifDemo, loadImageEffectsDemo, loadLayoutDemo, loadShapesDemo, loadSmartGuidesDemo, loadTableDemo, loadTextDemo, loadVideoDemo } from './demos'
 import 'mce/styles'
@@ -46,7 +45,6 @@ const editor = new Editor({
     mp4(),
     gif(),
   ],
-  gifWorkerUrl,
 })
 
 window.editor = editor
