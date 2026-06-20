@@ -19,6 +19,7 @@ import _hover from './hover'
 import _html from './html'
 import _image from './image'
 import _import from './import'
+import _interactions from './interactions'
 import _json from './json'
 import _layers from './layers'
 import _madeWith from './madeWith'
@@ -67,6 +68,7 @@ export const plugins = [
   _html,
   _image,
   _import,
+  _interactions,
   _json,
   _layers,
   _madeWith,

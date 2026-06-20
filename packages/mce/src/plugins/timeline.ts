@@ -22,9 +22,15 @@ declare global {
       target: { x: number, y: number }
     }
 
+    /** 循环模式：单次（到尾暂停）/ 循环（回到开头）/ 往返（到尾反向）。 */
+    type LoopMode = 'none' | 'loop' | 'alternate'
+
     interface Editor {
       paused: Ref<boolean>
       fps: Ref<number>
+      /** 播放倍速，1 为正常速度。 */
+      playbackRate: Ref<number>
+      loopMode: Ref<LoopMode>
       recomputeTimelineEndTime: () => Promise<void>
       keyframeEditing: Ref<KeyframeEditing | null>
     }
@@ -63,8 +69,15 @@ export default definePlugin((editor) => {
 
   const paused = ref(true)
   const fps = ref(30)
+  const playbackRate = ref(1)
+  const loopMode = ref<Mce.LoopMode>('loop')
 
   const keyframeEditing = ref<Mce.KeyframeEditing | null>(null)
+
+  // 原生 loop 处理「循环」回绕；「单次」「往返」由 RAF 循环自行控制。
+  watch(loopMode, (mode) => {
+    timeline.value.loop = mode === 'loop'
+  }, { immediate: true })
 
   async function recomputeTimelineEndTime() {
     await editor.renderEngine.value.nextTick()
@@ -73,7 +86,7 @@ export default definePlugin((editor) => {
       : 0
   }
 
-  Object.assign(editor, { paused, fps, recomputeTimelineEndTime, keyframeEditing })
+  Object.assign(editor, { paused, fps, playbackRate, loopMode, recomputeTimelineEndTime, keyframeEditing })
 
   function play() {
     paused.value = false
@@ -154,18 +167,33 @@ export default definePlugin((editor) => {
 
       let requestId: number | undefined
       let prevTime: number | undefined
+      let direction: 1 | -1 = 1
 
       function startRaf() {
         if (requestId !== undefined)
           return
-        if (!Number.isFinite(timeline.value.currentTime)) {
-          timeline.value.currentTime = timeline.value.startTime
+        const tl = timeline.value
+        direction = 1
+        // 从头重播：播放头无效或已到结尾时回到开头。
+        if (!Number.isFinite(tl.currentTime) || tl.currentTime >= tl.endTime) {
+          tl.currentTime = tl.startTime
         }
         function loop(time?: number) {
           if (prevTime !== undefined && time !== undefined) {
             const tl = timeline.value
             if (tl.endTime > tl.startTime) {
-              tl.addTime(time - prevTime)
+              tl.addTime((time - prevTime) * playbackRate.value * direction)
+              if (loopMode.value === 'none') {
+                if (tl.currentTime >= tl.endTime)
+                  paused.value = true // 单次：到尾暂停
+              }
+              else if (loopMode.value === 'alternate') {
+                if (direction > 0 && tl.currentTime >= tl.endTime)
+                  direction = -1
+                else if (direction < 0 && tl.currentTime <= tl.startTime)
+                  direction = 1
+              }
+              // 'loop' 由原生 timeline.loop 回绕处理
             }
           }
           prevTime = time

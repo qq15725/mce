@@ -1,9 +1,10 @@
 import type { Element2D, Node } from 'modern-canvas'
-import type { Keyframe } from '../utils'
+import type { Keyframe, PresetChannels } from '../utils'
 import { Animation } from 'modern-canvas'
 import { definePlugin } from '../plugin'
 import {
   buildLottie,
+  getPreset,
   removeKeyframeAt,
   setKeyframeEasing,
   upsertKeyframe,
@@ -29,6 +30,16 @@ declare global {
       removeAnimationKeyframe: (offset: number, node?: Element2D) => void
       setAnimationKeyframeEasing: (offset: number, easing: string, node?: Element2D) => void
       setAnimationTiming: (timing: AnimationTiming, node?: Element2D) => void
+      /** 应用预设动画（进入 / 退出 / 强调），按元素当前样式生成关键帧；同类预设会被替换。 */
+      applyAnimationPreset: (id: string, node?: Element2D) => void
+      /** 独立播放某元素自身的动画（脱离全局时间轴，各元素各自计时）。restart 从头播，否则续播。 */
+      playElementAnimation: (node?: Element2D, restart?: boolean) => void
+      /** 暂停某元素的独立播放，冻结在当前帧。 */
+      pauseElementAnimation: (node?: Element2D) => void
+      /** 切换某元素独立播放 / 暂停。 */
+      toggleElementAnimation: (node?: Element2D) => void
+      /** 停止独立播放并恢复跟随全局时间轴。 */
+      stopElementAnimation: (node?: Element2D) => void
       /** 注册可复用的自定义缓动（名字 → cubic-bezier 字符串），存于文档。 */
       registerEasing: (name: string, value: string) => void
       getEasings: () => Record<string, string>
@@ -51,7 +62,8 @@ export default definePlugin((editor) => {
     return node.children.find((c): c is Animation => c instanceof Animation)
   }
 
-  // 注意：新建 Animation 子节点会经 CRDT 代理同步，实时行为需在编辑器内复核。
+  // 挂到「响应式」元素上（不要 toRaw），让 appendChild 把 Animation 也纳入代理 /
+  // CRDT 注册，与场景里其它节点一致，否则渲染引擎不会处理这个裸节点。
   function ensureAnimation(node: Element2D): Animation {
     let anim = getAnimation(node)
     if (!anim) {
@@ -59,6 +71,109 @@ export default definePlugin((editor) => {
       root.value?.transact(() => node.appendChild(anim!))
     }
     return anim
+  }
+
+  // ── 单元素独立播放运行器 ───────────────────────────────────────────────
+  // 引擎以 fps:0/speed:0 每帧渲染但 delta 恒为 0，时间由外部驱动。这里用一个
+  // 共享 RAF 逐帧推进各元素的「本地时钟」，并通过 Animation.setLocalTime 注入，
+  // 使每个元素的动画脱离全局时间轴各自计时（交互触发各播各的）。
+  interface ActiveEl {
+    node: Element2D
+    anims: Animation[]
+    t: number
+    /** 元素动画总跨度 max(delay+duration)。 */
+    span: number
+    /** 任一动画 loop 则整体循环。 */
+    loop: boolean
+    rate: number
+  }
+  const activeEls = new Map<Element2D, ActiveEl>()
+  let rafId: number | undefined
+  let prevTime: number | undefined
+
+  function elementAnimations(node: Element2D): Animation[] {
+    return node.children.filter((c): c is Animation => c instanceof Animation)
+  }
+
+  function applyLocal(a: ActiveEl): void {
+    a.anims.forEach(anim => anim.setLocalTime(a.t - (anim.delay ?? 0)))
+  }
+
+  function frame(now: number): void {
+    const dt = prevTime === undefined ? 0 : now - prevTime
+    prevTime = now
+    const finished: Element2D[] = []
+    activeEls.forEach((a) => {
+      a.t += dt * a.rate
+      if (a.loop) {
+        if (a.span > 0)
+          a.t %= a.span
+      }
+      else if (a.t >= a.span) {
+        a.t = a.span
+        applyLocal(a)
+        finished.push(a.node) // 播完冻结在末帧（保持入场后的显示），移出 RAF
+        return
+      }
+      applyLocal(a)
+    })
+    finished.forEach(node => activeEls.delete(node))
+    if (activeEls.size) {
+      rafId = requestAnimationFrame(frame)
+    }
+    else {
+      rafId = undefined
+      prevTime = undefined
+    }
+  }
+
+  function ensureRaf(): void {
+    if (rafId === undefined) {
+      prevTime = undefined
+      rafId = requestAnimationFrame(frame)
+    }
+  }
+
+  function playElementAnimation(node = elementSelection.value[0], restart = true): void {
+    if (!node)
+      return
+    const anims = elementAnimations(node)
+    if (!anims.length)
+      return
+    anims.forEach(a => a.setStandalone(true))
+    const span = Math.max(0, ...anims.map(a => (a.delay ?? 0) + (a.duration ?? 0)))
+    const loop = anims.some(a => !!a.loop)
+    const existing = activeEls.get(node)
+    activeEls.set(node, {
+      node,
+      anims,
+      span,
+      loop,
+      rate: 1,
+      t: restart || !existing ? 0 : existing.t,
+    })
+    ensureRaf()
+  }
+
+  function pauseElementAnimation(node = elementSelection.value[0]): void {
+    if (node)
+      activeEls.delete(node) // 退出 RAF，standalone 保持 → 冻结在当前帧
+  }
+
+  function toggleElementAnimation(node = elementSelection.value[0]): void {
+    if (!node)
+      return
+    if (activeEls.has(node))
+      pauseElementAnimation(node)
+    else
+      playElementAnimation(node, false)
+  }
+
+  function stopElementAnimation(node = elementSelection.value[0]): void {
+    if (!node)
+      return
+    activeEls.delete(node)
+    elementAnimations(node).forEach(a => a.setStandalone(false)) // 回到全局时间轴
   }
 
   function getElementKeyframes(node = elementSelection.value[0]): Keyframe[] {
@@ -94,6 +209,61 @@ export default definePlugin((editor) => {
       anim.duration = timing.duration
     if (timing.delay !== undefined)
       anim.delay = timing.delay
+  }
+
+  function readBaseChannels(node: Element2D): PresetChannels {
+    const s = node.style as any
+    return {
+      left: s?.left ?? 0,
+      top: s?.top ?? 0,
+      rotate: s?.rotate ?? 0,
+      scaleX: s?.scaleX ?? 1,
+      scaleY: s?.scaleY ?? 1,
+      opacity: s?.opacity ?? 1,
+    }
+  }
+
+  function presetCategoryOf(anim: Animation): string | undefined {
+    // meta 自定义键经 toJSON 读回（与 registerEasing 一致）。
+    return (anim.meta as any)?.toJSON?.()?.presetCategory
+  }
+
+  function applyAnimationPreset(id: string, node = elementSelection.value[0]): void {
+    if (!node)
+      return
+    const preset = getPreset(id)
+    if (!preset)
+      return
+    const keyframes = preset.build(readBaseChannels(node))
+    // 剪映式：片段需有长度，进入锚头、退出锚尾。元素无时长时给个默认片段长度
+    // （只约束动画范围，不影响元素在画布上的常驻显示）。
+    const DEFAULT_CLIP = 3000
+    let clip = (node as any).duration as number
+    if (!clip || clip <= 0)
+      clip = DEFAULT_CLIP
+    const delay = preset.category === 'out' ? Math.max(0, clip - preset.duration) : 0
+    // 同类预设动画存在则替换，否则新建一个 Animation 子节点。
+    // 用响应式 node（不要 toRaw），让新建的 Animation 也被代理 / 注册进场景，
+    // 否则渲染引擎不会处理这个未代理的裸节点（动画不生效）。
+    const el = node as any
+    const existing = el.children.find((c: any): c is Animation =>
+      c instanceof Animation && presetCategoryOf(c) === preset.category)
+    root.value?.transact(() => {
+      if (!el.duration || el.duration <= 0)
+        el.duration = clip
+      let anim: Animation = existing
+      if (!anim) {
+        anim = new Animation({ duration: preset.duration, keyframes: [] })
+        el.appendChild(anim)
+      }
+      anim.keyframes = keyframes as any
+      anim.duration = preset.duration
+      anim.delay = delay
+      anim.loop = !!preset.loop
+      ;(anim.meta as any).presetCategory = preset.category
+      ;(anim.meta as any).presetId = id
+    })
+    ;(editor as any).recomputeTimelineEndTime?.()
   }
 
   function rootMeta(): Record<string, any> | undefined {
@@ -160,6 +330,11 @@ export default definePlugin((editor) => {
       { command: 'removeAnimationKeyframe', handle: removeAnimationKeyframe },
       { command: 'setAnimationKeyframeEasing', handle: setAnimationKeyframeEasing },
       { command: 'setAnimationTiming', handle: setAnimationTiming },
+      { command: 'applyAnimationPreset', handle: applyAnimationPreset },
+      { command: 'playElementAnimation', handle: playElementAnimation },
+      { command: 'pauseElementAnimation', handle: pauseElementAnimation },
+      { command: 'toggleElementAnimation', handle: toggleElementAnimation },
+      { command: 'stopElementAnimation', handle: stopElementAnimation },
       { command: 'registerEasing', handle: registerEasing },
       { command: 'getEasings', handle: getEasings },
       { command: 'exportLottie', handle: exportLottie },

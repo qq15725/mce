@@ -95,8 +95,8 @@ importers:
         specifier: ^5
         version: 5.13.0
       modern-canvas:
-        specifier: ^0.23.11
-        version: 0.23.11(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1)
+        specifier: ^0.23.14
+        version: 0.23.14(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1)
       modern-font:
         specifier: ^0.6.1
         version: 0.6.1
@@ -2322,8 +2322,8 @@ packages:
   mlly@1.8.2:
     resolution: {integrity: sha512-d+ObxMQFmbt10sretNDytwt85VrbkhhUA/JBGm1MPaWJ65Cl4wOgLaB1NYvJSZ0Ef03MMEU/0xpPMXUIQ29UfA==}
 
-  modern-canvas@0.23.11:
-    resolution: {integrity: sha512-EvyMKc3lnuq1lu3uKs58Z1k7ilAEVJlW67bWgmGvSV/kbFXBEnAYeA12vXQAQkgvb13WucHCEhcjHfx43ynpoA==}
+  modern-canvas@0.23.14:
+    resolution: {integrity: sha512-5vQJqN5E+4g4D2p5i4IT7fV4bBmBme+KOnHmhxMjDGsgLJnvPoak6BrWx4/YgHU+lAZRF9EWdNF9XKEVQQEOgw==}
     peerDependencies:
       echarts: ^5 || ^6
       lottie-web: ^5
@@ -2721,8 +2721,8 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
-  semver@7.8.4:
-    resolution: {integrity: sha512-rUCObTnP32Q08R2uuIrt7r9PlEonuTmtuXYcW6s5kjdlj3xbnwe+21yXptAUYcMAABLkYYTtnmzb3w3EDZfueA==}
+  semver@7.8.5:
+    resolution: {integrity: sha512-Y7/KDsb8LjooZpwaqGyulO6DQlksgCncchHGk+sZIY4SBvUocMBEFH5Ur1fI4dV+Jvl0w6cjvucaIi40puRioA==}
     engines: {node: '>=10'}
     hasBin: true
 
@@ -3935,7 +3935,7 @@ snapshots:
       eslint: 10.4.1(jiti@2.7.0)
       json-stable-stringify-without-jsonify: 1.0.1
       lodash.merge: 4.6.2
-      semver: 7.8.4
+      semver: 7.8.5
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -3982,7 +3982,7 @@ snapshots:
       '@typescript-eslint/visitor-keys': 8.56.1
       debug: 4.4.3
       minimatch: 10.2.5
-      semver: 7.8.4
+      semver: 7.8.5
       tinyglobby: 0.2.17
       ts-api-utils: 2.5.0(typescript@6.0.3)
       typescript: 6.0.3
@@ -5416,7 +5416,7 @@ snapshots:
       pkg-types: 1.3.1
       ufo: 1.6.4
 
-  modern-canvas@0.23.11(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1):
+  modern-canvas@0.23.14(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1):
     dependencies:
       colord: 2.9.3
       earcut: 3.0.2
@@ -5797,7 +5797,7 @@ snapshots:
 
   semver@7.8.2: {}
 
-  semver@7.8.4: {}
+  semver@7.8.5: {}
 
   shebang-command@2.0.0:
     dependencies:

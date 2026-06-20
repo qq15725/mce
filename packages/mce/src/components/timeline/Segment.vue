@@ -13,6 +13,9 @@ interface BlockItem {
   delay: number
   duration: number
   anim?: Animation
+  // For animation blocks: preset category (in / out / emphasis) + label.
+  category?: string
+  label?: string
 }
 
 const props = withDefaults(defineProps<{
@@ -28,7 +31,7 @@ const props = withDefaults(defineProps<{
 })
 
 const editor = useEditor()
-const { root, currentTime, fps, recomputeTimelineEndTime, selection, keyframeEditing } = editor
+const { root, currentTime, fps, recomputeTimelineEndTime, selection, keyframeEditing, t } = editor
 
 const CHANNEL_DEFAULTS: Record<string, number> = {
   left: 0,
@@ -64,11 +67,14 @@ const blocks = computed<BlockItem[]>(() => {
     }
     node.children.forEach((child) => {
       if (child instanceof Animation) {
+        const meta = (child.meta as any)?.toJSON?.() ?? {}
         items.push({
           kind: 'animation',
           delay: child.delay,
           duration: child.duration,
           anim: child,
+          category: meta.presetCategory,
+          label: meta.presetId ? t(meta.presetId) : t('animationItem'),
         })
       }
     })
@@ -77,7 +83,12 @@ const blocks = computed<BlockItem[]>(() => {
   return items
 })
 
+// 剪映式布局：入场块靠片段头、出场靠尾（按各自 delay/duration 定位）、
+// 强调贯穿整条置于底部细条；其余按 delay/duration 常规定位。
 function blockStyle(b: BlockItem): Record<string, string> {
+  if (b.kind === 'animation' && b.category === 'emphasis') {
+    return { left: '0', right: '0', width: 'auto' }
+  }
   return {
     left: `${b.delay / props.msPerPx}px`,
     width: b.duration > 0
@@ -323,11 +334,20 @@ function onSegmentDown(e: MouseEvent) {
       v-for="(block, index) in blocks"
       :key="index"
       class="m-segment__block"
-      :class="`m-segment__block--${block.kind}`"
+      :class="[
+        `m-segment__block--${block.kind}`,
+        block.kind === 'animation' && block.category && `m-segment__block--${block.category}`,
+        block.kind === 'animation' && block.category === 'emphasis' && 'm-segment__block--strip',
+      ]"
       :style="blockStyle(block)"
+      :title="block.kind === 'animation' ? block.label : undefined"
       @mousedown="onBlockDown($event, block)"
       @dblclick="onBlockDblClick($event, block)"
     >
+      <span
+        v-if="block.kind === 'animation' && block.label && block.category !== 'emphasis'"
+        class="m-segment__label"
+      >{{ block.label }}</span>
       <button
         v-for="(kf, ki) in (block.kind === 'animation' ? keyframesOf(block) : [])"
         :key="ki"
@@ -363,6 +383,21 @@ function onSegmentDown(e: MouseEvent) {
 
     &--active {
       outline: 1px solid rgb(var(--m-theme-on-surface));
+    }
+
+    &__label {
+      position: absolute;
+      left: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 1;
+      pointer-events: none;
+      font-size: 0.7rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: calc(100% - 12px);
+      color: white;
     }
 
     &__edge {
@@ -404,10 +439,11 @@ function onSegmentDown(e: MouseEvent) {
       // handle for moving the whole element track, even when a block (e.g. an
       // animation that spans the full segment) covers the bar.
       position: relative;
-      z-index: 1;
+      z-index: 2;
       cursor: move;
       border-radius: 2px;
-      padding: 2px 8px;
+      padding: 1px 6px;
+      background-color: rgba(0, 0, 0, 0.22);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -423,14 +459,67 @@ function onSegmentDown(e: MouseEvent) {
       pointer-events: auto;
       overflow: hidden;
 
+      // Plain keyframe animation (no preset): no fill — just a thin centre line
+      // with diamonds drawn on the clip (CapCut / Premiere style), so it doesn't
+      // double up on the element bar.
       &--animation {
-        background-color: rgba(255, 255, 255, 0.18);
-        // Allow keyframe markers at offset 0 / 1 to render fully (not clipped).
-        overflow: visible;
+        top: 0;
+        height: 100%;
+        background-color: transparent;
+        border: 0;
+        overflow: visible; // let keyframe markers at offset 0/1 show fully
 
-        &:hover {
-          background-color: rgba(255, 255, 255, 0.28);
+        &::before {
+          content: "";
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 50%;
+          height: 2px;
+          transform: translateY(-50%);
+          border-radius: 1px;
+          background-color: rgba(255, 255, 255, 0.55);
         }
+
+        &:hover::before {
+          background-color: rgba(255, 255, 255, 0.85);
+        }
+      }
+
+      // Preset animations render as solid coloured regions instead of a line.
+      &--in,
+      &--out {
+        top: 2px;
+        height: 66%;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 2px;
+
+        &::before {
+          display: none;
+        }
+      }
+
+      &--in {
+        background-color: rgba(64, 156, 96, 0.92);
+      }
+
+      &--out {
+        background-color: rgba(204, 88, 66, 0.92);
+      }
+
+      &--emphasis {
+        background-color: rgba(82, 116, 214, 0.92);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+
+        &::before {
+          display: none;
+        }
+      }
+
+      &--strip {
+        top: auto;
+        bottom: 0;
+        height: 28%;
       }
 
       &--media {

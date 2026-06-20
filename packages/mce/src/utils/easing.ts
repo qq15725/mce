@@ -8,7 +8,11 @@
 
 export type EasingCoords = [number, number, number, number]
 
-/** 命名缓动预设 → cubic-bezier 控制点。 */
+/**
+ * 命名缓动预设 → cubic-bezier 控制点。
+ * 键名用 CSS 缓动写法，与 modern-canvas 内置缓动一致（关键帧里直接存这些名字引擎即可识别）；
+ * 更复杂的曲线用 cubic-bezier 字符串。
+ */
 export const EASING_PRESETS: Record<string, EasingCoords> = {
   'linear': [0, 0, 1, 1],
   'ease': [0.25, 0.1, 0.25, 1],

@@ -6,6 +6,7 @@ describe('parseEasing', () => {
     expect(parseEasing('linear')).toEqual([0, 0, 1, 1])
     expect(parseEasing('cubic-bezier(0.1, 0.2, 0.3, 0.4)')).toEqual([0.1, 0.2, 0.3, 0.4])
     expect(parseEasing('myBounce', { myBounce: 'cubic-bezier(0.5, 0, 0.5, 1)' })).toEqual([0.5, 0, 0.5, 1])
+    expect(parseEasing('ease-in')).toEqual([0.42, 0, 1, 1])
     expect(parseEasing('myAlias', { myAlias: 'ease-in' })).toEqual([0.42, 0, 1, 1])
   })
 

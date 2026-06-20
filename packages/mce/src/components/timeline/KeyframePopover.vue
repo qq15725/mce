@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { EasingCoords, Keyframe } from '../../utils'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useEditor } from '../../composables'
 import { EASING_PRESETS, parseEasing, removeKeyframeAt, setKeyframeEasing, upsertKeyframe } from '../../utils'
 import { Icon } from '../icon'
@@ -34,16 +34,21 @@ const active = computed<Keyframe | undefined>(
 
 // 缓动：解析当前关键帧 easing（名字 / cubic-bezier / 自定义）为控制点供曲线图显示，
 // 拖手柄则写回 cubic-bezier 字符串，选预设则写回预设名。
+const customRev = ref(0)
+const customEasings = computed<Record<string, string>>(() => {
+  void customRev.value // 注册新预设后手动触发刷新（meta 读取非响应式）
+  return exec('getEasings')
+})
 const easingCoords = computed<EasingCoords>(
-  () => parseEasing(active.value?.easing ?? 'linear', exec('getEasings')),
+  () => parseEasing(active.value?.easing ?? 'linear', customEasings.value),
 )
 const presetName = computed(() => {
   const e = active.value?.easing ?? 'linear'
-  return e in EASING_PRESETS ? e : 'custom'
+  return e in EASING_PRESETS || e in customEasings.value ? e : 'custom'
 })
 const easingOptions = computed(() => {
-  const presets = Object.keys(EASING_PRESETS)
-  return presetName.value === 'custom' ? ['custom', ...presets] : presets
+  const base = [...Object.keys(EASING_PRESETS), ...Object.keys(customEasings.value)]
+  return presetName.value === 'custom' ? ['custom', ...base] : base
 })
 
 function onPreset(value: string) {
@@ -53,6 +58,23 @@ function onPreset(value: string) {
 
 function onCurve(coords: EasingCoords) {
   setEasing(`cubic-bezier(${coords.map(n => Math.round(n * 100) / 100).join(',')})`)
+}
+
+// 把当前自定义曲线存为命名预设（复用 registerEasing，存于文档 meta），并选中它。
+const saving = ref(false)
+const newPresetName = ref('')
+function startSave() {
+  saving.value = true
+  newPresetName.value = ''
+}
+function confirmSave() {
+  const name = newPresetName.value.trim()
+  saving.value = false
+  if (!name)
+    return
+  exec('registerEasing', name, `cubic-bezier(${easingCoords.value.join(',')})`)
+  customRev.value++
+  setEasing(name)
 }
 
 const extraKeys = computed(() => {
@@ -115,7 +137,6 @@ function onNumberInput(e: Event): number {
 <template>
   <Overlay
     v-model="open"
-    content-class="m-kfpop"
     location="top"
     :offset="10"
     :target="editing?.target"
@@ -123,15 +144,47 @@ function onNumberInput(e: Event): number {
     <div v-if="active" class="m-kfpop__body">
       <div class="m-kfpop__head">
         <span class="m-kfpop__pct">{{ Math.round(active.offset * 100) }}%</span>
-        <select
-          class="m-kfpop__select"
-          :value="presetName"
-          @change="onPreset(($event.target as HTMLSelectElement).value)"
-        >
-          <option v-for="opt in easingOptions" :key="opt" :value="opt">
-            {{ opt === 'custom' ? t('custom') : opt }}
-          </option>
-        </select>
+
+        <template v-if="saving">
+          <input
+            v-model="newPresetName"
+            class="m-kfpop__select"
+            :placeholder="t('saveEasingPreset')"
+            autofocus
+            @keyup.enter="confirmSave"
+            @keyup.esc="saving = false"
+          >
+          <button
+            class="m-kfpop__btn"
+            type="button"
+            :title="t('saveEasingPreset')"
+            @click="confirmSave"
+          >
+            <Icon icon="$check" />
+          </button>
+        </template>
+
+        <template v-else>
+          <select
+            class="m-kfpop__select"
+            :value="presetName"
+            @change="onPreset(($event.target as HTMLSelectElement).value)"
+          >
+            <option v-for="opt in easingOptions" :key="opt" :value="opt">
+              {{ opt === 'custom' ? t('custom') : opt }}
+            </option>
+          </select>
+          <button
+            v-if="presetName === 'custom'"
+            class="m-kfpop__btn"
+            type="button"
+            :title="t('saveEasingPreset')"
+            @click="startSave"
+          >
+            <Icon icon="$plus" />
+          </button>
+        </template>
+
         <button
           class="m-kfpop__btn"
           type="button"

@@ -1,4 +1,5 @@
 export * from './aiActions'
+export * from './animationPresets'
 export * from './arrow'
 export * from './box'
 export * from './components'

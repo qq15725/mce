@@ -9,7 +9,7 @@ import psd from '@mce/psd'
 import svg from '@mce/svg'
 import { Editor, EditorLayers, EditorLayout, EditorLayoutItem } from 'mce'
 import { computed } from 'vue'
-import { loadAnimationDemo, loadChartDemo, loadConnectionDemo, loadFillStrokeDemo, loadGifDemo, loadImageEffectsDemo, loadLayoutDemo, loadShapesDemo, loadSmartGuidesDemo, loadTableDemo, loadTextDemo, loadVideoDemo } from './demos'
+import { loadAnimationDemo, loadChartDemo, loadConnectionDemo, loadFillStrokeDemo, loadGifDemo, loadImageEffectsDemo, loadInteractionDemo, loadLayoutDemo, loadShapesDemo, loadSmartGuidesDemo, loadTableDemo, loadTextDemo, loadVideoDemo } from './demos'
 import 'mce/styles'
 
 const editorOptions = {
@@ -71,6 +71,9 @@ else if (demo === 'layout') {
 }
 else if (demo === 'animation') {
   loadAnimationDemo(editor)
+}
+else if (demo === 'interaction') {
+  loadInteractionDemo(editor)
 }
 else if (demo === 'gif') {
   loadGifDemo(editor)
@@ -154,6 +157,9 @@ const element = computed(() => editor.elementSelection.value[0])
           </button>
           <button @click="() => loadAnimationDemo(editor)">
             动画示例
+          </button>
+          <button @click="() => loadInteractionDemo(editor)">
+            交互示例
           </button>
           <button @click="() => loadGifDemo(editor)">
             GIF 示例

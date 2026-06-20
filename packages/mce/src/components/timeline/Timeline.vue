@@ -21,10 +21,20 @@ const {
   selection,
   paused,
   fps,
+  playbackRate,
+  loopMode,
   exec,
   t,
   assets,
 } = editor
+
+const SPEEDS = [0.25, 0.5, 1, 1.5, 2, 4]
+const LOOP_MODES = ['none', 'loop', 'alternate'] as const
+const loopLabel: Record<string, string> = {
+  none: 'loopOnce',
+  loop: 'loopAll',
+  alternate: 'loopPingpong',
+}
 
 const ruler = useTemplateRef('rulerTpl')
 const offset = ref([0, 0])
@@ -65,13 +75,20 @@ function hasAnimatedContent(el: Element2D): boolean {
 const elements = computed(() => {
   void endTime.value
   void tracksRev.value
-  return root.value.findAll<TimelineNode>((node) => {
+  const found = root.value.findAll<TimelineNode>((node) => {
     if (node instanceof Video2D)
       return true
     if (isElement(node) && hasAnimatedContent(node))
       return true
     return false
   }).reverse()
+  // Also surface selected elements without animation yet, so their track row
+  // (and its "+ animation" entry) is reachable to add a first animation.
+  for (const node of selection.value) {
+    if (isElement(node) && !found.includes(node as unknown as TimelineNode))
+      found.unshift(node as unknown as TimelineNode)
+  }
+  return found
 })
 
 function pad(n: number): string {
@@ -191,6 +208,26 @@ function rulerLabelFormat(f: number) {
           <Icon icon="$skipNext" />
         </button>
       </div>
+
+      <select
+        v-model.number="playbackRate"
+        class="m-timeline__select"
+        :title="t('playbackRate')"
+      >
+        <option v-for="s in SPEEDS" :key="s" :value="s">
+          {{ s }}×
+        </option>
+      </select>
+
+      <select
+        v-model="loopMode"
+        class="m-timeline__select"
+        :title="t('loopMode')"
+      >
+        <option v-for="m in LOOP_MODES" :key="m" :value="m">
+          {{ t(loopLabel[m]) }}
+        </option>
+      </select>
 
       <div class="m-timeline__toolbar-spacer" />
 
@@ -343,6 +380,23 @@ function rulerLabelFormat(f: number) {
       &--primary {
         width: 26px;
         height: 26px;
+      }
+    }
+
+    &__select {
+      height: 22px;
+      padding: 0 4px;
+      border: 1px solid rgba(var(--m-border-color), var(--m-border-opacity));
+      border-radius: 4px;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      font-size: 0.75rem;
+      cursor: pointer;
+
+      &:focus {
+        outline: none;
+        border-color: rgb(var(--m-theme-on-surface));
       }
     }
 

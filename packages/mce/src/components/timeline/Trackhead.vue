@@ -2,8 +2,9 @@
 import type { Element2D, Node } from 'modern-canvas'
 import { computed, nextTick, ref, useTemplateRef } from 'vue'
 import { useEditor, useNode } from '../../composables'
-import { addDragListener } from '../../utils'
+import { addDragListener, ANIMATION_PRESETS } from '../../utils'
 import { Icon } from '../icon'
+import Menu from '../shared/Menu.vue'
 
 const props = defineProps<{
   node: Node
@@ -12,13 +13,31 @@ const props = defineProps<{
 const editor = useEditor()
 const {
   selection,
-  isVisible,
-  setVisible,
-  isLock,
-  setLock,
   hoverElement,
   isElement,
+  exec,
+  t,
 } = editor
+
+const animMenu = ref(false)
+
+// 预设动画菜单：按 进入 / 退出 / 强调 分组（子菜单）。
+const presetMenu = computed<Mce.MenuItem[]>(() => {
+  const cats: { cat: string, key: string }[] = [
+    { cat: 'in', key: 'animGroupIn' },
+    { cat: 'out', key: 'animGroupOut' },
+    { cat: 'emphasis', key: 'animGroupEmphasis' },
+  ]
+  return cats.map(({ cat, key }) => ({
+    key,
+    children: ANIMATION_PRESETS
+      .filter(p => p.category === cat)
+      .map(p => ({
+        key: p.id,
+        handle: () => exec('applyAnimationPreset', p.id, props.node as Element2D),
+      })),
+  }))
+})
 
 const nodeRef = computed(() => props.node)
 const { thumbnailIcon, thumbnailName } = useNode(nodeRef, editor)
@@ -29,9 +48,7 @@ const editing = ref(false)
 const editValue = ref<string>('')
 const inputDom = useTemplateRef<HTMLInputElement>('inputDom')
 
-const showActions = computed(() => {
-  return hovering.value || isLock(props.node) || !isVisible(props.node)
-})
+const showActions = computed(() => hovering.value)
 
 function onMousedown(e: MouseEvent) {
   if (e.button !== 0)
@@ -117,16 +134,6 @@ function onInputKeydown(e: KeyboardEvent) {
     editing.value = false
   }
 }
-
-function onToggleLock(e: MouseEvent) {
-  e.stopPropagation()
-  setLock(props.node, !isLock(props.node))
-}
-
-function onToggleVisible(e: MouseEvent) {
-  e.stopPropagation()
-  setVisible(props.node, !isVisible(props.node))
-}
 </script>
 
 <template>
@@ -163,27 +170,31 @@ function onToggleVisible(e: MouseEvent) {
 
     <div
       class="m-trackhead__action"
-      :class="{ 'm-trackhead__action--show': showActions }"
+      :class="{ 'm-trackhead__action--show': showActions || animMenu }"
     >
-      <button
-        type="button"
-        class="m-trackhead__btn"
-        :class="{ 'm-trackhead__btn--show': isLock(node) }"
-        @mousedown.stop
-        @click="onToggleLock"
+      <Menu
+        v-if="isElement(node)"
+        v-model="animMenu"
+        :items="presetMenu"
+        location="bottom-start"
+        :offset="4"
       >
-        <Icon :icon="isLock(node) ? '$lock' : '$unlock'" />
-      </button>
-
-      <button
-        type="button"
-        class="m-trackhead__btn"
-        :class="{ 'm-trackhead__btn--show': !isVisible(node) }"
-        @mousedown.stop
-        @click="onToggleVisible"
-      >
-        <Icon :icon="isVisible(node) ? '$visible' : '$unvisible'" />
-      </button>
+        <template #activator="{ props: activatorProps }">
+          <button
+            type="button"
+            class="m-trackhead__btn"
+            :class="{ 'm-trackhead__btn--show': animMenu }"
+            :title="t('addAnimation')"
+            v-bind="activatorProps"
+            @mousedown.stop
+          >
+            <Icon icon="$plus" />
+          </button>
+        </template>
+        <template #title="{ item }">
+          {{ t(item.key) }}
+        </template>
+      </Menu>
     </div>
   </div>
 </template>
