@@ -329,14 +329,39 @@ export default defineMixin((editor, options) => {
       })
     }
 
+    // nodes / nodeIndexMap 增量维护：原本只在 docSet 时整树重建，有两个洞——
+    // ① docSet 监听器在 onBeforeMount 才挂，宿主在挂载前 setDoc（如 playground 加载 demo）时首次
+    //    docSet 被漏掉，索引一直为空；② 运行时增删节点不更新，编辑后会过期。
+    // 改为订阅 SceneTree 的 nodeEnter/nodeExit（权威信号）并按 microtask 合并重建，避免加载时
+    // N 个节点入场触发 N 次重建（O(n²)）。另在挂载时主动跑一次，兜住「挂载前已加载」。
+    let nodesDirty = false
+    function scheduleUpdateNodes(): void {
+      if (nodesDirty) {
+        return
+      }
+      nodesDirty = true
+      queueMicrotask(() => {
+        if (!nodesDirty) {
+          return
+        }
+        nodesDirty = false
+        updateNodes()
+      })
+    }
+
     onBeforeMount(() => {
       on('docSet', onSetDoc)
+      renderEngine.value.on('nodeEnter', scheduleUpdateNodes)
+      renderEngine.value.on('nodeExit', scheduleUpdateNodes)
+      updateNodes()
       renderEngine.value.start()
       document.addEventListener('mousemove', onMouseMove)
     })
 
     onScopeDispose(() => {
       off('docSet', onSetDoc)
+      renderEngine.value.off('nodeEnter', scheduleUpdateNodes)
+      renderEngine.value.off('nodeExit', scheduleUpdateNodes)
       renderEngine.value.stop()
       document.removeEventListener('mousemove', onMouseMove)
       if (pointerRafId !== null) {
