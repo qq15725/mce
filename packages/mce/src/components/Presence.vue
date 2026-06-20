@@ -5,8 +5,7 @@ import { useEditor } from '../composables/editor'
 const {
   presence,
   camera,
-  nodes,
-  nodeIndexMap,
+  root,
   getObb,
 } = useEditor()
 
@@ -20,8 +19,16 @@ function toDrawboard(p: { x: number, y: number }): { x: number, y: number } {
 }
 
 function getNode(id: string) {
-  const index = nodeIndexMap.get(id)
-  return index === undefined ? undefined : nodes.value[index]
+  // 用 findOne 而非 nodeIndexMap：后者依赖 docSet 时机填充，某些状态下为空；findOne 始终可靠。
+  let found: any
+  root.value.findOne((n) => {
+    if (n.id === id) {
+      found = n
+      return true
+    }
+    return false
+  })
+  return found
 }
 
 const cursors = computed(() => {
@@ -40,9 +47,12 @@ const cursors = computed(() => {
 })
 
 const selections = computed(() => {
-  const boxes: { key: string, color: string, style: Record<string, string> }[] = []
+  const boxes: { key: string, color: string, name: string, style: Record<string, string> }[] = []
   presence.peers.value.forEach((peer) => {
     const color = peer.user?.color ?? '#1C7ED6'
+    const name = peer.user?.name ?? ''
+    // 名字标签只挂在该 peer 的第一个选框上，多选时不刷屏。
+    let labeled = false
     peer.selection?.forEach((id) => {
       const node = getNode(id)
       if (!node) {
@@ -51,8 +61,10 @@ const selections = computed(() => {
       boxes.push({
         key: `${peer.clientId}:${id}`,
         color,
+        name: labeled ? '' : name,
         style: getObb(node, 'drawboard').toCssStyle(),
       })
+      labeled = true
     })
   })
   return boxes
@@ -67,7 +79,13 @@ const selections = computed(() => {
       :key="box.key"
       class="m-presence-selection"
       :style="{ ...box.style, borderColor: box.color }"
-    />
+    >
+      <span
+        v-if="box.name"
+        class="m-presence-tag"
+        :style="{ backgroundColor: box.color }"
+      >{{ box.name }}</span>
+    </div>
 
     <!-- 远端光标 -->
     <div
@@ -108,11 +126,26 @@ const selections = computed(() => {
     pointer-events: none;
   }
 
+  &-tag {
+    position: absolute;
+    top: 0;
+    left: -1.5px;
+    transform: translateY(-100%);
+    padding: 1px 6px;
+    border-radius: 4px 4px 4px 0;
+    color: #fff;
+    font-size: 12px;
+    line-height: 16px;
+    white-space: nowrap;
+  }
+
   &-cursor {
     position: absolute;
     top: 0;
     left: 0;
     will-change: transform;
+    // 光标插值：元素初次插入即就位（无 before 值不触发过渡），后续位置变化平滑过渡。
+    transition: transform 80ms linear;
 
     svg {
       display: block;
