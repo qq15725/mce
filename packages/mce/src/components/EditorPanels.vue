@@ -87,9 +87,13 @@ function RenderComponent(componentProps: Record<string, any> & { item: EditorCom
         <LayoutItem
           v-if="item.visible.value"
           v-model="item.visible.value"
+          :name="item.name"
           :position="item.position as any"
           :size="item.size || 200"
           :order="item.order || 0"
+          :resizable="(item as any).resizable !== false"
+          :min-size="(item as any).minSize"
+          :max-size="(item as any).maxSize"
         >
           <RenderComponent :item="item" />
         </LayoutItem>

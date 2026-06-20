@@ -13,7 +13,10 @@ declare global {
 
     interface PanelState {
       visible?: boolean
+      /** 浮动面板位置 / 尺寸。 */
       transform?: PanelTransform
+      /** 停靠面板尺寸（宽或高，按 position）。 */
+      size?: number
     }
 
     interface UIConfig {
@@ -26,6 +29,8 @@ declare global {
       visibleRef: (name: string) => WritableComputedRef<boolean>
       /** 浮动面板位置 / 尺寸的可写引用（持久化）。 */
       transformRef: (name: string) => WritableComputedRef<PanelTransform | undefined>
+      /** 停靠面板尺寸的可写引用（持久化）。 */
+      sizeRef: (name: string) => WritableComputedRef<number | undefined>
       /** 浮动面板层叠顺序（内存态，决定 z-index）。 */
       floatOrder: Ref<string[]>
       /** 把某浮动面板提到最前。 */
@@ -78,6 +83,13 @@ export default defineMixin((editor) => {
     })
   }
 
+  function sizeRef(name: string): WritableComputedRef<number | undefined> {
+    return computed({
+      get: () => panelsConfig.value[name]?.size,
+      set: size => patch(name, { size }),
+    })
+  }
+
   const floatOrder = ref<string[]>([])
 
   function bringToFront(name: string): void {
@@ -127,6 +139,7 @@ export default defineMixin((editor) => {
   const panels: Mce.PanelsApi = {
     visibleRef,
     transformRef,
+    sizeRef,
     floatOrder,
     bringToFront,
     release,

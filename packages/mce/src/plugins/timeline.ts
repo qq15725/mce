@@ -132,6 +132,7 @@ export default definePlugin((editor) => {
         type: 'panel',
         position: 'bottom',
         size: 160,
+        minSize: 80,
         component: Timeline,
         visible: computed({
           get: () => config.value.visible,

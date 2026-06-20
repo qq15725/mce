@@ -33,6 +33,7 @@ export default definePlugin((editor) => {
         type: 'panel',
         position: 'bottom',
         size: 24,
+        resizable: false,
         component: Statusbar,
         visible: computed({
           get: () => config.value.visible,
