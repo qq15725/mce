@@ -4,18 +4,17 @@ import { vResizeObserver } from '@vueuse/components'
 import { useImage } from '@vueuse/core'
 import { cloneDeep, isEqual } from 'lodash-es'
 import { computed, onBeforeMount, onBeforeUnmount, ref, useTemplateRef, watch } from 'vue'
+import { useEditor } from '../../composables'
 import { closestLine } from '../../mixins/snapper'
 import { boundingBoxToStyle } from '../../utils'
 import Transform from './Transform.vue'
 
 /**
- * TODO 撤回无法重渲
- *
- * 根因（已复现确认）：下方 `viewEffect` watch 在 `view` 变化时反向补偿 `cropRect`
- * 以保持 source 视觉不变。撤回会由 UndoManager 同时回退 `view` 与 `cropRect`，但该
- * watch 监到 `view` 回退后又据旧值重算 `cropRect`，把撤回覆盖掉。
- * 修复方向：撤回 / 重做前先退出 crop 态卸载本组件（注意卸载是异步的，需 nextTick 后再
- * undo，否则 watch 仍在），或让 viewEffect 仅对用户拖拽产生的 view 变化补偿、忽略外部来源。
+ * 撤回 / 重做修复说明：
+ * 下方 `viewEffect` watch 在 `view` 变化时反向补偿 `cropRect` 以保持 source 视觉不变。
+ * 但撤回/重做会由 UndoManager 同时回退 `view` 与 `cropRect`，此时不应再据旧 `view` 重算
+ * `cropRect`（会把已回退的 `cropRect` 覆盖掉）。因此 viewEffect 在 `editor.isUndoRedoing`
+ * 期间跳过补偿，仅对用户拖拽 / 改宽高比产生的 view 变化补偿。
  */
 type View = Record<'left' | 'top' | 'width' | 'height' | 'scaleX' | 'scaleY', number>
 const props = defineProps<{
@@ -156,8 +155,13 @@ function onTransformEnd() {
   snapGuides.value = {}
 }
 
+const editor = useEditor()
+
 // 外部view变化需要通过调整cropRect保持source视觉位置尺寸不变
 const viewEffect = watch(view, (val, old) => {
+  // 撤回/重做已同步回退了 cropRect，勿据旧 view 重算覆盖。
+  if (editor.isUndoRedoing?.value)
+    return
   if (!isEqual(val, old)) {
     const source = applyInverseMat(old)
     const left = (val.left - old.left - source.left) / source.width
