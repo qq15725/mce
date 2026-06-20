@@ -27,6 +27,7 @@ declare global {
 export default definePlugin((editor) => {
   const {
     root,
+    getNodeById,
     addElement,
     selection,
     exec,
@@ -43,15 +44,8 @@ export default definePlugin((editor) => {
   }
 
   function findById(id: string): Node | undefined {
-    let found: Node | undefined
-    root.value?.findOne((node: Node) => {
-      if (node.id === id) {
-        found = node
-        return true
-      }
-      return false
-    })
-    return found
+    // O(1)：走 SceneTree.nodeMap，替代原 root.findOne 的 O(n) 遍历。
+    return getNodeById(id)
   }
 
   function selectByIds(ids: string[]): void {

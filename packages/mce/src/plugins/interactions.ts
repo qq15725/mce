@@ -61,6 +61,7 @@ export function createInteractionId(): string {
 export default definePlugin((editor) => {
   const {
     root,
+    getNodeById,
     isElement,
     elementSelection,
     selection,
@@ -91,15 +92,8 @@ export default definePlugin((editor) => {
   function findById(id?: string): Node | undefined {
     if (!id)
       return undefined
-    let found: Node | undefined
-    root.value?.findOne((n: Node) => {
-      if (n.id === id) {
-        found = n
-        return true
-      }
-      return false
-    })
-    return found
+    // O(1)：走 SceneTree.nodeMap，替代原 root.findOne 的 O(n) 遍历。
+    return getNodeById(id)
   }
 
   function currentVariableValue(variableId: string): any {
