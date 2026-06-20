@@ -22,7 +22,20 @@
 2. 上层（Provider 或自定义传输）订阅 `update` 事件，把 `updateBytes` 发到对端。
 3. 对端调用 `Y.applyUpdate(doc, updateBytes, origin)` 应用增量，触发本地视图刷新。
 
-注意：**`origin` 用 `clientID` 区分本地/远端**，配合 `_isSelfTransaction` 判断当前回调来源，避免回环。
+注意：**事务 `origin` 区分变更来源**，配合 `_isSelfTransaction` 判断当前回调来源，避免回环。三类 origin：
+
+- `LOCAL_ORIGIN`：用户编辑。进 UndoManager，向对端广播。
+- `INTERNAL_ORIGIN`：把远端 / 撤销变更「回放到视图」时产生的内部写入（如 `_yChildrenChange` 初始化远端节点、`_proxyNode` 补 `parentId`、`_proxyProps` 对账 meta、`_proxyChildren` 重排）。**不进 UndoManager，也不广播**——源变更已由其 origin 端各自广播过，再发即回声。
+- Provider 实例：远端 apply 进来的增量（`Y.applyUpdate(doc, update, provider)`）。observe 据此跳过回写，Provider 据 `origin === this` 跳过再广播。
+
+**广播规则**（`AbstractProvider._onUpdate`）：`origin === this`（远端回来的）或 `origin === INTERNAL_ORIGIN`（视图回放）一律不广播；其余（`LOCAL_ORIGIN` 用户编辑、UndoManager 的撤销/重做）照常广播。
+
+> ⚠️ **核心不变量：远端 apply / 内部回放路径绝不能产生 yjs 结构。** 这比「包进 `INTERNAL_ORIGIN` 事务」更强：
+>
+> 1. 裸写（`_transacting === undefined`）会按 `LOCAL` 处理被 Provider 当本地编辑回传——异步是回声，**同步传输直接无限递归栈溢出**。
+> 2. **即便包成 `INTERNAL`，`Y.Map.set` 仍生成真实结构、推进本端 clock，而 `INTERNAL` 不广播** → 本端 clock 领先对端 → 本端后续 `LOCAL` 编辑依赖对端永远收不到的 clock → 对端整段挂进 `store.pendingStructs` **同步永久卡死**（典型症状：同一 map 两端 yjs id 相同却键不同；全量 `applyUpdate` 能修复）。
+>
+> 所以回放路径的回写要用 `if (this._isSelfTransaction()) return` **直接跳过**（Y.Doc 里本就有正确值），只有本地真实变更才写并广播；嵌套 map（style/meta/...）只在缺失时创建，已存在就复用、绝不 `yNode.set` 替换。回归测试见 `providers/AbstractProvider.test.ts`「对端在整合新建节点后继续编辑」用例（断言 `pendingStructs` 为空）。
 
 ## 撤销 / 重做
 
@@ -56,13 +69,20 @@ crdt/
 ├── YDoc.ts                                # 主类：Y.Doc 包装 + UndoManager + 事件
 ├── index.ts                               # 仅 re-export YDoc
 └── providers/
+    ├── AbstractProvider.ts                # 可插拔传输层基类：sync / awareness 协议编解码
     ├── index.ts
-    └── indexeddb/
-        ├── IndexeddbProvider.ts           # Y.Doc ↔ IndexedDB 同步
-        ├── indexeddb.ts                   # IndexedDB 底层封装
+    ├── indexeddb/
+    │   ├── IndexeddbProvider.ts           # Y.Doc ↔ IndexedDB 同步
+    │   ├── indexeddb.ts                   # IndexedDB 底层封装
+    │   └── index.ts
+    └── websocket/
+        ├── WebsocketProvider.ts           # WebSocket 传输（y-websocket 兼容，指数退避重连）
         └── index.ts
 ```
 
+会话接入与在场感知在应用层插件：`plugins/collaboration.ts`（Provider 生命周期、连接 / 同步状态）、`plugins/presence.ts`（awareness：本端 user/光标/选区广播 + 远端 `peers` + `Presence.vue` 渲染）。
+
 ## 测试
 
-> ⚠️ 目前 CRDT 模块**无单元测试**。多人协作回归在客户现场最难复现——建议优先补 `YDoc` 的 children 增删 / move 操作的同步测试（两个 YDoc 互相 applyUpdate 验证最终一致性）。见根 `docs/roadmap.md` P0.1。
+- `YDoc.test.ts`：两端最终一致性（增 / 嵌套 / 重排 / 删）、并发收敛、mergeUpdates 无丢失、undo 来源隔离、全量快照恢复。
+- `providers/AbstractProvider.test.ts`：内存链路对端互联，覆盖握手 synced、结构增量单向同步（验证远端回放不回环）、undo 经 provider 传播、awareness setLocalStateField / change 事件 / 离场清除。

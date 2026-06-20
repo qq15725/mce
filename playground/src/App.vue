@@ -9,6 +9,7 @@ import psd from '@mce/psd'
 import svg from '@mce/svg'
 import { Editor, EditorLayers, EditorLayout, EditorLayoutItem } from 'mce'
 import { computed } from 'vue'
+import { BroadcastChannelProvider } from './collab'
 import { loadAnimationDemo, loadChartDemo, loadConnectionDemo, loadFillStrokeDemo, loadGifDemo, loadImageEffectsDemo, loadInteractionDemo, loadLayoutDemo, loadShapesDemo, loadSmartGuidesDemo, loadTableDemo, loadTextDemo, loadVideoDemo } from './demos'
 import 'mce/styles'
 
@@ -103,6 +104,50 @@ else if (demo === 'chart') {
   loadChartDemo(editor)
 }
 
+// 协同演示：用 BroadcastChannel 在同浏览器多标签间同步（零服务端）。
+// 既可带 ?room=xxx 自动加入，也可点 demobar 上的「开启协同 / 新标签加入」按钮。
+function currentRoom(): string {
+  return new URL(window.location.href).searchParams.get('room')
+    || `room-${Math.floor(Math.random() * 100000)}`
+}
+
+function connectRoom(room: string): void {
+  // 同步到 URL，方便复制链接 / 开新标签携带同一房间。
+  const u = new URL(window.location.href)
+  u.searchParams.set('room', room)
+  window.history.replaceState(null, '', u)
+  editor.collaboration.connect({
+    provider: doc => new BroadcastChannelProvider(doc, room),
+  })
+  editor.presence.setUser({ name: `User-${Math.floor(Math.random() * 1000)}` })
+}
+
+function toggleCollab(): void {
+  if (editor.collaboration.active.value) {
+    editor.collaboration.disconnect()
+  }
+  else {
+    connectRoom(currentRoom())
+  }
+}
+
+// 开一个新标签页加入同一房间（先确保当前标签已入会，新标签不带 demo、纯接收同步）。
+function openCollabTab(): void {
+  const room = currentRoom()
+  if (!editor.collaboration.active.value) {
+    connectRoom(room)
+  }
+  const u = new URL(window.location.href)
+  u.searchParams.set('room', room)
+  u.searchParams.delete('demo')
+  window.open(u.toString(), '_blank')
+}
+
+const room = searchParams.get('room')
+if (room) {
+  connectRoom(room)
+}
+
 const element = computed(() => editor.elementSelection.value[0])
 </script>
 
@@ -149,6 +194,16 @@ const element = computed(() => editor.elementSelection.value[0])
 
       <template #drawboard>
         <div class="bar demobar">
+          <button
+            :style="{ color: editor.collaboration.active.value ? '#0CA678' : undefined, fontWeight: 'bold' }"
+            @click="toggleCollab"
+          >
+            {{ editor.collaboration.active.value ? '断开协同' : '开启协同' }}
+          </button>
+          <button :style="{ fontWeight: 'bold' }" @click="openCollabTab">
+            新标签加入
+          </button>
+          <span style="width: 1px; align-self: stretch; background: rgba(0,0,0,.15)" />
           <button @click="() => loadConnectionDemo(editor)">
             连线示例
           </button>
@@ -192,6 +247,7 @@ const element = computed(() => editor.elementSelection.value[0])
       </template>
 
       <EditorLayoutItem
+        name="sidebar"
         position="left"
         :size="200"
       >

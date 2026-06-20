@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { useEditor } from '../composables/editor'
+import CollaborationStatus from './CollaborationStatus.vue'
 import { Icon } from './icon'
 import ProgressIndicator from './shared/ProgressIndicator.vue'
 
@@ -111,6 +112,8 @@ const {
         :label="t('exporting')"
       />
     </div>
+
+    <CollaborationStatus />
   </div>
 </template>
 

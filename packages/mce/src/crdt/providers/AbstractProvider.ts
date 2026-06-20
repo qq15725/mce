@@ -5,6 +5,7 @@ import * as encoding from 'lib0/encoding'
 import { Observable } from 'modern-idoc'
 import * as awarenessProtocol from 'y-protocols/awareness'
 import * as syncProtocol from 'y-protocols/sync'
+import { INTERNAL_ORIGIN } from '../YDoc'
 
 /**
  * 顶层消息类型。一个消息 = [messageType: varUint, payload...]，房间名由传输层在 URL 等处携带。
@@ -36,6 +37,8 @@ export abstract class AbstractProvider<
 > extends Observable<Events> {
   readonly awareness: awarenessProtocol.Awareness
   synced = false
+  /** 传输层连接状态。随 onOpen / onClose 翻转，供晚挂监听的上层补读初值。 */
+  connected = false
 
   protected _ydoc: YDoc
   protected _doc: YDoc['_yDoc']
@@ -52,8 +55,12 @@ export abstract class AbstractProvider<
     this.awareness = new awarenessProtocol.Awareness(this._doc)
 
     this._onUpdate = (update, origin) => {
-      // 远端 apply 进来的（origin === this）不要再广播，避免回环。
-      if (origin === this) {
+      // 不广播两类更新，避免回环 / 回声：
+      // - origin === this：远端 apply 进来的（已是对端发来的状态）。
+      // - INTERNAL_ORIGIN：把远端 / 撤销变更回放到视图时产生的内部写入（如 _proxyNode 补 parentId、
+      //   _proxyChildren 重排）——这些是本地视图同步，对端已各自广播过源变更，再发即回声。
+      //   注：LOCAL_ORIGIN（用户编辑）与 UndoManager origin（撤销/重做）不在此列，照常广播。
+      if (origin === this || origin === INTERNAL_ORIGIN) {
         return
       }
       const encoder = encoding.createEncoder()
@@ -82,6 +89,21 @@ export abstract class AbstractProvider<
   /** 子类实现：把字节发往对端。连接未就绪时应自行缓冲或丢弃（同步协议可在重连后重放）。 */
   protected abstract send(data: Uint8Array): void
 
+  /**
+   * 把本端全量状态作为一条 sync update 主动推给对端。
+   *
+   * 用于**无中心服务端的 P2P 传输**（如 BroadcastChannel / WebRTC）：step1/step2 握手只能让
+   * 「发起方」拉到对端缺失的内容，无法让已在场的对端获得本端新内容。当本端在会话中途换上一份
+   * 新内容（如 setDoc 后 provider 重建）时，调用此方法把内容推过去，对端 applyUpdate 即合并。
+   * 有服务端的传输（WebSocket）由服务端持久化 + 转发，通常不需要。
+   */
+  protected broadcastState(): void {
+    const encoder = encoding.createEncoder()
+    encoding.writeVarUint(encoder, MESSAGE_SYNC)
+    syncProtocol.writeUpdate(encoder, this._ydoc.encodeStateAsUpdate())
+    this.send(encoding.toUint8Array(encoder))
+  }
+
   /** 连接（重新）建立后由子类调用：发起 sync step1 并广播本端 awareness。 */
   protected onOpen(): void {
     const encoder = encoding.createEncoder()
@@ -92,6 +114,7 @@ export abstract class AbstractProvider<
     if (this.awareness.getLocalState() !== null) {
       this.send(this._encodeAwareness([this._doc.clientID]))
     }
+    this.connected = true
     this.emit('status', { connected: true } as any)
   }
 
@@ -103,6 +126,7 @@ export abstract class AbstractProvider<
       Array.from(this.awareness.getStates().keys()).filter(id => id !== this._doc.clientID),
       this,
     )
+    this.connected = false
     this.emit('status', { connected: false } as any)
   }
 

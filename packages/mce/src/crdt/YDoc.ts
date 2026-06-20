@@ -156,21 +156,26 @@ export class YDoc extends Observable {
 
     const { keysChanged, changes } = event
 
-    keysChanged.forEach((id) => {
-      const change = changes.keys.get(id)
-      const yNode = this._yChildren.get(id)
-      switch (change?.action) {
-        case 'add':
-          if (yNode) {
-            this._initYNode(yNode)
-            this._debug('[yChildren][add]', id)
-          }
-          break
-        case 'delete':
-          this._debug('[yChildren][delete]', id)
-          break
-      }
-    })
+    // 包进 INTERNAL 事务（与 _proxyChildren 的 observeFn 同模式）：远端 apply 驱动的节点初始化
+    // 会经 accessor / _proxyProps 把 CRDT 值「对账」回写——这些是本地视图同步，必须走 INTERNAL，
+    // 否则 _transacting 为 undefined 时各处守卫失效、写入按 LOCAL 处理而被 provider 回环广播。
+    this.transact(() => {
+      keysChanged.forEach((id) => {
+        const change = changes.keys.get(id)
+        const yNode = this._yChildren.get(id)
+        switch (change?.action) {
+          case 'add':
+            if (yNode) {
+              this._initYNode(yNode)
+              this._debug('[yChildren][add]', id)
+            }
+            break
+          case 'delete':
+            this._debug('[yChildren][delete]', id)
+            break
+        }
+      })
+    }, false)
   }
 
   reset(): this {
@@ -475,10 +480,19 @@ export class YDoc extends Observable {
       this._nodeMap.set(id, node)
       this._flushPendingInserts(id)
 
-      yNode.set('parentId', node.parent?.id)
-      node.on('parented', () => {
-        yNode.set('parentId', node.parent?.id)
-      })
+      // parentId 是结构的次要镜像（主结构由 childrenIds 承载），对端可自行推导。
+      // 关键不变量：远端 apply / 内部回放（INTERNAL）路径**绝不能**写 Y.Doc —— 这类写入虽是冗余
+      // 回写（yNode 已带正确 parentId），却仍生成真实 yjs 结构、推进本端 clock，而 INTERNAL 又不广播，
+      // 于是本端 clock 领先对端、后续 LOCAL 编辑依赖对端永远收不到的 clock → 对端整段挂起(pendingStructs)
+      // 同步卡死。故此处与 accessor.setProperty 一样用 _isSelfTransaction 守卫：仅本地真实变更才写并广播。
+      const syncParentId = (): void => {
+        if (this._isSelfTransaction()) {
+          return
+        }
+        this.transact(() => yNode.set('parentId', node.parent?.id))
+      }
+      syncParentId()
+      node.on('parented', syncParentId)
 
       this._proxyProps(node, yNode)
 
