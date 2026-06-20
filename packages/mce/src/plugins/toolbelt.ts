@@ -10,6 +10,8 @@ declare global {
 
     interface ToolbeltConfig {
       visible: boolean
+      /** 浮动停靠方向：上 / 下 / 左 / 右。左右为竖向排列。默认 bottom。 */
+      placement?: 'top' | 'bottom' | 'left' | 'right'
     }
   }
 }
@@ -22,6 +24,7 @@ export default definePlugin((editor) => {
   const config = registerConfig<Mce.ToolbeltConfig>('ui.toolbelt', {
     default: {
       visible: true,
+      placement: 'bottom',
     },
   })
 

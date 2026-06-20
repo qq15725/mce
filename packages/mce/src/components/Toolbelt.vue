@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onScopeDispose, ref } from 'vue'
 import { useEditor } from '../composables/editor'
 import { Icon } from './icon'
 import Btn from './shared/Btn.vue'
@@ -13,7 +13,81 @@ const {
   activeTool,
   hotkeys,
   getKbd,
+  getConfigRef,
+  drawboardPointer,
+  drawboardAabb,
 } = useEditor()
+
+const config = getConfigRef<Mce.ToolbeltConfig>('ui.toolbelt')
+const placement = computed(() => config.value?.placement ?? 'bottom')
+
+// —— 拖拽吸附：拖手柄时工具栏跟随指针，松手按指针距画板四边最近边吸附 ——
+const dragging = ref(false)
+
+const dragStyle = computed(() => {
+  const p = drawboardPointer.value
+  if (!dragging.value || !p) {
+    return undefined
+  }
+  // drawboardPointer 已是相对画板容器坐标，工具栏也绝对定位于该容器，故直接用。
+  return {
+    left: `${p.x}px`,
+    top: `${p.y}px`,
+    right: 'auto',
+    bottom: 'auto',
+    transform: 'translate(-50%, -50%)',
+  }
+})
+
+function nearestPlacement(): Mce.ToolbeltConfig['placement'] {
+  const p = drawboardPointer.value
+  const ab = drawboardAabb.value
+  if (!p || !ab) {
+    return placement.value
+  }
+  const dists = {
+    top: p.y,
+    bottom: ab.height - p.y,
+    left: p.x,
+    right: ab.width - p.x,
+  } as const
+  return (Object.keys(dists) as (keyof typeof dists)[])
+    .reduce((a, b) => (dists[b] < dists[a] ? b : a))
+}
+
+function onDragEnd(): void {
+  window.removeEventListener('mouseup', onDragEnd)
+  if (!dragging.value) {
+    return
+  }
+  dragging.value = false
+  config.value = { ...config.value, placement: nearestPlacement() }
+}
+
+function onGripDown(e: MouseEvent): void {
+  if (e.button !== 0) {
+    return
+  }
+  e.preventDefault()
+  dragging.value = true
+  window.addEventListener('mouseup', onDragEnd)
+}
+
+onScopeDispose(() => window.removeEventListener('mouseup', onDragEnd))
+
+// tooltip / 子菜单弹出方向随停靠方向背向工具栏，避免被画布边缘遮挡。
+const tooltipLocation = computed(() => (({
+  bottom: 'top',
+  top: 'bottom',
+  left: 'right',
+  right: 'left',
+} as const)[placement.value]))
+const menuLocation = computed(() => (({
+  bottom: 'top-start',
+  top: 'bottom-start',
+  left: 'right-start',
+  right: 'left-start',
+} as const)[placement.value]))
 
 const activeShape = ref(0)
 const activePen = ref(0)
@@ -116,13 +190,34 @@ const items = computed(() => {
 </script>
 
 <template>
-  <div class="m-toolbelt">
+  <div
+    class="m-toolbelt"
+    :class="[`m-toolbelt--${placement}`, { 'm-toolbelt--dragging': dragging }]"
+    :style="dragStyle"
+  >
+    <div
+      class="m-toolbelt__grip"
+      title="拖动以停靠"
+      @mousedown="onGripDown"
+    >
+      <svg width="10" height="16" viewBox="0 0 10 16" aria-hidden="true">
+        <g fill="currentColor">
+          <circle cx="3" cy="4" r="1.1" />
+          <circle cx="7" cy="4" r="1.1" />
+          <circle cx="3" cy="8" r="1.1" />
+          <circle cx="7" cy="8" r="1.1" />
+          <circle cx="3" cy="12" r="1.1" />
+          <circle cx="7" cy="12" r="1.1" />
+        </g>
+      </svg>
+    </div>
+
     <template
       v-for="(tool, key) in items" :key="key"
     >
       <div class="m-toolbelt__group">
         <Tooltip
-          location="top"
+          :location="tooltipLocation"
           :offset="12"
           show-arrow
         >
@@ -156,7 +251,7 @@ const items = computed(() => {
           <Menu
             :items="tool.children"
             :offset="12"
-            location="top-start"
+            :location="menuLocation"
           >
             <template #activator="{ props }">
               <Btn icon class="m-toolbelt__arrow" v-bind="props">
@@ -191,18 +286,74 @@ const items = computed(() => {
   .m-toolbelt {
     pointer-events: auto !important;
     position: absolute;
-    left: 50%;
-    bottom: 18px;
-    transform: translateX(-50%);
     display: flex;
     align-items: center;
-    gap: 12px;
-    box-shadow: var(--m-shadow);
+    gap: 2px;
+    padding: 6px;
+    // Figma 风格：偏暗的拟态浮层、圆角更大、阴影更柔、带细描边。
     background: rgb(var(--m-theme-surface));
-    padding: 8px;
-    border-radius: 12px;
-    height: 48px;
+    border: 1px solid rgba(var(--m-theme-on-surface), .08);
+    border-radius: 14px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, .16), 0 1px 3px rgba(0, 0, 0, .08);
     cursor: default;
+
+    // —— 横向（上 / 下）——
+    &--bottom,
+    &--top {
+      flex-direction: row;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    &--bottom {
+      bottom: 18px;
+    }
+
+    &--top {
+      top: 18px;
+    }
+
+    // —— 竖向（左 / 右）——
+    &--left,
+    &--right {
+      flex-direction: column;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    &--left {
+      left: 18px;
+    }
+
+    &--right {
+      right: 18px;
+    }
+
+    &--dragging {
+      cursor: grabbing;
+      opacity: .92;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, .24);
+      user-select: none;
+    }
+
+    &__grip {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(var(--m-theme-on-surface), .35);
+      cursor: grab;
+      flex-shrink: 0;
+
+      &:hover {
+        color: rgba(var(--m-theme-on-surface), .6);
+      }
+    }
+
+    // 竖向时手柄横置（点阵转 90°），并与按钮列对齐。
+    &--left &__grip,
+    &--right &__grip {
+      transform: rotate(90deg);
+    }
 
     &__kbd {
       font-size: 0.75rem;
@@ -215,13 +366,13 @@ const items = computed(() => {
     &__group {
       display: flex;
       align-items: center;
-      height: 100%;
     }
 
     &__btn {
-      font-size: 24px;
-      width: 100%;
-      height: 100%;
+      font-size: 20px;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
     }
 
     &__icon {
@@ -229,10 +380,11 @@ const items = computed(() => {
     }
 
     &__arrow {
-      width: 16px;
-      height: 100%;
-      font-size: 0.75rem;
-      border-radius: 4px;
+      width: 14px;
+      height: 32px;
+      font-size: 0.625rem;
+      border-radius: 6px;
+      opacity: .5;
     }
   }
 </style>
