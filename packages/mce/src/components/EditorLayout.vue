@@ -350,7 +350,9 @@ function onEnginePointerDown(
       _element = undefined
     }
 
-    if (_element && (downEvent?.ctrlKey || downEvent?.shiftKey || downEvent?.metaKey)) {
+    // Figma 修饰键分工：Shift = 加 / 减选；Cmd/Ctrl 仅用于深选（在 activeStrategy 里解析最深元素），
+    // 不参与多选。故此处只有 Shift 切换增减，Cmd/Ctrl 落到单选（即"深选单个元素"）。
+    if (_element && downEvent?.shiftKey) {
       if (elementSelection.value.findIndex(v => v.equal(_element)) > -1) {
         selected = elementSelection.value.filter(v => !v.equal(_element))
       }
@@ -452,7 +454,10 @@ function onEnginePointerDown(
             onActivate()
           }
 
-          elementSelection.value = selected
+          // Shift+点击空白处保留当前选区（Figma）；普通点击空白才清空。
+          if (element || selecting || !downEvent?.shiftKey) {
+            elementSelection.value = selected
+          }
 
           if (ctxState) {
             if (selected[0] && !isLock(selected[0])) {

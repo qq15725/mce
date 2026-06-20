@@ -66,7 +66,7 @@ function redirectTableCell(
 }
 
 export const defaultActiveStrategy: ActiveStrategy = (context) => {
-  const { element, editor } = context
+  const { element, event, editor } = context
 
   if (!element) {
     return undefined
@@ -78,6 +78,12 @@ export const defaultActiveStrategy: ActiveStrategy = (context) => {
     isElement,
     elementSelection,
   } = editor
+
+  // Cmd/Ctrl 深选（Figma）：直接命中光标下最深元素，跳过组 / 帧的逐层归并。
+  // 表格单元格仍重定向到表格本身（单元格永不可单独选中）。
+  if (event?.metaKey || event?.ctrlKey) {
+    return redirectTableCell(element, isElement)
+  }
 
   const activeElement = elementSelection.value[0]
 
@@ -106,7 +112,7 @@ export const defaultDoubleclickStrategy: DoubleclickStrategy = (context) => {
 }
 
 export const defaultHoverStrategy: HoverStrategy = (context) => {
-  const { element, editor } = context
+  const { element, event, editor } = context
 
   if (!element) {
     return undefined
@@ -118,6 +124,11 @@ export const defaultHoverStrategy: HoverStrategy = (context) => {
     isElement,
     elementSelection,
   } = editor
+
+  // Cmd/Ctrl 深选高亮：与点击一致，悬停时高亮光标下最深元素。
+  if (event?.metaKey || event?.ctrlKey) {
+    return redirectTableCell(element, isElement)
+  }
 
   const activeElement = elementSelection.value[0]
 
