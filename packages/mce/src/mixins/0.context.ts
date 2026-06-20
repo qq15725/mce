@@ -60,6 +60,8 @@ declare global {
       getGlobalPointer: () => Vector2Like
       parseAnchor: (anchor: Anchor, isRtl?: boolean) => ParsedAnchor
       isNode: (value: any) => value is Node
+      /** 按 id 取节点：走 SceneTree 的 nodeMap（随 nodeEnter/nodeExit 增量维护），O(1) 且始终最新。 */
+      getNodeById: (id: string) => Node | undefined
       isRootNode: (node: Node) => boolean
       isFrameNode: (node: Node, isTop?: boolean) => boolean
       inEditorIs: (node: Node, inEditorIs?: EditorNodeType) => boolean
@@ -141,6 +143,13 @@ export default defineMixin((editor, options) => {
   function getGlobalPointer(): Vector2Like {
     const { x = 0, y = 0 } = drawboardPointer.value ?? {}
     return camera.value.toGlobal({ x, y }, { x: 0, y: 0 })
+  }
+
+  // Engine 继承自 SceneTree，nodeMap 随 nodeEnter/nodeExit 实时增删，是权威的 id→node 索引。
+  // 优于 root.findOne（O(n) 遍历）与 nodeIndexMap（仅 docSet 整树重建、且监听器挂载前的首次
+  // docSet 会被漏掉 → 可能为空；它本职是 Layer 的 z-order 序号映射，不适合做节点查找）。
+  function getNodeById(id: string): Node | undefined {
+    return renderEngine.value.getNodeById(id)
   }
 
   const block = ['top', 'bottom']
@@ -237,6 +246,7 @@ export default defineMixin((editor, options) => {
     getGlobalPointer,
     parseAnchor,
     isNode,
+    getNodeById,
     isRootNode,
     isElement,
     inEditorIs,

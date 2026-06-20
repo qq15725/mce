@@ -5,7 +5,7 @@ import { useEditor } from '../composables/editor'
 const {
   presence,
   camera,
-  root,
+  getNodeById,
   getObb,
 } = useEditor()
 
@@ -16,19 +16,6 @@ function toDrawboard(p: { x: number, y: number }): { x: number, y: number } {
     x: p.x * zoom.x - position.x,
     y: p.y * zoom.y - position.y,
   }
-}
-
-function getNode(id: string) {
-  // 用 findOne 而非 nodeIndexMap：后者依赖 docSet 时机填充，某些状态下为空；findOne 始终可靠。
-  let found: any
-  root.value.findOne((n) => {
-    if (n.id === id) {
-      found = n
-      return true
-    }
-    return false
-  })
-  return found
 }
 
 const cursors = computed(() => {
@@ -54,7 +41,7 @@ const selections = computed(() => {
     // 名字标签只挂在该 peer 的第一个选框上，多选时不刷屏。
     let labeled = false
     peer.selection?.forEach((id) => {
-      const node = getNode(id)
+      const node = getNodeById(id)
       if (!node) {
         return
       }
