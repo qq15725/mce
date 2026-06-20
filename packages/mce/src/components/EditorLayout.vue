@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import type { Cursor, Element2D, PointerInputEvent } from 'modern-canvas'
-import type { EditorComponent, Slots } from '../editor'
+import type { Slots } from '../editor'
 import { useResizeObserver } from '@vueuse/core'
 import { Aabb2D } from 'modern-canvas'
 import {
   computed,
-  h,
   nextTick,
   onBeforeMount,
   onBeforeUnmount,
@@ -19,10 +18,9 @@ import { createIcons, IconsSymbol } from '../composables/icons'
 import { provideOverlay } from '../composables/overlay'
 import { makeMceStrategyProps } from '../composables/strategy'
 import { Editor } from '../editor'
+import EditorPanels from './EditorPanels.vue'
 import Floatbar from './Floatbar.vue'
-import FloatPanel from './shared/FloatPanel.vue'
 import Layout from './shared/Layout.vue'
-import LayoutItem from './shared/LayoutItem.vue'
 import Main from './shared/Main.vue'
 
 const props = defineProps({
@@ -54,7 +52,6 @@ editor.setup()
 provide(IconsSymbol, createIcons())
 
 const {
-  sortedComponents,
   componentRefs,
   isElement,
   isFrameNode,
@@ -71,7 +68,6 @@ const {
   selectionMarquee,
   elementSelection,
   drawboardAabb,
-  screenCenterOffset,
   activeTool,
 } = editor
 
@@ -146,6 +142,12 @@ function bindRenderCanvas(canvas: HTMLCanvasElement, eventTarget?: HTMLElement) 
 }
 
 function onEnginePointerHover(event: PointerInputEvent) {
+  // 预览模式：不显示编辑态 hover 高亮（交互由 interactions 插件处理）。
+  if (editor.previewMode?.value) {
+    hoverElement.value = undefined
+    setCursor(undefined)
+    return
+  }
   let cursor: Cursor | undefined
   let hovered: Element2D | undefined
   if (
@@ -194,6 +196,9 @@ function onEnginePointerDown(
   downEvent: PointerInputEvent,
   options: Mce.PointerDownOptions = {},
 ): void {
+  // 预览模式：禁用选择 / 拖拽，点击交给 interactions 插件触发交互。
+  if (editor.previewMode?.value)
+    return
   const {
     srcElement,
     button,
@@ -534,32 +539,6 @@ function onScroll() {
   }
 }
 
-function setComponentRef(ref: any, item: EditorComponent) {
-  if (!componentRefs[item.plugin]) {
-    componentRefs[item.plugin] = []
-  }
-  componentRefs[item.plugin][item.indexInPlugin] = ref
-}
-
-function RenderComponent(props: Record<string, any> & { item: EditorComponent }) {
-  const { item, ...resetProps } = props
-  const itemSlots: Record<string, any> = {}
-  if (item.slot) {
-    Object.keys(slots).forEach((key) => {
-      if (key === item.slot) {
-        itemSlots.default = (slots as any)[key]
-      }
-      else if (key.startsWith(`${item.slot}.`)) {
-        itemSlots[key.substring(`${item.slot}.`.length)] = (slots as any)[key]
-      }
-    })
-  }
-  return h(item.component, {
-    ...resetProps,
-    ref: (v: any) => setComponentRef(v, item),
-  }, itemSlots)
-}
-
 const slotProps = {
   editor,
 }
@@ -614,67 +593,41 @@ const slotProps = {
 
     <slot v-bind="slotProps" />
 
-    <template
-      v-for="(item, key) in sortedComponents"
-      :key="key"
-    >
-      <template v-if="item.type === 'overlay'">
-        <Teleport
-          v-if="drawboardDom && item.visible.value"
-          :to="drawboardDom"
-        >
-          <RenderComponent
-            :item="item"
-          />
-        </Teleport>
-      </template>
-
-      <template v-else-if="item.type === 'panel'">
-        <template
-          v-if="item.position === 'float'"
-        >
-          <FloatPanel
-            v-if="drawboardAabb.height && item.visible.value"
-            v-model="item.visible.value"
-            :title="t(item.name)"
-            :default-transform="{
-              width: item.size || 240,
-              height: drawboardAabb.height * .7,
-              left: drawboardAabb.left + (screenCenterOffset.left + 24),
-              top: drawboardAabb.top + (screenCenterOffset.top + 24),
-            }"
-          >
-            <template #default="{ isActive }">
-              <RenderComponent
-                v-model:is-active="isActive.value"
-                :item="item"
-              />
-            </template>
-          </FloatPanel>
-        </template>
-
-        <template v-else>
-          <LayoutItem
-            v-if="item.visible.value"
-            v-model="item.visible.value"
-            :position="item.position as any"
-            :size="item.size || 200"
-            :order="item.order || 0"
-          >
-            <RenderComponent :item="item" />
-          </LayoutItem>
-        </template>
-      </template>
-    </template>
+    <EditorPanels :slots="slots" />
 
     <div
       ref="overlayContainerTpl"
       class="m-overlay-container"
     />
+
+    <button
+      v-if="editor.previewMode?.value"
+      class="m-editor__preview-badge"
+      type="button"
+      @click="exec('togglePreview')"
+    >
+      {{ t('previewExitHint') }}
+    </button>
   </Layout>
 </template>
 
 <style lang="scss">
+.m-editor__preview-badge {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2000;
+  padding: 6px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(20, 20, 20, 0.82);
+  color: #fff;
+  font-size: 0.75rem;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+}
+
 .m-editor {
   --m-theme-primary: 69, 151, 248;
   --m-theme-on-primary: 255, 255, 255;
@@ -695,6 +648,7 @@ const slotProps = {
   --m-activated-opacity: 0.06;
   --m-shadow: 0 8px 32px 2px rgba(0, 0, 0, 0.08), 0 0 1px rgba(0, 0, 0, 0.2);
   --m-blur: 8px;
+  --m-panel-width: 260px;
 
   position: relative;
   width: 100%;

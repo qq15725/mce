@@ -230,6 +230,9 @@ export class Editor extends Observable<Events> {
             visible = ref(true)
             break
           case 'panel':
+            // 显隐统一桥接到 config（ui.panels.<name>.visible），与浮动面板位置同源、可持久化。
+            visible = this.panels.visibleRef(c.name)
+            break
           default:
             visible = ref(false)
             break

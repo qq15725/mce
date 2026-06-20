@@ -20,6 +20,7 @@ import _exporter from './exporter'
 import _hotkey from './hotkey'
 import _http from './http'
 import _loader from './loader'
+import _panels from './panels'
 import _snapper from './snapper'
 import _snapshot from './snapshot'
 import _strategy from './strategy'
@@ -44,6 +45,7 @@ export const mixins = [
   _hotkey,
   _http,
   _loader,
+  _panels,
   _snapper,
   _snapshot,
   _strategy,

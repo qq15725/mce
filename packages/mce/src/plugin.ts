@@ -30,6 +30,18 @@ export type PluginComponent
     | PluginDialogComponent
     | PluginPanelComponent
 
+export function isPanelComponent<T extends { type?: string }>(c: T): c is T & PluginPanelComponent {
+  return c.type === 'panel'
+}
+
+export function isOverlayComponent<T extends { type?: string }>(c: T): c is T & PluginOverlayComponent {
+  return c.type === 'overlay'
+}
+
+export function isDialogComponent<T extends { type?: string }>(c: T): c is T & PluginDialogComponent {
+  return c.type === 'dialog'
+}
+
 export interface PluginObject {
   name: string
   ignore?: () => boolean
