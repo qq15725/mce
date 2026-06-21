@@ -54,7 +54,7 @@ packages/
   html/       # HTML 导入 loader 插件（@mce/html）
   workflow/   # 节点图模式插件（@mce/workflow，含 Workflow 组件）
   collaboration/ # 实时协同插件（@mce/collaboration：传输 provider + 在场感知；CRDT 文档模型 YDoc 仍在核心）
-  comments/   # Figma 式评论插件（@mce/comments：画布 / 元素锚定 pin + 线程弹窗；评论存 Y.Doc 独立顶层 Map，不进元素树/导出/undo）
+  comments/   # 评论插件（@mce/comments：评论工具 + 锚定元素的 pin + 线程弹窗；评论存 element.comments，随元素移动/复制，经 CRDT 逐线程同步）
 playground/   # 演示与测试应用
 ```
 
@@ -66,6 +66,7 @@ playground/   # 演示与测试应用
 - `registerEnterHandler`（双击/Enter 进入编辑）
 - `registerEditingState` + `isContentEditing`（内容编辑态下隐藏选择框/浮动条、抑制快捷键）
 - `registerToolbeltShapeItem`（向工具栏形状菜单追加工具）
+- `registerToolbeltItem`（向工具腰带追加一级工具按钮，如 @mce/comments 的评论工具）
 - `registerIcon`（随插件携带图标，合并进图标集）
 - `registerMode`（注册编辑模式，如 workflow；`Mode` 类型为 `'canvas' | (string & {})`）
 - `registerStatusbarItem`（向状态栏追加组件，如协同状态/在场头像）

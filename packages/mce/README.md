@@ -47,6 +47,7 @@
 **Collaboration & history**
 - CRDT document model ([Yjs](https://github.com/yjs/yjs)) in the core — undo / redo and offline persistence (IndexedDB) build on it
 - Real-time multi-user editing + awareness (remote cursors / selection / avatars) via `@mce/collaboration` (WebSocket / pluggable transport)
+- Comments anchored to elements (pins follow on move / scale / rotate, threads with replies & resolve) via `@mce/comments`
 
 **Design systems**
 - Components / symbols / instances with per-instance overrides and master propagation
@@ -93,6 +94,7 @@ Specialized features also ship as optional packages, registered the same way (`p
 | `@mce/ai` | Typed AI canvas action schema (`applyAiActions`) |
 | `@mce/workflow` | Node-graph editing mode |
 | `@mce/collaboration` | Real-time collaboration: transport providers + presence (cursors / selection / avatars) |
+| `@mce/comments` | Comments: comment tool + pins anchored to elements + threads (stored on `element.comments`) |
 
 ## 📦 Install
 
@@ -109,6 +111,7 @@ npm i mce
   import ai from '@mce/ai'
   import chart from '@mce/chart'
   import collaboration from '@mce/collaboration'
+  import comments from '@mce/comments'
   import gif from '@mce/gif'
   import mp4 from '@mce/mp4'
   import openxml from '@mce/openxml'
@@ -131,6 +134,7 @@ npm i mce
       ai(),
       workflow(),
       collaboration(), // registers the collaboration + presence plugins
+      comments(),
     ],
     // @mce/gif bundles its encoding worker by default. To self-host it
     // (e.g. under a strict CSP), pass `gifWorkerUrl` explicitly:
@@ -289,6 +293,7 @@ packages/
   ai/            # AI canvas actions  (@mce/ai)
   workflow/      # node-graph mode  (@mce/workflow)
   collaboration/ # real-time collaboration  (@mce/collaboration)
+  comments/      # comments  (@mce/comments)
 playground/      # demo & test app
 ```
 
