@@ -6,7 +6,6 @@ import _ai from './ai'
 import _animate from './animate'
 import _arrange from './arrange'
 import _autoNest from './autoNest'
-import _chart from './chart'
 import _clipboard from './clipboard'
 import _collaboration from './collaboration'
 import _components from './components'
@@ -39,7 +38,6 @@ import _smartGuides from './smartGuides'
 import _smartSelection from './smartSelection'
 import _state from './state'
 import _statusbar from './statusbar'
-import _table from './table'
 import _test from './test'
 import _timeline from './timeline'
 import _tool from './tool'
@@ -57,7 +55,6 @@ export const plugins = [
   _animate,
   _arrange,
   _autoNest,
-  _chart,
   _clipboard,
   _collaboration,
   _components,
@@ -90,7 +87,6 @@ export const plugins = [
   _smartSelection,
   _state,
   _statusbar,
-  _table,
   _test,
   _timeline,
   _tool,

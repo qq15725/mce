@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import bigesj, { options } from '@mce/bigesj'
+import chart from '@mce/chart'
 import gaoding from '@mce/gaoding'
 import gif from '@mce/gif'
 import mp4 from '@mce/mp4'
@@ -7,6 +8,7 @@ import openxml from '@mce/openxml'
 import pdf from '@mce/pdf'
 import psd from '@mce/psd'
 import svg from '@mce/svg'
+import table from '@mce/table'
 import { Editor, EditorLayers, EditorLayout, EditorLayoutItem } from 'mce'
 import { computed } from 'vue'
 import { BroadcastChannelProvider } from './collab'
@@ -47,6 +49,8 @@ const editor = new Editor({
     mp4(),
     gif(),
     psd(),
+    chart(),
+    table(),
   ],
 })
 

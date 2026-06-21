@@ -14,6 +14,7 @@
   },
   "devDependencies": {
     "@mce/bigesj": "workspace:*",
+    "@mce/chart": "workspace:*",
     "@mce/gaoding": "workspace:*",
     "@mce/gif": "workspace:*",
     "@mce/mp4": "workspace:*",

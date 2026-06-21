@@ -48,10 +48,18 @@ packages/
   openxml/    # PPTX 导出插件（@mce/openxml）
   gaoding/    # Gaoding 集成插件（@mce/gaoding）
   bigesj/     # Bigesj 集成插件（@mce/bigesj）
+  chart/      # 图表元素插件（@mce/chart）
+  table/      # 表格元素插件（@mce/table，含 TableEditor 组件）
 playground/   # 演示与测试应用
 ```
 
 所有插件以 `mce: ^0` 为 peer dependency。
+
+元素类型插件（chart/table）通过核心的扩展点解耦：`registerSelectionRedirect`
+（命中重定向，如单元格→表格）、`registerResizeOverride`（自定义缩放）、
+`registerEnterHandler`（双击/Enter 进入编辑）、`registerEditingState`+`isContentEditing`
+（内容编辑态下隐藏选择框/浮动条、抑制快捷键）、`registerToolbeltShapeItem`
+（向工具栏形状菜单追加工具）。见 `mixins/extensions.ts`。
 
 ### 核心层次（packages/mce/src/）
 

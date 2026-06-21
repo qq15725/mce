@@ -1,5 +1,6 @@
 import type { Editor } from 'mce'
-import { createChartElement, createTableElement } from 'mce'
+import { createChartElement } from '@mce/chart'
+import { createTableElement } from '@mce/table'
 import { Flexbox } from 'modern-canvas'
 
 // 通过 URL 参数加载时，时间轴插件的 immediate watcher 会在挂载后把 paused 重置为

@@ -1,9 +1,8 @@
-import type { Chart, ChartType, Element, Fill, Outline, ShapeConnectionPoint, TableCellObject } from 'modern-idoc'
+import type { Element, Fill, Outline, ShapeConnectionPoint } from 'modern-idoc'
 import type { Options } from 'modern-text'
 import { normalizeTextContent } from 'modern-idoc'
 import { measureText } from 'modern-text'
 import { getImageSizeFromUrl } from './image'
-import { CELL_BACKGROUND, CELL_BORDER_STYLE, defaultTextStyle } from './table'
 
 // A unit rectangle path; the shape is scaled to fill the element's box, so the
 // exact coordinates don't matter — only that it draws a full rectangle.
@@ -215,73 +214,5 @@ export function createStickyElement(content: string, options: CreateStickyElemen
       inPptIs: 'Shape',
       inCanvasIs: 'Element2D',
     },
-  }
-}
-
-export interface CreateTableElementOptions {
-  width?: number
-  height?: number
-}
-
-/** A grid table backed by the native `table` element property; first row is a header. */
-export function createTableElement(rows = 3, cols = 3, options: CreateTableElementOptions = {}): Element {
-  const { width = 360, height = 160 } = options
-  const colWidth = width / cols
-  const rowHeight = height / rows
-  const cells: TableCellObject[] = []
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      cells.push({
-        row: r,
-        col: c,
-        // White fill + a 1px border so the canvas renders a solid, lined table.
-        background: CELL_BACKGROUND,
-        style: { ...CELL_BORDER_STYLE },
-        children: [
-          {
-            // Sizing the child to the cell lets `verticalAlign` center the text.
-            style: { ...defaultTextStyle(r === 0), width: colWidth, height: rowHeight },
-            text: { content: normalizeTextContent(r === 0 ? `列 ${c + 1}` : '') },
-            meta: { inCanvasIs: 'Element2D' },
-          },
-        ],
-      })
-    }
-  }
-  return {
-    style: { width, height },
-    table: {
-      columns: Array.from({ length: cols }, () => ({ width: colWidth })),
-      rows: Array.from({ length: rows }, () => ({ height: rowHeight })),
-      cells,
-    },
-    meta: { inPptIs: 'Shape', inCanvasIs: 'Element2D', inEditorIs: 'Table' },
-  }
-}
-
-export interface CreateChartElementOptions {
-  width?: number
-  height?: number
-  categories?: string[]
-  series?: Chart['series']
-}
-
-/** A chart backed by the native `chart` element property (column/line/pie/…). */
-export function createChartElement(type: ChartType = 'column', options: CreateChartElementOptions = {}): Element {
-  const {
-    width = 360,
-    height = 240,
-    categories = ['一月', '二月', '三月', '四月', '五月'],
-    series = [{ name: '系列 1', values: [40, 70, 55, 90, 60] }],
-  } = options
-  return {
-    style: { width, height },
-    chart: {
-      type,
-      categories,
-      series,
-      legend: 'bottom',
-    },
-    meta: { inPptIs: 'Shape', inCanvasIs: 'Element2D', inEditorIs: 'Chart' },
   }
 }

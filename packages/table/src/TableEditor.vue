@@ -1,8 +1,10 @@
 <script lang="ts" setup>
 import type { Element2D } from 'modern-canvas'
-import type { CellPos, CellRange, TableModel, TableModelCell } from '../utils/table'
+import type { CellPos, CellRange, TableModel, TableModelCell } from './table'
+// TextEditor aliased so the binding name doesn't match the `<text-editor>` tag —
+// otherwise Vue resolves the tag to this class and tries to render it as a component.
+import { TextEditor as TextEditorElement, useEditor } from 'mce'
 import { computed, nextTick, onBeforeMount, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { useEditor } from '../composables/editor'
 import {
   cellRange,
   cloneTableModel,
@@ -23,10 +25,7 @@ import {
   rowTop,
   setCellText,
   splitCell,
-} from '../utils/table'
-// Aliased so the binding name doesn't match the `<text-editor>` tag — otherwise
-// Vue resolves the tag to this class and tries to render it as a component.
-import { TextEditor as TextEditorElement } from '../web-components'
+} from './table'
 
 const {
   elementSelection,
