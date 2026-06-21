@@ -1,4 +1,4 @@
-import type { Box } from '../src/utils/smartGuides-geometry'
+import type { Box } from '../src/utils/smartGuidesGeometry'
 import { describe, expect, it } from 'vitest'
 import {
   createLine,
@@ -6,7 +6,7 @@ import {
   flipType,
   isLeftTopLine,
   toBoundingBox,
-} from '../src/utils/smartGuides-geometry'
+} from '../src/utils/smartGuidesGeometry'
 
 // 测试用 box 工厂：与插件内 createBox 一致的 6 线结构，便于无 editor 直接构造。
 function makeBox(id: number | string, left: number, top: number, width: number, height: number): Box {

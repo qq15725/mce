@@ -16,7 +16,7 @@
  * @link https://zhuanlan.zhihu.com/p/92469406 《云凤蝶如何打造媲美 sketch 的自由画布》
  */
 import type { Node } from 'modern-canvas'
-import type { BoundingBox, Box, Line, LinePair, LineType } from '../utils/smartGuides-geometry'
+import type { BoundingBox, Box, Line, LinePair, LineType } from '../utils/smartGuidesGeometry'
 import { computed, h, ref } from 'vue'
 import SmartGuides from '../components/SmartGuides.vue'
 import { definePlugin } from '../plugin'
@@ -27,10 +27,10 @@ import {
   flipType,
   isLeftTopLine,
   toBoundingBox,
-} from '../utils/smartGuides-geometry'
+} from '../utils/smartGuidesGeometry'
 
-export type { BoundingBox, Box, Line, LinePair, LinePairType, LineType } from '../utils/smartGuides-geometry'
-export { createLine, findDistancePairs, flipType, isLeftTopLine, toBoundingBox } from '../utils/smartGuides-geometry'
+export type { BoundingBox, Box, Line, LinePair, LinePairType, LineType } from '../utils/smartGuidesGeometry'
+export { createLine, findDistancePairs, flipType, isLeftTopLine, toBoundingBox } from '../utils/smartGuidesGeometry'
 
 export default definePlugin((editor) => {
   const {
