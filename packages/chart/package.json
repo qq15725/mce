@@ -56,6 +56,12 @@
     "mce": "workspace:*"
   },
   "peerDependencies": {
+    "echarts": "^5 || ^6",
     "mce": "^0"
+  },
+  "peerDependenciesMeta": {
+    "echarts": {
+      "optional": true
+    }
   }
 }

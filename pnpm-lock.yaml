@@ -65,6 +65,10 @@ importers:
         version: link:../mce
 
   packages/chart:
+    dependencies:
+      echarts:
+        specifier: ^5 || ^6
+        version: 6.1.0
     devDependencies:
       mce:
         specifier: workspace:*
