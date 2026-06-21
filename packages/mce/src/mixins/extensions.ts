@@ -62,6 +62,14 @@ declare global {
        */
       toolbeltShapeItems: Ref<string[]>
       registerToolbeltShapeItem: (key: string) => void
+
+      /**
+       * 插件注册的图标：alias 名（不含 `$`）→ SVG path。会在 EditorLayout 创建图标集时
+       * 合并进 IconsSymbol 的 aliases，从而让 `$<name>` 可解析。供 @mce/table、@mce/chart
+       * 等把自己的图标随插件携带，核心图标集不再硬编码它们。
+       */
+      icons: Ref<Record<string, string>>
+      registerIcon: (name: string, path: string) => void
     }
   }
 }
@@ -77,6 +85,7 @@ export default defineMixin((editor) => {
   const enterHandlers: Mce.EnterHandler[] = []
   const editingStates = new Set<string>()
   const toolbeltShapeItems = ref<string[]>([])
+  const icons = ref<Record<string, string>>({})
 
   return {
     selectionRedirects,
@@ -118,6 +127,11 @@ export default defineMixin((editor) => {
       if (!toolbeltShapeItems.value.includes(key)) {
         toolbeltShapeItems.value.push(key)
       }
+    },
+
+    icons,
+    registerIcon: (name: string, path: string) => {
+      icons.value[name] = path
     },
   }
 })

@@ -30,7 +30,11 @@ export function plugin() {
       registerEnterHandler,
       registerEditingState,
       registerToolbeltShapeItem,
+      registerIcon,
     } = editor
+
+    // 随插件携带图标（核心图标集不再硬编码表格图标）。
+    registerIcon('table', 'M4,3H20A2,2 0 0,1 22,5V19A2,2 0 0,1 20,21H4A2,2 0 0,1 2,19V5A2,2 0 0,1 4,3M4,7V11H8V7H4M10,7V11H14V7H10M16,7V11H20V7H16M4,13V17H8V13H4M10,13V17H14V13H10M16,13V17H20V13H16Z')
 
     // —— 核心扩展点注册：表格相关特例行为均经此挂到核心 ——
 

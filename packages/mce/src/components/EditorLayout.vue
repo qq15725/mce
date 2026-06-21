@@ -49,7 +49,8 @@ else {
 
 editor.setup()
 
-provide(IconsSymbol, createIcons())
+// 合并插件注册的图标（如 @mce/table、@mce/chart）。插件在 editor.setup() 期间已注册完毕。
+provide(IconsSymbol, createIcons({ aliases: editor.icons.value }))
 
 const {
   componentRefs,
