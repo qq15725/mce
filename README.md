@@ -37,7 +37,7 @@
 **Content**
 - Shapes, pen / freehand paths, lines & arrows
 - Rich text (fragment styling, custom fonts, format painter, auto-fit strategies)
-- Images (insert / upload / crop), video, tables and charts
+- Images (insert / upload / crop), video, tables (`@mce/table`) and charts (`@mce/chart`)
 
 **Motion**
 - Timeline with frame-based playback
@@ -45,25 +45,28 @@
 - Export to GIF, MP4 and Lottie
 
 **Collaboration & history**
-- Real-time multi-user editing via [Yjs](https://github.com/yjs/yjs) CRDT (WebSocket provider)
-- Offline persistence (IndexedDB) and awareness (remote cursors / selection)
-- Undo / redo integrated with the CRDT history
+- CRDT document model ([Yjs](https://github.com/yjs/yjs)) in the core — undo / redo and offline persistence (IndexedDB) build on it
+- Real-time multi-user editing + awareness (remote cursors / selection / avatars) via `@mce/collaboration` (WebSocket / pluggable transport)
 
 **Design systems**
 - Components / symbols / instances with per-instance overrides and master propagation
 - Design tokens / variables (collections + modes) for theming and responsive values
 
-**AI**
+**AI** (`@mce/ai`)
 - A typed AI canvas action schema — drive edits from an LLM over the existing command & undo stack (model wiring left to the consumer)
 
+**Workflow** (`@mce/workflow`)
+- A node-graph editing mode: connectable nodes with input / output ports and curved connections
+
 **Extensible**
-- 45+ built-in plugins; a plugin can contribute commands, tools, hotkeys, exporters, loaders, components and events
+- ~40 built-in plugins; a plugin can contribute commands, tools, hotkeys, exporters, loaders, components and events
+- Element types & modes are decoupled via extension points (selection redirect, resize override, enter handler, editing state, toolbelt item, icon, mode, statusbar item) — see `mixins/extensions.ts`
 - Unified command system, hotkeys, and i18n
 
 ## 📤 Import & export
 
 - **Export**: `PNG` · `JPEG` · `WebP` · `SVG` · `PDF` · `GIF` · `MP4` · `Lottie` · `PPTX` / `XLSX` / `DOCX` · `JSON`
-- **Import**: `PPTX` / `XLSX` / `DOCX` · `PSD` · images · `JSON`
+- **Import**: `PPTX` / `XLSX` / `DOCX` · `PSD` · `HTML` · images · `JSON`
 
 These ship as optional plugins; their heavy encoders / parsers are lazy-loaded on first use:
 
@@ -75,8 +78,21 @@ These ship as optional plugins; their heavy encoders / parsers are lazy-loaded o
 | `@mce/svg` | SVG export |
 | `@mce/openxml` | PPTX / XLSX / DOCX import & export |
 | `@mce/psd` | PSD import (Photoshop layers → elements) |
+| `@mce/html` | HTML import |
 
 (`PNG` / `JPEG` / `WebP` / `JSON` / `Lottie` export are built in.)
+
+## 🔌 Feature plugins
+
+Specialized features also ship as optional packages, registered the same way (`plugins: [...]`):
+
+| Package | Adds |
+| --- | --- |
+| `@mce/table` | Table element + in-canvas table editor |
+| `@mce/chart` | Chart elements (bar / line / pie / …) |
+| `@mce/ai` | Typed AI canvas action schema (`applyAiActions`) |
+| `@mce/workflow` | Node-graph editing mode |
+| `@mce/collaboration` | Real-time collaboration: transport providers + presence (cursors / selection / avatars) |
 
 ## 📦 Install
 
@@ -90,19 +106,31 @@ npm i mce
 <script setup lang="ts">
   import { Editor, EditorLayout, EditorLayoutItem } from 'mce'
   import 'mce/styles'
+  import ai from '@mce/ai'
+  import chart from '@mce/chart'
+  import collaboration from '@mce/collaboration'
   import gif from '@mce/gif'
   import mp4 from '@mce/mp4'
   import openxml from '@mce/openxml'
   import pdf from '@mce/pdf'
   import svg from '@mce/svg'
+  import table from '@mce/table'
+  import workflow from '@mce/workflow'
 
   const editor = new Editor({
     plugins: [
+      // export / import formats
       gif(),
       mp4(),
       svg(),
       pdf(),
       openxml(),
+      // feature plugins (all optional)
+      table(),
+      chart(),
+      ai(),
+      workflow(),
+      collaboration(), // registers the collaboration + presence plugins
     ],
     // @mce/gif bundles its encoding worker by default. To self-host it
     // (e.g. under a strict CSP), pass `gifWorkerUrl` explicitly:
@@ -228,31 +256,50 @@ editor.exec('addAnimationKeyframe', 0, { left: 0, opacity: 0 })
 editor.exec('addAnimationKeyframe', 1, { left: 300, opacity: 1 })
 const lottie = editor.exec('exportLottie')
 
-// AI canvas actions (validated, applied in one undo step)
+// AI canvas actions (validated, applied in one undo step) — needs @mce/ai
 editor.exec('applyAiActions', [
   { type: 'createText', text: 'Hello', x: 40, y: 40 },
   { type: 'align', direction: 'left' },
 ])
 ```
 
+Real-time collaboration (needs `@mce/collaboration`):
+
+```ts
+editor.presence.setUser({ name: 'Alice', color: '#E64980' })
+editor.collaboration.connect({ url: 'wss://your-server', room: 'doc-1' })
+// editor.collaboration.connected / .synced — reactive status
+// editor.presence.peers — reactive remote users (cursors / selection)
+```
+
 ## 🏗️ Architecture
 
 ```
 packages/
-  mce/        # core editor library (npm: mce)
-  gif/        # GIF export  (@mce/gif)
-  mp4/        # MP4 export  (@mce/mp4)
-  pdf/        # PDF export  (@mce/pdf)
-  svg/        # SVG export  (@mce/svg)
-  openxml/    # PPTX/XLSX/DOCX import & export  (@mce/openxml)
-  psd/        # PSD import  (@mce/psd)
-playground/   # demo & test app
+  mce/           # core editor library (npm: mce)
+  gif/           # GIF export  (@mce/gif)
+  mp4/           # MP4 export  (@mce/mp4)
+  pdf/           # PDF export  (@mce/pdf)
+  svg/           # SVG export  (@mce/svg)
+  openxml/       # PPTX/XLSX/DOCX import & export  (@mce/openxml)
+  psd/           # PSD import  (@mce/psd)
+  html/          # HTML import  (@mce/html)
+  table/         # table element + editor  (@mce/table)
+  chart/         # chart elements  (@mce/chart)
+  ai/            # AI canvas actions  (@mce/ai)
+  workflow/      # node-graph mode  (@mce/workflow)
+  collaboration/ # real-time collaboration  (@mce/collaboration)
+playground/      # demo & test app
 ```
 
 The `Editor` is composed from layered mixins and a plugin system. Rendering is powered by
 [`modern-canvas`](https://www.npmjs.com/package/modern-canvas) (WebGL), with text / fonts /
-document model from `modern-text`, `modern-font` and `modern-idoc`. Collaboration is built on
-`yjs` + `y-protocols`.
+document model from `modern-text`, `modern-font` and `modern-idoc`.
+
+The core stays lean: element types and editing modes are decoupled through extension points
+(`mixins/extensions.ts`), so feature packages register their behavior instead of the core
+hard-coding it. The CRDT document model (`yjs` + `y-protocols`) lives in the core; the
+real-time transport and presence layer is the optional `@mce/collaboration` package.
 
 ## 🛠️ Development
 
