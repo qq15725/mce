@@ -25,18 +25,22 @@ const placement = computed(() => config.value?.placement ?? 'bottom')
 // —— 拖拽吸附：拖手柄时工具栏跟随指针，松手按指针距画板四边最近边吸附 ——
 const dragging = ref(false)
 
+// 抓取手柄时记录指针相对工具栏左上角的像素偏移，拖拽时保持该偏移，
+// 使抓取点（手柄）始终跟随指针，而不是把工具栏中心跳到指针处。
+const grabOffset = ref({ x: 0, y: 0 })
+
 const dragStyle = computed(() => {
   const p = drawboardPointer.value
   if (!dragging.value || !p) {
     return undefined
   }
-  // drawboardPointer 已是相对画板容器坐标，工具栏也绝对定位于该容器，故直接用。
+  // drawboardPointer 与工具栏均以画板容器为基准；减去抓取偏移即得工具栏左上角。
   return {
-    left: `${p.x}px`,
-    top: `${p.y}px`,
+    left: `${p.x - grabOffset.value.x}px`,
+    top: `${p.y - grabOffset.value.y}px`,
     right: 'auto',
     bottom: 'auto',
-    transform: 'translate(-50%, -50%)',
+    transform: 'none',
   }
 })
 
@@ -70,6 +74,11 @@ function onGripDown(e: MouseEvent): void {
     return
   }
   e.preventDefault()
+  const bar = (e.currentTarget as HTMLElement).closest('.m-toolbelt') as HTMLElement | null
+  if (bar) {
+    const rect = bar.getBoundingClientRect()
+    grabOffset.value = { x: e.clientX - rect.left, y: e.clientY - rect.top }
+  }
   dragging.value = true
   window.addEventListener('mouseup', onDragEnd)
 }

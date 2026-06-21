@@ -134,7 +134,7 @@ function apply(): void {
   close()
 }
 
-// —— echarts 预览（echarts 为可选 peer，动态加载，缺失时优雅降级）——
+// —— echarts 预览（echarts 是本包直接依赖，按需动态加载以免影响初始体积）——
 const previewEl = ref<HTMLElement>()
 const previewError = ref(false)
 let echartsLib: any
