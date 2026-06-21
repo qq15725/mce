@@ -1,5 +1,5 @@
 /**
- * 设计令牌 / 变量系统的纯逻辑层（参考 Figma variables：collections + modes）。
+ * 设计令牌 / 变量系统的纯逻辑层（参考 variables：collections + modes）。
  *
  * 一个 collection 含多个 mode（如「亮 / 暗」「手机 / 桌面」）；每个变量按 mode 存值，
  * 值可以是字面量，也可以是指向另一变量的别名（alias）。解析在变量所属 collection 的

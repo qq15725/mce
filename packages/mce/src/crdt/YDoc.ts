@@ -32,6 +32,7 @@ export type YNode = Y.Map<unknown> & {
     & ((prop: 'text') => Y.Map<unknown>)
     & ((prop: 'foreground') => Y.Map<unknown>)
     & ((prop: 'shadow') => Y.Map<unknown>)
+    & ((prop: 'comments') => Y.Map<unknown>)
     & ((prop: 'meta') => Y.Map<unknown>)
     & ((prop: 'childrenIds') => Y.Array<string>)
     & (<T = unknown>(prop: string) => T)
@@ -515,6 +516,7 @@ export class YDoc extends Observable {
           'shadow',
           'table',
           'chart',
+          'comments',
         ].forEach((key) => {
           let yMap = yNode.get(key) as Y.Map<any> | undefined
           if (!yMap || !(yMap instanceof Y.Map)) {

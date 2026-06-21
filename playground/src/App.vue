@@ -3,6 +3,7 @@ import ai from '@mce/ai'
 import bigesj, { options } from '@mce/bigesj'
 import chart from '@mce/chart'
 import collaboration from '@mce/collaboration'
+import comments from '@mce/comments'
 import gaoding from '@mce/gaoding'
 import html from '@mce/html'
 import gif from '@mce/gif'
@@ -16,7 +17,7 @@ import workflow from '@mce/workflow'
 import { Editor, EditorLayers, EditorLayout, EditorLayoutItem } from 'mce'
 import { computed } from 'vue'
 import { BroadcastChannelProvider } from './collab'
-import { loadAnimationDemo, loadChartDemo, loadConnectionDemo, loadFillStrokeDemo, loadGifDemo, loadImageEffectsDemo, loadInteractionDemo, loadLayoutDemo, loadShapesDemo, loadSmartGuidesDemo, loadTableDemo, loadTextDemo, loadVideoDemo } from './demos'
+import { loadAnimationDemo, loadChartDemo, loadCommentsDemo, loadConnectionDemo, loadFillStrokeDemo, loadGifDemo, loadImageEffectsDemo, loadInteractionDemo, loadLayoutDemo, loadShapesDemo, loadSmartGuidesDemo, loadTableDemo, loadTextDemo, loadVideoDemo } from './demos'
 import 'mce/styles'
 
 const editorOptions = {
@@ -59,6 +60,7 @@ const editor = new Editor({
     html(),
     workflow(),
     collaboration(),
+    comments(),
   ],
 })
 
@@ -114,6 +116,9 @@ else if (demo === 'table') {
 }
 else if (demo === 'chart') {
   loadChartDemo(editor)
+}
+else if (demo === 'comments') {
+  loadCommentsDemo(editor)
 }
 
 // 协同演示：用 BroadcastChannel 在同浏览器多标签间同步（零服务端）。
@@ -254,6 +259,9 @@ const element = computed(() => editor.elementSelection.value[0])
           </button>
           <button @click="() => loadChartDemo(editor)">
             图表示例
+          </button>
+          <button @click="() => loadCommentsDemo(editor)">
+            评论示例
           </button>
         </div>
       </template>

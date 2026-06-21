@@ -1,7 +1,7 @@
 import { cloneDeep, get, isPlainObject, merge, set } from 'lodash-es'
 
 /**
- * 组件 / 符号 / 实例系统的纯逻辑层（参考 Figma components：master + instances + overrides）。
+ * 组件 / 符号 / 实例系统的纯逻辑层（参考 components：master + instances + overrides）。
  *
  * - master 定义：一棵节点子树的 JSON 快照（node.toJSON()）。
  * - instance：从 master 克隆出的子树，记录 componentId 与一组路径级 override。

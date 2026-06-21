@@ -93,6 +93,19 @@ importers:
         specifier: workspace:*
         version: link:../mce
 
+  packages/comments:
+    dependencies:
+      vue:
+        specifier: ^3.5.0
+        version: 3.5.35(typescript@6.0.3)
+    devDependencies:
+      '@vitejs/plugin-vue':
+        specifier: ^6.0.7
+        version: 6.0.7(vite@8.0.16(@types/node@25.9.2)(esbuild@0.27.3)(jiti@2.7.0)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.9.0))(vue@3.5.35(typescript@6.0.3))
+      mce:
+        specifier: workspace:*
+        version: link:../mce
+
   packages/gaoding:
     devDependencies:
       mce:
@@ -136,8 +149,8 @@ importers:
         specifier: ^5
         version: 5.13.0
       modern-canvas:
-        specifier: ^0.23.14
-        version: 0.23.14(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1)
+        specifier: ^0.24.1
+        version: 0.24.1(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1)
       modern-font:
         specifier: ^0.6.1
         version: 0.6.1
@@ -145,8 +158,8 @@ importers:
         specifier: ^2
         version: 2.1.0
       modern-idoc:
-        specifier: ^0.11.9
-        version: 0.11.9
+        specifier: ^0.12.0
+        version: 0.12.0
       modern-text:
         specifier: ^2.0.6
         version: 2.0.6
@@ -275,6 +288,9 @@ importers:
       '@mce/collaboration':
         specifier: workspace:*
         version: link:../packages/collaboration
+      '@mce/comments':
+        specifier: workspace:*
+        version: link:../packages/comments
       '@mce/gaoding':
         specifier: workspace:*
         version: link:../packages/gaoding
@@ -2418,8 +2434,8 @@ packages:
   mlly@1.8.2:
     resolution: {integrity: sha512-d+ObxMQFmbt10sretNDytwt85VrbkhhUA/JBGm1MPaWJ65Cl4wOgLaB1NYvJSZ0Ef03MMEU/0xpPMXUIQ29UfA==}
 
-  modern-canvas@0.23.14:
-    resolution: {integrity: sha512-5vQJqN5E+4g4D2p5i4IT7fV4bBmBme+KOnHmhxMjDGsgLJnvPoak6BrWx4/YgHU+lAZRF9EWdNF9XKEVQQEOgw==}
+  modern-canvas@0.24.1:
+    resolution: {integrity: sha512-7s5Whla7NmUaZMf+uso+dF+feDCv7Py/Gi9WWT6JvqzAR3blCkbOAqVwmDmQyuafDR8hbigT76foBn8gFBg91w==}
     peerDependencies:
       echarts: ^5 || ^6
       lottie-web: ^5
@@ -2446,6 +2462,9 @@ packages:
 
   modern-idoc@0.11.9:
     resolution: {integrity: sha512-MM/FUzhcCs8kjWE7blFM8vh1rQc5kkpfvbk3X34oIJGz7coz6CObbet4I9GxvFHChTaLdDviiHlT62UhFwHQBQ==}
+
+  modern-idoc@0.12.0:
+    resolution: {integrity: sha512-cUzz8lBIy1T+YJyzF9+/nVWBvzayv+fWYtjwqNrwfHM7HcfquLtS2qcbt8h4AA+vPMc61fPcIxaZ10a6bfrAUw==}
 
   modern-mp4@0.2.0:
     resolution: {integrity: sha512-Z2X7+B1Kru8MTI2E6mpcSqm1E7FMxYg61DXoTkwq/KnMMfeyFcMCY4UVjvklFtdw4/NnvKA93bxw7XsqtMB1Tw==}
@@ -5551,12 +5570,12 @@ snapshots:
       pkg-types: 1.3.1
       ufo: 1.6.4
 
-  modern-canvas@0.23.14(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1):
+  modern-canvas@0.24.1(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1):
     dependencies:
       colord: 2.9.3
       earcut: 3.0.2
       modern-font: 0.6.1
-      modern-idoc: 0.11.9
+      modern-idoc: 0.12.0
       modern-path2d: 1.8.5
       modern-text: 2.0.6
     optionalDependencies:
@@ -5579,6 +5598,11 @@ snapshots:
       modern-text: 2.0.6
 
   modern-idoc@0.11.9:
+    dependencies:
+      colord: 2.9.3
+      nanoid: 5.1.11
+
+  modern-idoc@0.12.0:
     dependencies:
       colord: 2.9.3
       nanoid: 5.1.11

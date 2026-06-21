@@ -62,7 +62,7 @@ export const defaultActiveStrategy: ActiveStrategy = (context) => {
     resolveSelectionRedirect,
   } = editor
 
-  // Cmd/Ctrl 深选（Figma）：直接命中光标下最深元素，跳过组 / 帧的逐层归并。
+  // Cmd/Ctrl 深选：直接命中光标下最深元素，跳过组 / 帧的逐层归并。
   // 选择重定向（如表格单元格 → 表格）由插件注册，这里统一应用。
   if (event?.metaKey || event?.ctrlKey) {
     return resolveSelectionRedirect(element)

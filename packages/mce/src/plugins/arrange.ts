@@ -198,7 +198,7 @@ export default definePlugin((editor) => {
     }
   }
 
-  // 参考 Figma「Tidy up」：将选中元素聚类成行/列，重排为间距统一的网格
+  // 参考「Tidy up」：将选中元素聚类成行/列，重排为间距统一的网格
   // （单行退化为水平等距、单列退化为垂直等距）。
   function tidyUp() {
     const els = elementSelection.value

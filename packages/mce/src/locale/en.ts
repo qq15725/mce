@@ -74,6 +74,7 @@ export default {
   'checkerboard:grid': 'Grid checkerboard',
   'checkerboard:dot': 'Dot checkerboard',
   'panels': 'Panels',
+  'components': 'Components',
   'timeline': 'Timeline',
   'play': 'Play',
   'pause': 'Pause',

@@ -74,6 +74,7 @@ export default {
   'checkerboard:grid': '网格棋盘',
   'checkerboard:dot': '点状棋盘',
   'panels': '面板',
+  'components': '组件',
   'statusbar': '状态栏',
   'timeline': '时间线',
   'play': '播放',

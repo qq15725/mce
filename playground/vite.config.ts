@@ -44,6 +44,7 @@ export default defineConfig(() => {
           '@mce/html': fileURLToPath(new URL('../packages/html/src/index.ts', import.meta.url)),
           '@mce/workflow': fileURLToPath(new URL('../packages/workflow/src/index.ts', import.meta.url)),
           '@mce/collaboration': fileURLToPath(new URL('../packages/collaboration/src/index.ts', import.meta.url)),
+          '@mce/comments': fileURLToPath(new URL('../packages/comments/src/index.ts', import.meta.url)),
           '@mce/table': fileURLToPath(new URL('../packages/table/src/index.ts', import.meta.url)),
           '@mce/gaoding': fileURLToPath(new URL('../packages/gaoding/src/index.ts', import.meta.url)),
           '@mce/openxml': fileURLToPath(new URL('../packages/openxml/src/index.ts', import.meta.url)),

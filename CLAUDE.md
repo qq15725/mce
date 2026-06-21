@@ -54,6 +54,7 @@ packages/
   html/       # HTML 导入 loader 插件（@mce/html）
   workflow/   # 节点图模式插件（@mce/workflow，含 Workflow 组件）
   collaboration/ # 实时协同插件（@mce/collaboration：传输 provider + 在场感知；CRDT 文档模型 YDoc 仍在核心）
+  comments/   # Figma 式评论插件（@mce/comments：画布 / 元素锚定 pin + 线程弹窗；评论存 Y.Doc 独立顶层 Map，不进元素树/导出/undo）
 playground/   # 演示与测试应用
 ```
 

@@ -17,6 +17,7 @@ const {
   getConfigRef,
   drawboardAabb,
   toolbeltShapeItems,
+  toolbeltItems,
 } = useEditor()
 
 const config = getConfigRef<Mce.ToolbeltConfig>('ui.toolbelt')
@@ -170,8 +171,21 @@ const penItems = computed(() => {
   ]
 })
 
+// 插件经 registerToolbeltItem 注册的一级按钮（如 @mce/comments 的评论工具），
+// 映射为与内置项同构的结构（无 children），按 placement 分前 / 后。
+const pluginItems = computed(() =>
+  toolbeltItems.value.map(it => ({
+    key: it.key,
+    icon: it.icon ?? `$${it.key}`,
+    active: it.isActive?.() ?? false,
+    handle: it.handle,
+    placement: it.placement ?? 'after',
+  })),
+)
+
 const items = computed(() => {
   return [
+    ...pluginItems.value.filter(it => it.placement === 'before'),
     {
       key: ['hand'].includes(state.value || '') ? 'hand' : 'move',
       active: state.value !== 'drawing',
@@ -210,6 +224,7 @@ const items = computed(() => {
       ...(penItems.value.find(v => v.checked) ?? penItems.value[activePen.value]),
       children: penItems.value,
     },
+    ...pluginItems.value.filter(it => it.placement === 'after'),
   ]
 })
 </script>
@@ -254,7 +269,7 @@ const items = computed(() => {
               v-bind="slotProps"
               @click="tool.handle"
             >
-              <Icon :icon="`$${tool.key}`" />
+              <Icon :icon="(tool as any).icon ?? `$${tool.key}`" />
             </Btn>
           </template>
 
@@ -272,9 +287,9 @@ const items = computed(() => {
           </template>
         </Tooltip>
 
-        <template v-if="tool.children?.length">
+        <template v-if="(tool as any).children?.length">
           <Menu
-            :items="tool.children"
+            :items="(tool as any).children"
             :offset="12"
             :location="menuLocation"
           >
@@ -315,7 +330,7 @@ const items = computed(() => {
     align-items: center;
     gap: 2px;
     padding: 6px;
-    // Figma 风格：偏暗的拟态浮层、圆角更大、阴影更柔、带细描边。
+    // 偏暗的拟态浮层、圆角更大、阴影更柔、带细描边。
     background: rgb(var(--m-theme-surface));
     border: 1px solid rgba(var(--m-theme-on-surface), .08);
     border-radius: 14px;

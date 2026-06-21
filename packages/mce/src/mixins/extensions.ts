@@ -29,6 +29,23 @@ declare global {
      */
     type EnterHandler = (element: Element2D, editor: Editor) => boolean
 
+    /**
+     * 插件向工具腰带（底部主工具栏）追加的一级按钮（如 @mce/comments 的评论工具）。
+     * 底部主工具栏：工具即按钮，带激活高亮 / tooltip / 快捷键提示。
+     */
+    interface ToolbeltItem {
+      /** 图标 / i18n key：图标取 `$<key>`，tooltip 取 `t(key)`，快捷键提示按 key 推断。 */
+      key: string
+      /** 自定义图标名（默认 `$<key>`）。 */
+      icon?: string
+      /** 是否激活（高亮）。渲染时调用，读响应式状态即可自动更新。 */
+      isActive?: () => boolean
+      /** 点击处理。 */
+      handle: () => void
+      /** 放置在内置工具之前 / 之后（默认 after）。 */
+      placement?: 'before' | 'after'
+    }
+
     interface Editor {
       /** 选择重定向链。 */
       selectionRedirects: SelectionRedirect[]
@@ -84,6 +101,13 @@ declare global {
        */
       statusbarItems: Ref<Component[]>
       registerStatusbarItem: (component: Component) => void
+
+      /**
+       * 插件向工具腰带追加的一级按钮（如 @mce/comments 的评论工具）。
+       * Toolbelt 据此渲染，核心不再硬编码插件工具。
+       */
+      toolbeltItems: Ref<ToolbeltItem[]>
+      registerToolbeltItem: (item: ToolbeltItem) => void
     }
   }
 }
@@ -99,6 +123,7 @@ export default defineMixin((editor) => {
   const enterHandlers: Mce.EnterHandler[] = []
   const editingStates = new Set<string>()
   const toolbeltShapeItems = ref<string[]>([])
+  const toolbeltItems = ref<Mce.ToolbeltItem[]>([])
   const icons = ref<Record<string, string>>({})
   const modes = ref<string[]>([])
   const statusbarItems = shallowRef<Component[]>([])
@@ -143,6 +168,11 @@ export default defineMixin((editor) => {
       if (!toolbeltShapeItems.value.includes(key)) {
         toolbeltShapeItems.value.push(key)
       }
+    },
+
+    toolbeltItems,
+    registerToolbeltItem: (item: Mce.ToolbeltItem) => {
+      toolbeltItems.value = [...toolbeltItems.value, item]
     },
 
     icons,
