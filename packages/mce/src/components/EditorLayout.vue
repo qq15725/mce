@@ -69,6 +69,7 @@ const {
   elementSelection,
   drawboardAabb,
   activeTool,
+  isContentEditing,
 } = editor
 
 // Prop wins when provided, otherwise use the editor's configured strategy.
@@ -572,7 +573,7 @@ const slotProps = {
         />
 
         <Floatbar
-          v-if="(slots['floatbar-top'] || slots.floatbar) && state !== 'tableEditing'"
+          v-if="(slots['floatbar-top'] || slots.floatbar) && !isContentEditing()"
           location="top-start"
           :target="state === 'typing'
             ? (componentRefs['mce:text']?.[0] as any)?.textEditor
@@ -584,7 +585,7 @@ const slotProps = {
         </Floatbar>
 
         <Floatbar
-          v-if="slots['floatbar-bottom'] && state !== 'tableEditing'"
+          v-if="slots['floatbar-bottom'] && !isContentEditing()"
           location="bottom-start"
           :target="(componentRefs['mce:selection']?.[0] as any)?.transform?.$el"
           :middlewares="['offset', 'shift']"

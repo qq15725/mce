@@ -47,24 +47,6 @@ export const makeMceStrategyProps = propsFactory({
   hoverStrategy: Function as PropType<HoverStrategy>,
 }, 'makeMceStrategyProps')
 
-// Table cells render as Element2D nodes parented to the table element (in its
-// internal back layer), so a raw hit-test lands on a cell. Cells are managed by
-// the table and must never be selected on their own — redirect any cell hit to
-// its owning table element so clicks/hover always act on the table as a whole
-// (and double-click enters table editing).
-function redirectTableCell(
-  node: Element2D | undefined,
-  isElement: Editor['isElement'],
-): Element2D | undefined {
-  if (!node) {
-    return node
-  }
-  const owner = node.findAncestor<Element2D>(
-    n => isElement(n) && Boolean((n as Element2D).table?.isValid?.()),
-  )
-  return owner ?? node
-}
-
 export const defaultActiveStrategy: ActiveStrategy = (context) => {
   const { element, event, editor } = context
 
@@ -77,12 +59,13 @@ export const defaultActiveStrategy: ActiveStrategy = (context) => {
     inEditorIs,
     isElement,
     elementSelection,
+    resolveSelectionRedirect,
   } = editor
 
   // Cmd/Ctrl 深选（Figma）：直接命中光标下最深元素，跳过组 / 帧的逐层归并。
-  // 表格单元格仍重定向到表格本身（单元格永不可单独选中）。
+  // 选择重定向（如表格单元格 → 表格）由插件注册，这里统一应用。
   if (event?.metaKey || event?.ctrlKey) {
-    return redirectTableCell(element, isElement)
+    return resolveSelectionRedirect(element)
   }
 
   const activeElement = elementSelection.value[0]
@@ -104,7 +87,7 @@ export const defaultActiveStrategy: ActiveStrategy = (context) => {
   }
 
   const resolved = cb(element) ? element : element.findAncestor<Element2D>(cb)
-  return redirectTableCell(resolved, isElement)
+  return resolveSelectionRedirect(resolved)
 }
 
 export const defaultDoubleclickStrategy: DoubleclickStrategy = (context) => {
@@ -123,11 +106,12 @@ export const defaultHoverStrategy: HoverStrategy = (context) => {
     inEditorIs,
     isElement,
     elementSelection,
+    resolveSelectionRedirect,
   } = editor
 
   // Cmd/Ctrl 深选高亮：与点击一致，悬停时高亮光标下最深元素。
   if (event?.metaKey || event?.ctrlKey) {
-    return redirectTableCell(element, isElement)
+    return resolveSelectionRedirect(element)
   }
 
   const activeElement = elementSelection.value[0]
@@ -149,5 +133,5 @@ export const defaultHoverStrategy: HoverStrategy = (context) => {
   }
 
   const resolved = cb(element) ? element : element.findAncestor<Element2D>(cb)
-  return redirectTableCell(resolved, isElement)
+  return resolveSelectionRedirect(resolved)
 }

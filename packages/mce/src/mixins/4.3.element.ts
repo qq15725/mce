@@ -52,6 +52,7 @@ export default defineMixin((editor) => {
     selection,
     camera,
     parseAnchor,
+    applyResizeOverride,
     exec,
   } = editor
 
@@ -275,28 +276,8 @@ export default defineMixin((editor) => {
     const scaleX = Math.abs(newWidth / el.style.width)
     const scaleY = Math.abs(newHeight / el.style.height)
 
-    // A table's size is driven by its column/row grid (Element2DTable forces the
-    // element to `gridWidth × gridHeight`), so scale the grid — and each cell's
-    // text child — instead of the element box, then write it back.
-    if (el.table.isValid()) {
-      const scaleFont = options.textFontSizeToFit ? scaleX : 1
-      const columns = el.table.columns.map(c => ({ ...c, width: (c.width || 0) * scaleX }))
-      const rows = el.table.rows.map(r => ({ ...r, height: (r.height || 0) * scaleY }))
-      const cells = (JSON.parse(JSON.stringify(el.table.cells)) as any[]).map((cell) => {
-        const cs = cell.children?.[0]?.style
-        if (cs) {
-          if (cs.width)
-            cs.width *= scaleX
-          if (cs.height)
-            cs.height *= scaleY
-          if (scaleFont !== 1 && cs.fontSize)
-            cs.fontSize *= scaleFont
-        }
-        return cell
-      })
-      el.style.width = newWidth
-      el.style.height = newHeight
-      el.table.setProperties({ columns, rows, cells })
+    // 元素类型相关的特殊缩放（如表格按行列网格重算）由插件经 registerResizeOverride 提供。
+    if (applyResizeOverride(el, { scaleX, scaleY, newWidth, newHeight, options })) {
       return
     }
 

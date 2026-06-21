@@ -37,6 +37,8 @@ declare global {
     // node-graph editor (directional connections, port handles).
     type Mode = 'canvas' | 'workflow'
 
+    // 插件可贡献自己的瞬时编辑态（如 @mce/table 的 'tableEditing'），故联合里保留
+    // `(string & {})` 以接纳任意字符串而不丢核心字面量的自动补全。
     type State
       = | 'loading'
         | 'hand'
@@ -45,12 +47,12 @@ declare global {
         | 'moving'
         | 'transforming'
         | 'typing'
-        | 'tableEditing'
         | 'cropping'
         | 'pathEditing'
         | 'imageReplacing'
         | 'shapeReplacing'
         | 'painting'
+        | (string & {})
         | undefined
 
     interface DrawingContext {

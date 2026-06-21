@@ -16,6 +16,7 @@ const {
   getConfigRef,
   drawboardPointer,
   drawboardAabb,
+  toolbeltShapeItems,
 } = useEditor()
 
 const config = getConfigRef<Mce.ToolbeltConfig>('ui.toolbelt')
@@ -93,6 +94,7 @@ const activeShape = ref(0)
 const activePen = ref(0)
 
 const shapeItems = computed(() => {
+  // 核心形状工具 + 插件经 registerToolbeltShapeItem 追加的工具（如 @mce/table、@mce/chart）。
   const keys = [
     'rectangle',
     'line',
@@ -100,10 +102,7 @@ const shapeItems = computed(() => {
     'ellipse',
     'polygon',
     'star',
-    'table',
-    'chartBar',
-    'chartLine',
-    'chartPie',
+    ...toolbeltShapeItems.value,
   ]
 
   return [

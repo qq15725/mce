@@ -17,6 +17,7 @@ import _4_0_node from './4.0.node'
 import _4_2_frame from './4.2.frame'
 import _4_3_element from './4.3.element'
 import _exporter from './exporter'
+import _extensions from './extensions'
 import _hotkey from './hotkey'
 import _http from './http'
 import _loader from './loader'
@@ -42,6 +43,7 @@ export const mixins = [
   _4_2_frame,
   _4_3_element,
   _exporter,
+  _extensions,
   _hotkey,
   _http,
   _loader,

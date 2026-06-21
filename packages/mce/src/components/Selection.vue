@@ -23,6 +23,7 @@ const {
   isLock,
   getConfigRef,
   hoverElement,
+  isContentEditing,
 } = useEditor()
 
 const transformConfig = getConfigRef<Mce.TransformConfig>('interaction.transform')
@@ -128,7 +129,7 @@ const isConnection = computed(() => {
 
 const movable = computed(() => {
   return state.value !== 'typing'
-    && state.value !== 'tableEditing'
+    && !isContentEditing()
     && !isConnection.value
     && elementSelection.value.every((element) => {
       return !isLock(element)
@@ -139,7 +140,7 @@ const movable = computed(() => {
 
 const resizable = computed(() => {
   return state.value !== 'typing'
-    && state.value !== 'tableEditing'
+    && !isContentEditing()
     && !isConnection.value
     && elementSelection.value.every((element) => {
       return !isLock(element)
@@ -150,7 +151,7 @@ const resizable = computed(() => {
 
 const rotatable = computed(() => {
   return state.value !== 'typing'
-    && state.value !== 'tableEditing'
+    && !isContentEditing()
     && !isConnection.value
     && elementSelection.value.every((element) => {
       return !isLock(element)
@@ -162,7 +163,7 @@ const rotatable = computed(() => {
 const roundable = computed(() => {
   if (
     state.value !== 'typing'
-    && state.value !== 'tableEditing'
+    && !isContentEditing()
     && !isConnection.value
     && elementSelection.value.length === 1
   ) {

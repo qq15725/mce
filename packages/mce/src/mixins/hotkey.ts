@@ -334,7 +334,7 @@ export default defineMixin((editor) => {
         // textarea lives in a shadow DOM and may not be in the event path (e.g.
         // focus briefly lands on <body> after entering edit mode), so guard on
         // the typing state too — otherwise tool/select-all shortcuts leak through.
-        if (isInputEvent(e) || state.value === 'typing' || state.value === 'tableEditing') {
+        if (isInputEvent(e) || state.value === 'typing' || editor.isContentEditing()) {
           return
         }
 

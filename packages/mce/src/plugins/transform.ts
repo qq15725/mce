@@ -88,6 +88,7 @@ export default definePlugin((editor) => {
     resizeElement,
     state,
     registerConfig,
+    enterHandlers,
     snap,
     snapResize,
   } = editor
@@ -105,10 +106,11 @@ export default definePlugin((editor) => {
     const els = elementSelection.value
     if (els.length === 1) {
       const el = els[0]
-      if (el.table.isValid()) {
-        state.value = 'tableEditing'
+      // 插件贡献的进入编辑（如 @mce/table 的 tableEditing）优先；命中即停。
+      if (enterHandlers.some(h => h(el, editor))) {
+        return
       }
-      else if (el.text.isValid()) {
+      if (el.text.isValid()) {
         await exec('startTyping')
       }
       else if (el.foreground.isValid()) {

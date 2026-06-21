@@ -1,9 +1,16 @@
 import type { Element2D } from 'modern-canvas'
 import type { ChartType } from 'modern-idoc'
 import { definePlugin } from '../plugin'
+import { createChartElement } from '../utils'
 
 declare global {
   namespace Mce {
+    interface Tools {
+      chartBar: []
+      chartLine: []
+      chartPie: []
+    }
+
     interface ChartLegendOptions {
       legend?: 'top' | 'bottom' | 'left' | 'right' | 'none'
       title?: string
@@ -26,7 +33,17 @@ declare global {
 }
 
 export default definePlugin((editor) => {
-  const { elementSelection } = editor
+  const {
+    elementSelection,
+    addElement,
+    activateTool,
+    registerToolbeltShapeItem,
+  } = editor
+
+  // 工具栏「形状」下拉追加图表工具。
+  registerToolbeltShapeItem('chartBar')
+  registerToolbeltShapeItem('chartLine')
+  registerToolbeltShapeItem('chartPie')
 
   function getChart(node?: Element2D): any {
     const el = (node ?? elementSelection.value[0]) as any
@@ -76,5 +93,40 @@ export default definePlugin((editor) => {
       { command: 'setChartData', handle: setChartData },
       { command: 'setChartOptions', handle: setChartOptions },
     ],
+    tools: [
+      {
+        name: 'chartBar',
+        handle: (start) => {
+          addElement(createChartElement('column'), { position: start, active: true })
+          return { end: () => activateTool(undefined) }
+        },
+      },
+      {
+        name: 'chartLine',
+        handle: (start) => {
+          addElement(createChartElement('line'), { position: start, active: true })
+          return { end: () => activateTool(undefined) }
+        },
+      },
+      {
+        name: 'chartPie',
+        handle: (start) => {
+          addElement(createChartElement('pie'), { position: start, active: true })
+          return { end: () => activateTool(undefined) }
+        },
+      },
+    ],
+    messages: {
+      en: {
+        chartBar: 'Bar Chart',
+        chartLine: 'Line Chart',
+        chartPie: 'Pie Chart',
+      },
+      zhHans: {
+        chartBar: '柱状图',
+        chartLine: '折线图',
+        chartPie: '饼图',
+      },
+    },
   }
 })

@@ -1,7 +1,7 @@
 import type { Shape } from 'modern-idoc'
 import { Path2D } from 'modern-path2d'
 import { definePlugin } from '../plugin'
-import { createChartElement, createShapeElement, createTableElement, getArrowPath } from '../utils'
+import { createShapeElement, getArrowPath } from '../utils'
 
 declare global {
   namespace Mce {
@@ -12,10 +12,6 @@ declare global {
       ellipse: []
       polygon: []
       star: []
-      table: []
-      chartBar: []
-      chartLine: []
-      chartPie: []
     }
   }
 }
@@ -141,35 +137,6 @@ export default definePlugin((editor) => {
       {
         name: 'star',
         handle: createHandle([{ data: 'M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2L9.19 8.62L2 9.24l5.45 4.73L5.82 21z' }]),
-      },
-      // table/chart 为点击插入默认示例（固定尺寸），不走拖拽缩放
-      {
-        name: 'table',
-        handle: (start) => {
-          addElement(createTableElement(), { position: start, active: true })
-          return { end: () => activateTool(undefined) }
-        },
-      },
-      {
-        name: 'chartBar',
-        handle: (start) => {
-          addElement(createChartElement('column'), { position: start, active: true })
-          return { end: () => activateTool(undefined) }
-        },
-      },
-      {
-        name: 'chartLine',
-        handle: (start) => {
-          addElement(createChartElement('line'), { position: start, active: true })
-          return { end: () => activateTool(undefined) }
-        },
-      },
-      {
-        name: 'chartPie',
-        handle: (start) => {
-          addElement(createChartElement('pie'), { position: start, active: true })
-          return { end: () => activateTool(undefined) }
-        },
       },
     ],
     hotkeys: [
