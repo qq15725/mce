@@ -52,7 +52,6 @@ export default defineMixin((editor) => {
     selection,
     camera,
     parseAnchor,
-    applyResizeOverride,
     exec,
   } = editor
 
@@ -277,7 +276,8 @@ export default defineMixin((editor) => {
     const scaleY = Math.abs(newHeight / el.style.height)
 
     // 元素类型相关的特殊缩放（如表格按行列网格重算）由插件经 registerResizeOverride 提供。
-    if (applyResizeOverride(el, { scaleX, scaleY, newWidth, newHeight, options })) {
+    // 经 editor 在调用时取（extensions mixin 排在本 mixin 之后，setup 期解构会拿到 undefined）。
+    if (editor.applyResizeOverride(el, { scaleX, scaleY, newWidth, newHeight, options })) {
       return
     }
 
