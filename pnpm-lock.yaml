@@ -42,6 +42,12 @@ importers:
         specifier: ^3.3.3
         version: 3.3.3(typescript@6.0.3)
 
+  packages/ai:
+    devDependencies:
+      mce:
+        specifier: workspace:*
+        version: link:../mce
+
   packages/bigesj:
     dependencies:
       fflate:
@@ -72,6 +78,12 @@ importers:
       modern-gif:
         specifier: ^2.1.0
         version: 2.1.0
+    devDependencies:
+      mce:
+        specifier: workspace:*
+        version: link:../mce
+
+  packages/html:
     devDependencies:
       mce:
         specifier: workspace:*
@@ -215,6 +227,9 @@ importers:
 
   playground:
     devDependencies:
+      '@mce/ai':
+        specifier: workspace:*
+        version: link:../packages/ai
       '@mce/bigesj':
         specifier: workspace:*
         version: link:../packages/bigesj
@@ -227,6 +242,9 @@ importers:
       '@mce/gif':
         specifier: workspace:*
         version: link:../packages/gif
+      '@mce/html':
+        specifier: workspace:*
+        version: link:../packages/html
       '@mce/mp4':
         specifier: workspace:*
         version: link:../packages/mp4

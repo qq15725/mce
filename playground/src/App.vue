@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import ai from '@mce/ai'
 import bigesj, { options } from '@mce/bigesj'
 import chart from '@mce/chart'
 import gaoding from '@mce/gaoding'
+import html from '@mce/html'
 import gif from '@mce/gif'
 import mp4 from '@mce/mp4'
 import openxml from '@mce/openxml'
@@ -51,6 +53,8 @@ const editor = new Editor({
     psd(),
     chart(),
     table(),
+    ai(),
+    html(),
   ],
 })
 

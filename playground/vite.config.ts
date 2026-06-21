@@ -38,8 +38,12 @@ export default defineConfig(() => {
       resolve: {
         alias: {
           '@': fileURLToPath(new URL('./src', import.meta.url)),
+          '@mce/ai': fileURLToPath(new URL('../packages/ai/src/index.ts', import.meta.url)),
           '@mce/bigesj': fileURLToPath(new URL('../packages/bigesj/src/index.ts', import.meta.url)),
           '@mce/chart': fileURLToPath(new URL('../packages/chart/src/index.ts', import.meta.url)),
+          '@mce/html': fileURLToPath(new URL('../packages/html/src/index.ts', import.meta.url)),
+          '@mce/workflow': fileURLToPath(new URL('../packages/workflow/src/index.ts', import.meta.url)),
+          '@mce/collaboration': fileURLToPath(new URL('../packages/collaboration/src/index.ts', import.meta.url)),
           '@mce/table': fileURLToPath(new URL('../packages/table/src/index.ts', import.meta.url)),
           '@mce/gaoding': fileURLToPath(new URL('../packages/gaoding/src/index.ts', import.meta.url)),
           '@mce/openxml': fileURLToPath(new URL('../packages/openxml/src/index.ts', import.meta.url)),

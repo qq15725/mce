@@ -13,9 +13,11 @@
     "type-check": "vue-tsc --build"
   },
   "devDependencies": {
+    "@mce/ai": "workspace:*",
     "@mce/bigesj": "workspace:*",
     "@mce/chart": "workspace:*",
     "@mce/gaoding": "workspace:*",
+    "@mce/html": "workspace:*",
     "@mce/gif": "workspace:*",
     "@mce/mp4": "workspace:*",
     "@mce/openxml": "workspace:*",
