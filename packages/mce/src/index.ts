@@ -2,6 +2,7 @@ import './typed-global.d.ts'
 import './typed-plugins.d.ts'
 
 export { default as EditorLayout } from './components/EditorLayout.vue'
+export { Icon } from './components/icon'
 export { default as EditorLayers } from './components/Layers.vue'
 export { default as Cropper } from './components/shared/Cropper.vue'
 export { default as Dialog } from './components/shared/Dialog.vue'

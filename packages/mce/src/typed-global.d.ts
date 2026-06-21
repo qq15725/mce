@@ -35,7 +35,9 @@ declare global {
     // Persistent editor mode, orthogonal to the transient `State`. 'canvas' is
     // the free-form editing experience; 'workflow' turns the canvas into a
     // node-graph editor (directional connections, port handles).
-    type Mode = 'canvas' | 'workflow'
+    // 'canvas' 为核心自由编辑模式；插件可贡献其它模式（如 @mce/workflow 的 'workflow'），
+    // 故联合保留 `(string & {})` 以接纳任意字符串而不丢核心字面量补全。
+    type Mode = 'canvas' | (string & {})
 
     // 插件可贡献自己的瞬时编辑态（如 @mce/table 的 'tableEditing'），故联合里保留
     // `(string & {})` 以接纳任意字符串而不丢核心字面量的自动补全。

@@ -11,6 +11,7 @@ import pdf from '@mce/pdf'
 import psd from '@mce/psd'
 import svg from '@mce/svg'
 import table from '@mce/table'
+import workflow from '@mce/workflow'
 import { Editor, EditorLayers, EditorLayout, EditorLayoutItem } from 'mce'
 import { computed } from 'vue'
 import { BroadcastChannelProvider } from './collab'
@@ -55,6 +56,7 @@ const editor = new Editor({
     table(),
     ai(),
     html(),
+    workflow(),
   ],
 })
 

@@ -45,6 +45,7 @@ export default definePlugin((editor, options) => {
     isElement,
     exec,
     mode,
+    modes,
   } = editor
 
   const {
@@ -90,10 +91,12 @@ export default definePlugin((editor, options) => {
 
   const modeMenu = computed(() => ({
     key: 'mode',
-    children: [
-      { key: 'mode:canvas', checked: mode.value === 'canvas', handle: () => mode.value = 'canvas' },
-      { key: 'mode:workflow', checked: mode.value === 'workflow', handle: () => mode.value = 'workflow' },
-    ],
+    // 核心 'canvas' + 插件经 registerMode 贡献的模式（如 @mce/workflow）。
+    children: ['canvas', ...modes.value].map(m => ({
+      key: `mode:${m}`,
+      checked: mode.value === m,
+      handle: () => mode.value = m,
+    })),
   }))
 
   const editMenus1 = computed(() => [

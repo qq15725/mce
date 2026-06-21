@@ -1,10 +1,9 @@
 <script lang="ts" setup>
 import type { Element2D } from 'modern-canvas'
-import type { WorkflowPort } from '../utils/workflow'
+import type { WorkflowPort } from './workflow'
+import { Icon, useEditor } from 'mce'
 import { computed, ref } from 'vue'
-import { useEditor } from '../composables'
-import { getWorkflowPorts, INPUT_PORT, OUTPUT_PORT } from '../utils/workflow'
-import { Icon } from './icon'
+import { getWorkflowPorts, INPUT_PORT, OUTPUT_PORT } from './workflow'
 
 const {
   mode,

@@ -70,6 +70,13 @@ declare global {
        */
       icons: Ref<Record<string, string>>
       registerIcon: (name: string, path: string) => void
+
+      /**
+       * 插件注册的编辑模式（除核心 'canvas' 外，如 @mce/workflow 的 'workflow'）。
+       * 菜单的模式切换项据此生成；模式 UI 由插件以 overlay 组件按 mode 自行条件渲染。
+       */
+      modes: Ref<string[]>
+      registerMode: (mode: string) => void
     }
   }
 }
@@ -86,6 +93,7 @@ export default defineMixin((editor) => {
   const editingStates = new Set<string>()
   const toolbeltShapeItems = ref<string[]>([])
   const icons = ref<Record<string, string>>({})
+  const modes = ref<string[]>([])
 
   return {
     selectionRedirects,
@@ -132,6 +140,13 @@ export default defineMixin((editor) => {
     icons,
     registerIcon: (name: string, path: string) => {
       icons.value[name] = path
+    },
+
+    modes,
+    registerMode: (mode: string) => {
+      if (!modes.value.includes(mode)) {
+        modes.value.push(mode)
+      }
     },
   }
 })

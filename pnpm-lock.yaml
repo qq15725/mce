@@ -225,6 +225,19 @@ importers:
         specifier: workspace:*
         version: link:../mce
 
+  packages/workflow:
+    dependencies:
+      vue:
+        specifier: ^3.5.0
+        version: 3.5.35(typescript@6.0.3)
+    devDependencies:
+      '@vitejs/plugin-vue':
+        specifier: ^6.0.7
+        version: 6.0.7(vite@8.0.16(@types/node@25.9.2)(esbuild@0.27.3)(jiti@2.7.0)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.9.0))(vue@3.5.35(typescript@6.0.3))
+      mce:
+        specifier: workspace:*
+        version: link:../mce
+
   playground:
     devDependencies:
       '@mce/ai':
@@ -257,6 +270,9 @@ importers:
       '@mce/svg':
         specifier: workspace:*
         version: link:../packages/svg
+      '@mce/workflow':
+        specifier: workspace:*
+        version: link:../packages/workflow
       '@tsconfig/node22':
         specifier: ^22.0.5
         version: 22.0.5
