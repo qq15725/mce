@@ -267,14 +267,75 @@ editor.exec('applyAiActions', [
 ])
 ```
 
-Real-time collaboration (needs `@mce/collaboration`):
+## 🤝 Collaboration
+
+The CRDT document model (Yjs) lives in the **core** — undo / redo and offline
+persistence (IndexedDB) build on it. The **network transport and presence**
+(awareness) layer is the optional `@mce/collaboration` package.
+
+**1. Register the plugin**
 
 ```ts
-editor.presence.setUser({ name: 'Alice', color: '#E64980' })
-editor.collaboration.connect({ url: 'wss://your-server', room: 'doc-1' })
-// editor.collaboration.connected / .synced — reactive status
-// editor.presence.peers — reactive remote users (cursors / selection)
+import collaboration from '@mce/collaboration'
+
+const editor = new Editor({
+  plugins: [
+    collaboration(), // registers the collaboration + presence plugins
+  ],
+})
 ```
+
+**2. Identify the local user (presence)**
+
+```ts
+editor.presence.setUser({
+  id: 'u-1', // optional, for dedupe / avatars
+  name: 'Alice',
+  color: '#E64980',
+  avatar: 'https://…', // optional
+})
+```
+
+**3. Connect to a room**
+
+```ts
+// Built-in WebSocket transport (y-websocket compatible server)
+editor.collaboration.connect({
+  url: 'wss://your-server',
+  room: 'doc-1', // defaults to the current document id
+})
+
+// …or a custom / pluggable transport (WebRTC, BroadcastChannel, …)
+import { AbstractProvider } from '@mce/collaboration'
+editor.collaboration.connect({
+  provider: doc => new MyProvider(doc), // doc is the document's YDoc
+})
+
+editor.collaboration.disconnect() // end the session
+```
+
+You can also auto-connect on startup via the editor option:
+
+```ts
+new Editor({ collaboration: { url: 'wss://your-server', room: 'doc-1' } })
+```
+
+**4. Reactive status & remote peers**
+
+```ts
+editor.collaboration.connected // Ref<boolean> — transport connected
+editor.collaboration.synced    // Ref<boolean> — first full sync done
+editor.collaboration.active    // Ref<boolean> — a session is active
+editor.presence.peers          // Ref<Peer[]> — remote users (cursor / selection / user)
+editor.presence.localUser      // Ref<PresenceUser>
+```
+
+Remote cursors, selection boxes and a connection/avatars status-bar item render
+automatically once a session is active. Document switching rebuilds the provider
+on the new document's `YDoc`; the transport is bound per-document.
+
+> Comments (`@mce/comments`) live on `element.comments` and are part of the
+> document model, so they sync over the same session automatically.
 
 ## 🏗️ Architecture
 
