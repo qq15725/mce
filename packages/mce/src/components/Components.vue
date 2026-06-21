@@ -63,7 +63,7 @@ onUnmounted(() => {
 }
 .mce-components__empty {
   padding: 16px 8px;
-  color: var(--mce-color-text-secondary, #999);
+  color: rgba(var(--m-theme-on-surface), .55);
   font-size: 12px;
   text-align: center;
 }
@@ -79,7 +79,7 @@ onUnmounted(() => {
   user-select: none;
 }
 .mce-components__item:hover {
-  background: var(--mce-color-hover, rgb(0 0 0 / 6%));
+  background: rgba(var(--m-theme-on-surface), .06);
 }
 .mce-components__name {
   overflow: hidden;
@@ -102,6 +102,6 @@ onUnmounted(() => {
 }
 .mce-components__remove:hover {
   opacity: 1;
-  background: var(--mce-color-hover, rgb(0 0 0 / 10%));
+  background: rgba(var(--m-theme-on-surface), .1);
 }
 </style>

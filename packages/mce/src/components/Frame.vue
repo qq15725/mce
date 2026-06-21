@@ -84,7 +84,7 @@ async function onPointerdown(event: PointerEvent) {
   position: absolute;
 
   &--outline {
-    outline: 1px solid #0000002b;
+    outline: 1px solid rgba(var(--m-theme-on-surface), .17);
   }
 
   &--lock {

@@ -498,7 +498,7 @@ onBeforeUnmount(disposePreview)
     &--primary {
       border: none;
       background: rgb(var(--m-theme-primary, 30 200 230));
-      color: #fff;
+      color: rgb(var(--m-theme-on-primary, 255 255 255));
       font-weight: 600;
     }
   }

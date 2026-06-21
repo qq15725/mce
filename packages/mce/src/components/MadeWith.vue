@@ -15,7 +15,7 @@
     right: 18px;
     bottom: 18px;
     opacity: .38;
-    color: #000;
+    color: rgb(var(--m-theme-on-surface));
     text-align: center;
     font-size: 0.75rem;
     line-height: 1;

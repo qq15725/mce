@@ -60,7 +60,7 @@ const progress = defineModel<number>({ default: 0 })
         left: -30%;
         width: 30%;
         height: 100%;
-        background-color: #3b82f6;
+        background-color: rgb(var(--m-theme-primary));
         animation: indeterminate-slide 1.5s linear infinite;
       }
     }

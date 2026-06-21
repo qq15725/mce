@@ -258,12 +258,12 @@ function portStyle(p: ScreenPort): Record<string, string> {
     margin: -9px 0 0 -9px;
     border-radius: 50%;
     background: rgb(var(--m-theme-primary, 30 200 230));
-    color: #fff;
+    color: rgb(var(--m-theme-on-primary, 255 255 255));
     font-size: 12px;
     cursor: crosshair;
     pointer-events: auto;
     user-select: none;
-    box-shadow: 0 0 0 2px #fff;
+    box-shadow: 0 0 0 2px rgb(var(--m-theme-surface, 255 255 255));
   }
 
   &__backdrop {
@@ -276,7 +276,7 @@ function portStyle(p: ScreenPort): Record<string, string> {
     position: absolute;
     min-width: 200px;
     padding: 6px;
-    background: #fff;
+    background: rgb(var(--m-theme-surface, 255 255 255));
     border-radius: 12px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
     pointer-events: auto;
@@ -285,7 +285,7 @@ function portStyle(p: ScreenPort): Record<string, string> {
   &__menu-title {
     padding: 6px 10px;
     font-size: 12px;
-    color: #9ca3af;
+    color: rgba(var(--m-theme-on-surface, 30 30 30), .5);
   }
 
   &__menu-item {
@@ -298,11 +298,11 @@ function portStyle(p: ScreenPort): Record<string, string> {
     border-radius: 8px;
     background: transparent;
     font-size: 14px;
-    color: #1f2937;
+    color: rgb(var(--m-theme-on-surface, 30 30 30));
     cursor: pointer;
 
     &:hover {
-      background: #f3f4f6;
+      background: rgba(var(--m-theme-on-surface, 30 30 30), .06);
     }
   }
 
@@ -313,13 +313,13 @@ function portStyle(p: ScreenPort): Record<string, string> {
 
     .m-icon {
       font-size: 18px;
-      color: #6b7280;
+      color: rgba(var(--m-theme-on-surface, 30 30 30), .6);
     }
   }
 
   &__menu-kbd {
     font-size: 12px;
-    color: #9ca3af;
+    color: rgba(var(--m-theme-on-surface, 30 30 30), .5);
   }
 }
 </style>

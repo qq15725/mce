@@ -30,7 +30,7 @@ const {
 
   &__tip {
     margin: 4px;
-    border: 1px solid #0000002b;
+    border: 1px solid rgba(var(--m-theme-on-surface), .17);
     border-radius: 4px;
     width: fit-content;
     height: 22px;
