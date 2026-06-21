@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { Icon, useEditor } from 'mce'
+import { Dialog, Icon, useEditor } from 'mce'
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 
 const { state, elementSelection } = useEditor()
@@ -204,9 +204,12 @@ onBeforeUnmount(disposePreview)
 </script>
 
 <template>
-  <div v-if="active" class="m-chart-editor">
-    <div class="m-chart-editor__backdrop" @pointerdown="close" />
-    <div class="m-chart-editor__dialog" @pointerdown.stop>
+  <Dialog
+    :model-value="active"
+    width="min(1040px, 92vw)"
+    @update:model-value="(v) => { if (!v) close() }"
+  >
+    <div class="m-chart-editor">
       <header class="m-chart-editor__header">
         <Icon icon="$chartBar" />
         <span class="m-chart-editor__title">图表数据</span>
@@ -277,37 +280,16 @@ onBeforeUnmount(disposePreview)
         </button>
       </footer>
     </div>
-  </div>
+  </Dialog>
 </template>
 
 <style lang="scss">
 .m-chart-editor {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
+  // 外层遮罩 / 居中 / 面板样式由 mce 的 Dialog 提供，这里只负责内容布局。
+  flex: 1;
+  min-height: 0;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: auto;
-
-  &__backdrop {
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, .35);
-  }
-
-  &__dialog {
-    position: relative;
-    width: min(1040px, 92vw);
-    max-height: 88vh;
-    display: flex;
-    flex-direction: column;
-    background: rgb(var(--m-theme-surface, 255 255 255));
-    color: rgb(var(--m-theme-on-surface, 30 30 30));
-    border-radius: 16px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, .25);
-    overflow: hidden;
-  }
+  flex-direction: column;
 
   &__header {
     display: flex;
