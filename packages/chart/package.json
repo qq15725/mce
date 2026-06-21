@@ -53,7 +53,7 @@
     "typecheck": "vue-tsc --noEmit --project tsconfig.json"
   },
   "dependencies": {
-    "echarts": "^5 || ^6"
+    "echarts": "^6.1.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.7",

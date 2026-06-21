@@ -67,7 +67,7 @@ importers:
   packages/chart:
     dependencies:
       echarts:
-        specifier: ^5 || ^6
+        specifier: ^6.1.0
         version: 6.1.0
       vue:
         specifier: ^3.5.0
