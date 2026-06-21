@@ -12,6 +12,8 @@ declare global {
       visible: boolean
       /** 浮动停靠方向：上 / 下 / 左 / 右。左右为竖向排列。默认 bottom。 */
       placement?: 'top' | 'bottom' | 'left' | 'right'
+      /** 沿停靠边的中心坐标（上 / 下 为 x、左 / 右 为 y，相对画板像素）。undefined 表示居中。 */
+      offset?: number
     }
   }
 }

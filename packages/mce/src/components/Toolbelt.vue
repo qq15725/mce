@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, onScopeDispose, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useEditor } from '../composables/editor'
+import { addDragListener } from '../utils'
 import { Icon } from './icon'
 import Btn from './shared/Btn.vue'
 import Menu from './shared/Menu.vue'
@@ -14,59 +15,41 @@ const {
   hotkeys,
   getKbd,
   getConfigRef,
-  drawboardPointer,
   drawboardAabb,
   toolbeltShapeItems,
 } = useEditor()
 
 const config = getConfigRef<Mce.ToolbeltConfig>('ui.toolbelt')
-const placement = computed(() => config.value?.placement ?? 'bottom')
 
-// —— 拖拽吸附：拖手柄时工具栏跟随指针，松手按指针距画板四边最近边吸附 ——
+// —— 停靠式拖拽（贴边滑动 + 居中吸附）——
+// 工具栏始终贴某条边；拖手柄时沿离指针最近的边的轴滑动（实时跟随），
+// 经过该边中点时吸附居中；松手提交停靠边与沿边偏移。
+const SNAP = 12 // 居中吸附阈值（px）
 const dragging = ref(false)
+// 拖拽中的实时停靠（边 + 沿边中心偏移）；松手提交到 config。
+const dragState = ref<{ placement: NonNullable<Mce.ToolbeltConfig['placement']>, offset: number | undefined }>()
 
-// 抓取手柄时记录指针相对工具栏左上角的像素偏移，拖拽时保持该偏移，
-// 使抓取点（手柄）始终跟随指针，而不是把工具栏中心跳到指针处。
-const grabOffset = ref({ x: 0, y: 0 })
+const placement = computed(() => dragState.value?.placement ?? config.value?.placement ?? 'bottom')
+// 沿边偏移（工具栏中心沿轴坐标，相对画板）。undefined 表示居中（交回 CSS）。
+const offset = computed(() => (dragging.value ? dragState.value?.offset : config.value?.offset))
 
-const dragStyle = computed(() => {
-  const p = drawboardPointer.value
-  if (!dragging.value || !p) {
+const barStyle = computed(() => {
+  const o = offset.value
+  if (o == null) {
     return undefined
   }
-  // drawboardPointer 与工具栏均以画板容器为基准；减去抓取偏移即得工具栏左上角。
-  return {
-    left: `${p.x - grabOffset.value.x}px`,
-    top: `${p.y - grabOffset.value.y}px`,
-    right: 'auto',
-    bottom: 'auto',
-    transform: 'none',
-  }
+  // 上/下沿 x 定位、左/右沿 y 定位；居中 transform 由 placement class 提供。
+  return (placement.value === 'left' || placement.value === 'right')
+    ? { top: `${o}px` }
+    : { left: `${o}px` }
 })
 
-function nearestPlacement(): Mce.ToolbeltConfig['placement'] {
-  const p = drawboardPointer.value
+// 指针落在画板四边中距离最近的一边。
+function nearestEdge(px: number, py: number): NonNullable<Mce.ToolbeltConfig['placement']> {
   const ab = drawboardAabb.value
-  if (!p || !ab) {
-    return placement.value
-  }
-  const dists = {
-    top: p.y,
-    bottom: ab.height - p.y,
-    left: p.x,
-    right: ab.width - p.x,
-  } as const
+  const dists = { top: py, bottom: ab.height - py, left: px, right: ab.width - px } as const
   return (Object.keys(dists) as (keyof typeof dists)[])
     .reduce((a, b) => (dists[b] < dists[a] ? b : a))
-}
-
-function onDragEnd(): void {
-  window.removeEventListener('mouseup', onDragEnd)
-  if (!dragging.value) {
-    return
-  }
-  dragging.value = false
-  config.value = { ...config.value, placement: nearestPlacement() }
 }
 
 function onGripDown(e: MouseEvent): void {
@@ -75,15 +58,49 @@ function onGripDown(e: MouseEvent): void {
   }
   e.preventDefault()
   const bar = (e.currentTarget as HTMLElement).closest('.m-toolbelt') as HTMLElement | null
-  if (bar) {
-    const rect = bar.getBoundingClientRect()
-    grabOffset.value = { x: e.clientX - rect.left, y: e.clientY - rect.top }
-  }
-  dragging.value = true
-  window.addEventListener('mouseup', onDragEnd)
-}
+  const rect = bar?.getBoundingClientRect()
+  const halfW = (rect?.width ?? 0) / 2
+  const halfH = (rect?.height ?? 0) / 2
+  // 抓取点相对工具栏中心的偏移：拖拽时保持，避免工具栏瞬移把中心跳到指针下。
+  const grabDx = rect ? e.clientX - (rect.left + halfW) : 0
+  const grabDy = rect ? e.clientY - (rect.top + halfH) : 0
 
-onScopeDispose(() => window.removeEventListener('mouseup', onDragEnd))
+  addDragListener(e, {
+    threshold: 4,
+    start: () => {
+      dragging.value = true
+    },
+    move: (ctx) => {
+      const ab = drawboardAabb.value
+      const px = ctx.movePoint.x - ab.left
+      const py = ctx.movePoint.y - ab.top
+      const place = nearestEdge(px, py)
+      const vertical = place === 'left' || place === 'right'
+      const half = vertical ? halfH : halfW
+      const axisLen = vertical ? ab.height : ab.width
+      const axisCenter = axisLen / 2
+      // 工具栏中心沿轴坐标（扣除抓取偏移），夹在画板内（留 8px 边距）。
+      const along = vertical ? py - grabDy : px - grabDx
+      const pos = Math.min(Math.max(along, half + 8), axisLen - half - 8)
+      // 靠近中点吸附居中（offset 置 undefined）。
+      dragState.value = {
+        placement: place,
+        offset: Math.abs(pos - axisCenter) < SNAP ? undefined : pos,
+      }
+    },
+    end: () => {
+      dragging.value = false
+      if (dragState.value) {
+        config.value = {
+          ...config.value,
+          placement: dragState.value.placement,
+          offset: dragState.value.offset,
+        }
+      }
+      dragState.value = undefined
+    },
+  })
+}
 
 // tooltip / 子菜单弹出方向随停靠方向背向工具栏，避免被画布边缘遮挡。
 const tooltipLocation = computed(() => (({
@@ -201,7 +218,7 @@ const items = computed(() => {
   <div
     class="m-toolbelt"
     :class="[`m-toolbelt--${placement}`, { 'm-toolbelt--dragging': dragging }]"
-    :style="dragStyle"
+    :style="barStyle"
   >
     <div
       class="m-toolbelt__grip"
@@ -339,7 +356,6 @@ const items = computed(() => {
 
     &--dragging {
       cursor: grabbing;
-      opacity: .92;
       box-shadow: 0 12px 32px rgba(0, 0, 0, .24);
       user-select: none;
     }
@@ -376,6 +392,12 @@ const items = computed(() => {
       align-items: center;
     }
 
+    // 竖向时每组改纵向（按钮在上、下拉箭头在下），保持按钮列居中对齐。
+    &--left &__group,
+    &--right &__group {
+      flex-direction: column;
+    }
+
     &__btn {
       font-size: 20px;
       width: 32px;
@@ -393,6 +415,13 @@ const items = computed(() => {
       font-size: 0.625rem;
       border-radius: 6px;
       opacity: .5;
+    }
+
+    // 竖向时箭头转为按钮下方的横条。
+    &--left &__arrow,
+    &--right &__arrow {
+      width: 32px;
+      height: 14px;
     }
   }
 </style>
