@@ -11,7 +11,7 @@ export default defineConfig({
       fileName: () => `index.js`,
       formats: ['es'],
     },
-    rollupOptions: {
+    rolldownOptions: {
       external: [
         ...Object.keys(pkg.devDependencies || {}),
         ...Object.keys(pkg.peerDependencies || {}),

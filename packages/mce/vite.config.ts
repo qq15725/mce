@@ -20,7 +20,7 @@ export default defineConfig({
       fileName: () => `index.js`,
       formats: ['es'],
     },
-    rollupOptions: {
+    rolldownOptions: {
       external: [
         ...Object.keys(pkg.dependencies || {}),
         ...Object.keys(pkg.peerDependencies || {}),
