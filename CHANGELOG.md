@@ -1,3 +1,60 @@
+# [0.25.0](https://github.com/qq15725/mce/compare/v0.24.4...v0.25.0) (2026-06-21)
+
+
+### Bug Fixes
+
+* **context:** keep nodes/nodeIndexMap current via SceneTree node events ([fda22f6](https://github.com/qq15725/mce/commit/fda22f6b77d4dff63f4c1eee1aa92d603ce21cd6))
+* **crdt:** rebuild nested children on cold snapshot recovery ([642ba3f](https://github.com/qq15725/mce/commit/642ba3fbb42a2c12524565cb07f6f8ae9d2c7d2d))
+* **element:** call applyResizeOverride lazily via editor ([9a086b2](https://github.com/qq15725/mce/commit/9a086b268d4a2f7213b0cd8a3aea021ac88a2933))
+* **font:** move text re-measure-on-font-load to the lower layer ([7eb4999](https://github.com/qq15725/mce/commit/7eb4999bac0eba196fbbb3dace88582fb8e46554))
+* **history:** expose isUndoRedoing flag; fix cropper undo re-render ([b927c67](https://github.com/qq15725/mce/commit/b927c67beb0bd4ea6c5c24a497979aa1b4da5e58))
+* **plugins:** correct command logic and type declarations ([02743db](https://github.com/qq15725/mce/commit/02743db0072cc4c2e2b835a07658a62d69a9005a))
+* re-measure text once fonts ready, table-aware traversal, centralized doc-switch cleanup ([dd1d005](https://github.com/qq15725/mce/commit/dd1d005060aa9f19a6b6ba8293bded1274da9e3e))
+* **selection:** clear selection on document switch ([bdcb7be](https://github.com/qq15725/mce/commit/bdcb7be6a1e53572f64a73ecc90776439c740850))
+* **typography:** remap textSelection after fragment regroup ([73e3399](https://github.com/qq15725/mce/commit/73e33999bad169c4ca34c3a12673470a8b0ed7e2))
+* **ui:** use theme colors instead of hardcoded values ([1ce562d](https://github.com/qq15725/mce/commit/1ce562d8a355b87539060eb36875c848e7790180)), closes [#999](https://github.com/qq15725/mce/issues/999) [#3b82f6](https://github.com/qq15725/mce/issues/3b82f6) [#000](https://github.com/qq15725/mce/issues/000) [#0000002b](https://github.com/qq15725/mce/issues/0000002b) [6b7280/#f3f4f6](https://github.com/qq15725/mce/issues/f3f4f6)
+* **variables,components,animate:** correct doc-meta storage and apply paths ([cdbd8d2](https://github.com/qq15725/mce/commit/cdbd8d23fe9591bffa31fcddb03bb077239fd420))
+
+
+### Features
+
+* **ai,html:** extract @mce/ai and @mce/html packages ([c1fc140](https://github.com/qq15725/mce/commit/c1fc14035b468ab8589cb854a140b7a005c8163a))
+* **ai:** add typed AI canvas action layer ([acd5c78](https://github.com/qq15725/mce/commit/acd5c7862e1b982f9ff6517be6013988d44e9587))
+* **animate:** keyframe editing, reusable easing, Lottie export ([11bbd5c](https://github.com/qq15725/mce/commit/11bbd5cdd3b4d29e475f97ac4fbfb973e690caec))
+* **animate:** on-track animation editing, presets and interaction system ([86834af](https://github.com/qq15725/mce/commit/86834af6078491d24b850cedcd3da372b4a80478))
+* **arrange:** implement Figma-style tidyUp grid layout ([772f638](https://github.com/qq15725/mce/commit/772f638746e5bb14637c98b386f9541f255afbef))
+* **chart,table:** editing command layers ([a4e413c](https://github.com/qq15725/mce/commit/a4e413ced36bdbb60763eafe5435ebddba8e8df2))
+* **chart,table:** extract chart/table into @mce/chart and @mce/table packages ([97329a8](https://github.com/qq15725/mce/commit/97329a879270ee49f3df8c1b1768f889e52388fb))
+* **chart:** double-click chart data editor dialog ([e505256](https://github.com/qq15725/mce/commit/e505256969ed0ec0996362d1134361520eefda7b))
+* **collaboration:** extract @mce/collaboration package ([594af20](https://github.com/qq15725/mce/commit/594af20b23958014570b97587bb89384641ddd15))
+* **comments:** Figma-like comments via element.comments ([a069872](https://github.com/qq15725/mce/commit/a069872b2aa2e07d2bc5837055bf7233de5080a2))
+* **components:** component / symbol / instance system ([263c575](https://github.com/qq15725/mce/commit/263c575cc1807a79bae5053886d3a83e033d1377))
+* **components:** component library panel + preset loading ([1c6ce19](https://github.com/qq15725/mce/commit/1c6ce19084e2d764a88544cb628d29126f32b41c))
+* **components:** deep-merge overrides + nested instance resolution ([508362f](https://github.com/qq15725/mce/commit/508362f471010c42ba4f2895a94b8713a3543836))
+* **context:** add editor.getNodeById backed by SceneTree.nodeMap ([2a5ec58](https://github.com/qq15725/mce/commit/2a5ec58f987e4713d0f92e0208a951cafbee17e3))
+* **crdt:** collaboration session lifecycle, awareness presence & status UI ([9ac60b3](https://github.com/qq15725/mce/commit/9ac60b35e1febcc70ac2b62e4247eecf227e49a3))
+* **crdt:** collaborative providers, lossless sync, decouple reactivity from vue ([425e120](https://github.com/qq15725/mce/commit/425e120b96adf1bf4bc39a1c263e17718f8ad968))
+* **dialog:** modal Dialog component with transition; chart editor uses it ([0acc37f](https://github.com/qq15725/mce/commit/0acc37ffa4752121f88667811446027bed804193))
+* **extensions:** add registerIcon; move table/chart icons into their packages ([5e171b2](https://github.com/qq15725/mce/commit/5e171b25748d5a32c02481b2008c25b8791c7745))
+* **flexLayout:** add container-level flex commands ([8422009](https://github.com/qq15725/mce/commit/842200922f8f8e9d5db83befb56a18349255cd67))
+* **gif:** self-default the encoding worker, make gifWorkerUrl optional ([86db494](https://github.com/qq15725/mce/commit/86db49417c688daf21e589ab13a00496dea297f1))
+* **panels:** resizable dockable panels with persisted size ([4e94b1e](https://github.com/qq15725/mce/commit/4e94b1edca88301419d952febf1d0c52704ee6d7))
+* **playground:** add shape/text/fill/table/chart demos ([a836fb1](https://github.com/qq15725/mce/commit/a836fb1301308228e1ecd045ebb4d61b30f95a37))
+* **presence): remote selection name labels + cursor interpolation; test(crdt:** websocket reconnect/offline buffering ([797a98b](https://github.com/qq15725/mce/commit/797a98bf306ba3b5b231cf36e2c407ed06f154da))
+* **psd:** add @mce/psd package for PSD (Photoshop) import ([473084f](https://github.com/qq15725/mce/commit/473084fb7fc57d94dfb714826d8eca81bb90177c))
+* **strategy:** figma-style selection — cmd/ctrl deep-select, shift add ([f8093b0](https://github.com/qq15725/mce/commit/f8093b0cb5f9841ddf435ca2d000f5be4c495a12))
+* **timeline:** on-track keyframe editing with bezier easing popover ([179672d](https://github.com/qq15725/mce/commit/179672db712afe088f7a6e79edbe3b2f29d70b7b))
+* **toolbelt:** edge-docking drag with along-edge slide and center snap ([35a01ad](https://github.com/qq15725/mce/commit/35a01ad1e0ffa8650365c226405d191d848ecaab))
+* **toolbelt:** figma-style refinement + 4-way dock with drag-to-snap ([caca160](https://github.com/qq15725/mce/commit/caca160fe0156ad6559492fd1f91ab51d7689870))
+* **variables:** design tokens / variables system ([56f4eea](https://github.com/qq15725/mce/commit/56f4eeaa11d11edb7583beddae6247fa7f525cfc))
+* **workflow:** extract @mce/workflow; make Mode extensible ([84da0ea](https://github.com/qq15725/mce/commit/84da0ea175a55ee9a416936a593b8c3c6d7f40c8))
+
+
+### Performance Improvements
+
+* **gif:** lazy-load the encoder so it matches the other export plugins ([d57eb7e](https://github.com/qq15725/mce/commit/d57eb7e868f8040d0db7211b070c5508faeec8a0))
+* **plugins:** use getNodeById for id lookups instead of O(n) findOne ([85b96b2](https://github.com/qq15725/mce/commit/85b96b2d00156b34810dc1f825f946396fbf2e66))
+
 ## [0.24.4](https://github.com/qq15725/mce/compare/v0.24.3...v0.24.4) (2026-06-14)
 
 
