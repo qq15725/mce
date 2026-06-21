@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import { useEditor } from 'mce'
 import { computed } from 'vue'
-import { useEditor } from '../composables/editor'
 
 const {
   presence,

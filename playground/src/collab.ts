@@ -1,5 +1,5 @@
 import type { YDoc } from 'mce'
-import { AbstractProvider } from 'mce'
+import { AbstractProvider } from '@mce/collaboration'
 
 /**
  * 基于 BroadcastChannel 的传输：同一浏览器多标签页之间同步，零服务端、零网络。

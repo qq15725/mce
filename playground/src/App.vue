@@ -2,6 +2,7 @@
 import ai from '@mce/ai'
 import bigesj, { options } from '@mce/bigesj'
 import chart from '@mce/chart'
+import collaboration from '@mce/collaboration'
 import gaoding from '@mce/gaoding'
 import html from '@mce/html'
 import gif from '@mce/gif'
@@ -57,6 +58,7 @@ const editor = new Editor({
     ai(),
     html(),
     workflow(),
+    collaboration(),
   ],
 })
 

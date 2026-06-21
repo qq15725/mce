@@ -1,5 +1,5 @@
+import { Doc } from 'mce'
 import { describe, expect, it } from 'vitest'
-import { Doc } from '../../scene/Doc'
 import { AbstractProvider } from './AbstractProvider'
 
 /**

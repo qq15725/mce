@@ -6,7 +6,6 @@ import _animate from './animate'
 import _arrange from './arrange'
 import _autoNest from './autoNest'
 import _clipboard from './clipboard'
-import _collaboration from './collaboration'
 import _components from './components'
 import _doc from './doc'
 import _edit from './edit'
@@ -25,7 +24,6 @@ import _memory from './memory'
 import _menu from './menu'
 import _node from './node'
 import _pen from './pen'
-import _presence from './presence'
 import _ruler from './ruler'
 import _saveAs from './saveAs'
 import _scroll from './scroll'
@@ -52,7 +50,6 @@ export const plugins = [
   _arrange,
   _autoNest,
   _clipboard,
-  _collaboration,
   _components,
   _doc,
   _edit,
@@ -71,7 +68,6 @@ export const plugins = [
   _menu,
   _node,
   _pen,
-  _presence,
   _ruler,
   _saveAs,
   _scroll,

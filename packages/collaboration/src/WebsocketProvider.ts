@@ -1,5 +1,5 @@
-import type { YDoc } from '../../YDoc'
-import { AbstractProvider } from '../AbstractProvider'
+import type { YDoc } from 'mce'
+import { AbstractProvider } from './AbstractProvider'
 
 export interface WebsocketProviderOptions {
   /** 是否构造后立即连接，默认 true。 */

@@ -1,0 +1,64 @@
+{
+  "name": "@mce/collaboration",
+  "type": "module",
+  "version": "0.24.4",
+  "description": "Collaboration plugin for mce",
+  "author": "wxm",
+  "license": "MIT",
+  "homepage": "https://github.com/qq15725/mce",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qq15725/mce.git"
+  },
+  "bugs": {
+    "url": "https://github.com/qq15725/mce/issues"
+  },
+  "keywords": [
+    "mce",
+    "collaboration",
+    "plugin"
+  ],
+  "sideEffects": true,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./*.mjs": "./*.js",
+    "./*": "./*"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "browser": "./dist/index.js",
+  "typings": "dist/index.d.ts",
+  "types": "dist/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "*",
+        "dist/*",
+        "dist/*.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build:code": "vite build",
+    "build:tsc": "NODE_ENV=production vue-tsc --emitDeclarationOnly --project tsconfig.json",
+    "build": "pnpm build:code && pnpm build:tsc",
+    "lint": "eslint src",
+    "typecheck": "vue-tsc --noEmit --project tsconfig.json",
+    "test": "vitest --run"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.7",
+    "mce": "workspace:*"
+  },
+  "peerDependencies": {
+    "mce": "^0",
+    "vue": "^3.5.0"
+  }
+}

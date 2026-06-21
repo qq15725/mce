@@ -1,5 +1,5 @@
+import { YDoc } from 'mce'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { YDoc } from '../../YDoc'
 import { WebsocketProvider } from './WebsocketProvider'
 
 /**

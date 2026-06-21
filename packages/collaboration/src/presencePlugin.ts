@@ -1,7 +1,7 @@
 import type { Ref } from 'vue'
+import { definePlugin } from 'mce'
 import { ref, watch } from 'vue'
-import Presence from '../components/Presence.vue'
-import { definePlugin } from '../plugin'
+import Presence from './Presence.vue'
 
 declare global {
   namespace Mce {

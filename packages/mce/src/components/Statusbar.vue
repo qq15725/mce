@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { useEditor } from '../composables/editor'
-import CollaborationStatus from './CollaborationStatus.vue'
 import { Icon } from './icon'
 import ProgressIndicator from './shared/ProgressIndicator.vue'
 
@@ -12,6 +11,7 @@ const {
   exportProgress,
   selection,
   isElement,
+  statusbarItems,
 } = useEditor()
 </script>
 
@@ -113,7 +113,7 @@ const {
       />
     </div>
 
-    <CollaborationStatus />
+    <component :is="item" v-for="(item, i) in statusbarItems" :key="i" />
   </div>
 </template>
 

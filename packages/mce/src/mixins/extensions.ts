@@ -1,6 +1,6 @@
 import type { Element2D } from 'modern-canvas'
-import type { Ref } from 'vue'
-import { ref } from 'vue'
+import type { Component, Ref } from 'vue'
+import { ref, shallowRef } from 'vue'
 import { defineMixin } from '../mixin'
 
 declare global {
@@ -77,6 +77,13 @@ declare global {
        */
       modes: Ref<string[]>
       registerMode: (mode: string) => void
+
+      /**
+       * 插件向状态栏右侧追加的组件（如 @mce/collaboration 的连接状态 / 在场头像）。
+       * Statusbar 据此渲染，核心状态栏不再直接 import 插件组件。
+       */
+      statusbarItems: Ref<Component[]>
+      registerStatusbarItem: (component: Component) => void
     }
   }
 }
@@ -94,6 +101,7 @@ export default defineMixin((editor) => {
   const toolbeltShapeItems = ref<string[]>([])
   const icons = ref<Record<string, string>>({})
   const modes = ref<string[]>([])
+  const statusbarItems = shallowRef<Component[]>([])
 
   return {
     selectionRedirects,
@@ -147,6 +155,11 @@ export default defineMixin((editor) => {
       if (!modes.value.includes(mode)) {
         modes.value.push(mode)
       }
+    },
+
+    statusbarItems,
+    registerStatusbarItem: (component: Component) => {
+      statusbarItems.value = [...statusbarItems.value, component]
     },
   }
 })

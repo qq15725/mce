@@ -1,11 +1,11 @@
+import type { YDoc } from 'mce'
 import type { ObservableEvents } from 'modern-idoc'
-import type { YDoc } from '../YDoc'
 import * as decoding from 'lib0/decoding'
 import * as encoding from 'lib0/encoding'
+import { INTERNAL_ORIGIN } from 'mce'
 import { Observable } from 'modern-idoc'
 import * as awarenessProtocol from 'y-protocols/awareness'
 import * as syncProtocol from 'y-protocols/sync'
-import { INTERNAL_ORIGIN } from '../YDoc'
 
 /**
  * 顶层消息类型。一个消息 = [messageType: varUint, payload...]，房间名由传输层在 URL 等处携带。

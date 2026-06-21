@@ -50,16 +50,27 @@ packages/
   bigesj/     # Bigesj 集成插件（@mce/bigesj）
   chart/      # 图表元素插件（@mce/chart）
   table/      # 表格元素插件（@mce/table，含 TableEditor 组件）
+  ai/         # AI action 插件（@mce/ai）
+  html/       # HTML 导入 loader 插件（@mce/html）
+  workflow/   # 节点图模式插件（@mce/workflow，含 Workflow 组件）
+  collaboration/ # 实时协同插件（@mce/collaboration：传输 provider + 在场感知；CRDT 文档模型 YDoc 仍在核心）
 playground/   # 演示与测试应用
 ```
 
 所有插件以 `mce: ^0` 为 peer dependency。
 
-元素类型插件（chart/table）通过核心的扩展点解耦：`registerSelectionRedirect`
-（命中重定向，如单元格→表格）、`registerResizeOverride`（自定义缩放）、
-`registerEnterHandler`（双击/Enter 进入编辑）、`registerEditingState`+`isContentEditing`
-（内容编辑态下隐藏选择框/浮动条、抑制快捷键）、`registerToolbeltShapeItem`
-（向工具栏形状菜单追加工具）。见 `mixins/extensions.ts`。
+插件通过核心 `mixins/extensions.ts` 的扩展点解耦，避免在核心硬编码元素/特性专属逻辑：
+- `registerSelectionRedirect`（命中重定向，如单元格→表格）
+- `registerResizeOverride`（自定义缩放，如表格按网格）
+- `registerEnterHandler`（双击/Enter 进入编辑）
+- `registerEditingState` + `isContentEditing`（内容编辑态下隐藏选择框/浮动条、抑制快捷键）
+- `registerToolbeltShapeItem`（向工具栏形状菜单追加工具）
+- `registerIcon`（随插件携带图标，合并进图标集）
+- `registerMode`（注册编辑模式，如 workflow；`Mode` 类型为 `'canvas' | (string & {})`）
+- `registerStatusbarItem`（向状态栏追加组件，如协同状态/在场头像）
+
+`State` 同样放开为接纳插件字符串。CRDT 文档模型（`crdt/YDoc` + IndexeddbProvider）是核心；
+网络传输与在场感知（AbstractProvider/WebsocketProvider/presence）在 `@mce/collaboration`。
 
 ### 核心层次（packages/mce/src/）
 

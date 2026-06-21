@@ -1,10 +1,11 @@
+import type { YDoc } from 'mce'
 import type { Ref, ShallowRef } from 'vue'
-import type { YDoc } from '../crdt'
-import type { AbstractProvider, WebsocketProviderOptions } from '../crdt/providers'
+import type { AbstractProvider } from './AbstractProvider'
+import type { WebsocketProviderOptions } from './WebsocketProvider'
+import { definePlugin } from 'mce'
 import { onScopeDispose, ref, shallowRef } from 'vue'
-import { WebsocketProvider } from '../crdt/providers'
-import { definePlugin } from '../plugin'
-import { logger } from '../utils/console'
+import CollaborationStatus from './CollaborationStatus.vue'
+import { WebsocketProvider } from './WebsocketProvider'
 
 declare global {
   namespace Mce {
@@ -120,7 +121,7 @@ export default definePlugin((editor, options) => {
       factory = doc => new WebsocketProvider(url, room ?? editor.root.value.id, doc, websocket)
     }
     else {
-      logger.warn('[collaboration] connect 需要提供 url 或 provider')
+      console.warn('[collaboration] connect 需要提供 url 或 provider')
       return undefined
     }
     active.value = true
@@ -156,6 +157,9 @@ export default definePlugin((editor, options) => {
     connect,
     disconnect,
   }
+
+  // 状态栏连接状态 + 在场头像（核心状态栏经 statusbarItems 渲染）。
+  editor.registerStatusbarItem(CollaborationStatus)
 
   return {
     name: 'mce:collaboration',

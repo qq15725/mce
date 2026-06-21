@@ -16,6 +16,7 @@
     "@mce/ai": "workspace:*",
     "@mce/bigesj": "workspace:*",
     "@mce/chart": "workspace:*",
+    "@mce/collaboration": "workspace:*",
     "@mce/gaoding": "workspace:*",
     "@mce/gif": "workspace:*",
     "@mce/html": "workspace:*",

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
+import { useEditor } from 'mce'
 import { computed } from 'vue'
-import { useEditor } from '../composables/editor'
 
 const {
   collaboration,
