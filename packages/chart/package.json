@@ -47,17 +47,19 @@
   ],
   "scripts": {
     "build:code": "vite build",
-    "build:tsc": "NODE_ENV=production tsc --emitDeclarationOnly --project tsconfig.json",
+    "build:tsc": "NODE_ENV=production vue-tsc --emitDeclarationOnly --project tsconfig.json",
     "build": "pnpm build:code && pnpm build:tsc",
     "lint": "eslint src",
-    "typecheck": "tsc --noEmit --project tsconfig.json"
+    "typecheck": "vue-tsc --noEmit --project tsconfig.json"
   },
   "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.7",
     "mce": "workspace:*"
   },
   "peerDependencies": {
     "echarts": "^5 || ^6",
-    "mce": "^0"
+    "mce": "^0",
+    "vue": "^3.5.0"
   },
   "peerDependenciesMeta": {
     "echarts": {

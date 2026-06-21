@@ -1,9 +1,19 @@
 import path from 'node:path'
+import vue from '@vitejs/plugin-vue'
 import mcePkg from 'mce/package.json' with { type: 'json' }
 import { defineConfig } from 'vite'
 import pkg from './package.json'
 
 export default defineConfig({
+  plugins: [
+    vue({
+      template: {
+        compilerOptions: {
+          isCustomElement: (tag: string) => tag === 'text-editor',
+        },
+      },
+    }),
+  ],
   build: {
     minify: false,
     lib: {
@@ -20,6 +30,9 @@ export default defineConfig({
         ...Object.keys(mcePkg.peerDependencies || {}),
         ...Object.keys(mcePkg.devDependencies || {}),
       ].map(v => new RegExp(`^${v}`)),
+      output: {
+        assetFileNames: () => 'index.css',
+      },
     },
   },
 })

@@ -1,6 +1,7 @@
 import type { Element2D } from 'modern-canvas'
 import type { ChartType } from 'modern-idoc'
 import { definePlugin } from 'mce'
+import ChartEditor from './ChartEditor.vue'
 import { createChartElement } from './create'
 
 declare global {
@@ -40,6 +41,8 @@ export function plugin() {
       activateTool,
       registerToolbeltShapeItem,
       registerIcon,
+      registerEnterHandler,
+      registerEditingState,
     } = editor
 
     // 随插件携带图标（核心图标集不再硬编码图表图标）。
@@ -51,6 +54,17 @@ export function plugin() {
     registerToolbeltShapeItem('chartBar')
     registerToolbeltShapeItem('chartLine')
     registerToolbeltShapeItem('chartPie')
+
+    // 双击 / Enter 图表元素 → 打开数据编辑弹窗（ChartEditor 监听该状态）。
+    registerEnterHandler((el, ed) => {
+      if ((el as any).chart?.isValid?.()) {
+        ed.state.value = 'chartEditing'
+        return true
+      }
+      return false
+    })
+    // 内容编辑态：弹窗期间隐藏选择框 / 浮动条、抑制快捷键。
+    registerEditingState('chartEditing')
 
     function getChart(node?: Element2D): any {
       const el = (node ?? elementSelection.value[0]) as any
@@ -122,6 +136,9 @@ export function plugin() {
             return { end: () => activateTool(undefined) }
           },
         },
+      ],
+      components: [
+        { type: 'overlay', component: ChartEditor },
       ],
       messages: {
         en: {
