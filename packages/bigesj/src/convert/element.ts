@@ -4,11 +4,13 @@ import { clearUndef, idGenerator, isGradientFill, normalizeGradientFill } from '
 import { svgToPath2DSet } from 'modern-path2d'
 import { parseAnimations } from './animation'
 import { convertBackground } from './background'
+import { convertChart } from './chart'
 import { croppingToCropRect } from './cropping'
 import { convertImageEffects } from './image'
 import { convertShapeElementToSvg } from './shape'
 import { getStyle } from './style'
 import { convertSvgElementToUrl } from './svg'
+import { convertTable } from './table'
 import { convertTextContent, convertTextDeformation, convertTextEffects, convertTextStyle } from './text'
 import { transformToCropRect } from './transform'
 
@@ -237,6 +239,18 @@ export async function convertElement(
       meta.inCanvasIs = 'Video2D'
       ;(element as any).src = el.src
       break
+    case 'echart':
+      meta.inCanvasIs = 'Element2D'
+      meta.inPptIs = 'Shape'
+      meta.inEditorIs = 'Chart'
+      ;(element as any).chart = convertChart(el.chartOption)
+      break
+    case 'table':
+      meta.inCanvasIs = 'Element2D'
+      meta.inPptIs = 'Shape'
+      meta.inEditorIs = 'Table'
+      ;(element as any).table = convertTable(el.tableOption)
+      break
     case 'pic':
     case 'mosaic':
     case 'image_squence':
@@ -244,8 +258,6 @@ export async function convertElement(
     case 'legend':
     case 'ppt':
     case 'wordcloud':
-    case 'table':
-    case 'echart':
     case 'qrcode':
     case 'latex':
     case 'mindmap':

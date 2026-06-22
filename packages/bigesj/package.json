@@ -49,6 +49,7 @@
     "build:tsc": "NODE_ENV=production tsc --emitDeclarationOnly --project tsconfig.json",
     "build": "pnpm build:code && pnpm build:tsc",
     "lint": "eslint src",
+    "test": "vitest --run",
     "typecheck": "tsc --noEmit --project tsconfig.json"
   },
   "dependencies": {
