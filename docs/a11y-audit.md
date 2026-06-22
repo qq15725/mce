@@ -36,7 +36,7 @@
 文档元素全部画在 `<canvas>` 上，DOM 里只有空白。屏幕阅读器只能看到外层工具栏。**编辑内容、画板、节点、文本字段对 AT (assistive tech) 不存在**。
 
 工业方案有两种：
-- **Off-screen DOM mirror**：保留一份隐藏 DOM 树同步 canvas 内容，AT 读 DOM（Figma、Google Docs 早期做法）
+- **Off-screen DOM mirror**：保留一份隐藏 DOM 树同步 canvas 内容，AT 读 DOM（Google Docs 早期做法）
 - **Accessibility tree API**（Chromium 实验）：成本高且兼容性差
 
 目前**完全没有**做任何一种。
@@ -74,7 +74,7 @@
 
 ### 重头戏（2-4 周，AAA 级别需要）
 
-7. **Canvas DOM mirror**：维护一份隐藏 DOM 树，节点结构、层级、文本内容、选区状态都同步过去；屏幕阅读器读这份；用户操作（如 Tab 到某节点）映射回 canvas 选区。这是 Figma/Miro 都做了的事，工作量大。
+7. **Canvas DOM mirror**：维护一份隐藏 DOM 树，节点结构、层级、文本内容、选区状态都同步过去；屏幕阅读器读这份；用户操作（如 Tab 到某节点）映射回 canvas 选区。这是主流画布编辑器都做了的事，工作量大。
 
 ## 决策点（请回答）
 
