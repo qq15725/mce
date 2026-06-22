@@ -51,6 +51,9 @@ export default defineMixin((editor) => {
   }
 
   const activateTool: Mce.Editor['activateTool'] = (tool) => {
+    if (editor.readonly.value) {
+      return // 只读：不激活任何工具
+    }
     if (tool) {
       state.value = 'drawing'
       activeTool.value = tools.get(String(tool))

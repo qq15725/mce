@@ -33,6 +33,11 @@ declare global {
 
     type EditorNodeType = 'Doc' | 'Frame' | 'Slice' | 'Element'
 
+    interface Options {
+      /** 启动即只读：仅浏览 / 平移 / 缩放，禁用一切编辑。运行时可改 `editor.readonly.value`。 */
+      readonly?: boolean
+    }
+
     interface Editor {
       fonts: Fonts
       assets: Assets
@@ -57,6 +62,8 @@ declare global {
       hoverElement: Ref<Element2D | undefined>
       state: Ref<State | undefined>
       mode: Ref<Mode>
+      /** 前端只读模式：禁用一切编辑（选择拖动 / 变换 / 工具 / 双击编辑 / 变更类快捷键），仅保留浏览 / 平移 / 缩放。 */
+      readonly: Ref<boolean>
       getGlobalPointer: () => Vector2Like
       parseAnchor: (anchor: Anchor, isRtl?: boolean) => ParsedAnchor
       isNode: (value: any) => value is Node
@@ -112,6 +119,7 @@ export default defineMixin((editor, options) => {
   const hoverElement = ref<Element2D>()
   const state = ref<Mce.State>()
   const mode = ref<Mce.Mode>(options.mode ?? 'canvas')
+  const readonly = ref<boolean>(options.readonly ?? false)
 
   function setCursor(mode: Cursor | undefined): void {
     renderEngine.value.input.setCursor(mode)
@@ -242,6 +250,7 @@ export default defineMixin((editor, options) => {
     drawboardContextMenuPointer,
     state,
     mode,
+    readonly,
     setCursor,
     getGlobalPointer,
     parseAnchor,

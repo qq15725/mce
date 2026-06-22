@@ -201,6 +201,9 @@ function onEnginePointerDown(
   // 预览模式：禁用选择 / 拖拽，点击交给 interactions 插件触发交互。
   if (editor.previewMode?.value)
     return
+  // 只读模式：禁用选择 / 拖拽 / 双击进入编辑（仅保留平移 / 缩放 / hover）。
+  if (editor.readonly.value)
+    return
   const {
     srcElement,
     button,

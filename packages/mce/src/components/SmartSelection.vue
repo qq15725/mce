@@ -16,6 +16,7 @@ const {
   resizeElement,
   inEditorIs,
   aabbToDrawboardAabb,
+  readonly,
 } = useEditor()
 
 const info = ref<{
@@ -497,7 +498,7 @@ function onSpacingDrag(event: PointerEvent) {
 
 <template>
   <div
-    v-if="info"
+    v-if="info && !readonly"
     class="m-smart-selection"
     :class="{
       'm-smart-selection--hover': !state && isPointerInSelection,

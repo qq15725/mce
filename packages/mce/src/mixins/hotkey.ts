@@ -4,6 +4,9 @@ import { reactive } from 'vue'
 import { defineMixin } from '../mixin'
 import { isInputEvent, isMac, isWindows } from '../utils'
 
+/** 只读模式下仍放行的快捷键命令（不改文档：视图 / 缩放 / 滚动 / 面板切换 / 复制）。 */
+const READONLY_SAFE_COMMAND = /^(?:zoom|fit|scroll|toggle|copy)/i
+
 declare global {
   namespace Mce {
     interface Hotkeys {
@@ -345,6 +348,10 @@ export default defineMixin((editor) => {
             return
           }
           const command = hotkeyData.command
+          // 只读：默认拒绝,仅放行视图 / 缩放 / 滚动 / 面板切换 / 复制等不改文档的命令。
+          if (editor.readonly.value && !READONLY_SAFE_COMMAND.test(command)) {
+            return
+          }
           const hotkey = hotkeys.get(command)
           const keys = Array.isArray(hotkeyData.key) ? hotkeyData.key : [hotkeyData.key]
           keys.forEach((key) => {
