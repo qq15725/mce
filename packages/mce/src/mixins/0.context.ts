@@ -343,6 +343,21 @@ export default defineMixin((editor, options) => {
     //    docSet 被漏掉，索引一直为空；② 运行时增删节点不更新，编辑后会过期。
     // 改为订阅 SceneTree 的 nodeEnter/nodeExit（权威信号）并按 microtask 合并重建，避免加载时
     // N 个节点入场触发 N 次重建（O(n²)）。另在挂载时主动跑一次，兜住「挂载前已加载」。
+    // 远端删除 / 对端切文档（被动接收端不触发 docSet）后，selection / hoverElement 可能仍指向已离开
+    // 树的节点 —— 选框等会按野指针在陈旧位置残留渲染。剪掉不在树中的引用（nodeMap 是权威）。
+    // 放在 nodeExit 的 microtask 里：重新父化会在同一 tick removeChild→addChild、节点旋即重新入树，
+    // 延到 microtask 后再判活可避免误删；本地删除选中元素也顺带清理。
+    function pruneDanglingNodeRefs(): void {
+      const tree = renderEngine.value
+      const alive = (n: any): boolean => Boolean(n) && tree.getNodeById(n.id) === n
+      if (selection.value.some(n => !alive(n))) {
+        selection.value = selection.value.filter(alive)
+      }
+      if (hoverElement.value && !alive(hoverElement.value)) {
+        hoverElement.value = undefined
+      }
+    }
+
     let nodesDirty = false
     function scheduleUpdateNodes(): void {
       if (nodesDirty) {
@@ -355,6 +370,7 @@ export default defineMixin((editor, options) => {
         }
         nodesDirty = false
         updateNodes()
+        pruneDanglingNodeRefs()
       })
     }
 
