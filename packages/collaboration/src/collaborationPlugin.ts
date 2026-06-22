@@ -141,6 +141,12 @@ export default definePlugin((editor, options) => {
     if (!active.value) {
       return
     }
+    // 协同中「原地换内容」（setDoc 复用当前 YDoc reset+重填）时 YDoc 未变，现有 Provider 仍有效，
+    // 内容增量已经它广播给对端 —— 此时重建会无谓断连/重发，直接跳过。仅当 YDoc 确实换了
+    // （新建文档）才以新 YDoc 重建 Provider，否则会话会指向已销毁的旧文档。
+    if (provider.value && provider.value.ydoc === editor.root.value._yDoc) {
+      return
+    }
     try {
       teardown()
     }

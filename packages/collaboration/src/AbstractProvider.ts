@@ -42,6 +42,12 @@ export abstract class AbstractProvider<
 
   protected _ydoc: YDoc
   protected _doc: YDoc['_yDoc']
+
+  /** 本 Provider 绑定的 YDoc。docSet 时若 YDoc 未变（协同中原地换内容），上层据此跳过重建。 */
+  get ydoc(): YDoc {
+    return this._ydoc
+  }
+
   private _onUpdate: (update: Uint8Array, origin: unknown) => void
   private _onAwarenessUpdate: (
     changed: { added: number[], updated: number[], removed: number[] },

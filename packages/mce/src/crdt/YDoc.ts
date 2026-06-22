@@ -19,6 +19,32 @@ export const LOCAL_ORIGIN = Symbol.for('mce.crdt.local')
  */
 export const INTERNAL_ORIGIN = Symbol.for('mce.crdt.internal')
 
+/**
+ * Element2D 上需要逐键代理同步的 CoreObject 子对象。
+ *
+ * **必须是「全集」而非按内容推导**：即便某子对象当前为空（如未连线的 connection），也要建好
+ * 代理，否则对端后续往该子对象写入将无法同步。漏一项即是一类静默 bug（connection 曾因漏列导致
+ * 连线在对端丢失）。
+ *
+ * **单一事实来源 = 引擎 Element2D.toJSON() 序列化的子对象集**（modern-canvas）。两处独立硬编码
+ * 会漂移，故此处集中定义，并由 YDoc.test.ts 的「子对象覆盖完整」用例对账：引擎新增子对象时测试失败，
+ * 提示在此补列。注：`filter` 在 TS 接口里但不被 toJSON 序列化、也非独立 CoreObject，故不在此列。
+ */
+export const ELEMENT2D_SYNCED_SUBOBJECTS = [
+  'style',
+  'background',
+  'shape',
+  'fill',
+  'outline',
+  'text',
+  'foreground',
+  'shadow',
+  'table',
+  'chart',
+  'comments',
+  'connection',
+] as const
+
 export type YNode = Y.Map<unknown> & {
   get:
     & ((prop: 'id') => string)
@@ -444,6 +470,10 @@ export class YDoc extends Observable {
     if (!yNode) {
       yNode = new Y.Map<unknown>(Object.entries({
         ...node.offsetGetProperties(),
+        // 节点类型标记：offsetGetProperties 不含 `is`，但远端重建（_initYNode）靠它选对节点类。
+        // 与序列化语义一致——meta.inCanvasIs 在时由它定类，否则回退到 `is`（如 Animation 等非 Element2D
+        // 子节点），不存就会被重建成普通 Node，keyframes 等专属属性挂不上、动画在对端失效。
+        ...(node.meta.inCanvasIs ? {} : { is: node.is }),
         id,
       })) as YNode
       this._yChildren.set(id, yNode)
@@ -505,19 +535,7 @@ export class YDoc extends Observable {
       this._proxyProps(node.meta, meta, true)
 
       if (node instanceof Element2D) {
-        ;[
-          'style',
-          'background',
-          'shape',
-          'fill',
-          'outline',
-          'text',
-          'foreground',
-          'shadow',
-          'table',
-          'chart',
-          'comments',
-        ].forEach((key) => {
+        ELEMENT2D_SYNCED_SUBOBJECTS.forEach((key) => {
           let yMap = yNode.get(key) as Y.Map<any> | undefined
           if (!yMap || !(yMap instanceof Y.Map)) {
             yMap = new Y.Map(Object.entries((node as any)[key].offsetGetProperties()))
@@ -526,6 +544,14 @@ export class YDoc extends Observable {
           this._proxyProps((node as any)[key], yMap)
         })
         node.text.update()
+        // 表格的单元格是 back 层内部 Element2D，由 table 模型在 update() 时构建（cells→节点）。
+        // 远端 apply 只把模型写进 yMap 供懒读，不会触发属性变更事件 → 单元格节点不重建，
+        // 对端只看到网格线、没有单元格内容。这里在代理完成后主动重建一次（update 内部按 row:col
+        // diff 复用、幂等，本地新建路径再调一次也无副作用）。back 层节点 internalMode 非 default，
+        // 不会被 _proxyChildren 回收进 CRDT，故各端各自渲染、模型单点同步。
+        if (node.table.isValid()) {
+          node.table.update()
+        }
         node.requestRender()
       }
 
@@ -551,6 +577,9 @@ export class YDoc extends Observable {
     if (!node) {
       this.undoManager.addToScope(yNode)
       node = Node.parse({
+        // `is` 优先于 meta.inCanvasIs 决定节点类（见 Node.parse），保留它才能在对端重建出
+        // Animation 等非 Element2D 子节点；Element2D 仍由 inCanvasIs 兜底。
+        is: yNode.get('is') as string | undefined,
         meta: {
           inCanvasIs: yNode.get('meta')?.get('inCanvasIs') as string | undefined,
         },

@@ -174,6 +174,11 @@ export default definePlugin((editor) => {
         if (requestId !== undefined)
           return
         const tl = timeline.value
+        // 惰性重算时长：增量内容变更（本地增删动画 / 远端经 CRDT 同步到达的内容）不触发 docSet，
+        // endTime 会失真——尤其协同对端收到含动画的内容后仍为旧值。时长只有「播放」时才真正用到，
+        // 故在此按需重算一次，避免监听高频的 docUpdated 在每次更新上做全树扫描。recompute 是异步的
+        // （await nextTick），首帧可能仍读到旧 endTime，循环逐帧读取 endTime 故下一帧即跟上。
+        void updateEndTime()
         direction = 1
         // 从头重播：播放头无效或已到结尾时回到开头。
         if (!Number.isFinite(tl.currentTime) || tl.currentTime >= tl.endTime) {

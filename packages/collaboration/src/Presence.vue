@@ -81,9 +81,11 @@ const selections = computed(() => {
       class="m-presence-cursor"
       :style="{ transform: `translate(${cursor.x}px, ${cursor.y}px)` }"
     >
+      <!-- 箭头尖（热点）必须落在 svg 局部原点 (0,0)：容器按 translate(x,y) 定位其左上角，
+           若尖端在 (3,3) 则远端光标会偏在对方实际位置右下 ~3px。路径整体由原 (3,3) 起点平移到 (0,0)。 -->
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
         <path
-          d="M3 3L10 17L11.5 11.5L17 10L3 3Z"
+          d="M0 0L7 14L8.5 8.5L14 7L0 0Z"
           :fill="cursor.color"
           stroke="#fff"
           stroke-width="1"
