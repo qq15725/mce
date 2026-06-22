@@ -17,12 +17,12 @@ declare global {
        * 应用一批 AI action（通常来自 LLM 输出）。先校验/清洗，再在单个 undo 步骤内
        * 映射到现有命令执行。非法项被跳过并在返回值的 errors 中报告。
        */
-      applyAiActions: (actions: unknown) => AiApplyResult
+      applyAi: (actions: unknown) => AiApplyResult
       /** 返回供 LLM 提示的 action schema 描述。 */
-      getAiActionSchema: () => typeof AI_ACTION_SCHEMA
+      getAiSchema: () => typeof AI_ACTION_SCHEMA
       /**
        * 组装好可直接喂给 LLM 的完整提示词：动作 schema + 当前文档全部节点 id（供引用现有元素）
-       * + 用户指令。省去调用方手动拼 prompt。模型按此产出 JSON 动作数组，再交 applyAiActions 执行。
+       * + 用户指令。省去调用方手动拼 prompt。模型按此产出 JSON 动作数组，再交 applyAi 执行。
        */
       getAiPrompt: (userInput: string) => string
     }
@@ -60,7 +60,7 @@ export function plugin() {
         .filter((n): n is Node => Boolean(n))
     }
 
-    function applyAiActions(input: unknown): Mce.AiApplyResult {
+    function applyAi(input: unknown): Mce.AiApplyResult {
       const ids = collectIds()
       const { actions, errors } = validateAiActions(input, id => ids.has(id))
       const created: string[] = []
@@ -147,8 +147,8 @@ export function plugin() {
     return {
       name: 'mce:ai',
       commands: [
-        { command: 'applyAiActions', handle: applyAiActions },
-        { command: 'getAiActionSchema', handle: () => AI_ACTION_SCHEMA },
+        { command: 'applyAi', handle: applyAi },
+        { command: 'getAiSchema', handle: () => AI_ACTION_SCHEMA },
         { command: 'getAiPrompt', handle: getAiPrompt },
       ],
     }

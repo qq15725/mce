@@ -91,7 +91,7 @@ Specialized features also ship as optional packages, registered the same way (`p
 | --- | --- |
 | `@mce/table` | Table element + in-canvas table editor |
 | `@mce/chart` | Chart elements (bar / line / pie / …) |
-| `@mce/ai` | Typed AI canvas action schema (`applyAiActions`) |
+| `@mce/ai` | Typed AI canvas action schema (`applyAi`) |
 | `@mce/workflow` | Node-graph editing mode |
 | `@mce/collaboration` | Real-time collaboration: transport providers + presence (cursors / selection / avatars) |
 | `@mce/comments` | Comments: comment tool + pins anchored to elements + threads (stored on `element.comments`) |
@@ -261,7 +261,7 @@ editor.exec('addAnimationKeyframe', 1, { left: 300, opacity: 1 })
 const lottie = editor.exec('exportLottie')
 
 // AI canvas actions (validated, applied in one undo step) — needs @mce/ai
-editor.exec('applyAiActions', [
+editor.exec('applyAi', [
   { type: 'createText', text: 'Hello', x: 40, y: 40 },
   { type: 'align', direction: 'left' },
 ])
@@ -270,7 +270,7 @@ editor.exec('applyAiActions', [
 ## 🤖 AI
 
 `@mce/ai` ships a **typed action layer**, not a model. It gives you a schema to
-put in your prompt and a safe `applyAiActions` that validates / sanitizes a batch
+put in your prompt and a safe `applyAi` that validates / sanitizes a batch
 of actions and applies them in a single undo step — wiring the LLM call is up to you.
 
 **1. Register the plugin**
@@ -285,7 +285,7 @@ new Editor({ plugins: [ai()] })
 ```ts
 const prompt = editor.exec('getAiPrompt', userInput)
 // Already includes the action schema and every existing node id (so the model can
-// reference current elements). Need the raw schema instead? editor.exec('getAiActionSchema').
+// reference current elements). Need the raw schema instead? editor.exec('getAiSchema').
 ```
 
 **3. Call your own model, then apply the returned actions**
@@ -295,7 +295,7 @@ const prompt = editor.exec('getAiPrompt', userInput)
 const text = await callYourLLM(prompt)
 const actions = JSON.parse(text) // e.g. [{ type: 'createText', text: 'Hi', x: 40, y: 40 }]
 
-const { created, errors } = editor.exec('applyAiActions', actions)
+const { created, errors } = editor.exec('applyAi', actions)
 // created: ids of newly created elements
 // errors:  rejected actions + reasons (invalid fields / unknown node ids) — skipped, not applied
 ```
@@ -384,7 +384,7 @@ called via `editor.exec(name, …)` rather than imported.
 | Package | Description | Key exports |
 | --- | --- | --- |
 | `mce` | Headless infinite-canvas editor core (WebGL; export to image / video / PPT). | `Editor`, `EditorLayout`, `EditorLayoutItem`, `EditorLayers`, `createShapeElement` / `createTextElement` / … factories, `useEditor` |
-| `@mce/ai` | LLM-driven, typed canvas actions (`createText` / `createShape` / `setStyle` / `move` / `select` / `delete` / `duplicate` / `align`) applied in one undo step with automatic validation. | `plugin` (default); `validateAiActions`, `AI_ACTION_SCHEMA` (commands: `applyAiActions`, `getAiActionSchema`, `getAiPrompt`) |
+| `@mce/ai` | LLM-driven, typed canvas actions (`createText` / `createShape` / `setStyle` / `move` / `select` / `delete` / `duplicate` / `align`) applied in one undo step with automatic validation. | `plugin` (default); `validateAiActions`, `AI_ACTION_SCHEMA` (commands: `applyAi`, `getAiSchema`, `getAiPrompt`) |
 | `@mce/bigesj` | Bigesj design-doc integration: font preloading, clipboard paste detection, and PPTX / XLSX / DOCX loading. | `plugin(options)` (default); `useFonts`, `bigeLoader`, `bidTidLoader`, `clipboardLoader` |
 | `@mce/chart` | Bar / line / pie chart elements with a built-in data editor and toolbelt entry. | `plugin` (default); `createChartElement(type, options)` |
 | `@mce/collaboration` | Real-time multi-user editing (Yjs CRDT) over a pluggable provider (built-in WebSocket, y-websocket compatible; swap for WebRTC / BroadcastChannel) plus presence (remote cursors / selection / avatars). | `plugin` (default, registers collaboration + presence); `collaborationPlugin`, `presencePlugin`, `AbstractProvider`, `WebsocketProvider` |

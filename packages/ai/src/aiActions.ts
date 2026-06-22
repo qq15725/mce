@@ -157,7 +157,7 @@ export function validateAiActions(
 
 /**
  * 供 LLM 提示的 action schema 描述（JSON 可序列化）。消费方把它喂给模型，
- * 模型据此产出 action 数组，再经 validateAiActions 校验后由 applyAiActions 执行。
+ * 模型据此产出 action 数组，再经 validateAiActions 校验后由 applyAi 执行。
  */
 export const AI_ACTION_SCHEMA = {
   createText: { text: 'string (required)', x: 'number?', y: 'number?', style: 'object?' },
