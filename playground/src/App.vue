@@ -312,5 +312,10 @@ const element = computed(() => editor.elementSelection.value[0])
   left: 12px;
   top: 12px;
   pointer-events: auto;
+  // 按钮多于一行宽度时换行（覆盖 .bar 的 min-width: max-content，否则会强制单行不换）。
+  // max-width 给出换行边界，条本身仍随内容收缩（按钮少时不会撑成整条白条）。
+  flex-wrap: wrap;
+  min-width: 0;
+  max-width: calc(100% - 24px);
 }
 </style>
