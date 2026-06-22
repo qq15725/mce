@@ -25,6 +25,9 @@
       "import": "./dist/index.js",
       "require": "./dist/index.js"
     },
+    "./styles": {
+      "default": "./dist/index.css"
+    },
     "./*.mjs": "./*.js",
     "./*": "./*"
   },

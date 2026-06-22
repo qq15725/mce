@@ -108,6 +108,13 @@ npm i mce
 <script setup lang="ts">
   import { Editor, EditorLayout, EditorLayoutItem } from 'mce'
   import 'mce/styles'
+  // Plugins that ship UI components export their own stylesheet — import it or
+  // their editor styles (chart / table / comments / presence / workflow) are missing.
+  import '@mce/chart/styles'
+  import '@mce/collaboration/styles'
+  import '@mce/comments/styles'
+  import '@mce/table/styles'
+  import '@mce/workflow/styles'
   import ai from '@mce/ai'
   import chart from '@mce/chart'
   import collaboration from '@mce/collaboration'
