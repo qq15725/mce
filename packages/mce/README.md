@@ -67,7 +67,7 @@
 ## 📤 Import & export
 
 - **Export**: `PNG` · `JPEG` · `WebP` · `SVG` · `PDF` · `GIF` · `MP4` · `Lottie` · `PPTX` / `XLSX` / `DOCX` · `JSON`
-- **Import**: `PPTX` / `XLSX` / `DOCX` · `PSD` · `HTML` · images · `JSON`
+- **Import**: `PPTX` / `XLSX` / `DOCX` · `PSD` · `SVG` · `HTML` · images · `JSON`
 
 These ship as optional plugins; their heavy encoders / parsers are lazy-loaded on first use:
 
@@ -76,7 +76,7 @@ These ship as optional plugins; their heavy encoders / parsers are lazy-loaded o
 | `@mce/gif` | GIF export |
 | `@mce/mp4` | MP4 export |
 | `@mce/pdf` | PDF export |
-| `@mce/svg` | SVG export |
+| `@mce/svg` | SVG import & export |
 | `@mce/openxml` | PPTX / XLSX / DOCX import & export |
 | `@mce/psd` | PSD import (Photoshop layers → elements) |
 | `@mce/html` | HTML import |
@@ -267,6 +267,52 @@ editor.exec('applyAiActions', [
 ])
 ```
 
+## 🤖 AI
+
+`@mce/ai` ships a **typed action layer**, not a model. It gives you a schema to
+put in your prompt and a safe `applyAiActions` that validates / sanitizes a batch
+of actions and applies them in a single undo step — wiring the LLM call is up to you.
+
+**1. Register the plugin**
+
+```ts
+import ai from '@mce/ai'
+new Editor({ plugins: [ai()] })
+```
+
+**2. Build the prompt from the schema + current node ids**
+
+```ts
+const schema = editor.exec('getAiActionSchema')
+// All node ids in the document (id → index map, covers nested nodes), so the
+// model can reference existing elements — actions citing unknown ids are rejected.
+const nodeIds = [...editor.nodeIndexMap.keys()]
+
+const prompt = `You are a canvas editing assistant. Reply with ONLY a JSON array of
+actions. Each action must strictly match this schema (types and fields):
+${JSON.stringify(schema, null, 2)}
+
+Existing node ids you may reference: ${JSON.stringify(nodeIds)}
+User request: ${userInput}`
+```
+
+**3. Call your own model, then apply the returned actions**
+
+```ts
+// ← your LLM / SDK; @mce/ai is model-agnostic
+const text = await callYourLLM(prompt)
+const actions = JSON.parse(text) // e.g. [{ type: 'createText', text: 'Hi', x: 40, y: 40 }]
+
+const { created, errors } = editor.exec('applyAiActions', actions)
+// created: ids of newly created elements
+// errors:  rejected actions + reasons (invalid fields / unknown node ids) — skipped, not applied
+```
+
+- **Model-agnostic** — any LLM / SDK works as long as it emits schema-conforming JSON.
+- **Safe** — invalid actions (bad fields, unknown ids) are rejected into `errors`, never written to the document.
+- **One undo step** — the whole batch is a single undo entry.
+- **Pass the node ids** — `setStyle` / `move` / `delete` / `select` / `duplicate` / `align(ids)` reference existing nodes; include `editor.nodeIndexMap` keys in the prompt or those actions get rejected.
+
 ## 🤝 Collaboration
 
 The CRDT document model (Yjs) lives in the **core** — undo / redo and offline
@@ -337,6 +383,31 @@ on the new document's `YDoc`; the transport is bound per-document.
 > Comments (`@mce/comments`) live on `element.comments` and are part of the
 > document model, so they sync over the same session automatically.
 
+## 📚 Packages
+
+Every package ships as ESM and registers the same way (`new Editor({ plugins: [pkg()] })`).
+The default export of each `@mce/*` package is its plugin function; commands it adds are
+called via `editor.exec(name, …)` rather than imported.
+
+| Package | Description | Key exports |
+| --- | --- | --- |
+| `mce` | Headless infinite-canvas editor core (WebGL; export to image / video / PPT). | `Editor`, `EditorLayout`, `EditorLayoutItem`, `EditorLayers`, `createShapeElement` / `createTextElement` / … factories, `useEditor` |
+| `@mce/ai` | LLM-driven, typed canvas actions (`createText` / `createShape` / `setStyle` / `move` / `select` / `delete` / `duplicate` / `align`) applied in one undo step with automatic validation. | `plugin` (default); `validateAiActions`, `AI_ACTION_SCHEMA` (commands: `applyAiActions`, `getAiActionSchema`) |
+| `@mce/bigesj` | Bigesj design-doc integration: font preloading, clipboard paste detection, and PPTX / XLSX / DOCX loading. | `plugin(options)` (default); `useFonts`, `bigeLoader`, `bidTidLoader`, `clipboardLoader` |
+| `@mce/chart` | Bar / line / pie chart elements with a built-in data editor and toolbelt entry. | `plugin` (default); `createChartElement(type, options)` |
+| `@mce/collaboration` | Real-time multi-user editing (Yjs CRDT) over a pluggable provider (built-in WebSocket, y-websocket compatible; swap for WebRTC / BroadcastChannel) plus presence (remote cursors / selection / avatars). | `plugin` (default, registers collaboration + presence); `collaborationPlugin`, `presencePlugin`, `AbstractProvider`, `WebsocketProvider` |
+| `@mce/comments` | Anchored comments: pins anchored to elements that follow on move / scale / rotate, with thread replies / resolve / reopen / delete. | `plugin` (default); `useComments`, `createCommentsStore` |
+| `@mce/gaoding` | Gaoding design-doc clipboard-paste support. | `plugin` (default); `clipboardLoader` |
+| `@mce/gif` | GIF export (frame-by-frame render from timeline keyframes; `modern-gif` lazy-loaded). | `plugin` (default) |
+| `@mce/html` | HTML file / MIME import — DOM converted into canvas elements. | `plugin` (default) |
+| `@mce/mp4` | MP4 export (adaptive bitrate, 720p–2160p, 30fps; `modern-mp4` lazy-loaded). | `plugin` (default) |
+| `@mce/openxml` | PPTX / XLSX / DOCX two-way import & export with smart layer & font mapping (`modern-openxml`). | `plugin` (default) |
+| `@mce/pdf` | PDF export with page metadata (size / margins; `modern-pdf` lazy-loaded). | `plugin` (default) |
+| `@mce/psd` | PSD import — Photoshop layers expanded into elements, layer canvases auto-uploaded as image assets. | `plugin` (default); `psdToFrame` |
+| `@mce/svg` | SVG import & export (Path2D path sets + viewBox, multi-MIME copy). | `plugin` (default) |
+| `@mce/table` | Table element + in-canvas editor (add / remove rows & columns, merge / split cells, style editing, zoom-aware grid, toolbelt entry). | `plugin` (default); `createTableElement(rows, cols, options)` |
+| `@mce/workflow` | Node-graph editing mode (connectable nodes, templated node types, preset text / image / video generation nodes). | `plugin` (default); `getWorkflowPorts`, `toConnectionPoints`, `INPUT_PORT`, `OUTPUT_PORT` (commands: `addWorkflowNode`, `addWorkflowConnection`) |
+
 ## 🏗️ Architecture
 
 ```
@@ -345,7 +416,7 @@ packages/
   gif/           # GIF export  (@mce/gif)
   mp4/           # MP4 export  (@mce/mp4)
   pdf/           # PDF export  (@mce/pdf)
-  svg/           # SVG export  (@mce/svg)
+  svg/           # SVG import & export  (@mce/svg)
   openxml/       # PPTX/XLSX/DOCX import & export  (@mce/openxml)
   psd/           # PSD import  (@mce/psd)
   html/          # HTML import  (@mce/html)
@@ -355,6 +426,8 @@ packages/
   workflow/      # node-graph mode  (@mce/workflow)
   collaboration/ # real-time collaboration  (@mce/collaboration)
   comments/      # comments  (@mce/comments)
+  bigesj/        # Bigesj design-doc integration  (@mce/bigesj)
+  gaoding/       # Gaoding clipboard paste  (@mce/gaoding)
 playground/      # demo & test app
 ```
 

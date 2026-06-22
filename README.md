@@ -267,6 +267,52 @@ editor.exec('applyAiActions', [
 ])
 ```
 
+## 🤖 AI
+
+`@mce/ai` ships a **typed action layer**, not a model. It gives you a schema to
+put in your prompt and a safe `applyAiActions` that validates / sanitizes a batch
+of actions and applies them in a single undo step — wiring the LLM call is up to you.
+
+**1. Register the plugin**
+
+```ts
+import ai from '@mce/ai'
+new Editor({ plugins: [ai()] })
+```
+
+**2. Build the prompt from the schema + current node ids**
+
+```ts
+const schema = editor.exec('getAiActionSchema')
+// All node ids in the document (id → index map, covers nested nodes), so the
+// model can reference existing elements — actions citing unknown ids are rejected.
+const nodeIds = [...editor.nodeIndexMap.keys()]
+
+const prompt = `You are a canvas editing assistant. Reply with ONLY a JSON array of
+actions. Each action must strictly match this schema (types and fields):
+${JSON.stringify(schema, null, 2)}
+
+Existing node ids you may reference: ${JSON.stringify(nodeIds)}
+User request: ${userInput}`
+```
+
+**3. Call your own model, then apply the returned actions**
+
+```ts
+// ← your LLM / SDK; @mce/ai is model-agnostic
+const text = await callYourLLM(prompt)
+const actions = JSON.parse(text) // e.g. [{ type: 'createText', text: 'Hi', x: 40, y: 40 }]
+
+const { created, errors } = editor.exec('applyAiActions', actions)
+// created: ids of newly created elements
+// errors:  rejected actions + reasons (invalid fields / unknown node ids) — skipped, not applied
+```
+
+- **Model-agnostic** — any LLM / SDK works as long as it emits schema-conforming JSON.
+- **Safe** — invalid actions (bad fields, unknown ids) are rejected into `errors`, never written to the document.
+- **One undo step** — the whole batch is a single undo entry.
+- **Pass the node ids** — `setStyle` / `move` / `delete` / `select` / `duplicate` / `align(ids)` reference existing nodes; include `editor.nodeIndexMap` keys in the prompt or those actions get rejected.
+
 ## 🤝 Collaboration
 
 The CRDT document model (Yjs) lives in the **core** — undo / redo and offline
