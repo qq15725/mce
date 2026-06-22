@@ -129,8 +129,7 @@ const isConnection = computed(() => {
 })
 
 const movable = computed(() => {
-  return !readonly.value
-    && state.value !== 'typing'
+  return state.value !== 'typing'
     && !isContentEditing()
     && !isConnection.value
     && elementSelection.value.every((element) => {
@@ -141,8 +140,7 @@ const movable = computed(() => {
 })
 
 const resizable = computed(() => {
-  return !readonly.value
-    && state.value !== 'typing'
+  return state.value !== 'typing'
     && !isContentEditing()
     && !isConnection.value
     && elementSelection.value.every((element) => {
@@ -153,8 +151,7 @@ const resizable = computed(() => {
 })
 
 const rotatable = computed(() => {
-  return !readonly.value
-    && state.value !== 'typing'
+  return state.value !== 'typing'
     && !isContentEditing()
     && !isConnection.value
     && elementSelection.value.every((element) => {
@@ -166,8 +163,7 @@ const rotatable = computed(() => {
 
 const roundable = computed(() => {
   if (
-    !readonly.value
-    && state.value !== 'typing'
+    state.value !== 'typing'
     && !isContentEditing()
     && !isConnection.value
     && elementSelection.value.length === 1
@@ -249,7 +245,7 @@ defineExpose({
     />
 
     <Transform
-      v-if="transformValue.width && transformValue.height && state !== 'pathEditing'"
+      v-if="!readonly && transformValue.width && transformValue.height && state !== 'pathEditing'"
       ref="transformTpl"
       v-bind="transformProps"
       :model-value="transformValue"
