@@ -20,6 +20,11 @@ declare global {
       applyAiActions: (actions: unknown) => AiApplyResult
       /** 返回供 LLM 提示的 action schema 描述。 */
       getAiActionSchema: () => typeof AI_ACTION_SCHEMA
+      /**
+       * 组装好可直接喂给 LLM 的完整提示词：动作 schema + 当前文档全部节点 id（供引用现有元素）
+       * + 用户指令。省去调用方手动拼 prompt。模型按此产出 JSON 动作数组，再交 applyAiActions 执行。
+       */
+      getAiPrompt: (userInput: string) => string
     }
   }
 }
@@ -127,11 +132,24 @@ export function plugin() {
       return { created, errors }
     }
 
+    function getAiPrompt(userInput: string): string {
+      const ids = [...collectIds()]
+      return [
+        'You are a canvas editing assistant. Reply with ONLY a JSON array of actions.',
+        'Each action must strictly match this schema (types and fields):',
+        JSON.stringify(AI_ACTION_SCHEMA, null, 2),
+        '',
+        `Existing node ids you may reference: ${JSON.stringify(ids)}`,
+        `User request: ${userInput}`,
+      ].join('\n')
+    }
+
     return {
       name: 'mce:ai',
       commands: [
         { command: 'applyAiActions', handle: applyAiActions },
         { command: 'getAiActionSchema', handle: () => AI_ACTION_SCHEMA },
+        { command: 'getAiPrompt', handle: getAiPrompt },
       ],
     }
   })

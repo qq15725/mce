@@ -280,20 +280,12 @@ import ai from '@mce/ai'
 new Editor({ plugins: [ai()] })
 ```
 
-**2. Build the prompt from the schema + current node ids**
+**2. Build the prompt — `getAiPrompt` assembles schema + node ids + request for you**
 
 ```ts
-const schema = editor.exec('getAiActionSchema')
-// All node ids in the document (id → index map, covers nested nodes), so the
-// model can reference existing elements — actions citing unknown ids are rejected.
-const nodeIds = [...editor.nodeIndexMap.keys()]
-
-const prompt = `You are a canvas editing assistant. Reply with ONLY a JSON array of
-actions. Each action must strictly match this schema (types and fields):
-${JSON.stringify(schema, null, 2)}
-
-Existing node ids you may reference: ${JSON.stringify(nodeIds)}
-User request: ${userInput}`
+const prompt = editor.exec('getAiPrompt', userInput)
+// Already includes the action schema and every existing node id (so the model can
+// reference current elements). Need the raw schema instead? editor.exec('getAiActionSchema').
 ```
 
 **3. Call your own model, then apply the returned actions**
@@ -311,7 +303,7 @@ const { created, errors } = editor.exec('applyAiActions', actions)
 - **Model-agnostic** — any LLM / SDK works as long as it emits schema-conforming JSON.
 - **Safe** — invalid actions (bad fields, unknown ids) are rejected into `errors`, never written to the document.
 - **One undo step** — the whole batch is a single undo entry.
-- **Pass the node ids** — `setStyle` / `move` / `delete` / `select` / `duplicate` / `align(ids)` reference existing nodes; include `editor.nodeIndexMap` keys in the prompt or those actions get rejected.
+- **Node ids included** — `getAiPrompt` embeds all current node ids, so actions referencing existing elements (`setStyle` / `move` / `delete` / `select` / `duplicate` / `align(ids)`) validate; building the prompt yourself means adding them manually.
 
 ## 🤝 Collaboration
 
@@ -392,7 +384,7 @@ called via `editor.exec(name, …)` rather than imported.
 | Package | Description | Key exports |
 | --- | --- | --- |
 | `mce` | Headless infinite-canvas editor core (WebGL; export to image / video / PPT). | `Editor`, `EditorLayout`, `EditorLayoutItem`, `EditorLayers`, `createShapeElement` / `createTextElement` / … factories, `useEditor` |
-| `@mce/ai` | LLM-driven, typed canvas actions (`createText` / `createShape` / `setStyle` / `move` / `select` / `delete` / `duplicate` / `align`) applied in one undo step with automatic validation. | `plugin` (default); `validateAiActions`, `AI_ACTION_SCHEMA` (commands: `applyAiActions`, `getAiActionSchema`) |
+| `@mce/ai` | LLM-driven, typed canvas actions (`createText` / `createShape` / `setStyle` / `move` / `select` / `delete` / `duplicate` / `align`) applied in one undo step with automatic validation. | `plugin` (default); `validateAiActions`, `AI_ACTION_SCHEMA` (commands: `applyAiActions`, `getAiActionSchema`, `getAiPrompt`) |
 | `@mce/bigesj` | Bigesj design-doc integration: font preloading, clipboard paste detection, and PPTX / XLSX / DOCX loading. | `plugin(options)` (default); `useFonts`, `bigeLoader`, `bidTidLoader`, `clipboardLoader` |
 | `@mce/chart` | Bar / line / pie chart elements with a built-in data editor and toolbelt entry. | `plugin` (default); `createChartElement(type, options)` |
 | `@mce/collaboration` | Real-time multi-user editing (Yjs CRDT) over a pluggable provider (built-in WebSocket, y-websocket compatible; swap for WebRTC / BroadcastChannel) plus presence (remote cursors / selection / avatars). | `plugin` (default, registers collaboration + presence); `collaborationPlugin`, `presencePlugin`, `AbstractProvider`, `WebsocketProvider` |
