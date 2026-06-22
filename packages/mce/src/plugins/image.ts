@@ -25,6 +25,9 @@ declare global {
   }
 }
 
+// image/* 但浏览器无法当 <img> 渲染、且各有专属 loader 的容器格式，image loader 不应抢走。
+const NON_RENDERABLE_IMAGE_MIME = ['image/svg+xml', 'image/vnd.adobe.photoshop']
+
 export default definePlugin((editor) => {
   const {
     exec,
@@ -95,8 +98,11 @@ export default definePlugin((editor) => {
         accept: imageExts.join(','),
         test: (source) => {
           if (source instanceof Blob) {
+            // File 继承自 Blob，故先走这里：仅认浏览器能直接当 <img> 渲染的 image/* 类型。
+            // 排除有专属 loader、且 <img> 加载不了的位图容器——svg（矢量）、psd（Photoshop，
+            // mime 也是 image/vnd.adobe.photoshop，否则整份 .psd 会被当图片加载而报 failed to load）。
             if (
-              !source.type.startsWith('image/svg+xml')
+              !NON_RENDERABLE_IMAGE_MIME.some(m => source.type.startsWith(m))
               && source.type.startsWith('image/')
             ) {
               return true
