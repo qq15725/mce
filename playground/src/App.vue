@@ -17,7 +17,7 @@ import workflow from '@mce/workflow'
 import { Editor, EditorLayers, EditorLayout, EditorLayoutItem } from 'mce'
 import { computed } from 'vue'
 import { BroadcastChannelProvider } from './collab'
-import { loadAnimationDemo, loadChartDemo, loadCommentsDemo, loadConnectionDemo, loadFillStrokeDemo, loadGifDemo, loadImageEffectsDemo, loadInteractionDemo, loadLayoutDemo, loadShapesDemo, loadSmartGuidesDemo, loadTableDemo, loadTextDemo, loadVideoDemo } from './demos'
+import { loadAnimationDemo, loadChartDemo, loadCommentsDemo, loadConnectionDemo, loadFillStrokeDemo, loadGifDemo, loadImageEffectsDemo, loadInteractionDemo, loadLayoutDemo, loadPsdDemo, loadShapesDemo, loadSmartGuidesDemo, loadTableDemo, loadTextDemo, loadVideoDemo } from './demos'
 import 'mce/styles'
 
 const editorOptions = {
@@ -119,6 +119,9 @@ else if (demo === 'chart') {
 }
 else if (demo === 'comments') {
   loadCommentsDemo(editor)
+}
+else if (demo === 'psd') {
+  loadPsdDemo(editor)
 }
 
 // 协同演示：用 BroadcastChannel 在同浏览器多标签间同步（零服务端）。
@@ -262,6 +265,9 @@ const element = computed(() => editor.elementSelection.value[0])
           </button>
           <button @click="() => loadCommentsDemo(editor)">
             评论示例
+          </button>
+          <button @click="() => loadPsdDemo(editor)">
+            PSD 示例
           </button>
         </div>
       </template>
