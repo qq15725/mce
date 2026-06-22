@@ -1,3 +1,10 @@
+## [0.26.1](https://github.com/qq15725/mce/compare/v0.26.0...v0.26.1) (2026-06-22)
+
+
+### Bug Fixes
+
+* **plugins:** expose ./styles export so consumers can load plugin CSS ([6c17f01](https://github.com/qq15725/mce/commit/6c17f0117e45cd8f5e66801024c419f00157c651))
+
 # [0.26.0](https://github.com/qq15725/mce/compare/v0.25.1...v0.26.0) (2026-06-22)
 
 
