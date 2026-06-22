@@ -69,3 +69,10 @@ export const imageMimeTypeExtMap = {
 
 export const imageExts = Object.values(imageMimeTypeExtMap).flat()
 export const imageExtRe = new RegExp(`\\.(?:${imageExts.map(v => v.substring(1)).join('|')})`, 'i')
+
+/**
+ * 浏览器能直接当 <img> 渲染的位图 mime 白名单（即 imageMimeTypeExtMap 的键）。
+ * 用白名单而非 `startsWith('image/')`：svg（矢量，已从上表注释）、psd 等 image/* 容器虽以 image/
+ * 开头却无法被 <img> 加载、且各有专属 loader，黑名单容易漏；白名单只放确知可渲染的类型。
+ */
+export const imageMimes = Object.keys(imageMimeTypeExtMap)
