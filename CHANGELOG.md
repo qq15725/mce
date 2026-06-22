@@ -1,3 +1,15 @@
+# [0.26.0](https://github.com/qq15725/mce/compare/v0.25.1...v0.26.0) (2026-06-22)
+
+
+### Bug Fixes
+
+* **bigesj:** resolve table cell styles via getComputedStyle, honor userStyle ([c90a6de](https://github.com/qq15725/mce/commit/c90a6de4975c28f32a609577e8fa9265b5315769))
+
+
+### Features
+
+* **bigesj:** convert echart and table elements ([fdd129b](https://github.com/qq15725/mce/commit/fdd129b6fe94956f7b2def586fe19ccfc362ea33))
+
 ## [0.25.1](https://github.com/qq15725/mce/compare/v0.25.0...v0.25.1) (2026-06-22)
 
 
