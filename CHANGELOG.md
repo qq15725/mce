@@ -1,3 +1,19 @@
+## [0.25.1](https://github.com/qq15725/mce/compare/v0.25.0...v0.25.1) (2026-06-22)
+
+
+### Bug Fixes
+
+* **collaboration:** close sync gaps, doc-switch union, timeline & cursor offset ([eba9d47](https://github.com/qq15725/mce/commit/eba9d47c54e42ecfc7044372afb5b84bc48f6cf3))
+* **core:** prune dangling selection/hover refs on node exit ([1ffa0a7](https://github.com/qq15725/mce/commit/1ffa0a7205b6c2ef9bc86ded6b33d3af11e92fe1))
+* **image:** don't let image loader claim PSD/non-renderable image mimes ([ebbc1e9](https://github.com/qq15725/mce/commit/ebbc1e90f2e31a2647a9f18e75b239e1bb02ef3a))
+
+
+### Features
+
+* **ai:** add getAiPrompt command to assemble the LLM prompt ([5a18dbe](https://github.com/qq15725/mce/commit/5a18dbe234b52ab96cfc288b02e5411f53d352bc))
+* **core:** front-end read-only mode ([96f2058](https://github.com/qq15725/mce/commit/96f20586f76a705065b723ec23ca85bfecfd5b2a))
+* **playground:** add PSD demo button ([6ae8b7c](https://github.com/qq15725/mce/commit/6ae8b7c8791e4e232e33dbc8b542c30ac4fd0bf5))
+
 # [0.25.0](https://github.com/qq15725/mce/compare/v0.24.4...v0.25.0) (2026-06-21)
 
 
