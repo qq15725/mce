@@ -70,4 +70,15 @@ describe('convertTable', () => {
     // fontFamily 透传
     expect(header0.children[0].style.fontFamily).toBe('SourceHanSansCN-Normal')
   })
+
+  it('userStyle 优先于 style（用户自定义覆盖主题）', () => {
+    const table: any = convertTable({
+      ...sample,
+      userStyle: { td: 'color: #ff0000; font-size: 20px; background-color: #00ff00;' },
+    })
+    const body = table.cells.find((c: any) => c.row === 1 && c.col === 0)
+    expect(body.children[0].style.color).toBe('#ff0000')
+    expect(body.children[0].style.fontSize).toBe(20)
+    expect(body.background).toBe('#00ff00')
+  })
 })
