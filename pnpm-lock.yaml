@@ -167,8 +167,8 @@ importers:
         specifier: ^0.12.1
         version: 0.12.1
       modern-text:
-        specifier: ^2.0.6
-        version: 2.0.6
+        specifier: ^2.0.8
+        version: 2.0.8
       typescript:
         specifier: '>=4.7'
         version: 6.0.3
@@ -2492,8 +2492,8 @@ packages:
   modern-pdf@1.5.1:
     resolution: {integrity: sha512-Ut3LS+6CKo/WYW9A6tyJEuqQV1n0wmF+Rn6LAF7d66BXyPkt3nuHMgWS1zy20fT7sv/XUPwSz79WGzutidhk+Q==}
 
-  modern-text@2.0.6:
-    resolution: {integrity: sha512-rr6yD3kmFRjEsULjRPARXykrjjsL/tdRcoalKWjzd99zdPy/WLt9E/JEJAEtysUt13j3nEh3VdHIAEY+2PCLDA==}
+  modern-text@2.0.8:
+    resolution: {integrity: sha512-f2rJTlanMHZBBuignnx/F0hKhtD17H/8lV0RSYgzWLv8F5TAQPJFeOUas4dNOmwZDAdx+TYMICV+X/T+Q4fGBA==}
 
   module-replacements@3.0.0-beta.8:
     resolution: {integrity: sha512-sc8TepP9elxoOBXEpxmhPzKKjTjbswHVcmsKGbgvm3k6jZlLu/WMV/Lfmga6IGMgHU/V3WtY2s6VEgM4nTElUQ==}
@@ -4056,8 +4056,8 @@ snapshots:
 
   '@typescript-eslint/project-service@8.56.1(typescript@6.0.3)':
     dependencies:
-      '@typescript-eslint/tsconfig-utils': 8.60.1(typescript@6.0.3)
-      '@typescript-eslint/types': 8.60.1
+      '@typescript-eslint/tsconfig-utils': 8.56.1(typescript@6.0.3)
+      '@typescript-eslint/types': 8.56.1
       debug: 4.4.3
       typescript: 6.0.3
     transitivePeerDependencies:
@@ -5586,7 +5586,7 @@ snapshots:
       modern-font: 0.6.1
       modern-idoc: 0.12.1
       modern-path2d: 1.8.5
-      modern-text: 2.0.6
+      modern-text: 2.0.8
     optionalDependencies:
       echarts: 6.1.0
       lottie-web: 5.13.0
@@ -5604,7 +5604,7 @@ snapshots:
   modern-idoc-svg@0.3.4:
     dependencies:
       modern-idoc: 0.11.9
-      modern-text: 2.0.6
+      modern-text: 2.0.8
 
   modern-idoc@0.11.9:
     dependencies:
@@ -5640,9 +5640,9 @@ snapshots:
       modern-font: 0.6.1
       modern-idoc: 0.11.9
       modern-path2d: 1.8.5
-      modern-text: 2.0.6
+      modern-text: 2.0.8
 
-  modern-text@2.0.6:
+  modern-text@2.0.8:
     dependencies:
       diff: 9.0.0
       modern-font: 0.6.1
