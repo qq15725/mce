@@ -1,5 +1,6 @@
 import type { Element2D } from 'modern-canvas'
 import type { Component, Ref } from 'vue'
+import type { AnimationPreset } from '../utils'
 import { ref, shallowRef } from 'vue'
 import { defineMixin } from '../mixin'
 
@@ -108,6 +109,15 @@ declare global {
        */
       toolbeltItems: Ref<ToolbeltItem[]>
       registerToolbeltItem: (item: ToolbeltItem) => void
+
+      /**
+       * 插件注册的动画预设（进入 / 退出 / 强调）。核心不内置任何预设——
+       * Timeline / Trackhead 的「添加动画」菜单据此生成，为空时不显示添加入口。
+       * 注册同 id 则覆盖。预设的显示名走 i18n（`t(preset.id)`），由注册方提供文案。
+       */
+      animationPresets: Ref<AnimationPreset[]>
+      registerAnimationPreset: (preset: AnimationPreset) => void
+      getAnimationPreset: (id: string) => AnimationPreset | undefined
     }
   }
 }
@@ -127,6 +137,7 @@ export default defineMixin((editor) => {
   const icons = ref<Record<string, string>>({})
   const modes = ref<string[]>([])
   const statusbarItems = shallowRef<Component[]>([])
+  const animationPresets = shallowRef<AnimationPreset[]>([])
 
   return {
     selectionRedirects,
@@ -191,5 +202,14 @@ export default defineMixin((editor) => {
     registerStatusbarItem: (component: Component) => {
       statusbarItems.value = [...statusbarItems.value, component]
     },
+
+    animationPresets,
+    registerAnimationPreset: (preset: AnimationPreset) => {
+      const exists = animationPresets.value.some(p => p.id === preset.id)
+      animationPresets.value = exists
+        ? animationPresets.value.map(p => (p.id === preset.id ? preset : p))
+        : [...animationPresets.value, preset]
+    },
+    getAnimationPreset: (id: string) => animationPresets.value.find(p => p.id === id),
   }
 })

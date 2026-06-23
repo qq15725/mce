@@ -51,6 +51,12 @@ importers:
         specifier: workspace:*
         version: link:../mce
 
+  packages/animation-presets:
+    devDependencies:
+      mce:
+        specifier: workspace:*
+        version: link:../mce
+
   packages/bigesj:
     dependencies:
       fflate:
@@ -279,6 +285,9 @@ importers:
       '@mce/ai':
         specifier: workspace:*
         version: link:../packages/ai
+      '@mce/animation-presets':
+        specifier: workspace:*
+        version: link:../packages/animation-presets
       '@mce/bigesj':
         specifier: workspace:*
         version: link:../packages/bigesj

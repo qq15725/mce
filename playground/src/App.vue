@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ai from '@mce/ai'
+import animationPresets from '@mce/animation-presets'
 import bigesj, { options } from '@mce/bigesj'
 import chart from '@mce/chart'
 import collaboration from '@mce/collaboration'
@@ -57,6 +58,7 @@ const editor = new Editor({
     chart(),
     table(),
     ai(),
+    animationPresets(),
     html(),
     workflow(),
     collaboration(),

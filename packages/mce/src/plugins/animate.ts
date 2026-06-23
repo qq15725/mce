@@ -4,7 +4,6 @@ import { Animation } from 'modern-canvas'
 import { definePlugin } from '../plugin'
 import {
   buildLottie,
-  getPreset,
   removeKeyframeAt,
   setKeyframeEasing,
   upsertKeyframe,
@@ -231,7 +230,7 @@ export default definePlugin((editor) => {
   function applyAnimationPreset(id: string, node = elementSelection.value[0]): void {
     if (!node)
       return
-    const preset = getPreset(id)
+    const preset = editor.getAnimationPreset(id)
     if (!preset)
       return
     const keyframes = preset.build(readBaseChannels(node))

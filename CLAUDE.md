@@ -51,6 +51,7 @@ packages/
   chart/      # 图表元素插件（@mce/chart）
   table/      # 表格元素插件（@mce/table，含 TableEditor 组件）
   ai/         # AI action 插件（@mce/ai）
+  animation-presets/ # 动画预设包（@mce/animation-presets：注册进入/退出/强调预设 + 文案；核心不内置预设）
   html/       # HTML 导入 loader 插件（@mce/html）
   workflow/   # 节点图模式插件（@mce/workflow，含 Workflow 组件）
   collaboration/ # 实时协同插件（@mce/collaboration：传输 provider + 在场感知；CRDT 文档模型 YDoc 仍在核心）
@@ -70,6 +71,7 @@ playground/   # 演示与测试应用
 - `registerIcon`（随插件携带图标，合并进图标集）
 - `registerMode`（注册编辑模式，如 workflow；`Mode` 类型为 `'canvas' | (string & {})`）
 - `registerStatusbarItem`（向状态栏追加组件，如协同状态/在场头像）
+- `registerAnimationPreset`（注册动画预设；核心不内置任何预设，时间轴「添加动画」入口为空则不显示，如 @mce/animation-presets）
 
 `State` 同样放开为接纳插件字符串。CRDT 文档模型（`crdt/YDoc` + IndexeddbProvider）是核心；
 网络传输与在场感知（AbstractProvider/WebsocketProvider/presence）在 `@mce/collaboration`。

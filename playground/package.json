@@ -14,6 +14,7 @@
   },
   "devDependencies": {
     "@mce/ai": "workspace:*",
+    "@mce/animation-presets": "workspace:*",
     "@mce/bigesj": "workspace:*",
     "@mce/chart": "workspace:*",
     "@mce/collaboration": "workspace:*",
