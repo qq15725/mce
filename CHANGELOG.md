@@ -1,3 +1,18 @@
+# [0.27.0](https://github.com/qq15725/mce/compare/v0.26.1...v0.27.0) (2026-06-23)
+
+
+### Bug Fixes
+
+* **crdt:** never write undefined into the Yjs map ([c7f37fd](https://github.com/qq15725/mce/commit/c7f37fdcafeaa3ff6b52bdce431b51bdd06656b9))
+* **layout:** make panel resize opt-in, follow external size by default ([9c858da](https://github.com/qq15725/mce/commit/9c858da7f01a9b0d5fa0b450631d7793311a186b))
+
+
+### Features
+
+* **animation:** make presets registrable, add @mce/animation-presets pack ([0df1a57](https://github.com/qq15725/mce/commit/0df1a573409326534e5037bfbc8ce3300f52e0da))
+* **timeline:** derived track membership, toolbar add-animation, scrollable menu ([82b20b7](https://github.com/qq15725/mce/commit/82b20b7cb2e16b423012e14f04c35f148c84d7b2))
+* **timeline:** edit WAAPI transform keyframes by component ([703b1d1](https://github.com/qq15725/mce/commit/703b1d1a8be1f5f2b823fbe51a83e27e97e8e1cd))
+
 ## [0.26.1](https://github.com/qq15725/mce/compare/v0.26.0...v0.26.1) (2026-06-22)
 
 
