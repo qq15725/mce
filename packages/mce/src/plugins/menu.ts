@@ -243,6 +243,9 @@ export default definePlugin((editor, options) => {
       panelsMenu.value,
       { type: 'divider' },
       ...zoomViewMenu.value.children,
+      { type: 'divider' },
+      // 快捷键面板（mce:shortcuts 插件提供命令/热键/i18n）；key 用热键命令，菜单据此显示快捷键。
+      { key: 'toggleUi:shortcuts' },
     ].filter(Boolean) as Mce.MenuItem[],
   }))
 
