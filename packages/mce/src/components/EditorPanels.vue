@@ -91,9 +91,9 @@ function RenderComponent(componentProps: Record<string, any> & { item: EditorCom
           :position="item.position as any"
           :size="item.size || 200"
           :order="item.order || 0"
-          :resizable="(item as any).resizable !== false"
-          :min-size="(item as any).minSize"
-          :max-size="(item as any).maxSize"
+          :resizable="item.resizable === true"
+          :min-size="item.minSize"
+          :max-size="item.maxSize"
         >
           <RenderComponent :item="item" />
         </LayoutItem>

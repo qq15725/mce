@@ -15,7 +15,7 @@ export interface PluginPanelComponent extends PluginBaseComponent {
     | 'float'
     | 'top' | 'right' | 'bottom' | 'left'
   size?: number
-  /** 停靠面板是否可拖拽调整尺寸（默认 true；细条如 statusbar 设 false）。 */
+  /** 停靠面板是否可拖拽调整尺寸（默认 false；尺寸跟随 size，需拖拽时显式设 true）。 */
   resizable?: boolean
   /** 停靠面板拖拽尺寸下限 / 上限。 */
   minSize?: number

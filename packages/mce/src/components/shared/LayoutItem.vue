@@ -23,10 +23,13 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
-  /** 是否允许拖拽分隔条调整尺寸（细条类面板如 statusbar 关闭）。 */
+  /**
+   * 是否允许拖拽分隔条调整尺寸。默认关闭：尺寸完全由外部 `size` 驱动
+   * （外部改动会实时响应）。开启后改用本地尺寸，可拖拽、并随 `name` 记忆。
+   */
   resizable: {
     type: Boolean,
-    default: true,
+    default: false,
   },
   minSize: {
     type: Number,
@@ -41,9 +44,11 @@ const props = defineProps({
 
 const { panels } = useEditor()
 
-// 尺寸单一来源：已记忆值（有 name 时）> 传入 size。本地 ref 实时驱动布局引擎。
+// 可拖拽时用本地 ref（已记忆值 > 传入 size，拖拽实时写入）；
+// 不可拖拽时直接跟随外部 props.size，外部改动实时响应。
 const persisted = props.name ? panels.sizeRef(props.name).value : undefined
-const size = ref<number | string>(persisted ?? props.size)
+const internalSize = ref<number | string>(persisted ?? props.size)
+const size = computed<number | string>(() => props.resizable ? internalSize.value : props.size)
 
 const { layoutItemStyles } = useLayoutItem({
   id: props.name,
@@ -79,7 +84,7 @@ function onResizeDown(event: PointerEvent): void {
           : props.position === 'top'
             ? dy
             : -dy
-      size.value = clamp(start + delta)
+      internalSize.value = clamp(start + delta)
     },
     end: () => {
       if (props.name)
