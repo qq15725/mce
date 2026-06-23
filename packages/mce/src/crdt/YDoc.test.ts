@@ -245,6 +245,83 @@ describe('yDoc Element2D 子对象 / 节点类型同步', () => {
   })
 })
 
+describe('yDoc undefined 属性不写坏结构', () => {
+  // 回归：编辑器交互态曾把 renderMode/inputMode/internalMode 等运行时模式写成 undefined 进同步 props，
+  // yMap.set(key, undefined) 产出畸形 struct → 挂 provider 后 encodeStateAsUpdate 时 writeString(undefined) 崩。
+  it('属性被重置为 undefined → 转成删除键，全量编码不崩', async () => {
+    const a = new Doc([])
+    const el = new Element2D()
+    a.append(el)
+    await flush()
+
+    // 真实值能写入
+    ;(a as any)._propertyAccessor.setProperty('renderMode', 'visible')
+    expect(a._yDoc._yProps.get('renderMode')).toBe('visible')
+
+    // 重置为 undefined：不写 undefined，而是删除键
+    ;(a as any)._propertyAccessor.setProperty('renderMode', undefined)
+    expect(a._yDoc._yProps.has('renderMode')).toBe(false)
+
+    // 直接首次就 undefined（曾经的崩溃路径）：也不留下畸形值
+    ;(el as any)._propertyAccessor.setProperty('inputMode', undefined)
+    const yEl = a._yDoc._yChildren.get(el.id) as any
+    expect(yEl.has('inputMode')).toBe(false)
+
+    // 全量编码（= provider pushFull）不应抛
+    expect(() => a._yDoc.encodeStateAsUpdate()).not.toThrow()
+
+    a.destroy()
+  })
+
+  it('子对象整体赋值（resetProperties 批量写 undefined）不写坏结构', async () => {
+    const a = new Doc([])
+    const b = new Doc([])
+    link(a, b)
+    const el = new Element2D()
+    a.append(el)
+    await flush()
+
+    // 模拟 el.style = {...}：modern-canvas setter 内部 _style.resetProperties().setProperties(value)，
+    // resetProperties 会对所有 fallback-only 属性（width/height/transform/...）setProperty(undefined)。
+    a.transact(() => {
+      ;(el as any).style = { left: 10, top: 20, width: 50, height: 50 }
+    }, true)
+    await flush()
+
+    expect(() => a._yDoc.encodeStateAsUpdate()).not.toThrow()
+    expect(() => b._yDoc.encodeStateAsUpdate()).not.toThrow()
+
+    // style yMap 不应残留任何 undefined 值
+    const yStyle = (a._yDoc._yChildren.get(el.id) as any).get('style')
+    let undef = 0
+    yStyle.forEach((v: any) => {
+      if (v === undefined)
+        undef++
+    })
+    expect(undef).toBe(0)
+
+    a.destroy()
+    b.destroy()
+  })
+
+  it('undefined 删除会同步到对端', async () => {
+    const a = new Doc([])
+    const b = new Doc([])
+    link(a, b)
+
+    ;(a as any)._propertyAccessor.setProperty('renderMode', 'visible')
+    await flush()
+    ;(a as any)._propertyAccessor.setProperty('renderMode', undefined)
+    await flush()
+
+    expect(() => b._yDoc.encodeStateAsUpdate()).not.toThrow()
+    expect(b._yDoc._yProps.has('renderMode')).toBe(false)
+
+    a.destroy()
+    b.destroy()
+  })
+})
+
 describe('yDoc 快照恢复', () => {
   it('全量快照可重建出等价文档（模拟离线恢复 / 迟到入会）', async () => {
     const a = new Doc([])

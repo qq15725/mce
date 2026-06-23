@@ -45,6 +45,15 @@ export const ELEMENT2D_SYNCED_SUBOBJECTS = [
   'connection',
 ] as const
 
+/**
+ * 过滤掉值为 undefined 的条目。Yjs Map **不接受 undefined 值**——`yMap.set(key, undefined)`
+ * 会写出畸形 struct，全量 `encodeStateAsUpdate` 时 `writeString(undefined)` 崩、observer 清理也错乱
+ * （曾因编辑器交互态把 renderMode/inputMode 等运行时模式写成 undefined 进同步 props 而导致协同崩溃）。
+ */
+function definedEntries(obj: Record<string, any>): [string, any][] {
+  return Object.entries(obj).filter(([, v]) => v !== undefined)
+}
+
 export type YNode = Y.Map<unknown> & {
   get:
     & ((prop: 'id') => string)
@@ -246,7 +255,16 @@ export class YDoc extends Observable {
         if (this._isSelfTransaction()) {
           return
         }
-        this.transact(() => yMap.set(key, value))
+        // Yjs Map 不接受 undefined 值（见 definedEntries）。运行时把属性「重置」为 undefined 时
+        // 转成删除键——既保持两端一致（对端 observe 'delete' 会把属性置回 undefined），又不写坏结构。
+        this.transact(() => {
+          if (value === undefined) {
+            yMap.delete(key)
+          }
+          else {
+            yMap.set(key, value)
+          }
+        })
       },
     }
 
@@ -468,7 +486,7 @@ export class YDoc extends Observable {
     }
 
     if (!yNode) {
-      yNode = new Y.Map<unknown>(Object.entries({
+      yNode = new Y.Map<unknown>(definedEntries({
         ...node.offsetGetProperties(),
         // 节点类型标记：offsetGetProperties 不含 `is`，但远端重建（_initYNode）靠它选对节点类。
         // 与序列化语义一致——meta.inCanvasIs 在时由它定类，否则回退到 `is`（如 Animation 等非 Element2D
@@ -529,7 +547,7 @@ export class YDoc extends Observable {
 
       let meta = yNode.get('meta')
       if (!meta || !(meta instanceof Y.Map)) {
-        meta = new Y.Map(Object.entries(node.meta.offsetGetProperties()))
+        meta = new Y.Map(definedEntries(node.meta.offsetGetProperties()))
         yNode.set('meta', meta)
       }
       this._proxyProps(node.meta, meta, true)
@@ -538,7 +556,7 @@ export class YDoc extends Observable {
         ELEMENT2D_SYNCED_SUBOBJECTS.forEach((key) => {
           let yMap = yNode.get(key) as Y.Map<any> | undefined
           if (!yMap || !(yMap instanceof Y.Map)) {
-            yMap = new Y.Map(Object.entries((node as any)[key].offsetGetProperties()))
+            yMap = new Y.Map(definedEntries((node as any)[key].offsetGetProperties()))
             yNode.set(key, yMap)
           }
           this._proxyProps((node as any)[key], yMap)
