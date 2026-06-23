@@ -226,14 +226,14 @@ const groups = computed(() => {
       white-space: nowrap;
     }
 
+    // 纯文本无盒子（同 Menu）；等宽字体让 ⌘⇧⌥⌃ 等修饰符与字母等宽，右对齐时整列字符对齐。
     &__kbd {
       flex-shrink: 0;
-      padding: 2px 7px;
-      border-radius: 5px;
-      background-color: rgba(var(--m-theme-on-surface), 0.08);
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       font-size: 0.75rem;
-      line-height: 1.4;
+      white-space: nowrap;
+      text-align: right;
+      opacity: 0.5;
     }
 
     &__empty {
