@@ -2,7 +2,7 @@
 import type { EasingCoords, Keyframe } from '../../utils'
 import { computed, ref } from 'vue'
 import { useEditor } from '../../composables'
-import { EASING_PRESETS, parseEasing, removeKeyframeAt, setKeyframeEasing, upsertKeyframe } from '../../utils'
+import { EASING_PRESETS, parseEasing, parseTransform, removeKeyframeAt, setKeyframeEasing, setTransformField, transformFields, upsertKeyframe } from '../../utils'
 import { Icon } from '../icon'
 import Overlay from '../shared/Overlay.vue'
 import EasingCurve from './EasingCurve.vue'
@@ -21,6 +21,8 @@ const CHANNELS = [
 ] as const
 
 const RESERVED = new Set(['offset', 'easing'])
+// 这些键由专门 UI 处理，不进 extraKeys 的通用数值输入。
+const HANDLED = new Set([...CHANNELS.map(c => c.key), 'transform', 'transformOrigin'])
 
 const editing = computed(() => keyframeEditing.value)
 const anim = computed(() => editing.value?.anim)
@@ -78,12 +80,26 @@ function confirmSave() {
 }
 
 const extraKeys = computed(() => {
-  const std = new Set<string>(CHANNELS.map(c => c.key))
   const k = active.value
   if (!k)
     return []
-  return Object.keys(k).filter(key => !RESERVED.has(key) && !std.has(key))
+  return Object.keys(k).filter(key => !RESERVED.has(key) && !HANDLED.has(key))
 })
+
+// transform 关键帧（WAAPI 原始写法）：解析成分量供编辑，改完序列化写回字符串。
+const transformStr = computed(() =>
+  typeof active.value?.transform === 'string' ? active.value.transform : undefined,
+)
+const hasTransform = computed(() => transformStr.value != null)
+const transformFns = computed(() => transformStr.value ? parseTransform(transformStr.value) : [])
+const tFields = computed(() => transformFields(transformFns.value))
+const transformOrigin = computed(() =>
+  typeof active.value?.transformOrigin === 'string' ? active.value.transformOrigin : '',
+)
+// 有 transform 时位置/缩放/旋转由 transform 接管，只额外露出 opacity 通道。
+const visibleChannels = computed(() =>
+  hasTransform.value ? CHANNELS.filter(c => c.key === 'opacity') : CHANNELS,
+)
 
 // model-value 由「有正在编辑的关键帧」驱动；Overlay 的点击外关闭会置 false → 关闭浮层。
 const open = computed({
@@ -114,6 +130,19 @@ function setChannel(key: string, value: number) {
   if (!active.value || !Number.isFinite(value))
     return
   commit(upsertKeyframe(keyframes.value, { offset: offset.value, [key]: value }))
+}
+
+function setTransform(fnIndex: number, argIndex: number, value: number) {
+  if (!active.value || !Number.isFinite(value))
+    return
+  const next = setTransformField(transformFns.value, fnIndex, argIndex, value)
+  commit(upsertKeyframe(keyframes.value, { offset: offset.value, transform: next }))
+}
+
+function setTransformOrigin(value: string) {
+  if (!active.value)
+    return
+  commit(upsertKeyframe(keyframes.value, { offset: offset.value, transformOrigin: value }))
 }
 
 function setEasing(value: string) {
@@ -201,7 +230,7 @@ function onNumberInput(e: Event): number {
       />
 
       <div class="m-kfpop__channels">
-        <label v-for="ch in CHANNELS" :key="ch.key" class="m-kfpop__field">
+        <label v-for="ch in visibleChannels" :key="ch.key" class="m-kfpop__field">
           <span>{{ ch.label }}</span>
           <input
             class="m-kfpop__input"
@@ -211,6 +240,24 @@ function onNumberInput(e: Event): number {
             @change="setChannel(ch.key, onNumberInput($event))"
           >
         </label>
+
+        <!-- transform 分量（解析自 WAAPI transform 字符串） -->
+        <label
+          v-for="(f, i) in tFields"
+          :key="`t${i}`"
+          class="m-kfpop__field"
+        >
+          <span>{{ f.label }}</span>
+          <input
+            class="m-kfpop__input"
+            type="number"
+            step="0.01"
+            :value="fmt(f.value, 2)"
+            @change="setTransform(f.fnIndex, f.argIndex, onNumberInput($event))"
+          >
+          <span v-if="f.unit" class="m-kfpop__unit">{{ f.unit }}</span>
+        </label>
+
         <label v-for="key in extraKeys" :key="key" class="m-kfpop__field">
           <span>{{ key }}</span>
           <input
@@ -222,6 +269,17 @@ function onNumberInput(e: Event): number {
           >
         </label>
       </div>
+
+      <label v-if="hasTransform" class="m-kfpop__field m-kfpop__field--wide">
+        <span>origin</span>
+        <input
+          class="m-kfpop__input"
+          type="text"
+          :value="transformOrigin"
+          :placeholder="t('default')"
+          @change="setTransformOrigin(($event.target as HTMLInputElement).value)"
+        >
+      </label>
     </div>
   </Overlay>
 </template>
@@ -272,6 +330,16 @@ function onNumberInput(e: Event): number {
         opacity: 0.6;
         min-width: 14px;
       }
+
+      &--wide {
+        grid-column: 1 / -1;
+        display: flex;
+      }
+    }
+
+    &__unit {
+      opacity: 0.5;
+      font-size: 0.7rem;
     }
 
     &__input,
