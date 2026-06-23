@@ -88,7 +88,7 @@ export default defineMixin((editor, options) => {
   const docLoading = ref(false)
   const fonts = markRaw(new Fonts()) as Fonts
   const camera = ref(new Camera2D({ internalMode: 'front' }))
-  const timeline = ref(new Timeline({ startTime: 0, currentTime: 0, endTime: 0, loop: true, paused: true }))
+  const timeline = ref(new Timeline({ startTime: 0, currentTime: 0, endTime: 0, paused: true }))
   const drawboardEffect = ref(new DrawboardEffect({ internalMode: 'back', effectMode: 'before' }))
   const _renderEngine = new Engine({
     pixelRatio: 2,

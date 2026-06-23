@@ -74,10 +74,9 @@ export default definePlugin((editor) => {
 
   const keyframeEditing = ref<Mce.KeyframeEditing | null>(null)
 
-  // 原生 loop 处理「循环」回绕；「单次」「往返」由 RAF 循环自行控制。
-  watch(loopMode, (mode) => {
-    timeline.value.loop = mode === 'loop'
-  }, { immediate: true })
+  // 播放语义集中在引擎 Timeline：loop 模式与倍速实时同步过去（播放推进由 RAF 喂 advance）。
+  watch(loopMode, mode => timeline.value.loopMode = mode, { immediate: true })
+  watch(playbackRate, rate => timeline.value.rate = rate, { immediate: true })
 
   async function recomputeTimelineEndTime() {
     await editor.renderEngine.value.nextTick()
@@ -168,7 +167,6 @@ export default definePlugin((editor) => {
 
       let requestId: number | undefined
       let prevTime: number | undefined
-      let direction: 1 | -1 = 1
 
       function startRaf() {
         if (requestId !== undefined)
@@ -176,31 +174,13 @@ export default definePlugin((editor) => {
         const tl = timeline.value
         // 惰性重算时长：增量内容变更（本地增删动画 / 远端经 CRDT 同步到达的内容）不触发 docSet，
         // endTime 会失真——尤其协同对端收到含动画的内容后仍为旧值。时长只有「播放」时才真正用到，
-        // 故在此按需重算一次，避免监听高频的 docUpdated 在每次更新上做全树扫描。recompute 是异步的
-        // （await nextTick），首帧可能仍读到旧 endTime，循环逐帧读取 endTime 故下一帧即跟上。
+        // 故在此按需重算一次，避免监听高频的 docUpdated 在每次更新上做全树扫描。
         void updateEndTime()
-        direction = 1
-        // 从头重播：播放头无效或已到结尾时回到开头。
-        if (!Number.isFinite(tl.currentTime) || tl.currentTime >= tl.endTime) {
-          tl.currentTime = tl.startTime
-        }
+        // 播放语义集中在引擎 Timeline（play/advance/loop 模式/方向/自停）；mce 仅喂墙钟增量。
+        tl.play({ rate: playbackRate.value, loopMode: loopMode.value })
         function loop(time?: number) {
           if (prevTime !== undefined && time !== undefined) {
-            const tl = timeline.value
-            if (tl.endTime > tl.startTime) {
-              tl.addTime((time - prevTime) * playbackRate.value * direction)
-              if (loopMode.value === 'none') {
-                if (tl.currentTime >= tl.endTime)
-                  paused.value = true // 单次：到尾暂停
-              }
-              else if (loopMode.value === 'alternate') {
-                if (direction > 0 && tl.currentTime >= tl.endTime)
-                  direction = -1
-                else if (direction < 0 && tl.currentTime <= tl.startTime)
-                  direction = 1
-              }
-              // 'loop' 由原生 timeline.loop 回绕处理
-            }
+            timeline.value.advance(time - prevTime)
           }
           prevTime = time
           requestId = requestAnimationFrame(loop)
@@ -214,7 +194,14 @@ export default definePlugin((editor) => {
           requestId = undefined
         }
         prevTime = undefined
+        timeline.value.pause()
       }
+
+      // 'none' 模式播放到端点：引擎 Timeline 自停并触发 'ended'，这里回写 UI 暂停态。
+      const onEnded = (): void => {
+        paused.value = true
+      }
+      timeline.value.on('ended', onEnded)
 
       watch(() => config.value.visible, (visible) => {
         paused.value = visible
@@ -236,6 +223,7 @@ export default definePlugin((editor) => {
 
       onScopeDispose(() => {
         stopRaf()
+        timeline.value.off('ended', onEnded)
         off('docSet', updateEndTime)
         assets.off('loaded', updateEndTime)
       })
