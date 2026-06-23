@@ -226,14 +226,15 @@ const groups = computed(() => {
       white-space: nowrap;
     }
 
-    // 纯文本无盒子（同 Menu）；等宽字体让 ⌘⇧⌥⌃ 等修饰符与字母等宽，右对齐时整列字符对齐。
+    // 与 Menu 的 kbd 渲染一致：默认字体（等宽字体会把 ⌘⇧⌥⌃ 等修饰符渲染得发虚），
+    // 字距 + 低透明度，右对齐。
     &__kbd {
       flex-shrink: 0;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       font-size: 0.75rem;
       white-space: nowrap;
+      letter-spacing: 0.08em;
       text-align: right;
-      opacity: 0.5;
+      opacity: 0.45;
     }
 
     &__empty {
