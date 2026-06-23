@@ -86,6 +86,7 @@ export default {
   'stepForward': '前进一帧',
   'collapse': '折叠',
   'removeKeyframe': '删除关键帧',
+  'close': '关闭',
   'custom': '自定义',
   'default': '默认',
   'saveEasingPreset': '保存为预设',

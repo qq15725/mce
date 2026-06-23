@@ -29,6 +29,7 @@ import _saveAs from './saveAs'
 import _scroll from './scroll'
 import _selection from './selection'
 import _shape from './shape'
+import _shortcuts from './shortcuts'
 import _slice from './slice'
 import _smartGuides from './smartGuides'
 import _smartSelection from './smartSelection'
@@ -73,6 +74,7 @@ export const plugins = [
   _scroll,
   _selection,
   _shape,
+  _shortcuts,
   _slice,
   _smartGuides,
   _smartSelection,

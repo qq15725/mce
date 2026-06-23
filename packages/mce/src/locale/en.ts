@@ -85,6 +85,7 @@ export default {
   'stepForward': 'Next Frame',
   'collapse': 'Collapse',
   'removeKeyframe': 'Remove keyframe',
+  'close': 'Close',
   'custom': 'Custom',
   'default': 'Default',
   'saveEasingPreset': 'Save as preset',
