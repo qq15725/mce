@@ -2,7 +2,7 @@
 import type { Element2D, Node } from 'modern-canvas'
 import { computed, nextTick, ref, useTemplateRef } from 'vue'
 import { useEditor, useNode } from '../../composables'
-import { addDragListener, ANIMATION_PRESETS } from '../../utils'
+import { addDragListener } from '../../utils'
 import { Icon } from '../icon'
 import Menu from '../shared/Menu.vue'
 
@@ -17,6 +17,7 @@ const {
   isElement,
   exec,
   t,
+  animationPresets,
 } = editor
 
 const animMenu = ref(false)
@@ -30,7 +31,7 @@ const presetMenu = computed<Mce.MenuItem[]>(() => {
   ]
   return cats.map(({ cat, key }) => ({
     key,
-    children: ANIMATION_PRESETS
+    children: animationPresets.value
       .filter(p => p.category === cat)
       .map(p => ({
         key: p.id,
@@ -173,7 +174,7 @@ function onInputKeydown(e: KeyboardEvent) {
       :class="{ 'm-trackhead__action--show': showActions || animMenu }"
     >
       <Menu
-        v-if="isElement(node)"
+        v-if="isElement(node) && animationPresets.length"
         v-model="animMenu"
         :items="presetMenu"
         location="bottom-start"

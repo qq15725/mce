@@ -259,7 +259,8 @@ defineExpose({
   padding: 8px;
   border-radius: 8px;
   gap: 2px;
-  max-height: inherit;
+  // 项过多时限高滚动，避免长列表（如动画预设）撑满视口。
+  max-height: min(60vh, 480px);
   overflow-y: auto;
 
   &__divider {

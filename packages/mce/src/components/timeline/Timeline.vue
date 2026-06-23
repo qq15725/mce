@@ -4,6 +4,7 @@ import { Animation, IN_MAC_OS, Video2D } from 'modern-canvas'
 import { computed, onBeforeMount, onBeforeUnmount, ref, useTemplateRef } from 'vue'
 import { useEditor } from '../../composables'
 import { Icon } from '../icon'
+import Menu from '../shared/Menu.vue'
 import Ruler from '../shared/Ruler.vue'
 import KeyframePopover from './KeyframePopover.vue'
 import Playhead from './Playhead.vue'
@@ -26,6 +27,7 @@ const {
   exec,
   t,
   assets,
+  animationPresets,
 } = editor
 
 const SPEEDS = [0.25, 0.5, 1, 1.5, 2, 4]
@@ -72,23 +74,47 @@ function hasAnimatedContent(el: Element2D): boolean {
   )
 }
 
+// 轨道成员纯派生：有动画内容 / Video 才上轴，与 selection 无关（不再临时注入选中元素）。
 const elements = computed(() => {
   void endTime.value
   void tracksRev.value
-  const found = root.value.findAll<TimelineNode>((node) => {
+  return root.value.findAll<TimelineNode>((node) => {
     if (node instanceof Video2D)
       return true
     if (isElement(node) && hasAnimatedContent(node))
       return true
     return false
   }).reverse()
-  // Also surface selected elements without animation yet, so their track row
-  // (and its "+ animation" entry) is reachable to add a first animation.
-  for (const node of selection.value) {
-    if (isElement(node) && !found.includes(node as unknown as TimelineNode))
-      found.unshift(node as unknown as TimelineNode)
-  }
-  return found
+})
+
+// 选中元素里还没动画的那些——「+ 添加动画」入口的可见性与作用对象。
+const animatableSelection = computed(
+  () => selection.value.filter(n => isElement(n) && !hasAnimatedContent(n as Element2D)) as Element2D[],
+)
+
+const animAddMenu = ref(false)
+
+// 预设动画菜单：按 进入 / 退出 / 强调 分组（与 Trackhead 一致）。
+const presetMenu = computed<Mce.MenuItem[]>(() => {
+  const cats = [
+    { cat: 'in', key: 'animGroupIn' },
+    { cat: 'out', key: 'animGroupOut' },
+    { cat: 'emphasis', key: 'animGroupEmphasis' },
+  ]
+  return cats.map(({ cat, key }) => ({
+    key,
+    children: animationPresets.value
+      .filter(p => p.category === cat)
+      .map(p => ({
+        key: p.id,
+        handle: () => {
+          for (const el of animatableSelection.value)
+            exec('applyAnimationPreset', p.id, el)
+          // 主动刷新，让新轨道即时出现，不必等 tracksRev 轮询。
+          bumpTracksRev()
+        },
+      })),
+  }))
 })
 
 function pad(n: number): string {
@@ -228,6 +254,30 @@ function rulerLabelFormat(f: number) {
           {{ t(loopLabel[m]) }}
         </option>
       </select>
+
+      <Menu
+        v-if="animatableSelection.length && animationPresets.length"
+        v-model="animAddMenu"
+        :items="presetMenu"
+        location="bottom-start"
+        :offset="4"
+      >
+        <template #activator="{ props: activatorProps }">
+          <button
+            type="button"
+            class="m-timeline__btn m-timeline__add-anim"
+            :class="{ 'm-timeline__add-anim--active': animAddMenu }"
+            :title="t('addAnimation')"
+            v-bind="activatorProps"
+          >
+            <Icon icon="$plus" />
+            <span>{{ t('addAnimation') }}</span>
+          </button>
+        </template>
+        <template #title="{ item }">
+          {{ t(item.key) }}
+        </template>
+      </Menu>
 
       <div class="m-timeline__toolbar-spacer" />
 
@@ -380,6 +430,16 @@ function rulerLabelFormat(f: number) {
       &--primary {
         width: 26px;
         height: 26px;
+      }
+    }
+
+    &__add-anim {
+      width: auto;
+      gap: 4px;
+      padding: 0 8px;
+
+      &--active {
+        background-color: rgba(var(--m-theme-on-surface), 0.16);
       }
     }
 
