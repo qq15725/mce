@@ -178,10 +178,11 @@ export function loadAnimationDemo(editor: Editor): void {
       is: 'Animation',
       loop: true,
       duration: 2000,
+      // 用 transform 写法（走 node 的 extraTransform，与 style.left/top 分通道、与拖拽不冲突）。
       keyframes: [
-        { offset: 0, left: 0, top: 80, rotate: 0, opacity: 1 },
-        { offset: 0.5, left: 360, top: 80, rotate: 180, opacity: 0.4 },
-        { offset: 1, left: 0, top: 80, rotate: 360, opacity: 1 },
+        { offset: 0, transform: 'translate(0px, 0px) rotate(0deg)', opacity: 1 },
+        { offset: 0.5, transform: 'translate(360px, 0px) rotate(180deg)', opacity: 0.4 },
+        { offset: 1, transform: 'translate(0px, 0px) rotate(360deg)', opacity: 1 },
       ],
     },
   ]
