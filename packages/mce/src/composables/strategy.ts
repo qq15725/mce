@@ -47,7 +47,11 @@ export const makeMceStrategyProps = propsFactory({
   hoverStrategy: Function as PropType<HoverStrategy>,
 }, 'makeMceStrategyProps')
 
-export const defaultActiveStrategy: ActiveStrategy = (context) => {
+/**
+ * 点击 / 悬停共用的命中目标解析：Cmd/Ctrl 深选直达最深元素，否则按当前选中元素的
+ * 父子归并逐层上溯，最后统一应用选择重定向（如表格单元格 → 表格）。
+ */
+function resolveSelectionTarget(context: ActiveStrategyContext): Element2D | undefined {
   const { element, event, editor } = context
 
   if (!element) {
@@ -90,48 +94,10 @@ export const defaultActiveStrategy: ActiveStrategy = (context) => {
   return resolveSelectionRedirect(resolved)
 }
 
+export const defaultActiveStrategy: ActiveStrategy = resolveSelectionTarget
+
 export const defaultDoubleclickStrategy: DoubleclickStrategy = (context) => {
   context.editor.exec('enter')
 }
 
-export const defaultHoverStrategy: HoverStrategy = (context) => {
-  const { element, event, editor } = context
-
-  if (!element) {
-    return undefined
-  }
-
-  const {
-    isRootNode,
-    inEditorIs,
-    isElement,
-    elementSelection,
-    resolveSelectionRedirect,
-  } = editor
-
-  // Cmd/Ctrl 深选高亮：与点击一致，悬停时高亮光标下最深元素。
-  if (event?.metaKey || event?.ctrlKey) {
-    return resolveSelectionRedirect(element)
-  }
-
-  const activeElement = elementSelection.value[0]
-
-  const cb = (node: Node) => {
-    const parent = node.parent
-    if (
-      isElement(node) && (
-        node.equal(activeElement)
-        || parent?.equal(activeElement)
-        || parent?.equal(activeElement?.parent)
-        || (parent && inEditorIs(parent, 'Frame') && parent.parent && isRootNode(parent.parent))
-        || (parent && isRootNode(parent))
-      )
-    ) {
-      return true
-    }
-    return false
-  }
-
-  const resolved = cb(element) ? element : element.findAncestor<Element2D>(cb)
-  return resolveSelectionRedirect(resolved)
-}
+export const defaultHoverStrategy: HoverStrategy = resolveSelectionTarget

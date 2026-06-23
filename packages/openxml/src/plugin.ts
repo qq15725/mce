@@ -1,5 +1,9 @@
 import type { DocxMeta, PptxMeta, XlsxMeta } from 'modern-openxml'
-import { definePlugin } from 'mce'
+import { base64ToBytes, definePlugin, matchSource } from 'mce'
+
+const PPTX_MIME = 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+const XLSX_MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+const DOCX_MIME = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
 
 declare global {
   namespace Mce {
@@ -26,7 +30,32 @@ export function plugin() {
       fonts,
     } = editor
 
-    const RE = /\.pptx$/i
+    // pptx/xlsx/docx 三个导出器共用：to('json') → 可选 reverse → 合并 meta → 转字节 → Blob。
+    function makeExporter<K extends 'pptx' | 'xlsx' | 'docx'>(
+      name: K,
+      mime: string,
+      reverse: boolean,
+      withFonts: boolean,
+      run: (payload: any) => Promise<Uint8Array | ArrayBuffer>,
+    ): Mce.Exporter {
+      return {
+        name,
+        saveAs: true,
+        handle: async (options) => {
+          const { [name]: specificOptions, ...jsonOptions } = options
+          const doc = await to('json', jsonOptions)
+          if (reverse) {
+            doc.children?.reverse()
+          }
+          const bytes = await run({
+            ...doc as any,
+            ...(withFonts ? { fonts } : {}),
+            meta: { ...doc.meta, ...specificOptions },
+          })
+          return new Blob([bytes as any], { type: mime })
+        },
+      }
+    }
 
     return {
       name: 'mce:openxml',
@@ -46,19 +75,7 @@ export function plugin() {
         {
           name: 'pptx',
           accept: '.pptx',
-          test: (source) => {
-            if (source instanceof Blob) {
-              if (source.type.startsWith('application/vnd.openxmlformats-officedocument.presentationml.presentation')) {
-                return true
-              }
-            }
-            if (source instanceof File) {
-              if (RE.test(source.name)) {
-                return true
-              }
-            }
-            return false
-          },
+          test: matchSource({ ext: /\.pptx$/i, mime: PPTX_MIME }),
           load: async (source: File | Blob) => {
             // 重依赖 modern-openxml 按需加载：插件注册保持轻量，导入/导出代码仅首次用到时加载
             const [{ pptxToDoc }, presetShapeDefinitions] = await Promise.all([
@@ -71,7 +88,7 @@ export function plugin() {
               upload: async (input, meta) => {
                 const filename = meta.image
                 let mimeType = getMimeType(meta.image)
-                const arrayBuffer = base64ToArrayBuffer(input)
+                const arrayBuffer = base64ToBytes(input).buffer as ArrayBuffer
                 if (!mimeType) {
                   const ext = detectImageExt(arrayBuffer)
                   if (ext) {
@@ -108,15 +125,7 @@ export function plugin() {
         {
           name: 'xlsx',
           accept: '.xlsx',
-          test: (source) => {
-            if (source instanceof Blob && source.type.includes('spreadsheetml.sheet')) {
-              return true
-            }
-            if (source instanceof File && /\.xlsx$/i.test(source.name)) {
-              return true
-            }
-            return false
-          },
+          test: matchSource({ ext: /\.xlsx$/i, mime: XLSX_MIME }),
           load: async (source: File | Blob) => {
             const { xlsxToDoc } = await import('modern-openxml')
             const doc = await xlsxToDoc(await source.arrayBuffer())
@@ -128,15 +137,7 @@ export function plugin() {
         {
           name: 'docx',
           accept: '.docx',
-          test: (source) => {
-            if (source instanceof Blob && source.type.includes('wordprocessingml.document')) {
-              return true
-            }
-            if (source instanceof File && /\.docx$/i.test(source.name)) {
-              return true
-            }
-            return false
-          },
+          test: matchSource({ ext: /\.docx$/i, mime: DOCX_MIME }),
           load: async (source: File | Blob) => {
             const { docxToDoc } = await import('modern-openxml')
             const doc = await docxToDoc(await source.arrayBuffer())
@@ -147,63 +148,18 @@ export function plugin() {
         },
       ],
       exporters: [
-        {
-          name: 'pptx',
-          saveAs: true,
-          handle: async (options) => {
-            const { docToPptx } = await import('modern-openxml')
-            const { pptx: pptxOptions, ...jsonOptions } = options
-
-            const doc = await to('json', jsonOptions)
-
-            doc.children?.reverse()
-
-            const pptx = await docToPptx({
-              ...doc as any,
-              fonts,
-              meta: {
-                ...doc.meta,
-                ...pptxOptions,
-              },
-            }) as any
-
-            return new Blob([pptx], {
-              type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-            })
-          },
-        },
-        {
-          name: 'xlsx',
-          saveAs: true,
-          handle: async (options) => {
-            const { docToXlsx } = await import('modern-openxml')
-            const { xlsx: xlsxOptions, ...jsonOptions } = options
-            const doc = await to('json', jsonOptions)
-            const xlsx = await docToXlsx({
-              ...doc as any,
-              meta: { ...doc.meta, ...xlsxOptions },
-            })
-            return new Blob([xlsx as any], {
-              type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            })
-          },
-        },
-        {
-          name: 'docx',
-          saveAs: true,
-          handle: async (options) => {
-            const { docToDocx } = await import('modern-openxml')
-            const { docx: docxOptions, ...jsonOptions } = options
-            const doc = await to('json', jsonOptions)
-            const docx = await docToDocx({
-              ...doc as any,
-              meta: { ...doc.meta, ...docxOptions },
-            })
-            return new Blob([docx as any], {
-              type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            })
-          },
-        },
+        makeExporter('pptx', PPTX_MIME, true, true, async (payload) => {
+          const { docToPptx } = await import('modern-openxml')
+          return await docToPptx(payload) as any
+        }),
+        makeExporter('xlsx', XLSX_MIME, false, false, async (payload) => {
+          const { docToXlsx } = await import('modern-openxml')
+          return await docToXlsx(payload) as any
+        }),
+        makeExporter('docx', DOCX_MIME, false, false, async (payload) => {
+          const { docToDocx } = await import('modern-openxml')
+          return await docToDocx(payload) as any
+        }),
       ],
     }
   })
@@ -225,17 +181,6 @@ function getMimeType(filename: string): string | null {
   const arr = filename.split('.')
   const ext = arr[arr.length - 1].toLowerCase()
   return ext in EXT_TO_MIMES ? EXT_TO_MIMES[ext as keyof typeof EXT_TO_MIMES] : null
-}
-
-function base64ToArrayBuffer(base64: string): ArrayBuffer {
-  const binaryString = atob(base64)
-  const length = binaryString.length
-  const buffer = new ArrayBuffer(length)
-  const uint8Array = new Uint8Array(buffer)
-  for (let i = 0; i < length; i++) {
-    uint8Array[i] = binaryString.charCodeAt(i)
-  }
-  return buffer
 }
 
 function detectImageExt(buffer: ArrayBuffer): string | undefined {

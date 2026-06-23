@@ -1,6 +1,6 @@
 import type { Reactive } from 'vue'
-import { reactive } from 'vue'
 import { defineMixin } from '../mixin'
+import { createMapRegistry } from '../utils'
 
 declare global {
   namespace Mce {
@@ -32,20 +32,11 @@ export default defineMixin((editor) => {
     emit,
   } = editor
 
-  const commands: Mce.Editor['commands'] = reactive(new Map())
-
-  const registerCommand: Mce.Editor['registerCommand'] = (value) => {
-    if (Array.isArray(value)) {
-      value.forEach(item => registerCommand(item))
-    }
-    else {
-      commands.set(value.command, value)
-    }
-  }
-
-  const unregisterCommand: Mce.Editor['unregisterCommand'] = (command) => {
-    commands.delete(command)
-  }
+  const {
+    map: commands,
+    register: registerCommand,
+    unregister: unregisterCommand,
+  } = createMapRegistry<Mce.Command>(item => item.command)
 
   const exec: Mce.Editor['exec'] = (command, ...args) => {
     const [name, arg1] = command.split(':')

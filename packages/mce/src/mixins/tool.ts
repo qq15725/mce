@@ -1,7 +1,8 @@
 import type { Vector2Like } from 'modern-path2d'
 import type { Reactive, Ref } from 'vue'
-import { reactive, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { defineMixin } from '../mixin'
+import { createMapRegistry } from '../utils'
 
 declare global {
   namespace Mce {
@@ -34,21 +35,12 @@ export default defineMixin((editor) => {
     state,
   } = editor
 
-  const tools: Mce.Editor['tools'] = reactive(new Map())
+  const {
+    map: tools,
+    register: registerTool,
+    unregister: unregisterTool,
+  } = createMapRegistry<Mce.Tool>(item => item.name)
   const activeTool = ref<Mce.Tool>()
-
-  const registerTool: Mce.Editor['registerTool'] = (tool): void => {
-    if (Array.isArray(tool)) {
-      tool.forEach(registerTool)
-    }
-    else {
-      tools.set(tool.name, tool)
-    }
-  }
-
-  const unregisterTool: Mce.Editor['unregisterTool'] = (tool): void => {
-    tools.delete(tool)
-  }
 
   const activateTool: Mce.Editor['activateTool'] = (tool) => {
     if (editor.readonly.value) {

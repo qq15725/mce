@@ -1,7 +1,9 @@
 import type { Element2D } from 'modern-canvas'
 import type { Reactive, Ref } from 'vue'
-import { reactive, ref } from 'vue'
+import { render } from 'modern-canvas'
+import { ref } from 'vue'
 import { defineMixin } from '../mixin'
+import { createMapRegistry } from '../utils'
 
 declare global {
   namespace Mce {
@@ -22,6 +24,16 @@ declare global {
       handle: ExporterHandle
     }
 
+    interface RenderFramesOptions {
+      /** to('json') 的导出数据，需含 meta.startTime / meta.endTime。 */
+      data: any
+      width: number
+      height: number
+      /** 帧间隔（毫秒）。 */
+      step: number
+      onFrame: (pixels: Uint8ClampedArray, info: { duration: number, progress: number }) => void | Promise<void>
+    }
+
     interface Editor {
       exporters: Reactive<Map<string, Exporter>>
       registerExporter: (value: Exporter | Exporter[]) => void
@@ -30,26 +42,35 @@ declare global {
       to: <K extends keyof Exporters>(name: K, options?: ExportOptions) => Exporters[K]
       exporting: Ref<boolean>
       exportProgress: Ref<number>
+      /** 按 step 逐帧渲染时间轴并回调像素，供 gif/mp4 等视频导出复用。 */
+      renderFrames: (options: RenderFramesOptions) => Promise<void>
     }
   }
 }
 
 export default defineMixin((editor) => {
-  const exporters: Mce.Editor['exporters'] = reactive(new Map())
+  const {
+    map: exporters,
+    register: registerExporter,
+    unregister: unregisterExporter,
+  } = createMapRegistry<Mce.Exporter>(item => item.name)
   const exporting = ref(false)
   const exportProgress = ref(0)
 
-  const registerExporter: Mce.Editor['registerExporter'] = (value) => {
-    if (Array.isArray(value)) {
-      value.forEach(item => registerExporter(item))
-    }
-    else {
-      exporters.set(value.name, value)
-    }
-  }
-
-  const unregisterExporter: Mce.Editor['unregisterExporter'] = (name) => {
-    exporters.delete(name)
+  const renderFrames: Mce.Editor['renderFrames'] = async ({ data, width, height, step, onFrame }) => {
+    const { startTime, endTime } = data.meta
+    const keyframes = Array.from(
+      { length: ~~((endTime - startTime) / step) },
+      (_, i) => startTime + i * step,
+    )
+    await editor.runExclusiveRender(() => render({
+      data,
+      width,
+      height,
+      fonts: editor.fonts,
+      keyframes,
+      onKeyframe: (pixels: any, info: { duration: number, progress: number }) => onFrame(pixels, info),
+    }))
   }
 
   const to: Mce.Editor['to'] = (name, options = {}) => {
@@ -78,6 +99,7 @@ export default defineMixin((editor) => {
     exportProgress,
     registerExporter,
     unregisterExporter,
+    renderFrames,
     export: to,
     to,
   })

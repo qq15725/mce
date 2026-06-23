@@ -1,8 +1,8 @@
 import type { NormalizedElement } from 'modern-idoc'
 import type { Reactive } from 'vue'
 import { useFileDialog } from '@vueuse/core'
-import { reactive } from 'vue'
 import { defineMixin } from '../mixin'
+import { createMapRegistry } from '../utils'
 
 declare global {
   namespace Mce {
@@ -29,20 +29,11 @@ export default defineMixin((editor) => {
     state,
   } = editor
 
-  const loaders: Mce.Editor['loaders'] = reactive(new Map())
-
-  const registerLoader: Mce.Editor['registerLoader'] = (value) => {
-    if (Array.isArray(value)) {
-      value.forEach(v => registerLoader(v))
-    }
-    else {
-      loaders.set(value.name, value)
-    }
-  }
-
-  const unregisterLoader: Mce.Editor['unregisterLoader'] = (key) => {
-    loaders.delete(key)
-  }
+  const {
+    map: loaders,
+    register: registerLoader,
+    unregister: unregisterLoader,
+  } = createMapRegistry<Mce.Loader>(item => item.name)
 
   const canLoad: Mce.Editor['canLoad'] = async (source) => {
     for (const loader of loaders.values()) {

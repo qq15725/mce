@@ -1,3 +1,4 @@
+import { base64ToText } from 'mce'
 import { convertDoc } from '../convert'
 
 export function clipboardLoader(): Mce.Loader {
@@ -13,17 +14,7 @@ export function clipboardLoader(): Mce.Loader {
       if (encoded) {
         const doc = JSON.parse(
           decodeURIComponent(
-            new TextDecoder('utf-8', { fatal: false }).decode(
-              new Uint8Array(
-                atob(
-                  encoded
-                    .getAttribute('data-clipboard')
-                    ?.replace(/\s+/g, '') ?? '',
-                )
-                  .split('')
-                  .map(c => c.charCodeAt(0)),
-              ),
-            ),
+            base64ToText(encoded.getAttribute('data-clipboard')?.replace(/\s+/g, '') ?? ''),
           ),
         )
 

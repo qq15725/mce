@@ -2,7 +2,7 @@
 import type { Element2D, TimelineNode } from 'modern-canvas'
 import { Animation, IN_MAC_OS, Video2D } from 'modern-canvas'
 import { computed, onBeforeMount, onBeforeUnmount, ref, useTemplateRef } from 'vue'
-import { useEditor } from '../../composables'
+import { useAnimationPresetsMenu, useEditor } from '../../composables'
 import { Icon } from '../icon'
 import Menu from '../shared/Menu.vue'
 import Ruler from '../shared/Ruler.vue'
@@ -95,26 +95,11 @@ const animatableSelection = computed(
 const animAddMenu = ref(false)
 
 // 预设动画菜单：按 进入 / 退出 / 强调 分组（与 Trackhead 一致）。
-const presetMenu = computed<Mce.MenuItem[]>(() => {
-  const cats = [
-    { cat: 'in', key: 'animGroupIn' },
-    { cat: 'out', key: 'animGroupOut' },
-    { cat: 'emphasis', key: 'animGroupEmphasis' },
-  ]
-  return cats.map(({ cat, key }) => ({
-    key,
-    children: animationPresets.value
-      .filter(p => p.category === cat)
-      .map(p => ({
-        key: p.id,
-        handle: () => {
-          for (const el of animatableSelection.value)
-            exec('applyAnimationPreset', p.id, el)
-          // 主动刷新，让新轨道即时出现，不必等 tracksRev 轮询。
-          bumpTracksRev()
-        },
-      })),
-  }))
+const presetMenu = useAnimationPresetsMenu(editor, (p) => {
+  for (const el of animatableSelection.value)
+    exec('applyAnimationPreset', p.id, el)
+  // 主动刷新，让新轨道即时出现，不必等 tracksRev 轮询。
+  bumpTracksRev()
 })
 
 function pad(n: number): string {

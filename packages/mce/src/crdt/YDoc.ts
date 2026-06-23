@@ -252,12 +252,9 @@ export class YDoc extends Observable {
     const accessor: PropertyAccessor = {
       getProperty: key => yMap.doc ? yMap.get(key) : undefined,
       setProperty: (key, value) => {
-        if (this._isSelfTransaction()) {
-          return
-        }
         // Yjs Map 不接受 undefined 值（见 definedEntries）。运行时把属性「重置」为 undefined 时
         // 转成删除键——既保持两端一致（对端 observe 'delete' 会把属性置回 undefined），又不写坏结构。
-        this.transact(() => {
+        this._guardedTransact(() => {
           if (value === undefined) {
             yMap.delete(key)
           }
@@ -317,10 +314,39 @@ export class YDoc extends Observable {
         })
       }, false)
     }
-    ;(obj as any)._yMap = this._rx.markRaw(yMap)
-    ;(obj as any)._yMapObserveFn && yMap.unobserve((obj as any)._yMapObserveFn)
-    ;(obj as any)._yMapObserveFn = this._rx.markRaw(observeFn)
-    yMap.observe(observeFn)
+    this._bindObserver(obj, '_yMap', '_yMapObserveFn', yMap, observeFn)
+  }
+
+  // 统一「markRaw 存 yType / 先解绑旧 observer 再挂新 observer」的重绑样板。
+  protected _bindObserver(
+    target: any,
+    rawKey: string,
+    fnKey: string,
+    yType: Y.AbstractType<any>,
+    observeFn: (...args: any[]) => void,
+  ): void {
+    target[rawKey] = this._rx.markRaw(yType)
+    target[fnKey] && yType.unobserve(target[fnKey])
+    target[fnKey] = this._rx.markRaw(observeFn)
+    yType.observe(observeFn)
+  }
+
+  // 仅本地真实变更才写并广播：远端 apply / INTERNAL 回放路径绝不能写 Y.Doc（见 syncParentId 注释）。
+  protected _guardedTransact(fn: () => void): void {
+    if (this._isSelfTransaction()) {
+      return
+    }
+    this.transact(fn)
+  }
+
+  // 惰性建子 Map：yNode[key] 缺失或非 Y.Map 时，用源对象的 definedEntries 建好并挂载。
+  protected _ensureSubMap(yNode: YNode, key: string, source: any): Y.Map<any> {
+    let map = yNode.get(key)
+    if (!map || !(map instanceof Y.Map)) {
+      map = new Y.Map(definedEntries(source.offsetGetProperties()))
+      yNode.set(key, map)
+    }
+    return map as Y.Map<any>
   }
 
   protected _proxyChildren(node: Node, childrenIds: Y.Array<string>): void {
@@ -436,10 +462,7 @@ export class YDoc extends Observable {
         }
       })
     }
-    ;(node as any)._childrenIds = this._rx.markRaw(childrenIds)
-    ;(node as any)._childrenIdsObserveFn && childrenIds.unobserve((node as any)._childrenIdsObserveFn)
-    ;(node as any)._childrenIdsObserveFn = this._rx.markRaw(observeFn)
-    childrenIds.observe(observeFn)
+    this._bindObserver(node, '_childrenIds', '_childrenIdsObserveFn', childrenIds, observeFn)
 
     // 冷快照恢复 / 迟到入会：observe 只回调未来的 delta，不会回放快照里「出生即存在」
     // 的 childrenIds 条目。顶层 childrenIds 是「空→delta」故 observer 会触发，但嵌套节点的
@@ -535,31 +558,18 @@ export class YDoc extends Observable {
       // 于是本端 clock 领先对端、后续 LOCAL 编辑依赖对端永远收不到的 clock → 对端整段挂起(pendingStructs)
       // 同步卡死。故此处与 accessor.setProperty 一样用 _isSelfTransaction 守卫：仅本地真实变更才写并广播。
       const syncParentId = (): void => {
-        if (this._isSelfTransaction()) {
-          return
-        }
-        this.transact(() => yNode.set('parentId', node.parent?.id))
+        this._guardedTransact(() => yNode.set('parentId', node.parent?.id))
       }
       syncParentId()
       node.on('parented', syncParentId)
 
       this._proxyProps(node, yNode)
 
-      let meta = yNode.get('meta')
-      if (!meta || !(meta instanceof Y.Map)) {
-        meta = new Y.Map(definedEntries(node.meta.offsetGetProperties()))
-        yNode.set('meta', meta)
-      }
-      this._proxyProps(node.meta, meta, true)
+      this._proxyProps(node.meta, this._ensureSubMap(yNode, 'meta', node.meta), true)
 
       if (node instanceof Element2D) {
         ELEMENT2D_SYNCED_SUBOBJECTS.forEach((key) => {
-          let yMap = yNode.get(key) as Y.Map<any> | undefined
-          if (!yMap || !(yMap instanceof Y.Map)) {
-            yMap = new Y.Map(definedEntries((node as any)[key].offsetGetProperties()))
-            yNode.set(key, yMap)
-          }
-          this._proxyProps((node as any)[key], yMap)
+          this._proxyProps((node as any)[key], this._ensureSubMap(yNode, key, (node as any)[key]))
         })
         node.text.update()
         // 表格的单元格是 back 层内部 Element2D，由 table 模型在 update() 时构建（cells→节点）。

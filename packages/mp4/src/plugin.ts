@@ -1,5 +1,4 @@
 import { definePlugin } from 'mce'
-import { render } from 'modern-canvas'
 
 declare global {
   namespace Mce {
@@ -12,9 +11,8 @@ declare global {
 export function plugin() {
   return definePlugin((editor) => {
     const {
-      fonts,
       to,
-      runExclusiveRender,
+      renderFrames,
     } = editor
 
     return {
@@ -32,7 +30,6 @@ export function plugin() {
             const { MP4Encoder } = await import('modern-mp4')
             const { onProgress, ...restOptions } = options
             const data = to('json', restOptions)
-            const { startTime, endTime } = data.meta
             const width = Math.floor(data.style.width / 2) * 2
             const height = Math.floor(data.style.height / 2) * 2
             const framerate = 30
@@ -64,14 +61,13 @@ export function plugin() {
             }
             const encoder = new MP4Encoder(encoderOptions)
             let timestamp = 1
-            await runExclusiveRender(() => render({
+            await renderFrames({
               data,
               width,
               height,
-              fonts,
-              keyframes: Array.from({ length: ~~((endTime - startTime) / spf) }, (_, i) => startTime + i * spf),
-              onKeyframe: async (data, { duration, progress }) => {
-                const bitmap = await createImageBitmap(new ImageData(data as any, width, height))
+              step: spf,
+              onFrame: async (pixels, { duration, progress }) => {
+                const bitmap = await createImageBitmap(new ImageData(pixels as any, width, height))
                 await encoder.encode({
                   data: bitmap,
                   timestamp,
@@ -81,7 +77,7 @@ export function plugin() {
                 timestamp += duration
                 onProgress?.(progress)
               },
-            }))
+            })
             return await encoder.flush()
           },
         },

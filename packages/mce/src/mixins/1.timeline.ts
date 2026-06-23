@@ -50,17 +50,10 @@ export default defineMixin((editor) => {
       }
 
       if (isElement(node)) {
-        if (node.background.animatedTexture) {
-          range.endTime = Math.max(range.endTime, node.globalStartTime + node.background.animatedTexture.duration)
-        }
-        if (node.foreground.animatedTexture) {
-          range.endTime = Math.max(range.endTime, node.globalStartTime + node.foreground.animatedTexture.duration)
-        }
-        if (node.fill.animatedTexture) {
-          range.endTime = Math.max(range.endTime, node.globalStartTime + node.fill.animatedTexture.duration)
-        }
-        if (node.outline.animatedTexture) {
-          range.endTime = Math.max(range.endTime, node.globalStartTime + node.outline.animatedTexture.duration)
+        for (const layer of [node.background, node.foreground, node.fill, node.outline]) {
+          if (layer.animatedTexture) {
+            range.endTime = Math.max(range.endTime, node.globalStartTime + layer.animatedTexture.duration)
+          }
         }
       }
 

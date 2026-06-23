@@ -1,7 +1,5 @@
-import { definePlugin } from 'mce'
+import { definePlugin, matchSource } from 'mce'
 import { psdToFrame } from './convert'
-
-const PSD_RE = /\.psd$/i
 
 function canvasToBlob(canvas: HTMLCanvasElement): Promise<Blob> {
   return new Promise((resolve, reject) => {
@@ -26,15 +24,10 @@ export function plugin() {
         {
           name: 'psd',
           accept: '.psd',
-          test: (source: any) => {
-            if (source instanceof File) {
-              return PSD_RE.test(source.name)
-            }
-            if (source instanceof Blob) {
-              return source.type === 'image/vnd.adobe.photoshop' || source.type === 'application/x-photoshop'
-            }
-            return false
-          },
+          test: matchSource({
+            ext: /\.psd$/i,
+            mime: ['image/vnd.adobe.photoshop', 'application/x-photoshop'],
+          }),
           load: async (source: File | Blob) => {
             // 重依赖 ag-psd 按需加载：插件注册保持轻量，仅首次导入 PSD 时才拉取解析器。
             const { readPsd } = await import('ag-psd')

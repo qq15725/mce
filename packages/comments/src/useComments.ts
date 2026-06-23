@@ -59,7 +59,7 @@ function uid(prefix: string): string {
  * - 位置：线程 offset 为元素局部坐标，渲染时经元素世界矩阵还原。
  */
 export function createCommentsStore(editor: Editor): CommentsApi {
-  const { camera, root } = editor
+  const { root } = editor
 
   // 变更信号：评论经 toJSON 读 _properties，不一定建立 Vue 依赖；用一个 tick 兜底——
   // 本地写后 bump，远端 / 任意 CRDT 事务经 YDoc 'update' 也 bump，保证聚合刷新。
@@ -128,25 +128,25 @@ export function createCommentsStore(editor: Editor): CommentsApi {
     return id
   }
 
-  function reply(node: any, threadId: string, body: string): void {
+  // reply/resolve 共用：按 id 查到线程 → patch 合并 → 逐线程写回 → bump。
+  function mutateThread(node: any, threadId: string, patch: (t: any) => any): void {
     const t = threadsOf(node).find(x => x.id === threadId)
     if (!t || !node?.comments?.setProperty) {
       return
     }
-    node.comments.setProperty(threadId, {
-      ...t,
-      messages: [...(t.messages ?? []), { id: uid('m'), author: author(), body, createdAt: Date.now() }],
-    })
+    node.comments.setProperty(threadId, patch(t))
     bump()
   }
 
+  function reply(node: any, threadId: string, body: string): void {
+    mutateThread(node, threadId, t => ({
+      ...t,
+      messages: [...(t.messages ?? []), { id: uid('m'), author: author(), body, createdAt: Date.now() }],
+    }))
+  }
+
   function resolve(node: any, threadId: string, resolved: boolean): void {
-    const t = threadsOf(node).find(x => x.id === threadId)
-    if (!t) {
-      return
-    }
-    node.comments.setProperty(threadId, { ...t, resolved })
-    bump()
+    mutateThread(node, threadId, t => ({ ...t, resolved }))
   }
 
   function remove(node: any, threadId: string): void {
@@ -154,15 +154,9 @@ export function createCommentsStore(editor: Editor): CommentsApi {
     bump()
   }
 
-  function toScreen(p: { x: number, y: number }): { x: number, y: number } {
-    const { zoom, position } = camera.value
-    return { x: p.x * zoom.x - position.x, y: p.y * zoom.y - position.y }
-  }
-
-  function toWorld(p: { x: number, y: number }): { x: number, y: number } {
-    const { zoom, position } = camera.value
-    return { x: (p.x + position.x) / zoom.x, y: (p.y + position.y) / zoom.y }
-  }
+  // 坐标换算复用核心 box mixin 的点级方法，避免与引擎各处公式重复。
+  const toScreen = editor.globalToDrawboard
+  const toWorld = editor.drawboardToGlobal
 
   return { threads, addThread, reply, resolve, remove, toScreen, toWorld }
 }

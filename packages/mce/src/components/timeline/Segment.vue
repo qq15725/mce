@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { TimelineNode } from 'modern-canvas'
 import type { Keyframe } from '../../utils'
-import { Animation, Element2D, Video2D } from 'modern-canvas'
+import { Animation, clamp, Element2D, Video2D } from 'modern-canvas'
 import { computed } from 'vue'
 import { useEditor, useNode } from '../../composables'
 import { upsertKeyframe } from '../../utils'
@@ -210,10 +210,6 @@ function startDrag(e: MouseEvent, target: TimelineNode, resizable: boolean) {
 // Animation block: drag/resize the animation itself (relative to its element).
 function onBlockDown(e: MouseEvent, block: BlockItem) {
   startDrag(e, block.anim ?? props.node, block.kind === 'animation')
-}
-
-function clamp(v: number, lo: number, hi: number): number {
-  return Math.min(hi, Math.max(lo, v))
 }
 
 function keyframesOf(block: BlockItem): Keyframe[] {

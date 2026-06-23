@@ -1,4 +1,4 @@
-import { definePlugin } from 'mce'
+import { definePlugin, matchSource } from 'mce'
 
 declare global {
   namespace Mce {
@@ -15,8 +15,6 @@ export function plugin() {
       fonts,
     } = editor
 
-    const RE = /\.svg$/i
-
     return {
       name: 'mce:svg',
       messages: {
@@ -27,19 +25,7 @@ export function plugin() {
         {
           name: 'svg',
           accept: '.svg',
-          test: (source) => {
-            if (source instanceof Blob) {
-              if (source.type.startsWith('image/svg+xml')) {
-                return true
-              }
-            }
-            if (source instanceof File) {
-              if (RE.test(source.name)) {
-                return true
-              }
-            }
-            return false
-          },
+          test: matchSource({ ext: /\.svg$/i, mime: 'image/svg+xml' }),
           load: async (source: File | Blob) => {
             // 重依赖按需加载：仅在真正导入 SVG 时才拉取 modern-path2d
             const { svgToPath2DSet } = await import('modern-path2d')

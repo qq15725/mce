@@ -1,4 +1,5 @@
 import type { Ref, WritableComputedRef } from 'vue'
+import { clamp } from 'modern-canvas'
 import { computed, ref } from 'vue'
 import { defineMixin } from '../mixin'
 
@@ -106,10 +107,6 @@ export default defineMixin((editor) => {
   function floatZIndex(name: string): number {
     const index = floatOrder.value.indexOf(name)
     return FLOAT_BASE_Z + (index === -1 ? 0 : index)
-  }
-
-  function clamp(value: number, min: number, max: number): number {
-    return Math.min(Math.max(value, min), max)
   }
 
   function clampTransform(transform: Mce.PanelTransform): Mce.PanelTransform {

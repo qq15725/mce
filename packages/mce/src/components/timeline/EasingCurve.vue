@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { EasingCoords } from '../../utils'
+import { clamp } from 'modern-canvas'
 import { ref, useTemplateRef } from 'vue'
 
 // 可拖手柄的 cubic-bezier 曲线编辑器（Jitter / Framer 风格）。
@@ -31,9 +32,6 @@ function sy(by: number): number {
   return PADY + (1 - by) * H
 }
 
-function clamp(v: number, lo: number, hi: number): number {
-  return Math.min(hi, Math.max(lo, v))
-}
 function round(v: number): number {
   return Math.round(v * 100) / 100
 }

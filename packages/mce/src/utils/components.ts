@@ -43,8 +43,8 @@ export function stripNodeIds<T>(node: T): T {
  * 值为普通对象时与原值**深合并**（便于只覆盖 `style` 的部分字段而不丢其余）；
  * 基本类型 / 数组则整值替换。
  */
-export function applyOverrides<T>(node: T, overrides: InstanceOverrides = {}): T {
-  const clone = cloneDeep(node)
+/** 在已克隆好的子树上原地叠加覆盖（内部用，避免重复深拷贝）。 */
+function applyOverridesInPlace<T>(clone: T, overrides: InstanceOverrides): T {
   for (const [path, value] of Object.entries(overrides)) {
     if (isPlainObject(value)) {
       const existing = get(clone, path)
@@ -57,10 +57,15 @@ export function applyOverrides<T>(node: T, overrides: InstanceOverrides = {}): T
   return clone
 }
 
+export function applyOverrides<T>(node: T, overrides: InstanceOverrides = {}): T {
+  return applyOverridesInPlace(cloneDeep(node), overrides)
+}
+
 /**
  * 从 master 定义实例化一份节点 JSON：先剥 id（保证新实例独立），再叠加 override。
  * 返回的 JSON 交给 addElement(regenId) 落入画布。
  */
 export function instantiateComponent(def: ComponentDef, overrides: InstanceOverrides = {}): any {
-  return applyOverrides(stripNodeIds(def.node), overrides)
+  // stripNodeIds 已返回全新深拷贝，直接原地叠加 override，省去 applyOverrides 内部的二次深拷贝
+  return applyOverridesInPlace(stripNodeIds(def.node), overrides)
 }

@@ -14,6 +14,8 @@ declare global {
       obbToDrawboardObb: (aabb: Obb2D) => Obb2D
       getAabb: (node: Node | Node[] | undefined, inTarget?: 'drawboard' | 'frame' | 'parent') => Aabb2D
       aabbToDrawboardAabb: (aabb: Aabb2D) => Aabb2D
+      globalToDrawboard: (point: { x: number, y: number }) => { x: number, y: number }
+      drawboardToGlobal: (point: { x: number, y: number }) => { x: number, y: number }
       viewportAabb: ComputedRef<Aabb2D>
       rootAabb: ComputedRef<Aabb2D>
       selectionAabb: ComputedRef<Aabb2D>
@@ -132,28 +134,37 @@ export default defineMixin((editor) => {
     if (inTarget === 'drawboard') {
       obb = obbToDrawboardObb(obb)
     }
-    else if (inTarget === 'frame') {
-      const first = Array.isArray(node) ? node[0] : node
-      if (isElement(first)) {
-        const frame = getAncestorFrame(first)
-        if (frame) {
-          obb.left -= frame.style.left
-          obb.top -= frame.style.top
-        }
-      }
-    }
-    else if (inTarget === 'parent') {
-      const first = Array.isArray(node) ? node[0] : node
-      if (isElement(first)) {
-        const parent = first.findAncestor(el => isElement(el))
-        if (parent) {
-          const parentBox = getAabb(parent)
-          obb.left -= parentBox.left
-          obb.top -= parentBox.top
-        }
-      }
+    else if (inTarget === 'frame' || inTarget === 'parent') {
+      applyInTargetOffset(obb, node, inTarget)
     }
     return obb
+  }
+
+  // getObb / getAabb 共用的 frame/parent 偏移逻辑
+  function applyInTargetOffset(
+    box: { left: number, top: number },
+    node: Node | Node[] | undefined,
+    inTarget: 'frame' | 'parent',
+  ): void {
+    const first = Array.isArray(node) ? node[0] : node
+    if (!isElement(first)) {
+      return
+    }
+    if (inTarget === 'frame') {
+      const frame = getAncestorFrame(first)
+      if (frame) {
+        box.left -= frame.style.left
+        box.top -= frame.style.top
+      }
+    }
+    else {
+      const parent = first.findAncestor(el => isElement(el))
+      if (parent) {
+        const parentBox = getAabb(parent)
+        box.left -= parentBox.left
+        box.top -= parentBox.top
+      }
+    }
   }
 
   function getAabb(
@@ -206,54 +217,48 @@ export default defineMixin((editor) => {
     if (inTarget === 'drawboard') {
       aabb = aabbToDrawboardAabb(aabb)
     }
-    else if (inTarget === 'frame') {
-      const first = Array.isArray(node) ? node[0] : node
-      if (isElement(first)) {
-        const frame = getAncestorFrame(first)
-        if (frame) {
-          aabb.left -= frame.style.left
-          aabb.top -= frame.style.top
-        }
-      }
-    }
-    else if (inTarget === 'parent') {
-      const first = Array.isArray(node) ? node[0] : node
-      if (isElement(first)) {
-        const parent = first.findAncestor(el => isElement(el))
-        if (parent) {
-          const parentBox = getAabb(parent)
-          aabb.left -= parentBox.left
-          aabb.top -= parentBox.top
-        }
-      }
+    else if (inTarget === 'frame' || inTarget === 'parent') {
+      applyInTargetOffset(aabb, node, inTarget)
     }
     return aabb
   }
 
-  function aabbToDrawboardAabb(aabb: Aabb2D): Aabb2D {
-    const _aabb = new Aabb2D(aabb)
+  // world → drawboard 盒变换：缩放后减相机偏移
+  function applyCameraToBox<T extends { left: number, top: number, width: number, height: number }>(box: T): T {
     const zoom = camera.value.zoom
     const position = camera.value.position
-    _aabb.left *= zoom.x
-    _aabb.top *= zoom.y
-    _aabb.width *= zoom.x
-    _aabb.height *= zoom.y
-    _aabb.left -= position.x
-    _aabb.top -= position.y
-    return _aabb
+    box.left = box.left * zoom.x - position.x
+    box.top = box.top * zoom.y - position.y
+    box.width *= zoom.x
+    box.height *= zoom.y
+    return box
+  }
+
+  function aabbToDrawboardAabb(aabb: Aabb2D): Aabb2D {
+    return applyCameraToBox(new Aabb2D(aabb))
   }
 
   function obbToDrawboardObb(obb: Obb2D): Obb2D {
-    const _obb = new Obb2D(obb)
+    return applyCameraToBox(new Obb2D(obb))
+  }
+
+  // 点级 world ↔ drawboard 变换，供跨包（评论锚点、在场光标等）复用
+  function globalToDrawboard(point: { x: number, y: number }): { x: number, y: number } {
     const zoom = camera.value.zoom
     const position = camera.value.position
-    _obb.left *= zoom.x
-    _obb.top *= zoom.y
-    _obb.width *= zoom.x
-    _obb.height *= zoom.y
-    _obb.left -= position.x
-    _obb.top -= position.y
-    return _obb
+    return {
+      x: point.x * zoom.x - position.x,
+      y: point.y * zoom.y - position.y,
+    }
+  }
+
+  function drawboardToGlobal(point: { x: number, y: number }): { x: number, y: number } {
+    const zoom = camera.value.zoom
+    const position = camera.value.position
+    return {
+      x: (point.x + position.x) / zoom.x,
+      y: (point.y + position.y) / zoom.y,
+    }
   }
 
   const viewportAabb = computed(() => {
@@ -285,6 +290,8 @@ export default defineMixin((editor) => {
     obbToDrawboardObb,
     getAabb,
     aabbToDrawboardAabb,
+    globalToDrawboard,
+    drawboardToGlobal,
     viewportAabb,
     rootAabb,
     selectionAabb,

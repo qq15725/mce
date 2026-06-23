@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Element2D, Node } from 'modern-canvas'
 import { computed, nextTick, ref, useTemplateRef } from 'vue'
-import { useEditor, useNode } from '../../composables'
+import { useAnimationPresetsMenu, useEditor, useNode } from '../../composables'
 import { addDragListener } from '../../utils'
 import { Icon } from '../icon'
 import Menu from '../shared/Menu.vue'
@@ -23,22 +23,10 @@ const {
 const animMenu = ref(false)
 
 // 预设动画菜单：按 进入 / 退出 / 强调 分组（子菜单）。
-const presetMenu = computed<Mce.MenuItem[]>(() => {
-  const cats: { cat: string, key: string }[] = [
-    { cat: 'in', key: 'animGroupIn' },
-    { cat: 'out', key: 'animGroupOut' },
-    { cat: 'emphasis', key: 'animGroupEmphasis' },
-  ]
-  return cats.map(({ cat, key }) => ({
-    key,
-    children: animationPresets.value
-      .filter(p => p.category === cat)
-      .map(p => ({
-        key: p.id,
-        handle: () => exec('applyAnimationPreset', p.id, props.node as Element2D),
-      })),
-  }))
-})
+const presetMenu = useAnimationPresetsMenu(
+  editor,
+  p => exec('applyAnimationPreset', p.id, props.node as Element2D),
+)
 
 const nodeRef = computed(() => props.node)
 const { thumbnailIcon, thumbnailName } = useNode(nodeRef, editor)

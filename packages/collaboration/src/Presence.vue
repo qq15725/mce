@@ -4,25 +4,16 @@ import { computed } from 'vue'
 
 const {
   presence,
-  camera,
+  globalToDrawboard,
   getNodeById,
   getObb,
 } = useEditor()
-
-/** 全局画布坐标 → 画板（屏幕）像素，与 box mixin 的 obbToDrawboardObb 同公式。 */
-function toDrawboard(p: { x: number, y: number }): { x: number, y: number } {
-  const { zoom, position } = camera.value
-  return {
-    x: p.x * zoom.x - position.x,
-    y: p.y * zoom.y - position.y,
-  }
-}
 
 const cursors = computed(() => {
   return presence.peers.value
     .filter(peer => peer.cursor)
     .map((peer) => {
-      const { x, y } = toDrawboard(peer.cursor!)
+      const { x, y } = globalToDrawboard(peer.cursor!)
       return {
         clientId: peer.clientId,
         color: peer.user?.color ?? '#1C7ED6',

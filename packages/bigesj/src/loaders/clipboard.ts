@@ -1,3 +1,4 @@
+import { base64ToText } from 'mce'
 import { convertElement, convertLayout } from '../convert'
 
 interface SignedData {
@@ -37,15 +38,9 @@ export function clipboardLoader(): Mce.Loader {
 
   function decodeBase64(base64: string) {
     try {
-      const binary = atob(base64)
-      const bytes = new Uint8Array(binary.length)
-      for (let i = 0; i < binary.length; i++) {
-        bytes[i] = binary.charCodeAt(i)
-      }
-      return new TextDecoder().decode(bytes)
+      return base64ToText(base64)
     }
-    // eslint-disable-next-line unused-imports/no-unused-vars
-    catch (_error) {
+    catch {
       throw new Error('解码失败')
     }
   }
