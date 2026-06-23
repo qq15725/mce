@@ -1,3 +1,17 @@
+# [0.28.0](https://github.com/qq15725/mce/compare/v0.27.0...v0.28.0) (2026-06-23)
+
+
+### Bug Fixes
+
+* **shortcuts:** align kbd glyphs with a monospace, box-less keycap ([924c506](https://github.com/qq15725/mce/commit/924c50681c8240bf5ef39e544b6aeb9e4241fbc4))
+* **shortcuts:** render kbd in the default font to match Menu ([bb3224e](https://github.com/qq15725/mce/commit/bb3224e6b762162f66f2124d52485f5d9f77ac37))
+
+
+### Features
+
+* **shortcuts:** add keyboard shortcuts entry to the context menu view group ([41f73ae](https://github.com/qq15725/mce/commit/41f73ae700ab79b42fa6cdd0dfd766687cc3ac80))
+* **shortcuts:** add searchable keyboard shortcuts panel ([e21c16f](https://github.com/qq15725/mce/commit/e21c16fb9cc5fbe11025396643c01b837ca43c77))
+
 # [0.27.0](https://github.com/qq15725/mce/compare/v0.26.1...v0.27.0) (2026-06-23)
 
 

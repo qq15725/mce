@@ -1,7 +1,7 @@
 {
   "name": "@mce/comments",
   "type": "module",
-  "version": "0.27.0",
+  "version": "0.28.0",
   "description": "comments plugin for mce",
   "author": "wxm",
   "license": "MIT",
