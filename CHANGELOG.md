@@ -1,3 +1,10 @@
+## [0.29.2](https://github.com/qq15725/mce/compare/v0.29.1...v0.29.2) (2026-06-24)
+
+
+### Features
+
+* up deps ([b0688fb](https://github.com/qq15725/mce/commit/b0688fb60bfcab0de624fe341250ebc6230d7966))
+
 ## [0.29.1](https://github.com/qq15725/mce/compare/v0.29.0...v0.29.1) (2026-06-24)
 
 
