@@ -1,3 +1,11 @@
+# [0.29.0](https://github.com/qq15725/mce/compare/v0.28.1...v0.29.0) (2026-06-24)
+
+
+### Bug Fixes
+
+* **timeline:** guard non-finite video duration crashing playback ([e9e9d2b](https://github.com/qq15725/mce/commit/e9e9d2b638364160b0fed02de334f46b0d5f23f0))
+* **timeline:** use stable list keys for tracks and blocks ([db25008](https://github.com/qq15725/mce/commit/db25008a944d190a6b279049a1b9937cf40c95a4))
+
 ## [0.28.1](https://github.com/qq15725/mce/compare/v0.28.0...v0.28.1) (2026-06-23)
 
 # [0.28.0](https://github.com/qq15725/mce/compare/v0.27.0...v0.28.0) (2026-06-23)
