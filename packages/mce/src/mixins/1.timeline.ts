@@ -58,7 +58,9 @@ export default defineMixin((editor) => {
       }
 
       if (node instanceof Video2D) {
-        if (node.texture) {
+        // videoDuration 在元数据未就绪时为 NaN（videoDuration 的 `?? 0` 挡不住 NaN）。NaN 一旦混入
+        // endTime，会沿引擎 loop 取模传到 Video2D.currentTime，触发 HTMLMediaElement「non-finite」崩溃。
+        if (node.texture && Number.isFinite(node.videoDuration)) {
           range.endTime = Math.max(range.endTime, node.globalStartTime + node.videoDuration)
         }
       }
