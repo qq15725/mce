@@ -6,8 +6,8 @@ import chart from '@mce/chart'
 import collaboration from '@mce/collaboration'
 import comments from '@mce/comments'
 import gaoding from '@mce/gaoding'
-import html from '@mce/html'
 import gif from '@mce/gif'
+import html from '@mce/html'
 import mp4 from '@mce/mp4'
 import openxml from '@mce/openxml'
 import pdf from '@mce/pdf'
@@ -18,7 +18,7 @@ import workflow from '@mce/workflow'
 import { Editor, EditorLayers, EditorLayout, EditorLayoutItem } from 'mce'
 import { computed } from 'vue'
 import { BroadcastChannelProvider } from './collab'
-import { loadAnimationDemo, loadChartDemo, loadCommentsDemo, loadConnectionDemo, loadFillStrokeDemo, loadGifDemo, loadImageEffectsDemo, loadInteractionDemo, loadLayoutDemo, loadPsdDemo, loadShapesDemo, loadSmartGuidesDemo, loadTableDemo, loadTextDemo, loadVideoDemo } from './demos'
+import { loadAnimationDemo, loadArtboardDemo, loadChartDemo, loadCommentsDemo, loadConnectionDemo, loadFillStrokeDemo, loadGifDemo, loadImageEffectsDemo, loadInteractionDemo, loadLayoutDemo, loadPsdDemo, loadShapesDemo, loadSmartGuidesDemo, loadTableDemo, loadTextDemo, loadVideoDemo } from './demos'
 import 'mce/styles'
 
 const editorOptions = {
@@ -231,6 +231,9 @@ const element = computed(() => editor.elementSelection.value[0])
           </button>
           <button @click="() => loadLayoutDemo(editor)">
             布局示例
+          </button>
+          <button @click="() => loadArtboardDemo(editor)">
+            画板示例
           </button>
           <button @click="() => loadAnimationDemo(editor)">
             动画示例
