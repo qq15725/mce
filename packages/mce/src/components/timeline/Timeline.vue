@@ -288,7 +288,7 @@ function rulerLabelFormat(f: number) {
             }"
           >
             <Trackhead
-              v-for="(node, index) in elements" :key="index"
+              v-for="node in elements" :key="node.id"
               :node="node"
             />
           </div>
@@ -321,7 +321,7 @@ function rulerLabelFormat(f: number) {
               }"
             >
               <Track
-                v-for="(node, index) in elements" :key="index"
+                v-for="node in elements" :key="node.id"
               >
                 <Segment
                   :node="node"

@@ -10,6 +10,8 @@ type BlockKind = 'animation' | 'media' | 'video'
 
 interface BlockItem {
   kind: BlockKind
+  /** 列表内稳定唯一键：video / media:<slot> / 动画节点 id。 */
+  id: string
   delay: number
   duration: number
   anim?: Animation
@@ -54,7 +56,7 @@ const blocks = computed<BlockItem[]>(() => {
   if (node instanceof Video2D) {
     const d = node.videoDuration || 0
     if (d > 0) {
-      items.push({ kind: 'video', delay: 0, duration: d })
+      items.push({ kind: 'video', id: 'video', delay: 0, duration: d })
     }
   }
 
@@ -62,7 +64,7 @@ const blocks = computed<BlockItem[]>(() => {
     for (const slot of ['background', 'foreground', 'fill', 'outline'] as const) {
       const tx = node[slot]?.animatedTexture
       if (tx?.duration) {
-        items.push({ kind: 'media', delay: 0, duration: tx.duration })
+        items.push({ kind: 'media', id: `media:${slot}`, delay: 0, duration: tx.duration })
       }
     }
     node.children.forEach((child) => {
@@ -70,6 +72,7 @@ const blocks = computed<BlockItem[]>(() => {
         const meta = (child.meta as any)?.toJSON?.() ?? {}
         items.push({
           kind: 'animation',
+          id: child.id,
           delay: child.delay,
           duration: child.duration,
           anim: child,
@@ -327,8 +330,8 @@ function onSegmentDown(e: MouseEvent) {
     @mousedown="onSegmentDown"
   >
     <div
-      v-for="(block, index) in blocks"
-      :key="index"
+      v-for="block in blocks"
+      :key="block.id"
       class="m-segment__block"
       :class="[
         `m-segment__block--${block.kind}`,
