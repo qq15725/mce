@@ -1,3 +1,10 @@
+## [0.29.1](https://github.com/qq15725/mce/compare/v0.29.0...v0.29.1) (2026-06-24)
+
+
+### Bug Fixes
+
+* **timeline:** reset playback state on document switch ([9606e7a](https://github.com/qq15725/mce/commit/9606e7a73c4942d2f393ff42fdeb17e7540e4f42))
+
 # [0.29.0](https://github.com/qq15725/mce/compare/v0.28.1...v0.29.0) (2026-06-24)
 
 
