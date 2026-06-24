@@ -53,7 +53,7 @@
     "typecheck": "tsc --noEmit --project tsconfig.json"
   },
   "dependencies": {
-    "modern-pdf": "^1.5.1"
+    "modern-pdf": "^1.5.2"
   },
   "devDependencies": {
     "mce": "workspace:*"

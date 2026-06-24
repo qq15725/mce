@@ -32,7 +32,7 @@
     "@vue/tsconfig": "^0.9.1",
     "echarts": "^6.1.0",
     "mce": "workspace:*",
-    "npm-run-all2": "^9.0.1",
-    "vite-plugin-vue-devtools": "^8.1.2"
+    "npm-run-all2": "^9.0.2",
+    "vite-plugin-vue-devtools": "^8.1.3"
   }
 }

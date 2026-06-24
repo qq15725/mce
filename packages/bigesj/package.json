@@ -54,7 +54,7 @@
   },
   "dependencies": {
     "fflate": "^0.8.3",
-    "modern-openxml": "^1.12.4"
+    "modern-openxml": "^1.12.5"
   },
   "devDependencies": {
     "mce": "workspace:*"
