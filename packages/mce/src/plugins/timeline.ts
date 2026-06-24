@@ -165,6 +165,15 @@ export default definePlugin((editor) => {
 
       const updateEndTime = recomputeTimelineEndTime
 
+      // 切换文档：不继承上个文档的播放态与播放头。否则从「正在播放」的文档切到新文档
+      // （可能 endTime=0）后 RAF 仍在推进，循环一个零长时间轴会让 currentTime 退化为 NaN，
+      // 连累整张画布渲染空白。先停播放并把播放头归位，再按新内容重算时长。
+      function onDocSet() {
+        paused.value = true
+        timeline.value.currentTime = timeline.value.startTime
+        updateEndTime()
+      }
+
       let requestId: number | undefined
       let prevTime: number | undefined
 
@@ -217,14 +226,14 @@ export default definePlugin((editor) => {
       }, { immediate: true })
 
       onBeforeMount(() => {
-        on('docSet', updateEndTime)
+        on('docSet', onDocSet)
         assets.on('loaded', updateEndTime)
       })
 
       onScopeDispose(() => {
         stopRaf()
         timeline.value.off('ended', onEnded)
-        off('docSet', updateEndTime)
+        off('docSet', onDocSet)
         assets.off('loaded', updateEndTime)
       })
     },
