@@ -112,8 +112,13 @@ const {
       }
     }
 
+    // 数字标签锚定在容器中心（即间距线所在处，间距块的线也在其中心），再整体移到
+    // 线的上方（水平），不压住线、也不会跑到间距块的顶部。
     &__label {
       position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, calc(-100% - 3px));
       padding: 1px 5px;
       border-radius: 8px;
       font-size: 10px;
@@ -123,6 +128,12 @@ const {
       color: rgb(var(--m-theme-on-primary));
       background-color: rgb(var(--m-theme-primary));
       pointer-events: none;
+    }
+
+    // 竖直的距离/间距线：数字改放在线的左侧。
+    &__distance--vertical > &__label,
+    &__area--vertical > &__label {
+      transform: translate(calc(-100% - 3px), -50%);
     }
 
     &__area {
