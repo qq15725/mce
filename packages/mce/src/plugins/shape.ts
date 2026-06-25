@@ -13,6 +13,12 @@ declare global {
       polygon: []
       star: []
     }
+
+    /** 直线 / 箭头 / 画笔的绘制样式（描边色 + 线宽），由工具选项面板编辑。 */
+    interface DrawStyleConfig {
+      color: string
+      width: number
+    }
   }
 }
 
@@ -20,7 +26,12 @@ export default definePlugin((editor) => {
   const {
     addElement,
     activateTool,
+    registerConfig,
   } = editor
+
+  const drawStyle = registerConfig<Mce.DrawStyleConfig>('interaction.drawStyle', {
+    default: { color: '#ff4d4f', width: 6 },
+  })
 
   function createHandle(shape: Shape): Mce.ToolHandle {
     return (start) => {
@@ -60,8 +71,8 @@ export default definePlugin((editor) => {
         handle: (start) => {
           const el = addElement({
             outline: {
-              color: '#d9d9d9',
-              width: 5,
+              color: drawStyle.value.color,
+              width: drawStyle.value.width,
               lineCap: 'round',
               lineJoin: 'round',
             },
@@ -97,8 +108,8 @@ export default definePlugin((editor) => {
         handle: (start) => {
           const el = addElement({
             outline: {
-              color: '#d9d9d9',
-              width: 5,
+              color: drawStyle.value.color,
+              width: drawStyle.value.width,
               lineCap: 'round',
               lineJoin: 'round',
             },

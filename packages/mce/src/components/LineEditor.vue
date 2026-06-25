@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Element2D } from 'modern-canvas'
+import { Path2D } from 'modern-path2d'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useEditor } from '../composables/editor'
 import { getArrowPath, getLineEndpoints, parseLineShape } from '../utils'
@@ -71,12 +72,16 @@ const s2 = computed(() => toScreen(p2.value))
 function commit(): void {
   const u1 = toU(p1.value)
   const u2 = toU(p2.value)
-  const minX = Math.min(u1.x, u2.x)
-  const minY = Math.min(u1.y, u2.y)
-  const maxX = Math.max(u1.x, u2.x)
-  const maxY = Math.max(u1.y, u2.y)
-  const w = Math.max(1, maxX - minX)
-  const h = Math.max(1, maxY - minY)
+  // 先在 u 空间生成路径，用它的真实 bbox 作为元素 box——箭头的翼会超出两端点，
+  // 必须把翼算进 box，否则箭头头部会被裁切/压扁。
+  const rawData = isArrow
+    ? getArrowPath(u1, u2)
+    : `M ${u1.x} ${u1.y} L ${u2.x} ${u2.y}`
+  const bb = new Path2D(rawData).getBoundingBox()
+  const minX = bb.left
+  const minY = bb.top
+  const w = Math.max(1, bb.width)
+  const h = Math.max(1, bb.height)
   const center = applyR({ x: minX + w / 2, y: minY + h / 2 })
 
   el.style.left = center.x - w / 2
@@ -84,6 +89,7 @@ function commit(): void {
   el.style.width = w
   el.style.height = h
 
+  // path data 平移到 box 原点（保持与上面同一份几何）。
   const a = { x: u1.x - minX, y: u1.y - minY }
   const b = { x: u2.x - minX, y: u2.y - minY }
   const data = isArrow

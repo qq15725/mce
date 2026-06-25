@@ -28,10 +28,10 @@ export function getArrowPath(
   options: ArrowPathOptions = {},
 ): string {
   const {
-    size = 10,
-    angle = 30,
+    size = 16,
+    angle = 26,
     startMarker = 'none',
-    endMarker = 'open',
+    endMarker = 'filled',
     roundValues = true,
   } = options
 
