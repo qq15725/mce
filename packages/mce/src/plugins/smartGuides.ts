@@ -555,6 +555,11 @@ export default definePlugin((editor) => {
       },
     ],
   }
+}, {
+  // post：注册（及事件派发）排在所有普通插件之后，确保 selectionTransformed 在 transform 的
+  // setTransform（吸附+移动元素）之后才跑，读到的是元素吸附后的实际位置；否则辅助线会用吸附前
+  // 坐标、比元素滞后一帧。
+  enforce: 'post',
 })
 
 // 纯几何类型与函数已迁出到 ./smartGuides.geometry（见顶部 re-export）。

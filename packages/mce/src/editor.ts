@@ -168,55 +168,62 @@ export class Editor extends Observable<Events> {
 
   use(plugin: Plugin | Plugin[], options: Options): void {
     if (Array.isArray(plugin)) {
-      plugin.forEach((p) => {
-        try {
-          this.use(p, options)
-        }
-        catch (err: any) {
-          logger.error(`Failed to use plugin`, err)
-        }
-      })
+      // 按 enforce 稳定排序后逐个注册：pre 最先、post 最后，同级保持原（字母）序。
+      // enforce 由 definePlugin 标在插件上，无需先调用工厂即可读取，因此不改变各插件
+      // 「解析→注册」的相对时机，只调整注册（及事件派发）的先后。
+      const rank = (p: Plugin): number => {
+        const enforce = (p as PluginObject).enforce
+        return enforce === 'pre' ? 0 : enforce === 'post' ? 2 : 1
+      }
+      plugin
+        .slice()
+        .sort((a, b) => rank(a) - rank(b))
+        .forEach((p) => {
+          try {
+            this.use(p, options)
+          }
+          catch (err: any) {
+            logger.error(`Failed to use plugin`, err)
+          }
+        })
+      return
     }
-    else {
-      let result: PluginObject
-      if (typeof plugin === 'function') {
-        result = plugin(this, options)
-      }
-      else {
-        result = plugin
-      }
 
-      const {
-        name,
-        events,
-        commands = [],
-        hotkeys = [],
-        loaders = [],
-        exporters = [],
-        tools = [],
-        components = [],
-        messages,
-        setup,
-      } = result
+    const result = typeof plugin === 'function' ? plugin(this, options) : plugin
+    this.registerPlugin(result)
+  }
 
-      this.registerCommand(commands)
-      this.registerHotkey(hotkeys)
-      this.registerLoader(loaders)
-      this.registerExporter(exporters)
-      this.registerTool(tools)
-      this.registerComponent(name, components)
-      if (messages) {
-        this.registerMessages(messages)
-      }
+  protected registerPlugin(result: PluginObject): void {
+    const {
+      name,
+      events,
+      commands = [],
+      hotkeys = [],
+      loaders = [],
+      exporters = [],
+      tools = [],
+      components = [],
+      messages,
+      setup,
+    } = result
 
-      if (setup) {
-        this.setups.push(setup)
-      }
+    this.registerCommand(commands)
+    this.registerHotkey(hotkeys)
+    this.registerLoader(loaders)
+    this.registerExporter(exporters)
+    this.registerTool(tools)
+    this.registerComponent(name, components)
+    if (messages) {
+      this.registerMessages(messages)
+    }
 
-      if (events) {
-        for (const k in events) {
-          this.on(k, events[k])
-        }
+    if (setup) {
+      this.setups.push(setup)
+    }
+
+    if (events) {
+      for (const k in events) {
+        this.on(k, events[k])
       }
     }
   }

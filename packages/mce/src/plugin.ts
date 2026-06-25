@@ -49,6 +49,11 @@ export function isDialogComponent<T extends { type?: string }>(c: T): c is T & P
 
 export interface PluginObject {
   name: string
+  /**
+   * 注册时机：`pre` 最先、`post` 最后，省略为普通顺序（按文件名字母序）。
+   * 影响事件监听执行顺序——如 smartGuides 用 `post` 确保在 transform 吸附移动元素后再算辅助线。
+   */
+  enforce?: 'pre' | 'post'
   ignore?: () => boolean
   events?: { [K in keyof Events]: (...args: Events[K]) => void }
   commands?: Mce.Command[]
@@ -66,6 +71,10 @@ export type Plugin
   = | PluginObject
     | ((editor: Editor, options: Options) => PluginObject)
 
-export function definePlugin(cb: Plugin): Plugin {
+export function definePlugin(cb: Plugin, options?: { enforce?: 'pre' | 'post' }): Plugin {
+  // 把 enforce 标到插件（工厂函数或对象）上，使注册前无需调用工厂即可读取并排序。
+  if (options?.enforce) {
+    ;(cb as PluginObject).enforce = options.enforce
+  }
   return cb
 }
