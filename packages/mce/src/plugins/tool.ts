@@ -1,4 +1,3 @@
-import Drawing from '../components/Drawing.vue'
 import { definePlugin } from '../plugin'
 
 declare global {
@@ -18,9 +17,6 @@ export default definePlugin((editor) => {
     name: 'mce:tool',
     commands: [
       { command: 'activateTool', handle: val => activateTool(val) },
-    ],
-    components: [
-      { name: 'drawing', type: 'overlay', component: Drawing },
     ],
   }
 })
