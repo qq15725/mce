@@ -2,7 +2,9 @@
 import type { Element2D } from 'modern-canvas'
 import { computed, onBeforeMount, onBeforeUnmount, useTemplateRef } from 'vue'
 import { useEditor } from '../composables/editor'
+import { getLineEndpoints, parseLineShape } from '../utils'
 import ForegroundCropper from './ForegroundCropper.vue'
+import LineEditor from './LineEditor.vue'
 import PathEditor from './PathEditor.vue'
 import Transform from './shared/Transform.vue'
 
@@ -81,6 +83,11 @@ const parentObbStyles = computed(() => {
   return result
 })
 
+// 线/箭头(parseLineShape)与工作流连线(connection)都沿自身高亮，不画矩形包围盒。
+function hasLineVisual(el: any): boolean {
+  return Boolean(parseLineShape(el) || el?.connection?.isValid?.())
+}
+
 const selectionObbStyles = computed(() => {
   if (
     state.value !== 'selecting'
@@ -89,7 +96,8 @@ const selectionObbStyles = computed(() => {
     return []
   }
 
-  return elementSelection.value.map((el) => {
+  // 线类（直线/箭头/连线）走沿线高亮（见 selectionLinePaths），其余元素照常画 obb 框
+  return elementSelection.value.filter(el => !hasLineVisual(el)).map((el) => {
     const box = getObb(el, 'drawboard')
     return {
       id: el.instanceId,
@@ -99,6 +107,41 @@ const selectionObbStyles = computed(() => {
       },
     }
   })
+})
+
+// 把全局坐标映射到画板像素的 SVG 变换；配合 vector-effect 让描边宽度不随缩放变化。
+const cameraTransform = computed(() => {
+  const { zoom, position } = camera.value
+  return `translate(${-position.x} ${-position.y}) scale(${zoom.x} ${zoom.y})`
+})
+
+// 沿线高亮的 path（全局坐标，由 cameraTransform 映射到屏幕）：
+// - 连线(connection)：用 connection.route() 的实际路由路径（直线/折线/曲线），任何选中态都画；
+// - 直线/箭头：单选非框选时交给 LineEditor 端点编辑，这里只在框选/多选时画。
+const selectionLinePaths = computed(() => {
+  if (state.value === 'moving' || state.value === 'transforming') {
+    return []
+  }
+  const single = elementSelection.value.length === 1
+  const result: { id: number, d: string }[] = []
+  for (const el of elementSelection.value) {
+    const conn = (el as any).connection
+    if (conn?.isValid?.()) {
+      const d = conn.route?.()?.toData?.()
+      if (d) {
+        result.push({ id: el.instanceId, d })
+      }
+      continue
+    }
+    if (single && state.value !== 'selecting') {
+      continue
+    }
+    const eps = getLineEndpoints(el)
+    if (eps) {
+      result.push({ id: el.instanceId, d: `M ${eps[0].x} ${eps[0].y} L ${eps[1].x} ${eps[1].y}` })
+    }
+  }
+  return result
 })
 
 function onStart(ctx: Mce.TransformContext): void {
@@ -126,6 +169,15 @@ const transformValue = computed(() => exec('getTransform'))
 const isConnection = computed(() => {
   return elementSelection.value.length === 1
     && Boolean((elementSelection.value[0] as any).connection?.isValid())
+})
+
+// A straight line / arrow gets a Figma-style endpoint editor instead of the
+// rectangular box (resize/rotate handles + W×H tip make no sense for a line).
+// Detected purely from the shape geometry so it also covers imported/synced
+// data that never carried a creation-time marker.
+const isLineLike = computed(() => {
+  return elementSelection.value.length === 1
+    && Boolean(parseLineShape(elementSelection.value[0]))
 })
 
 const movable = computed(() => {
@@ -213,6 +265,20 @@ defineExpose({
         class="m-selection__node"
         :style="item.style"
       />
+      <svg
+        v-if="selectionLinePaths.length"
+        class="m-selection__lines"
+        :style="{ overflow: 'visible' }"
+      >
+        <path
+          v-for="item in selectionLinePaths"
+          :key="item.id"
+          class="m-selection__line"
+          :d="item.d"
+          :transform="cameraTransform"
+          vector-effect="non-scaling-stroke"
+        />
+      </svg>
     </template>
 
     <div
@@ -244,8 +310,16 @@ defineExpose({
       @end="state = undefined"
     />
 
+    <LineEditor
+      v-if="!readonly && isLineLike && state !== 'pathEditing' && state !== 'cropping'"
+      :key="elementSelection[0].instanceId"
+      :element="elementSelection[0]"
+      :scale="[camera.zoom.x, camera.zoom.y]"
+      :offset="[-camera.position.x, -camera.position.y]"
+    />
+
     <Transform
-      v-if="!readonly && transformValue.width && transformValue.height && state !== 'pathEditing'"
+      v-if="!readonly && !isLineLike && !isConnection && transformValue.width && transformValue.height && state !== 'pathEditing'"
       ref="transformTpl"
       v-bind="transformProps"
       :model-value="transformValue"
@@ -312,6 +386,22 @@ defineExpose({
       border-style: solid;
       color: rgba(var(--m-theme-primary), 1);
       border-color: currentcolor;
+    }
+
+    &__lines {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      color: rgba(var(--m-theme-primary), 1);
+    }
+
+    &__line {
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.5;
     }
   }
 </style>
