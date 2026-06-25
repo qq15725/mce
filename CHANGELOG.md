@@ -1,3 +1,19 @@
+## [0.29.4](https://github.com/qq15725/mce/compare/v0.29.3...v0.29.4) (2026-06-25)
+
+
+### Bug Fixes
+
+* hover highlight follows line/arrow/connection path, not a box ([a57e383](https://github.com/qq15725/mce/commit/a57e3838ba9f072acd3fe08d5e705cb7290b5d81))
+* remove cursor-following tool-name tip while drawing ([aaab6fd](https://github.com/qq15725/mce/commit/aaab6fd737330009ac6e8144109f0cf10650441e))
+
+
+### Features
+
+* keep arrow tool active after drawing for continuous drawing ([079d6ca](https://github.com/qq15725/mce/commit/079d6ca49dafaa91b18b4658de382d04749d0736))
+* red solid-head line/arrow default via a draw-style config ([5780e6b](https://github.com/qq15725/mce/commit/5780e6b937f566bdd92dcc953b95e304fa868e7c)), closes [#ff4d4f](https://github.com/qq15725/mce/issues/ff4d4f)
+* tapered solid arrow shape ([11abaaf](https://github.com/qq15725/mce/commit/11abaaff8c7f814b4fe5dafb824b14231d7cecc4))
+* tool options panel for line/arrow/pen width and color ([eb6d6d5](https://github.com/qq15725/mce/commit/eb6d6d5d14b08fe0600206abb0dcb4ab6480038e))
+
 ## [0.29.3](https://github.com/qq15725/mce/compare/v0.29.2...v0.29.3) (2026-06-25)
 
 
