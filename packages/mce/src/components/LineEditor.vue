@@ -3,7 +3,7 @@ import type { Element2D } from 'modern-canvas'
 import { Path2D } from 'modern-path2d'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useEditor } from '../composables/editor'
-import { getArrowPath, getLineEndpoints, parseLineShape } from '../utils'
+import { getLineEndpoints, getTaperedArrowPath, getTaperedArrowWidth, parseLineShape } from '../utils'
 
 // Figma-style selection for a single straight line / arrow: instead of the
 // rectangular bounding box with resize/rotate handles, show only the two
@@ -18,6 +18,8 @@ const props = defineProps<{
 const editor = useEditor()
 const el = props.element
 const isArrow = parseLineShape(el)?.kind === 'arrow'
+// 锥形箭头的线宽在端点拖拽期间保持不变，开局反推一次即可。
+const arrowWidth = isArrow ? getTaperedArrowWidth(el) : 0
 
 interface Pt { x: number, y: number }
 
@@ -75,7 +77,7 @@ function commit(): void {
   // 先在 u 空间生成路径，用它的真实 bbox 作为元素 box——箭头的翼会超出两端点，
   // 必须把翼算进 box，否则箭头头部会被裁切/压扁。
   const rawData = isArrow
-    ? getArrowPath(u1, u2)
+    ? getTaperedArrowPath(u1, u2, arrowWidth)
     : `M ${u1.x} ${u1.y} L ${u2.x} ${u2.y}`
   const bb = new Path2D(rawData).getBoundingBox()
   const minX = bb.left
@@ -93,7 +95,7 @@ function commit(): void {
   const a = { x: u1.x - minX, y: u1.y - minY }
   const b = { x: u2.x - minX, y: u2.y - minY }
   const data = isArrow
-    ? getArrowPath(a, b)
+    ? getTaperedArrowPath(a, b, arrowWidth)
     : `M ${a.x} ${a.y} L ${b.x} ${b.y}`
   const paths = el.shape.paths ?? []
   el.shape.paths = [{ ...(paths[0] ?? {}), data }]

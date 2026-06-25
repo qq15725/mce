@@ -1,7 +1,7 @@
 import type { Shape } from 'modern-idoc'
 import { Path2D } from 'modern-path2d'
 import { definePlugin } from '../plugin'
-import { createShapeElement, getArrowPath } from '../utils'
+import { createShapeElement, getTaperedArrowPath } from '../utils'
 
 declare global {
   namespace Mce {
@@ -106,22 +106,21 @@ export default definePlugin((editor) => {
       {
         name: 'arrow',
         handle: (start) => {
+          // 锥形实心箭头：单个闭合多边形，用 fill 上色；meta 标记 inEditorIs='Arrow'
+          // 供端点编辑识别（它是带填充的多边形，没有通用几何签名）。
+          const width = drawStyle.value.width
           const el = addElement({
-            outline: {
-              color: drawStyle.value.color,
-              width: drawStyle.value.width,
-              lineCap: 'round',
-              lineJoin: 'round',
-            },
+            fill: drawStyle.value.color,
             meta: {
               inPptIs: 'Shape',
+              inEditorIs: 'Arrow',
             },
           }, {
             position: start,
           })
           return {
             move: (move) => {
-              const data = getArrowPath(start, move)
+              const data = getTaperedArrowPath(start, move, width)
               el.shape.paths = [
                 { data },
               ]
