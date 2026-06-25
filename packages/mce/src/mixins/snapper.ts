@@ -99,36 +99,50 @@ export default defineMixin((editor) => {
     return { axisX, axisY, gutterX, gutterY }
   }
 
-  const snap: Mce.Editor['snap'] = (box) => {
-    const { axisX, axisY, gutterX, gutterY } = getSnapAxes()
+  // 盒子在某轴上参与吸附的位置：[偏移, 是否为边]。x→left/center/right，y→top/center/bottom；
+  // 中线不参与间距卡点(gutter)，避免 gutter 干扰中心对齐。
+  function axisOffsets(box: { width: number, height: number }, axis: 'x' | 'y'): [number, boolean][] {
+    const size = axis === 'x' ? box.width : box.height
+    return [[0, true], [size / 2, false], [size, true]]
+  }
 
-    // [偏移, 轴, 是否为边]——间距卡点只作用于盒子的边(left/right/top/bottom)，中线不参与。
-    const posList: [number, 'x' | 'y', boolean][] = [
-      [0, 'x', true],
-      [box.width / 2, 'x', false],
-      [box.width, 'x', true],
-      [0, 'y', true],
-      [box.height / 2, 'y', false],
-      [box.height, 'y', true],
-    ]
-
-    for (let i = 0; i < posList.length; i++) {
-      const [offset, axis, isEdge] = posList[i]
-      const position = (axis === 'x' ? box.left : box.top) + offset
-      // 先吸主线(对齐/区域，间距0)，未命中且是边时再尝试间距卡点，避免 gutter 干扰对齐。
-      let closest = closestLine(axis === 'x' ? axisX : axisY, position, snapThreshold.value)
-      if (closest === undefined && isEdge) {
-        closest = closestLine(axis === 'x' ? gutterX : gutterY, position, snapThreshold.value)
+  // 在该轴所有位置里，找残差(到吸附线的距离)最小的一个候选：先主线、边再退间距卡点。
+  // 每轴只应用这一个最近候选（而非各位置各自吸附互相覆盖），结果对拖拽位置单调、不抖。
+  function bestCandidate(
+    base: number,
+    offsets: [number, boolean][],
+    main: Set<number>,
+    gutter: Set<number>,
+    threshold: number,
+  ): { line: number, offset: number } | undefined {
+    let best: { line: number, offset: number, dist: number } | undefined
+    for (const [offset, isEdge] of offsets) {
+      const pos = base + offset
+      let line = closestLine(main, pos, threshold)
+      if (line === undefined && isEdge) {
+        line = closestLine(gutter, pos, threshold)
       }
-      if (closest === undefined) {
+      if (line === undefined) {
         continue
       }
-      if (axis === 'x') {
-        box.left = closest - offset
+      const dist = Math.abs(line - pos)
+      if (!best || dist < best.dist) {
+        best = { line, offset, dist }
       }
-      else {
-        box.top = closest - offset
-      }
+    }
+    return best
+  }
+
+  const snap: Mce.Editor['snap'] = (box) => {
+    const { axisX, axisY, gutterX, gutterY } = getSnapAxes()
+    const threshold = snapThreshold.value
+    const cx = bestCandidate(box.left, axisOffsets(box, 'x'), axisX, gutterX, threshold)
+    if (cx) {
+      box.left = cx.line - cx.offset
+    }
+    const cy = bestCandidate(box.top, axisOffsets(box, 'y'), axisY, gutterY, threshold)
+    if (cy) {
+      box.top = cy.line - cy.offset
     }
   }
 
