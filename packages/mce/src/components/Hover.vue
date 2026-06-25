@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue'
 import { useEditor } from '../composables/editor'
+import { getLineEndpoints } from '../utils'
 
 const {
   selection,
@@ -11,17 +12,54 @@ const {
 
 watch(selection, () => hoverElement.value = undefined)
 
+const show = computed(() =>
+  hoverElement.value && !selection.value.some(node => node.equal(hoverElement.value!)),
+)
+
+// 线/箭头/连线沿自身高亮（而非矩形包围盒）：连线用路由路径，直线/箭头用两端点连线。
+const hoverLinePath = computed<string | null>(() => {
+  const el = hoverElement.value
+  if (!el) {
+    return null
+  }
+  const conn = (el as any).connection
+  if (conn?.isValid?.()) {
+    return conn.route?.()?.toData?.() ?? null
+  }
+  const eps = getLineEndpoints(el)
+  return eps ? `M ${eps[0].x} ${eps[0].y} L ${eps[1].x} ${eps[1].y}` : null
+})
+
+// 全局坐标→画板像素的 SVG 变换（配合 vector-effect 让描边宽度不随缩放变化）。
+const cameraTransform = computed(() => {
+  const { zoom, position } = camera.value
+  return `translate(${-position.x} ${-position.y}) scale(${zoom.x} ${zoom.y})`
+})
+
 const hoverElementObb = computed(() => getObb(hoverElement.value, 'drawboard'))
 </script>
 
 <template>
+  <svg
+    v-if="show && hoverLinePath"
+    class="m-hover-line"
+    :style="{ overflow: 'visible' }"
+  >
+    <path
+      class="m-hover-line__path"
+      :d="hoverLinePath"
+      :transform="cameraTransform"
+      vector-effect="non-scaling-stroke"
+    />
+  </svg>
+
   <div
-    v-if="hoverElement && !selection.some(node => node.equal(hoverElement))"
+    v-else-if="show"
     class="m-hover"
-    :data-name="hoverElement.name"
+    :data-name="hoverElement?.name"
     :style="{
       borderColor: 'currentcolor',
-      borderRadius: `${(hoverElement.style.borderRadius ?? 0) * camera.zoom.x}px`,
+      borderRadius: `${(hoverElement?.style?.borderRadius ?? 0) * camera.zoom.x}px`,
       ...hoverElementObb.toCssStyle(),
     }"
   />
@@ -33,5 +71,21 @@ const hoverElementObb = computed(() => getObb(hoverElement.value, 'drawboard'))
   border-style: solid;
   border-width: 2px;
   color: rgba(var(--m-theme-primary), 1);
+}
+
+.m-hover-line {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  color: rgba(var(--m-theme-primary), 1);
+
+  &__path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+  }
 }
 </style>
