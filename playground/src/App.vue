@@ -18,7 +18,7 @@ import workflow from '@mce/workflow'
 import { Editor, EditorLayers, EditorLayout, EditorLayoutItem } from 'mce'
 import { computed } from 'vue'
 import { BroadcastChannelProvider } from './collab'
-import { loadAnimationDemo, loadArtboardDemo, loadChartDemo, loadCommentsDemo, loadConnectionDemo, loadFillStrokeDemo, loadGifDemo, loadImageEffectsDemo, loadInteractionDemo, loadLayoutDemo, loadPsdDemo, loadShapesDemo, loadSmartGuidesDemo, loadTableDemo, loadTextDemo, loadVideoDemo } from './demos'
+import { loadAnimationDemo, loadArtboardDemo, loadChartDemo, loadCommentsDemo, loadConnectionDemo, loadFillStrokeDemo, loadGifDemo, loadImageEffectsDemo, loadInteractionDemo, loadLayoutDemo, loadLinesDemo, loadPsdDemo, loadShapesDemo, loadSmartGuidesDemo, loadTableDemo, loadTextDemo, loadVideoDemo } from './demos'
 import 'mce/styles'
 
 const editorOptions = {
@@ -106,6 +106,9 @@ else if (demo === 'imageEffects') {
 }
 else if (demo === 'shapes') {
   loadShapesDemo(editor)
+}
+else if (demo === 'lines') {
+  loadLinesDemo(editor)
 }
 else if (demo === 'text') {
   loadTextDemo(editor)
@@ -255,6 +258,9 @@ const element = computed(() => editor.elementSelection.value[0])
           </button>
           <button @click="() => loadShapesDemo(editor)">
             形状示例
+          </button>
+          <button @click="() => loadLinesDemo(editor)">
+            直线箭头示例
           </button>
           <button @click="() => loadTextDemo(editor)">
             文字示例
