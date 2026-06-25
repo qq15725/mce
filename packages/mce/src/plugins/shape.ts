@@ -130,9 +130,7 @@ export default definePlugin((editor) => {
               el.style.width = box.width
               el.style.height = box.height
             },
-            end: () => {
-              activateTool(undefined)
-            },
+            // 画完不退出工具：保持箭头工具激活，可连续画多个箭头（切换工具或 Esc 退出）。
           }
         },
       },
