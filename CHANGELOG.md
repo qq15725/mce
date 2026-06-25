@@ -1,3 +1,17 @@
+## [0.29.3](https://github.com/qq15725/mce/compare/v0.29.2...v0.29.3) (2026-06-25)
+
+
+### Bug Fixes
+
+* compute smart guides from post-snap element position ([c652637](https://github.com/qq15725/mce/commit/c652637a435aca6b2d024cab62e3b1d2206d42f1))
+* drop fixed-gutter snapping to match Figma feel ([4553fd3](https://github.com/qq15725/mce/commit/4553fd33b2c40854fd1a9218931a82cb63aaddd5))
+* per-axis nearest guideline snapping ([bee34ec](https://github.com/qq15725/mce/commit/bee34eca4ffdbe33bbc9e6cde61d0f40375aeb72))
+
+
+### Features
+
+* endpoint-style selection for lines, arrows and connections ([943a563](https://github.com/qq15725/mce/commit/943a56377e10329dbad7d39bd7a4540e100f4b00))
+
 ## [0.29.2](https://github.com/qq15725/mce/compare/v0.29.1...v0.29.2) (2026-06-24)
 
 
