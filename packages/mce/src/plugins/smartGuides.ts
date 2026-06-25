@@ -7,9 +7,9 @@
  *   - 距离线 √（移动盒子中线到最近兄弟盒子，带像素值）
  *   - 间距线 √（以带数值的等距间距块呈现）
  *   - 间距块 √
- * - 自动吸附
+ * - 自动吸附（对齐边/中线、等距分布；不做固定档位卡点，贴近 Figma）
  *   - 对齐时吸附 √
- *   - 减少距离时（如 4/8/12/16）吸附 √（gutter 卡点，对齐优先、间距卡点次之）
+ *   - 等距分布时吸附 √（area/distance）
  *   - 调整大小时吸附 √（仅单边手柄）
  *   - 画板边界吸附 √（仅真实画板 Frame）
  * 参考资料:
@@ -193,14 +193,9 @@ export default definePlugin((editor) => {
   }
 
   const linePairs = ref<LinePair[]>([])
-  // 间距卡点候选：邻居边按这些间距偏移后的位置，作为吸附次选（“减少距离时吸附”，Ant Gutter 思路）。
-  const gutterPoints = ref<{ x: number[], y: number[] }>({ x: [], y: [] })
-  const GUTTERS = [4, 8, 12, 16]
 
   function updateSmartGuides(handle = 'move') {
     const _linePairs: LinePair[] = []
-    const _gutterX: number[] = []
-    const _gutterY: number[] = []
     // resize 时只用被拖动的边作对齐源：每轴最终只保留“最近的一条”对齐线，若沿用全部 6 条边，
     // 保留的那条可能落在未拖动的边上，导致吸附目标与实际在动的边错配。
     const resizeDir = handle.startsWith('resize') ? handle.split('-')[1] ?? '' : ''
@@ -237,18 +232,6 @@ export default definePlugin((editor) => {
           hLines: new BSTree<Line>((a, b) => a.pos - b.pos),
         },
       )
-
-      // 间距卡点候选 = 每条邻居边按 ±GUTTERS 偏移；中线(hm/vm)不参与（间距卡点只针对边）。
-      hLines.inorderTraversal((line) => {
-        if (line.type === 'hm')
-          return
-        for (const g of GUTTERS) _gutterX.push(line.pos + g, line.pos - g)
-      })
-      vLines.inorderTraversal((line) => {
-        if (line.type === 'vm')
-          return
-        for (const g of GUTTERS) _gutterY.push(line.pos + g, line.pos - g)
-      })
 
       const areaLine: Record<'vt' | 'vb' | 'hl' | 'hr', Line[]> = {
         vt: [],
@@ -370,7 +353,6 @@ export default definePlugin((editor) => {
     }
 
     linePairs.value = _linePairs
-    gutterPoints.value = { x: _gutterX, y: _gutterY }
   }
 
   const snapLines = computed(() => {
@@ -549,8 +531,6 @@ export default definePlugin((editor) => {
       return {
         xLines: lines.x,
         yLines: lines.y,
-        xGutters: gutterPoints.value.x,
-        yGutters: gutterPoints.value.y,
       }
     },
   })
@@ -566,7 +546,6 @@ export default definePlugin((editor) => {
       },
       selectionTransformEnded: () => {
         linePairs.value = []
-        gutterPoints.value = { x: [], y: [] }
       },
     },
     components: [

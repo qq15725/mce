@@ -9,9 +9,6 @@ declare global {
       xLines?: number[]
       yLines?: number[]
       points?: Vector2Like[]
-      /** 间距卡点候选位（如 4/8/12/16 间距）。仅当主吸附线(对齐/区域)未命中时作为次选。 */
-      xGutters?: number[]
-      yGutters?: number[]
     }
 
     interface Snapper {
@@ -78,50 +75,36 @@ export default defineMixin((editor) => {
     snappers.delete(key)
   }
 
-  // 汇总所有 snapper 提供的吸附线（主线 axis* / 间距卡点次选 gutter*）。
-  function getSnapAxes(): {
-    axisX: Set<number>
-    axisY: Set<number>
-    gutterX: Set<number>
-    gutterY: Set<number>
-  } {
+  // 汇总所有 snapper 提供的吸附线（对齐线/等距分布线）。
+  function getSnapAxes(): { axisX: Set<number>, axisY: Set<number> } {
     const axisX = new Set<number>()
     const axisY = new Set<number>()
-    const gutterX = new Set<number>()
-    const gutterY = new Set<number>()
     snappers.forEach((snapper) => {
-      const { xLines, yLines, xGutters, yGutters } = snapper.getLines()
+      const { xLines, yLines } = snapper.getLines()
       xLines?.forEach(v => axisX.add(v))
       yLines?.forEach(v => axisY.add(v))
-      xGutters?.forEach(v => gutterX.add(v))
-      yGutters?.forEach(v => gutterY.add(v))
     })
-    return { axisX, axisY, gutterX, gutterY }
+    return { axisX, axisY }
   }
 
-  // 盒子在某轴上参与吸附的位置：[偏移, 是否为边]。x→left/center/right，y→top/center/bottom；
-  // 中线不参与间距卡点(gutter)，避免 gutter 干扰中心对齐。
-  function axisOffsets(box: { width: number, height: number }, axis: 'x' | 'y'): [number, boolean][] {
+  // 盒子在某轴上参与吸附的位置：x→left/center/right，y→top/center/bottom。
+  function axisOffsets(box: { width: number, height: number }, axis: 'x' | 'y'): number[] {
     const size = axis === 'x' ? box.width : box.height
-    return [[0, true], [size / 2, false], [size, true]]
+    return [0, size / 2, size]
   }
 
-  // 在该轴所有位置里，找残差(到吸附线的距离)最小的一个候选：先主线、边再退间距卡点。
-  // 每轴只应用这一个最近候选（而非各位置各自吸附互相覆盖），结果对拖拽位置单调、不抖。
+  // 在该轴所有位置里，找残差(到吸附线的距离)最小的一个候选。每轴只应用这一个最近候选
+  // （而非各位置各自吸附互相覆盖），结果对拖拽位置单调、不抖。
   function bestCandidate(
     base: number,
-    offsets: [number, boolean][],
-    main: Set<number>,
-    gutter: Set<number>,
+    offsets: number[],
+    lines: Set<number>,
     threshold: number,
   ): { line: number, offset: number } | undefined {
     let best: { line: number, offset: number, dist: number } | undefined
-    for (const [offset, isEdge] of offsets) {
+    for (const offset of offsets) {
       const pos = base + offset
-      let line = closestLine(main, pos, threshold)
-      if (line === undefined && isEdge) {
-        line = closestLine(gutter, pos, threshold)
-      }
+      const line = closestLine(lines, pos, threshold)
       if (line === undefined) {
         continue
       }
@@ -134,13 +117,13 @@ export default defineMixin((editor) => {
   }
 
   const snap: Mce.Editor['snap'] = (box) => {
-    const { axisX, axisY, gutterX, gutterY } = getSnapAxes()
+    const { axisX, axisY } = getSnapAxes()
     const threshold = snapThreshold.value
-    const cx = bestCandidate(box.left, axisOffsets(box, 'x'), axisX, gutterX, threshold)
+    const cx = bestCandidate(box.left, axisOffsets(box, 'x'), axisX, threshold)
     if (cx) {
       box.left = cx.line - cx.offset
     }
-    const cy = bestCandidate(box.top, axisOffsets(box, 'y'), axisY, gutterY, threshold)
+    const cy = bestCandidate(box.top, axisOffsets(box, 'y'), axisY, threshold)
     if (cy) {
       box.top = cy.line - cy.offset
     }
@@ -151,35 +134,32 @@ export default defineMixin((editor) => {
     if (dir.length !== 1) {
       return
     }
-    const { axisX, axisY, gutterX, gutterY } = getSnapAxes()
-    // 边吸附：先对齐线(间距0)，未命中再间距卡点。
-    const snapEdge = (main: Set<number>, gutter: Set<number>, pos: number): number | undefined => {
-      return closestLine(main, pos, snapThreshold.value) ?? closestLine(gutter, pos, snapThreshold.value)
-    }
+    const { axisX, axisY } = getSnapAxes()
+    const th = snapThreshold.value
     const right = box.left + box.width
     const bottom = box.top + box.height
     if (dir === 'l') {
-      const s = snapEdge(axisX, gutterX, box.left)
+      const s = closestLine(axisX, box.left, th)
       if (s !== undefined && right - s >= 1) {
         box.left = s
         box.width = right - s
       }
     }
     else if (dir === 'r') {
-      const s = snapEdge(axisX, gutterX, right)
+      const s = closestLine(axisX, right, th)
       if (s !== undefined && s - box.left >= 1) {
         box.width = s - box.left
       }
     }
     else if (dir === 't') {
-      const s = snapEdge(axisY, gutterY, box.top)
+      const s = closestLine(axisY, box.top, th)
       if (s !== undefined && bottom - s >= 1) {
         box.top = s
         box.height = bottom - s
       }
     }
     else if (dir === 'b') {
-      const s = snapEdge(axisY, gutterY, bottom)
+      const s = closestLine(axisY, bottom, th)
       if (s !== undefined && s - box.top >= 1) {
         box.height = s - box.top
       }
