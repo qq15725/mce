@@ -6,6 +6,7 @@ import { Icon } from './icon'
 import Btn from './shared/Btn.vue'
 import Menu from './shared/Menu.vue'
 import Tooltip from './shared/Tooltip.vue'
+import ToolOptions from './ToolOptions.vue'
 
 const {
   state,
@@ -119,6 +120,11 @@ const menuLocation = computed(() => (({
 
 const activeShape = ref(0)
 const activePen = ref(0)
+
+// 直线 / 箭头 / 画笔工具激活时，显示线宽 + 颜色选项面板。
+const showToolOptions = computed(() =>
+  ['line', 'arrow', 'pen', 'pencil'].includes(activeTool.value?.name ?? ''),
+)
 
 const shapeItems = computed(() => {
   // 核心形状工具 + 插件经 registerToolbeltShapeItem 追加的工具（如 @mce/table、@mce/chart）。
@@ -235,6 +241,12 @@ const items = computed(() => {
     :class="[`m-toolbelt--${placement}`, { 'm-toolbelt--dragging': dragging }]"
     :style="barStyle"
   >
+    <ToolOptions
+      v-if="showToolOptions"
+      class="m-toolbelt__options"
+      :class="`m-toolbelt__options--${placement}`"
+    />
+
     <div
       class="m-toolbelt__grip"
       title="拖动以停靠"
@@ -373,6 +385,40 @@ const items = computed(() => {
       cursor: grabbing;
       box-shadow: 0 12px 32px rgba(0, 0, 0, .24);
       user-select: none;
+    }
+
+    // 选项面板：贴着工具栏、朝画布一侧浮出（下停靠→在上方，上停靠→在下方，左右同理）。
+    &__options {
+      position: absolute;
+      z-index: 1;
+    }
+
+    &__options--bottom {
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-bottom: 10px;
+    }
+
+    &__options--top {
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-top: 10px;
+    }
+
+    &__options--left {
+      left: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      margin-left: 10px;
+    }
+
+    &__options--right {
+      right: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      margin-right: 10px;
     }
 
     &__grip {

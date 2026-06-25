@@ -23,7 +23,11 @@ export default definePlugin((editor) => {
     camera,
     selection,
     state,
+    getConfigRef,
   } = editor
+
+  // 画笔与直线/箭头共用「绘制样式」（描边色 + 线宽），由工具选项面板编辑。
+  const drawStyle = getConfigRef<Mce.DrawStyleConfig>('interaction.drawStyle')
 
   let el: Element2D | undefined
   let currentPath: Path2D | undefined
@@ -114,8 +118,8 @@ export default definePlugin((editor) => {
               height: 1,
             },
             outline: {
-              color: '#d9d9d9',
-              width: 5,
+              color: drawStyle.value.color,
+              width: drawStyle.value.width,
               lineCap: 'round',
               lineJoin: 'round',
             },
@@ -166,8 +170,8 @@ export default definePlugin((editor) => {
               height: 1,
             },
             outline: {
-              color: '#d9d9d9',
-              width: 5,
+              color: drawStyle.value.color,
+              width: drawStyle.value.width,
               lineCap: 'round',
               lineJoin: 'round',
             },
