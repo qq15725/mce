@@ -1,7 +1,7 @@
-import type { Element2D } from 'modern-canvas'
-import { DrawboardEffect, render } from 'modern-canvas'
+import type { Element2D, Engine } from 'modern-canvas'
+import { DrawboardEffect, render, renderPixels } from 'modern-canvas'
 import { definePlugin } from '../plugin'
-import { createImageElement, imageExtRe, imageExts, imageMimes } from '../utils'
+import { createImageElement, imageExtRe, imageExts, imageMimes, MAX_CANVAS_AREA, rgbaToPngBlob, supportsPngStream } from '../utils'
 
 declare global {
   namespace Mce {
@@ -50,23 +50,33 @@ export default definePlugin((editor) => {
       saveAs: true,
       handle: async (options) => {
         const doc = await to('json', options)
+        const width = Math.max(1, Math.floor(doc.style.width))
+        const height = Math.max(1, Math.floor(doc.style.height))
+        const onBefore = (engine: Engine) => {
+          engine.root.append(
+            new DrawboardEffect({
+              ...drawboardEffect.value.getProperties(),
+              internalMode: 'back',
+              effectMode: 'before',
+              checkerboard: false,
+              pixelGrid: false,
+            }),
+          )
+        }
+
+        // PNG 大图：导出尺寸超过 canvas 面积上限时，绕过全尺寸 HTMLCanvas（否则 canvas 静默产出空白图），
+        // 改用 renderPixels（tiling 拼出的全尺寸 RGBA）+ 直接编码 PNG，上限改由内存决定。
+        if (name === 'png' && width * height > MAX_CANVAS_AREA && supportsPngStream()) {
+          const pixels = await runExclusiveRender(() => renderPixels({ data: doc, fonts, width, height, onBefore }))
+          return rgbaToPngBlob(pixels, width, height)
+        }
 
         const canvas = await runExclusiveRender(() => render({
           data: doc,
           fonts,
           width: doc.style.width,
           height: doc.style.height,
-          onBefore: (engine) => {
-            engine.root.append(
-              new DrawboardEffect({
-                ...drawboardEffect.value.getProperties(),
-                internalMode: 'back',
-                effectMode: 'before',
-                checkerboard: false,
-                pixelGrid: false,
-              }),
-            )
-          },
+          onBefore,
         }))
 
         return await new Promise<Blob>((resolve) => {
