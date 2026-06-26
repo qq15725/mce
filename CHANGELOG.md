@@ -1,3 +1,10 @@
+## [0.29.6](https://github.com/qq15725/mce/compare/v0.29.5...v0.29.6) (2026-06-26)
+
+
+### Performance Improvements
+
+* **export:** apply Sub filter and always direct-encode PNG ([dd6c1ec](https://github.com/qq15725/mce/commit/dd6c1ec9a101eb08cc0708d7a8a5b984ad2f7fc5))
+
 ## [0.29.5](https://github.com/qq15725/mce/compare/v0.29.4...v0.29.5) (2026-06-26)
 
 
