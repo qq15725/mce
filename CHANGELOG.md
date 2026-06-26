@@ -1,3 +1,10 @@
+## [0.29.5](https://github.com/qq15725/mce/compare/v0.29.4...v0.29.5) (2026-06-26)
+
+
+### Features
+
+* **export:** direct-encode oversized PNG to bypass canvas area limit ([1c5cce0](https://github.com/qq15725/mce/commit/1c5cce0cdf92dbe90aeca55023362227f14fae8e))
+
 ## [0.29.4](https://github.com/qq15725/mce/compare/v0.29.3...v0.29.4) (2026-06-25)
 
 
