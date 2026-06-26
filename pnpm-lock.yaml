@@ -155,8 +155,8 @@ importers:
         specifier: ^5
         version: 5.13.0
       modern-canvas:
-        specifier: ^0.24.9
-        version: 0.24.9(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1)
+        specifier: ^0.24.10
+        version: 0.24.10(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1)
       modern-font:
         specifier: ^0.6.1
         version: 0.6.1
@@ -2435,8 +2435,8 @@ packages:
   mlly@1.8.2:
     resolution: {integrity: sha512-d+ObxMQFmbt10sretNDytwt85VrbkhhUA/JBGm1MPaWJ65Cl4wOgLaB1NYvJSZ0Ef03MMEU/0xpPMXUIQ29UfA==}
 
-  modern-canvas@0.24.9:
-    resolution: {integrity: sha512-OXUM+balfCxcUrbupGU+SlO1YbsKmhmFzk45KU/5zXOA0uoEZD1MG0GoHqjvT6BfabUtdvIEJ7ySk2u0nopBwQ==}
+  modern-canvas@0.24.10:
+    resolution: {integrity: sha512-vfnH2flhc/yigiPXN3iRN3RTrr81pf+jMBAzL0HH049leRRjLqQ4KP9rRnb4ysJmuLORZ+8nBibzqoUf+f1FCA==}
     peerDependencies:
       echarts: ^5 || ^6
       lottie-web: ^5
@@ -5553,7 +5553,7 @@ snapshots:
       pkg-types: 1.3.1
       ufo: 1.6.4
 
-  modern-canvas@0.24.9(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1):
+  modern-canvas@0.24.10(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1):
     dependencies:
       colord: 2.9.3
       earcut: 3.0.2
