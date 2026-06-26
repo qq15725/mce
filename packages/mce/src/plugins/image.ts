@@ -1,7 +1,7 @@
 import type { Element2D, Engine } from 'modern-canvas'
 import { DrawboardEffect, render, renderPixels } from 'modern-canvas'
 import { definePlugin } from '../plugin'
-import { createImageElement, imageExtRe, imageExts, imageMimes, MAX_CANVAS_AREA, rgbaToPngBlob, supportsPngStream } from '../utils'
+import { createImageElement, imageExtRe, imageExts, imageMimes, rgbaToPngBlob, supportsPngStream } from '../utils'
 
 declare global {
   namespace Mce {
@@ -64,9 +64,9 @@ export default definePlugin((editor) => {
           )
         }
 
-        // PNG 大图：导出尺寸超过 canvas 面积上限时，绕过全尺寸 HTMLCanvas（否则 canvas 静默产出空白图），
-        // 改用 renderPixels（tiling 拼出的全尺寸 RGBA）+ 直接编码 PNG，上限改由内存决定。
-        if (name === 'png' && width * height > MAX_CANVAS_AREA && supportsPngStream()) {
+        // PNG 一律走直编码：renderPixels（tiling 全尺寸 RGBA）+ Sub-filter 直接编码，
+        // 彻底绕过 HTMLCanvas 的面积上限（大图不再空白），体积也比 canvas.toBlob 略小。
+        if (name === 'png' && supportsPngStream()) {
           const pixels = await runExclusiveRender(() => renderPixels({ data: doc, fonts, width, height, onBefore }))
           return rgbaToPngBlob(pixels, width, height)
         }
