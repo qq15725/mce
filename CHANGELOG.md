@@ -1,3 +1,10 @@
+## [0.29.7](https://github.com/qq15725/mce/compare/v0.29.6...v0.29.7) (2026-06-26)
+
+
+### Features
+
+* **export:** clamp canvas-based exports (jpeg/webp) to the real 2D-canvas limit ([fb0a126](https://github.com/qq15725/mce/commit/fb0a126287cddabcdc5e11271b4ee52df94808ba))
+
 ## [0.29.6](https://github.com/qq15725/mce/compare/v0.29.5...v0.29.6) (2026-06-26)
 
 
