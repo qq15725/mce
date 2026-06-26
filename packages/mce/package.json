@@ -71,7 +71,7 @@
     "@vueuse/core": "^14.3.0",
     "diff": "^9.0.0",
     "lodash-es": "^4.18.1",
-    "modern-canvas": "^0.24.10",
+    "modern-canvas": "^0.24.11",
     "modern-font": "^0.6.1",
     "modern-idoc": "^0.12.1",
     "modern-text": "^2.0.9",
