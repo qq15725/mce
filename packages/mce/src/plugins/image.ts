@@ -1,7 +1,7 @@
 import type { Element2D, Engine } from 'modern-canvas'
 import { DrawboardEffect, render, renderPixels } from 'modern-canvas'
 import { definePlugin } from '../plugin'
-import { createImageElement, imageExtRe, imageExts, imageMimes, rgbaToPngBlob, supportsPngStream } from '../utils'
+import { createImageElement, getMaxCanvasSide, imageExtRe, imageExts, imageMimes, rgbaToPngBlob, supportsPngStream } from '../utils'
 
 declare global {
   namespace Mce {
@@ -71,11 +71,27 @@ export default definePlugin((editor) => {
           return rgbaToPngBlob(pixels, width, height)
         }
 
+        // canvas 路径（jpeg / webp / 无 CompressionStream 的 png）：最终 toCanvas2D 受 2D canvas
+        // 面积上限约束，超过会静默产出空白图。按实测 canvas 上限等比缩小输出尺寸（降采样 scale），
+        // 保证产出有效图——上限由内核统一处理，调用方无需再自行钳制。
+        let canvasDoc = doc
+        const maxSide = getMaxCanvasSide()
+        const maxArea = Math.floor(maxSide * maxSide * 0.98)
+        const longest = Math.max(width, height)
+        let shrink = 1
+        if (longest > maxSide)
+          shrink = maxSide / longest
+        const areaAfterSide = (width * shrink) * (height * shrink)
+        if (areaAfterSide > maxArea)
+          shrink *= Math.sqrt(maxArea / areaAfterSide)
+        if (shrink < 1)
+          canvasDoc = await to('json', { ...options, scale: (options.scale ?? 1) * shrink })
+
         const canvas = await runExclusiveRender(() => render({
-          data: doc,
+          data: canvasDoc,
           fonts,
-          width: doc.style.width,
-          height: doc.style.height,
+          width: canvasDoc.style.width,
+          height: canvasDoc.style.height,
           onBefore,
         }))
 
