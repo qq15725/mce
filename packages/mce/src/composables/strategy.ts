@@ -97,7 +97,7 @@ function resolveSelectionTarget(context: ActiveStrategyContext): Element2D | und
 export const defaultActiveStrategy: ActiveStrategy = resolveSelectionTarget
 
 export const defaultDoubleclickStrategy: DoubleclickStrategy = (context) => {
-  context.editor.exec('enter')
+  context.editor.exec('editElement')
 }
 
 export const defaultHoverStrategy: HoverStrategy = resolveSelectionTarget

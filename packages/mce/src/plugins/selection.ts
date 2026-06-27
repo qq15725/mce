@@ -31,8 +31,8 @@ declare global {
       groupSelection: () => void
       ungroupSelection: () => void
       frameSelection: () => void
-      showOrHideSelection: (target?: 'show' | 'hide') => void
-      lockOrUnlockSelection: (target?: 'lock' | 'unlock') => void
+      toggleSelectionVisible: (target?: 'show' | 'hide') => void
+      toggleSelectionLock: (target?: 'lock' | 'unlock') => void
     }
 
     interface Hotkeys {
@@ -46,8 +46,8 @@ declare global {
       groupSelection: [event: KeyboardEvent]
       ungroupSelection: [event: KeyboardEvent]
       frameSelection: [event: KeyboardEvent]
-      showOrHideSelection: [event: KeyboardEvent]
-      lockOrUnlockSelection: [event: KeyboardEvent]
+      toggleSelectionVisible: [event: KeyboardEvent]
+      toggleSelectionLock: [event: KeyboardEvent]
     }
 
     interface Slots {
@@ -228,7 +228,7 @@ export default definePlugin((editor) => {
     })
   }
 
-  function showOrHideSelection(target?: 'show' | 'hide'): void {
+  function toggleSelectionVisible(target?: 'show' | 'hide'): void {
     elementSelection.value.forEach((el) => {
       switch (target) {
         case 'show':
@@ -244,7 +244,7 @@ export default definePlugin((editor) => {
     })
   }
 
-  function lockOrUnlockSelection(target?: 'lock' | 'unlock'): void {
+  function toggleSelectionLock(target?: 'lock' | 'unlock'): void {
     selection.value.forEach((el) => {
       switch (target) {
         case 'lock':
@@ -275,8 +275,8 @@ export default definePlugin((editor) => {
       { command: 'groupSelection', handle: () => groupSelection('Element') },
       { command: 'ungroupSelection', handle: ungroupSelection },
       { command: 'frameSelection', handle: () => groupSelection('Frame') },
-      { command: 'showOrHideSelection', handle: showOrHideSelection },
-      { command: 'lockOrUnlockSelection', handle: lockOrUnlockSelection },
+      { command: 'toggleSelectionVisible', handle: toggleSelectionVisible },
+      { command: 'toggleSelectionLock', handle: toggleSelectionLock },
     ],
     hotkeys: [
       { command: 'selectAll', key: 'CmdOrCtrl+A' },
@@ -289,8 +289,8 @@ export default definePlugin((editor) => {
       { command: 'groupSelection', key: 'CmdOrCtrl+G' },
       { command: 'ungroupSelection', key: 'CmdOrCtrl+Backspace' },
       { command: 'frameSelection', key: 'Alt+CmdOrCtrl+G' },
-      { command: 'showOrHideSelection', key: 'Shift+CmdOrCtrl+H' },
-      { command: 'lockOrUnlockSelection', key: 'Shift+CmdOrCtrl+L' },
+      { command: 'toggleSelectionVisible', key: 'Shift+CmdOrCtrl+H' },
+      { command: 'toggleSelectionLock', key: 'Shift+CmdOrCtrl+L' },
     ],
     events: {
       // 切文档清选区由 0.context.ts 的 onSetDoc 统一处理（docSet）；这里仅保留显式清空语义。

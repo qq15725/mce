@@ -67,7 +67,7 @@ export default definePlugin((editor, options) => {
       { key: 'newDoc' },
       { key: 'openDoc' },
       { type: 'divider' },
-      { key: 'import' },
+      { key: 'importFile' },
       exportMenu.value.children.length && exportMenu.value,
     ].filter(Boolean),
   }))
@@ -277,8 +277,8 @@ export default definePlugin((editor, options) => {
   }))
 
   const objectMenu2 = computed(() => [
-    { key: 'showOrHideSelection', disabled: !hasSelected.value },
-    { key: 'lockOrUnlockSelection', disabled: !hasSelected.value },
+    { key: 'toggleSelectionVisible', disabled: !hasSelected.value },
+    { key: 'toggleSelectionLock', disabled: !hasSelected.value },
   ])
 
   const objectMenu = computed(() => ({

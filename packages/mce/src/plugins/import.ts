@@ -10,11 +10,11 @@ declare global {
     }
 
     interface Commands {
-      import: (options?: ImportOptions) => Promise<Element2D[]>
+      importFile: (options?: ImportOptions) => Promise<Element2D[]>
     }
 
     interface Hotkeys {
-      import: [event: KeyboardEvent]
+      importFile: [event: KeyboardEvent]
     }
   }
 }
@@ -26,7 +26,7 @@ export default definePlugin((editor) => {
     addElements,
   } = editor
 
-  const _import: Mce.Commands['import'] = async (options = {}) => {
+  const _import: Mce.Commands['importFile'] = async (options = {}) => {
     const files = await openFileDialog({ multiple: true })
 
     return addElements((
@@ -48,10 +48,10 @@ export default definePlugin((editor) => {
   return {
     name: 'mce:import',
     commands: [
-      { command: 'import', handle: _import },
+      { command: 'importFile', handle: _import },
     ],
     hotkeys: [
-      { command: 'import', key: 'CmdOrCtrl+I' },
+      { command: 'importFile', key: 'CmdOrCtrl+I' },
     ],
     setup: () => {
       const {

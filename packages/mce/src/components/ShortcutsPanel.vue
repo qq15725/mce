@@ -21,7 +21,7 @@ const CATEGORIES: { key: string, test: (c: string) => boolean }[] = [
   { key: 'shortcutsCatTools', test: c => /^(?:activateTool:|setState:)/.test(c) },
   { key: 'shortcutsCatView', test: c => /^(?:zoom|fit|toggleUi|togglePanel|scroll)/.test(c) },
   { key: 'shortcutsCatEdit', test: c => /^(?:copy|cut|paste|duplicate|delete|undo|redo|import|formatPaint)/.test(c) },
-  { key: 'shortcutsCatSelection', test: c => c.startsWith('select') || c === 'enter' || c === 'cancel' },
+  { key: 'shortcutsCatSelection', test: c => c.startsWith('select') || c === 'editElement' || c === 'cancel' },
   { key: 'shortcutsCatArrange', test: c => /^(?:align|distribute|bring|send|group|ungroup|frameSelection|flip|tidyUp|lockOrUnlock|showOrHide|move)/.test(c) },
   { key: 'shortcutsCatPlayback', test: c => /^(?:togglePlay|seek|step)/.test(c) },
   { key: 'shortcutsCatDocument', test: c => /^(?:newDoc|openDoc)/.test(c) },

@@ -252,8 +252,8 @@ editor.exec('tidyUp')
 
 // Design tokens / variables
 const collection = editor.exec('createVariableCollection', 'Theme', 'Light')
-const dark = editor.exec('addVariableMode', collection, 'Dark')
-const brand = editor.exec('addVariable', collection, { name: 'brand', type: 'color', value: '#ff0000' })
+const dark = editor.exec('createVariableMode', collection, 'Dark')
+const brand = editor.exec('createVariable', collection, { name: 'brand', type: 'color', value: '#ff0000' })
 editor.exec('setVariableValue', brand, dark, '#0000ff')
 editor.exec('bindVariable', 'fill.color', brand) // bind selected element's fill
 editor.exec('setActiveVariableMode', collection, dark) // theme switch → canvas recolors

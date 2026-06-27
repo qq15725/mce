@@ -11,7 +11,7 @@ export interface TextPointer {
   charIndex: number
 }
 
-/** 片段字符数（与 handleTextSelection 同口径：用 normalizeCRLF 计数）。 */
+/** 片段字符数（与 eachTextSelection 同口径：用 normalizeCRLF 计数）。 */
 function fragmentCharLength(content: string): number {
   return Array.from(normalizeCRLF(content)).length
 }

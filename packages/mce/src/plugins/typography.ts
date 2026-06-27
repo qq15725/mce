@@ -41,7 +41,7 @@ declare global {
     interface Commands {
       startTyping: (event?: MouseEvent) => Promise<boolean>
       addTextElement: (options?: addTextElementOptions) => Element2D
-      handleTextSelection: (textSelection: IndexCharacter[], cb: (arg: Record<string, any>) => boolean) => void
+      eachTextSelection: (textSelection: IndexCharacter[], cb: (arg: Record<string, any>) => boolean) => void
       textFontSizeToFit: (element: Element2D, scale?: number) => void
       textToFit: (element: Element2D, typography?: TypographyStrategy) => void
       getTextStyle: (key: string) => any
@@ -228,7 +228,7 @@ export default definePlugin((editor) => {
     })
   }
 
-  function handleTextSelection([start, end]: IndexCharacter[], cb: (arg: Record<string, any>) => boolean): void {
+  function eachTextSelection([start, end]: IndexCharacter[], cb: (arg: Record<string, any>) => boolean): void {
     let flag = true
     elementSelection.value[0]?.text?.content.forEach((p, pIndex, pItems) => {
       if (!flag)
@@ -288,7 +288,7 @@ export default definePlugin((editor) => {
     if (hasTextSelectionRange.value && !isTextAllSelected.value) {
       const selection = textSelection.value
       if (selection && selection[0] && selection[1]) {
-        handleTextSelection(selection, ({ selected, fStyle }) => {
+        eachTextSelection(selection, ({ selected, fStyle }) => {
           if (selected && fStyle[key]) {
             value = fStyle[key]
             return false
@@ -335,7 +335,7 @@ export default definePlugin((editor) => {
     let newParagraph: NormalizedParagraph = { fragments: [] }
     let newFragment: NormalizedFragment | undefined
 
-    handleTextSelection(textSelection.value!, ({ selected, fIndex, fStyle, fLength, c, cIndex, cLength }) => {
+    eachTextSelection(textSelection.value!, ({ selected, fIndex, fStyle, fLength, c, cIndex, cLength }) => {
       if (fIndex === 0 && cIndex === 0) {
         newParagraph = { fragments: [] }
         newFragment = undefined
@@ -515,7 +515,7 @@ export default definePlugin((editor) => {
     name: 'mce:typography',
     commands: [
       { command: 'addTextElement', handle: addTextElement },
-      { command: 'handleTextSelection', handle: handleTextSelection },
+      { command: 'eachTextSelection', handle: eachTextSelection },
       { command: 'textFontSizeToFit', handle: textFontSizeToFit },
       { command: 'textToFit', handle: textToFit },
       { command: 'setTextStyle', handle: setTextStyle },

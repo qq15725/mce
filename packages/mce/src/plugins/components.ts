@@ -23,7 +23,7 @@ declare global {
       /** 解除实例与组件的关联，变回普通元素。 */
       detachInstance: (node?: Element2D) => void
       /** 用某节点的当前内容更新组件 master，并传播到所有实例。 */
-      updateComponent: (componentId: string, node?: Element2D) => void
+      setComponent: (componentId: string, node?: Element2D) => void
       /** 把某组件的所有实例按 master + 各自 override 重建。 */
       syncInstancesOf: (componentId: string) => void
       getComponents: () => ComponentDef[]
@@ -193,7 +193,7 @@ export default definePlugin((editor) => {
     eachInstanceOf(componentId, syncInstance)
   }
 
-  function updateComponent(componentId: string, node = elementSelection.value[0]): void {
+  function setComponent(componentId: string, node = elementSelection.value[0]): void {
     const def = findDef(componentId)
     if (!def || !node) {
       return
@@ -241,7 +241,7 @@ export default definePlugin((editor) => {
       { command: 'createInstance', handle: createInstance },
       { command: 'setInstanceOverride', handle: setInstanceOverride },
       { command: 'detachInstance', handle: detachInstance },
-      { command: 'updateComponent', handle: updateComponent },
+      { command: 'setComponent', handle: setComponent },
       { command: 'syncInstancesOf', handle: syncInstancesOf },
       { command: 'getComponents', handle: getComponents },
       { command: 'loadComponentPresets', handle: loadComponentPresets },

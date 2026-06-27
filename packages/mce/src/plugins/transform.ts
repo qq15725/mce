@@ -52,7 +52,7 @@ declare global {
     }
 
     interface Commands {
-      enter: () => void
+      editElement: () => void
       getTransform: () => TransformValue
       setTransform: (type: TransformType, value: Partial<TransformValue>, options?: TransformOptions) => void
       move: (direction: MoveDirection, distance?: number) => void
@@ -68,7 +68,7 @@ declare global {
     }
 
     interface Hotkeys {
-      enter: [event: KeyboardEvent]
+      editElement: [event: KeyboardEvent]
       moveLeft: [event: KeyboardEvent]
       moveTop: [event: KeyboardEvent]
       moveRight: [event: KeyboardEvent]
@@ -103,7 +103,7 @@ export default definePlugin((editor) => {
     },
   })
 
-  async function enter() {
+  async function editElement() {
     const els = elementSelection.value
     if (els.length === 1) {
       const el = els[0]
@@ -380,7 +380,7 @@ export default definePlugin((editor) => {
   return {
     name: 'mce:transform',
     commands: [
-      { command: 'enter', handle: enter },
+      { command: 'editElement', handle: editElement },
       { command: 'getTransform', handle: getTransform },
       { command: 'setTransform', handle: setTransform },
       { command: 'move', handle: move },
@@ -395,7 +395,7 @@ export default definePlugin((editor) => {
       { command: 'flipVertical', handle: () => flip('vertical') },
     ],
     hotkeys: [
-      { command: 'enter', key: 'Enter', when: () => elementSelection.value.length > 0 },
+      { command: 'editElement', key: 'Enter', when: () => elementSelection.value.length > 0 },
       { command: 'moveLeft', key: 'ArrowLeft', editable: false, when: () => elementSelection.value.length > 0 },
       { command: 'moveTop', key: 'ArrowUp', editable: false, when: () => elementSelection.value.length > 0 },
       { command: 'moveRight', key: 'ArrowRight', editable: false, when: () => elementSelection.value.length > 0 },

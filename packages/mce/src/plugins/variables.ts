@@ -20,8 +20,8 @@ declare global {
 
     interface Commands {
       createVariableCollection: (name: string, modeName?: string) => string
-      addVariableMode: (collectionId: string, name: string) => string
-      addVariable: (collectionId: string, variable: { name: string, type: VariableType, value: VariableValue }) => string
+      createVariableMode: (collectionId: string, name: string) => string
+      createVariable: (collectionId: string, variable: { name: string, type: VariableType, value: VariableValue }) => string
       setVariableValue: (variableId: string, modeId: string, value: VariableValue) => void
       /** 切换某 collection 的当前 mode（如亮 / 暗），并把绑定重新解析到画布。 */
       setActiveVariableMode: (collectionId: string, modeId: string) => void
@@ -80,13 +80,13 @@ export default definePlugin((editor) => {
     return id
   }
 
-  function addVariableMode(collectionId: string, name: string): string {
+  function createVariableMode(collectionId: string, name: string): string {
     const modeId = idGenerator()
     setState(addMode(getState(), collectionId, { id: modeId, name }))
     return modeId
   }
 
-  function addVariable(
+  function createVariable(
     collectionId: string,
     variable: { name: string, type: VariableType, value: VariableValue },
   ): string {
@@ -148,8 +148,8 @@ export default definePlugin((editor) => {
     name: 'mce:variables',
     commands: [
       { command: 'createVariableCollection', handle: createVariableCollection },
-      { command: 'addVariableMode', handle: addVariableMode },
-      { command: 'addVariable', handle: addVariable },
+      { command: 'createVariableMode', handle: createVariableMode },
+      { command: 'createVariable', handle: createVariable },
       { command: 'setVariableValue', handle: setVariableValue },
       { command: 'setActiveVariableMode', handle: setActiveVariableMode },
       { command: 'bindVariable', handle: bindVariable },

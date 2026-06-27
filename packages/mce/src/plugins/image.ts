@@ -141,7 +141,7 @@ export default definePlugin((editor) => {
       },
     ],
     tools: [
-      { name: 'image', handle: position => exec('import', { position }) },
+      { name: 'image', handle: position => exec('importFile', { position }) },
     ],
     hotkeys: [
       { command: 'copyAs:png', key: 'Shift+CmdOrCtrl+C' },
