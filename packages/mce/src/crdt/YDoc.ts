@@ -299,16 +299,18 @@ export class YDoc extends Observable {
           switch (change?.action) {
             case 'add':
             case 'update':
-              // for vue reactive
+              // 用 setProperty 而非 (obj as any)[key]=：远端这里是 markRaw 裸对象，直接赋值会绕过
+              // CoreObject 的属性路由——对动态 key 集合（如 comments 按线程 id 存储）会落成游离属性、
+              // 不进内部存储，toJSON 读不到（对端评论丢失）。setProperty 写内部存储且其 accessor 回写
+              // 在本 INTERNAL 事务内被 _guardedTransact 跳过，不会二次写 yMap。与 isMeta 分支一致。
               this.undoManager.stopCapturing()
-              ;(obj as any)[key] = yMap.get(key)
+              obj.setProperty(key, yMap.get(key))
               obj.requestUpdate(key, yMap.get(key), oldValue)
               break
             case 'delete':
-              // for vue reactive
               this.undoManager.stopCapturing()
-              ;(obj as any)[key] = undefined
-              obj.requestUpdate(key, (obj as any)[key], oldValue)
+              obj.setProperty(key, undefined)
+              obj.requestUpdate(key, undefined, oldValue)
               break
           }
         })
