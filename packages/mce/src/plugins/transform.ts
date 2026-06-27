@@ -3,6 +3,7 @@ import type { DragContext } from '../utils'
 import { DEG_TO_RAD } from 'modern-canvas'
 import { computed } from 'vue'
 import { definePlugin } from '../plugin'
+import { isFlexContainer } from '../utils/helper'
 
 declare global {
   namespace Mce {
@@ -200,7 +201,7 @@ export default definePlugin((editor) => {
     // plugin; here we just skip the absolute move.
     if (type === 'move' && els.length === 1) {
       const parent = els[0].getParent<Element2D>()
-      if (parent && (parent.style as any)?.display === 'flex') {
+      if (parent && isFlexContainer(parent)) {
         return
       }
     }

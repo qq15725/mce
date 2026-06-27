@@ -2,6 +2,7 @@ import type { Element2D } from 'modern-canvas'
 import type { FlexDirection } from 'modern-idoc'
 import { toRaw } from 'vue'
 import { definePlugin } from '../plugin'
+import { isFlexContainer } from '../utils/helper'
 
 declare global {
   namespace Mce {
@@ -68,7 +69,7 @@ export default definePlugin((editor) => {
 
   function flexParentOf(el: Element2D | undefined): Element2D | undefined {
     const parent = el?.getParent<Element2D>()
-    return parent && isElement(parent) && (parent.style as any)?.display === 'flex'
+    return parent && isElement(parent) && isFlexContainer(parent)
       ? parent
       : undefined
   }
@@ -174,7 +175,7 @@ export default definePlugin((editor) => {
   }
 
   function isFlexLayout(): boolean {
-    return (container()?.style as any)?.display === 'flex'
+    return isFlexContainer(container())
   }
 
   function enableFlexLayout(direction: FlexDirection = 'row'): void {

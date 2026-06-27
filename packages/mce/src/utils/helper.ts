@@ -4,6 +4,14 @@ import { shallowRef } from 'vue'
 
 export function noop(..._args: any): void {}
 
+/**
+ * 节点是否为 flex/自动布局容器（其子节点由布局引擎定位，而非绝对 left/top）。
+ * 统一各插件（transform/selection/smartGuides/flexLayout）对 `display === 'flex'` 的判断。
+ */
+export function isFlexContainer(node?: any): boolean {
+  return node?.style?.display === 'flex'
+}
+
 export function isClickInsideElement(event: MouseEvent, targetDiv: HTMLElement): boolean {
   const mouseX = event.clientX
   const mouseY = event.clientY

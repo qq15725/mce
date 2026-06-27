@@ -21,6 +21,7 @@ import { computed, h, ref } from 'vue'
 import SmartGuides from '../components/SmartGuides.vue'
 import { definePlugin } from '../plugin'
 import { BSTree } from '../utils/BSTree'
+import { isFlexContainer } from '../utils/helper'
 import {
   createLine,
   findDistancePairs,
@@ -539,6 +540,16 @@ export default definePlugin((editor) => {
     name: 'mce:smartGuides',
     events: {
       selectionTransformed: ({ handle }) => {
+        // flex 子节点拖动走重排（reorder）而非绝对定位（见 transform 插件），其位置由布局引擎
+        // 决定，对齐参考线无意义，跳过并清空。与 transform 的早返回保持一致：仅单选时跳过。
+        if (
+          handle === 'move'
+          && elementSelection.value.length === 1
+          && isFlexContainer(parent.value)
+        ) {
+          linePairs.value = []
+          return
+        }
         // move 与单边 resize（resize-t/l/r/b）显示参考线；角手柄常锁宽高比，暂不处理。
         if (handle === 'move' || /^resize-[tlrb]$/.test(handle)) {
           updateSmartGuides(handle)

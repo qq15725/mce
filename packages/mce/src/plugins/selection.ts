@@ -3,6 +3,7 @@ import { Obb2D } from 'modern-canvas'
 import ScrollToSelection from '../components/ScrollToSelection.vue'
 import Selection from '../components/Selection.vue'
 import { definePlugin } from '../plugin'
+import { isFlexContainer } from '../utils/helper'
 
 declare global {
   namespace Mce {
@@ -303,7 +304,7 @@ export default definePlugin((editor) => {
               // Flex/auto-layout containers are sized by the layout engine;
               // obbToFit would force a relayout through the reactive node and
               // throw a yoga embind Proxy error.
-              && (ancestor.style as any).display !== 'flex'
+              && !isFlexContainer(ancestor)
             ) {
               obbToFit(ancestor)
             }
