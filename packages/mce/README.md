@@ -178,7 +178,7 @@ npm i mce
         src: '/fonts/SourceHanSansCN-Normal.woff',
       },
     },
-    customUpload: async (blob) => URL.createObjectURL(blob),
+    uploader: async (blob) => URL.createObjectURL(blob),
     customContextMenu: (menu) => menu,
     doc: {
       children: [

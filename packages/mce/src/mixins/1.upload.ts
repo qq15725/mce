@@ -6,10 +6,13 @@ declare global {
 
     interface Editor {
       upload: Upload
+      /** 运行时设置/替换上传实现（返回上传后的可访问 URL）。 */
+      setUploader: (uploader: Upload) => void
     }
 
     interface Options {
-      customUpload?: Upload
+      /** 上传实现：传入 blob，返回上传后的可访问 URL。也可运行时用 {@link Editor.setUploader} 设置。 */
+      uploader?: Upload
     }
   }
 }
@@ -18,9 +21,15 @@ export default defineMixin((editor, options) => {
   // 默认上传用 createObjectURL 生成的 blob URL 会钉住底层 Blob，必须回收。
   const objectUrls = new Set<string>()
 
+  let uploader: Mce.Upload | undefined = options.uploader
+
+  const setUploader: Mce.Editor['setUploader'] = (fn) => {
+    uploader = fn
+  }
+
   const upload: Mce.Upload = async (file) => {
-    if (options.customUpload) {
-      return await options.customUpload(file)
+    if (uploader) {
+      return await uploader(file)
     }
 
     const url = URL.createObjectURL(file)
@@ -37,5 +46,6 @@ export default defineMixin((editor, options) => {
 
   Object.assign(editor, {
     upload,
+    setUploader,
   })
 })
