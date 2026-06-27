@@ -46,8 +46,9 @@
 
 **Collaboration & history**
 - CRDT document model ([Yjs](https://github.com/yjs/yjs)) in the core — undo / redo and offline persistence (IndexedDB) build on it
-- Real-time multi-user editing + awareness (remote cursors / selection / avatars) via `@mce/collaboration` (WebSocket / pluggable transport)
+- Real-time multi-user editing + awareness (remote cursors / selection / avatars) via `@mce/collaboration` (WebSocket / pluggable transport; auto-reconnect with heartbeat, offline buffering, stale-cursor expiry)
 - Comments anchored to elements (pins follow on move / scale / rotate, threads with replies & resolve) via `@mce/comments`
+- Save hook — a `save` event (debounced auto-save + `Cmd/Ctrl+S`) the core emits for you to persist however you like; storage is yours
 
 **Design systems**
 - Components / symbols / instances with per-instance overrides and master propagation
@@ -381,6 +382,30 @@ on the new document's `YDoc`; the transport is bound per-document.
 
 > Comments (`@mce/comments`) live on `element.comments` and are part of the
 > document model, so they sync over the same session automatically.
+
+## 💾 Saving
+
+The core does **not** ship a backend — it only tells you *when* to save and hands
+you the data; where it goes is yours. A built-in `save` event fires on a debounced
+auto-save (on document change) and on `Cmd/Ctrl+S` (which also suppresses the
+browser's native save dialog).
+
+```ts
+editor.on('save', ({ reason, getData }) => {
+  // reason: 'auto' | 'hotkey' | 'manual'
+  const data = getData() // lazy — only serializes the document when you call it
+  void persist(data) // your storage: REST / cloud / localStorage / …
+})
+
+editor.save() // trigger manually (reason: 'manual')
+```
+
+Tune or disable auto-save:
+
+```ts
+new Editor({ autoSave: { enabled: true, debounceMs: 2000 } }) // defaults
+// editor.setConfig('autoSave.enabled', false) // keep only Cmd/Ctrl+S + editor.save()
+```
 
 ## 📚 Packages
 
