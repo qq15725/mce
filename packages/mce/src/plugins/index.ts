@@ -25,6 +25,7 @@ import _menu from './menu'
 import _node from './node'
 import _pen from './pen'
 import _ruler from './ruler'
+import _save from './save'
 import _saveAs from './saveAs'
 import _scroll from './scroll'
 import _selection from './selection'
@@ -70,6 +71,7 @@ export const plugins = [
   _node,
   _pen,
   _ruler,
+  _save,
   _saveAs,
   _scroll,
   _selection,
