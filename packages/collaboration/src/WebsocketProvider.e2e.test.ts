@@ -189,11 +189,13 @@ interface Client {
 let roomSeq = 0
 let currentRoom = 'r0'
 const created: WebsocketProvider[] = []
-function makeClient(room = currentRoom): Client {
+function makeClient(room = currentRoom, opts: Record<string, any> = {}): Client {
   const doc = new Doc([])
   const provider = new WebsocketProvider('ws://test', room, doc._yDoc as unknown as YDoc, {
     reconnectInterval: 20,
     maxReconnectInterval: 40,
+    pingInterval: 0, // 默认关心跳，避免干扰常规用例；需要的用例显式开启
+    ...opts,
   })
   created.push(provider)
   return { doc, provider }
@@ -580,14 +582,11 @@ describe('websocket 端到端（经模拟 y-websocket 服务端中继）', () =>
     b.provider.destroy()
   })
 
-  // —— 以下为代码级（与具体服务端无关）的 WebsocketProvider 健壮性缺陷，用 it.fails 标注：
-  //    当前必然失败，修复后会自动翻红提示更新。详见对话中的「ws 问题清单」。
-  //    注：「重连后拉取 peers awareness」不在此列——标准 y-websocket 服务端会在新连接时主动推送
-  //    现有 awareness，故真实部署下能恢复（属服务端职责，非本客户端缺陷）。——
+  // —— 以下为已修复的 WebsocketProvider 健壮性机制（awareness 过期 / 心跳探活 / _pending 上界）。——
 
-  it.fails('[缺陷] 无 awareness 过期：对端半开消失后其光标永久残留（ghost cursor）', async () => {
-    const a = makeClient()
-    const b = makeClient()
+  it('[健壮性] awareness 过期：对端半开消失后其陈旧光标被清除（无 ghost cursor）', async () => {
+    const a = makeClient(undefined, { awarenessTimeout: 40 })
+    const b = makeClient(undefined, { awarenessTimeout: 40 })
     openAll()
     await flush()
     b.provider.awareness.setLocalState({ user: 'B' })
@@ -595,22 +594,21 @@ describe('websocket 端到端（经模拟 y-websocket 服务端中继）', () =>
     const bId = (b.doc._yDoc as any)._yDoc.clientID
     expect(a.provider.awareness.getStates().has(bId)).toBe(true)
 
-    // B 的连接「半开」：底层 TCP 死了但没有 close 事件（仅停止收发），不做 dropClient/netClose
+    // B 的连接「半开」：TCP 死了但无 close（仅停止收发）；B 进程已消失，停止任何广播
     ;(b.provider.ws as unknown as MockWebSocket).serverOpen = false
-    b.provider.awareness.setLocalState(null as any) // 假设 B 进程已消失，停止任何广播
+    b.provider.awareness.setLocalState(null as any)
 
-    // 等待较长时间（y-websocket 客户端会用 outdated-timeout 过期陈旧 awareness）
-    await flush(60)
+    // 等过 awarenessTimeout（A 的心跳定时器会过期清除陈旧 B）
+    await flush(160)
 
-    // 期望：A 侧 B 的陈旧光标应被过期清除
     expect(a.provider.awareness.getStates().has(bId)).toBe(false)
 
     a.provider.destroy()
     b.provider.destroy()
   })
 
-  it.fails('[缺陷] 无心跳 ping/pong：半开连接静默失联，永不检测/重连/恢复', async () => {
-    const a = makeClient()
+  it('[健壮性] 心跳探活：半开连接被检测并重连恢复（最终收到对端编辑）', async () => {
+    const a = makeClient(undefined, { pingInterval: 20 })
     const b = makeClient()
     openAll()
     await flush()
@@ -618,40 +616,54 @@ describe('websocket 端到端（经模拟 y-websocket 服务端中继）', () =>
     await flush()
     expect(childIds(b.doc).length).toBe(1)
 
-    // A 的连接半开：服务端不再投递给 A，也不触发 close（模拟 TCP 黑洞）
+    // A 的连接半开：服务端不再投递给 A，也不触发 close（TCP 黑洞）
     const aWs = a.provider.ws as unknown as MockWebSocket
-    aWs.serverOpen = false // 服务端发往 A 的消息被丢弃
-    aWs.hubRoom?.conns.delete(aWs) // 服务端不再广播给 A
+    aWs.serverOpen = false
+    aWs.hubRoom?.conns.delete(aWs)
 
     // B 继续编辑
     b.doc.append(new Node({ name: 'afterHalfOpen' }))
-    await flush(60)
 
-    // 期望：要么 A 检测到失联（connected=false 触发重连恢复），要么最终仍收到 B 的编辑
+    // 心跳应在 ~2 个间隔内判定 A 已死 → close → 重连。等待后打开重连的新连接。
+    await flush(80)
+    openAll()
+    await flush()
+
+    expect(a.provider.connected).toBe(true)
     expect(childIds(a.doc).length).toBe(2)
 
     a.provider.destroy()
     b.provider.destroy()
   })
 
-  it.fails('[缺陷] 离线待发缓冲 _pending 无上界：长时间离线编辑线性堆积（内存风险）', async () => {
-    const a = makeClient()
+  it('[健壮性] _pending 有上界：长时间离线编辑不无界堆积，重连后全量补推不丢', async () => {
+    const a = makeClient(undefined, { maxPendingMessages: 32 })
     const b = makeClient()
     openAll()
     await flush()
 
     hub.dropClient(a.provider.ws as unknown as MockWebSocket)
     await flush()
-    a.provider.disconnect() // 隔离观察 _pending，停掉重连
 
+    const ids: string[] = []
     for (let i = 0; i < 300; i++) {
-      a.doc.append(new Node({ name: `x${i}` }))
+      const n = new Node({ name: `x${i}` })
+      ids.push(n.id)
+      a.doc.append(n)
     }
     await flush()
 
-    const pendingLen = (a.provider as any)._pending.length as number
-    // 期望：有上界（丢弃 / 合并 / 快照），不应随离线编辑线性堆积
-    expect(pendingLen).toBeLessThan(50)
+    // 缓冲有上界
+    expect((a.provider as any)._pending.length).toBeLessThanOrEqual(32)
+    expect((a.provider as any)._droppedPending).toBe(true)
+
+    // 重连：onopen 会 broadcastState 全量补推 → B 收到所有离线编辑（不丢）
+    await flush(40)
+    openAll()
+    await flush()
+    for (const id of ids) {
+      expect(b.doc.findOne((x: any) => x.id === id)).toBeTruthy()
+    }
 
     a.provider.destroy()
     b.provider.destroy()

@@ -54,10 +54,15 @@ export abstract class AbstractProvider<
     origin: unknown,
   ) => void
 
-  constructor(ydoc: YDoc) {
+  /** awareness 过期阈值（ms）：超过此时长未刷新的对端在场状态视为陈旧并清除。 */
+  private readonly _awarenessTimeout: number
+  private _awarenessTimer: any = null
+
+  constructor(ydoc: YDoc, options: { awarenessTimeout?: number } = {}) {
     super()
     this._ydoc = ydoc
     this._doc = ydoc._yDoc
+    this._awarenessTimeout = options.awarenessTimeout ?? 30000
     this.awareness = new awarenessProtocol.Awareness(this._doc)
 
     this._onUpdate = (update, origin) => {
@@ -90,6 +95,42 @@ export abstract class AbstractProvider<
     if (typeof addEventListener !== 'undefined') {
       addEventListener('beforeunload', this._removeAwareness)
     }
+
+    this._startAwarenessHeartbeat()
+  }
+
+  /**
+   * 周期性：① 重广播本端 awareness（让对端刷新本端的 lastUpdated，不被误判过期）；
+   * ② 清除超过 {@link _awarenessTimeout} 未更新的对端陈旧在场（半开/崩溃的对端不再发 close，
+   * 仅靠服务端断连通知不可靠——这里用 y-protocols 的 lastUpdated 做客户端侧兜底过期，防 ghost cursor）。
+   */
+  protected _startAwarenessHeartbeat(): void {
+    if (typeof setInterval === 'undefined') {
+      return
+    }
+    const period = Math.max(1, Math.floor(this._awarenessTimeout / 3))
+    this._awarenessTimer = setInterval(() => {
+      const localId = this._doc.clientID
+      // ① 自报活
+      if (this.connected && this.awareness.getLocalState() !== null) {
+        this.send(this._encodeAwareness([localId]))
+      }
+      // ② 过期清理
+      const now = Date.now()
+      const outdated: number[] = []
+      this.awareness.getStates().forEach((_state, clientId) => {
+        if (clientId === localId) {
+          return
+        }
+        const meta = this.awareness.meta.get(clientId)
+        if (meta && now - meta.lastUpdated > this._awarenessTimeout) {
+          outdated.push(clientId)
+        }
+      })
+      if (outdated.length) {
+        awarenessProtocol.removeAwarenessStates(this.awareness, outdated, this)
+      }
+    }, period)
   }
 
   /** 子类实现：把字节发往对端。连接未就绪时应自行缓冲或丢弃（同步协议可在重连后重放）。 */
@@ -110,12 +151,17 @@ export abstract class AbstractProvider<
     this.send(encoding.toUint8Array(encoder))
   }
 
-  /** 连接（重新）建立后由子类调用：发起 sync step1 并广播本端 awareness。 */
-  protected onOpen(): void {
+  /** 发起一次 sync step1（state vector 握手 / 心跳 keepalive，会引出对端 step2 回流）。 */
+  protected requestSync(): void {
     const encoder = encoding.createEncoder()
     encoding.writeVarUint(encoder, MESSAGE_SYNC)
     syncProtocol.writeSyncStep1(encoder, this._doc)
     this.send(encoding.toUint8Array(encoder))
+  }
+
+  /** 连接（重新）建立后由子类调用：发起 sync step1 并广播本端 awareness。 */
+  protected onOpen(): void {
+    this.requestSync()
 
     if (this.awareness.getLocalState() !== null) {
       this.send(this._encodeAwareness([this._doc.clientID]))
@@ -194,6 +240,10 @@ export abstract class AbstractProvider<
   }
 
   destroy(): void {
+    if (this._awarenessTimer) {
+      clearInterval(this._awarenessTimer)
+      this._awarenessTimer = null
+    }
     this._removeAwareness()
     this._ydoc.off('update', this._onUpdate as any)
     this.awareness.off('update', this._onAwarenessUpdate as any)
