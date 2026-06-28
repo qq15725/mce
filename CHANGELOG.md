@@ -1,3 +1,21 @@
+# [0.30.0](https://github.com/qq15725/mce/compare/v0.29.9...v0.30.0) (2026-06-28)
+
+
+* refactor(pipeline)!: rename to imagePipelines, engine-instance resolver ([b138271](https://github.com/qq15725/mce/commit/b138271bd209f76837e3c7e818c22fc6d63ec104))
+
+
+### Bug Fixes
+
+* **bigesj:** sort imports in imageEffect test ([f9dc1ec](https://github.com/qq15725/mce/commit/f9dc1ecc3f19a060f4a9972805cb3e183647e5a3))
+
+
+### BREAKING CHANGES
+
+* image pipeline API renamed (registerImagePipeline,
+imagePipelines, ...); requires modern-canvas ^0.25.0 / modern-idoc ^0.12.3.
+
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
 ## [0.29.9](https://github.com/qq15725/mce/compare/v0.29.8...v0.29.9) (2026-06-28)
 
 

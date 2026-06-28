@@ -155,8 +155,8 @@ importers:
         specifier: ^5
         version: 5.13.0
       modern-canvas:
-        specifier: ^0.24.13
-        version: 0.24.13(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1)
+        specifier: ^0.25.0
+        version: 0.25.0(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1)
       modern-font:
         specifier: ^0.6.1
         version: 0.6.1
@@ -2435,8 +2435,8 @@ packages:
   mlly@1.8.2:
     resolution: {integrity: sha512-d+ObxMQFmbt10sretNDytwt85VrbkhhUA/JBGm1MPaWJ65Cl4wOgLaB1NYvJSZ0Ef03MMEU/0xpPMXUIQ29UfA==}
 
-  modern-canvas@0.24.13:
-    resolution: {integrity: sha512-tCdBgUgIQ3e1QYConP3SjB9p9NDeDei91x1oMgr4t5CJuIXd2ppTW+yD/jkPX/yeKdskpYmkrlufv4nZz/YSqQ==}
+  modern-canvas@0.25.0:
+    resolution: {integrity: sha512-ej+qyC4H41m2kVXAMfLw6iYgcGejs217iit/lGa8Gj64pR+0UPWHOA7N0OYWi8jyi59K/sEFvOQQICuo+VJCSg==}
     peerDependencies:
       echarts: ^5 || ^6
       lottie-web: ^5
@@ -4039,8 +4039,8 @@ snapshots:
 
   '@typescript-eslint/project-service@8.56.1(typescript@6.0.3)':
     dependencies:
-      '@typescript-eslint/tsconfig-utils': 8.56.1(typescript@6.0.3)
-      '@typescript-eslint/types': 8.56.1
+      '@typescript-eslint/tsconfig-utils': 8.62.0(typescript@6.0.3)
+      '@typescript-eslint/types': 8.62.0
       debug: 4.4.3
       typescript: 6.0.3
     transitivePeerDependencies:
@@ -5556,7 +5556,7 @@ snapshots:
       pkg-types: 1.3.1
       ufo: 1.6.4
 
-  modern-canvas@0.24.13(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1):
+  modern-canvas@0.25.0(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1):
     dependencies:
       colord: 2.9.3
       earcut: 3.0.2
