@@ -1,5 +1,5 @@
-import { afterEach, describe, expect, it } from 'vitest'
 import { setCanvasFactory } from 'modern-canvas'
+import { afterEach, describe, expect, it } from 'vitest'
 import { bakeImageEffects } from './imageEffect'
 
 // 用记录型 2D context 验证合成不变量（无需真实像素）：
