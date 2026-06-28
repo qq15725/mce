@@ -3,7 +3,6 @@ import { fileURLToPath, URL } from 'node:url'
 import vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vite'
 import vueDevTools from 'vite-plugin-vue-devtools'
-import { localLibAlias } from '../vite.alias'
 
 // const baseURI = 'https://neweditor.bige.show'
 const baseURI = 'https://admin.bige.show'
@@ -38,7 +37,6 @@ export default defineConfig(() => {
       server,
       resolve: {
         alias: {
-          ...localLibAlias(),
           '@': fileURLToPath(new URL('./src', import.meta.url)),
           '@mce/ai': fileURLToPath(new URL('../packages/ai/src/index.ts', import.meta.url)),
           '@mce/bigesj': fileURLToPath(new URL('../packages/bigesj/src/index.ts', import.meta.url)),
