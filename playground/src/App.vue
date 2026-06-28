@@ -18,7 +18,7 @@ import workflow from '@mce/workflow'
 import { Editor, EditorLayers, EditorLayout, EditorLayoutItem } from 'mce'
 import { computed } from 'vue'
 import { BroadcastChannelProvider } from './collab'
-import { loadAnimationDemo, loadArtboardDemo, loadChartDemo, loadCommentsDemo, loadConnectionDemo, loadFillStrokeDemo, loadGifDemo, loadImageEffectsDemo, loadInteractionDemo, loadLargeExportDemo, loadLayoutDemo, loadLinesDemo, loadPsdDemo, loadShapesDemo, loadSmartGuidesDemo, loadTableDemo, loadTextDemo, loadVideoDemo } from './demos'
+import { loadAnimationDemo, loadArtboardDemo, loadChartDemo, loadCommentsDemo, loadConnectionDemo, loadFillStrokeDemo, loadGifDemo, loadImageEffectsDemo, loadInteractionDemo, loadLargeExportDemo, loadLayoutDemo, loadLinesDemo, loadPipelinesDemo, loadPsdDemo, loadShapesDemo, loadSmartGuidesDemo, loadTableDemo, loadTextDemo, loadVideoDemo } from './demos'
 import 'mce/styles'
 
 const editorOptions = {
@@ -103,6 +103,9 @@ else if (demo === 'smartGuides') {
 }
 else if (demo === 'imageEffects') {
   loadImageEffectsDemo(editor)
+}
+else if (demo === 'pipelines') {
+  loadPipelinesDemo(editor)
 }
 else if (demo === 'shapes') {
   loadShapesDemo(editor)
@@ -258,6 +261,9 @@ const element = computed(() => editor.elementSelection.value[0])
           </button>
           <button @click="() => loadImageEffectsDemo(editor)">
             图片样式示例
+          </button>
+          <button @click="() => loadPipelinesDemo(editor)">
+            图片管线示例
           </button>
           <button @click="() => loadLargeExportDemo(editor)">
             大图导出示例

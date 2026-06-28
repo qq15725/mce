@@ -1,10 +1,15 @@
 import type { Editor } from 'mce'
+import { IMAGE_EFFECT_PIPELINE } from '@mce/bigesj'
+import { normalizeEffect } from 'modern-idoc'
 
-// 图片样式（foreground.effects）示例：对照 modern-canvas 官方 playground 的烘焙用例。
-// 关键点（见 bakeImageEffects）：
+// 图片样式示例：bige 的「图片样式」（描边/填充/阴影/重影）现统一走 @mce/bigesj 注册的
+// 内置 imageEffect 管线 —— 整组 effects 包成一个 pipeline 步骤（params.effects），
+// 与 bigesj 加载 bige 数据时 element.ts 生成的数据形态一致。
+// 关键点（见 bigesj 的 bakeImageEffects）：
 // - effects 基于图片 alpha 轮廓（source-in），需用带透明的图（example.png 线稿），矩形图看不出效果；
 // - 烘焙不会自动叠原图，空 `{}` 层才等于「画一次原图」；
 // - 带 translate 的层 source-over 画在上面，不带 translate 的层 destination-over 落到背后。
+// 纯像素的自定义管线（灰度/染色等）见 pipelines.ts。
 export function loadImageEffectsDemo(editor: Editor): void {
   const cases: { label: string, effects?: any[] }[] = [
     { label: '无 effects' },
@@ -29,7 +34,12 @@ export function loadImageEffectsDemo(editor: Editor): void {
     nodes.push({
       id: `ie-${i}`,
       style: { left: x, top: y, width: TILE, height: TILE, backgroundColor: '#ffffff' },
-      foreground: { image: '/example.png', fillWithShape: true, ...(c.effects ? { effects: c.effects } : {}) },
+      foreground: {
+        image: '/example.png',
+        fillWithShape: true,
+        // 整组 effects 包成单个 imageEffect 管线步骤（保留跨层合成语义），由 @mce/bigesj 烘焙。
+        ...(c.effects ? { pipelines: [{ name: IMAGE_EFFECT_PIPELINE, params: { effects: c.effects.map(normalizeEffect) } }] } : {}),
+      },
       meta: { inCanvasIs: 'Element2D', inPptIs: 'Picture' },
     })
     nodes.push({
