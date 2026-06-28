@@ -1,3 +1,10 @@
+## [0.29.9](https://github.com/qq15725/mce/compare/v0.29.8...v0.29.9) (2026-06-28)
+
+
+### Bug Fixes
+
+* **deps:** bump modern-idoc@0.12.2 and modern-canvas@0.24.13 ([b086aa8](https://github.com/qq15725/mce/commit/b086aa8ed4e9cd68e5574c6cbacefc251562da20))
+
 ## [0.29.8](https://github.com/qq15725/mce/compare/v0.29.7...v0.29.8) (2026-06-28)
 
 
