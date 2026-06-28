@@ -82,6 +82,18 @@ function setFgPipelines(imagePipelines?: { name: string, params?: Record<string,
   ;(el.foreground as any).imagePipelines = imagePipelines
 }
 
+// 导出当前文档为指定格式并下载（用于冒烟验证导出链，含图片处理管线的烘焙）。
+async function exportAs(fmt: 'svg' | 'png' | 'pdf' | 'pptx'): Promise<void> {
+  const res: any = await editor.to(fmt as any)
+  const blob = typeof res === 'string' ? new Blob([res], { type: 'image/svg+xml' }) : res
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `export.${fmt}`
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
 const searchParams = new URL(window.location.href).searchParams
 const tid = searchParams.get('tid')
 const bid = searchParams.get('bid')
@@ -285,6 +297,11 @@ const element = computed(() => editor.elementSelection.value[0])
           <button @click="() => loadPipelinesDemo(editor)">
             图片管线示例
           </button>
+          <span style="width: 1px; align-self: stretch; background: rgba(0,0,0,.15)" />
+          <button @click="() => exportAs('svg')">导出SVG</button>
+          <button @click="() => exportAs('png')">导出PNG</button>
+          <button @click="() => exportAs('pdf')">导出PDF</button>
+          <button @click="() => exportAs('pptx')">导出PPTX</button>
           <button @click="() => loadLargeExportDemo(editor)">
             大图导出示例
           </button>

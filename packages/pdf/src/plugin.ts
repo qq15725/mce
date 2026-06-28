@@ -1,5 +1,5 @@
 import type { PdfOptionMeta } from 'modern-pdf'
-import { definePlugin, materializeImagePipelines } from 'mce'
+import { definePlugin } from 'mce'
 
 declare global {
   namespace Mce {
@@ -40,14 +40,13 @@ export function plugin() {
 
             const doc = await to('json', jsonOptions)
 
-            // 物化图片处理管线：pdf 不能矢量重现黑盒管线，统一烘焙成成品图嵌入。
-            await materializeImagePipelines(doc, resolveImagePipelines)
-
             doc.children?.reverse()
 
             const pdf = new Pdf({
               ...doc,
               fonts,
+              // 图片处理管线下沉到 modern-pdf：注入引擎同款 resolver，由它在加载图片填充时烘焙。
+              imagePipelineResolver: resolveImagePipelines,
               meta: {
                 ...doc.meta,
                 ...pdfOptions,

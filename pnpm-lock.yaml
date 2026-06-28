@@ -214,8 +214,8 @@ importers:
   packages/openxml:
     dependencies:
       modern-openxml:
-        specifier: ^1.12.5
-        version: 1.12.5
+        specifier: ^1.13.0
+        version: 1.13.0
     devDependencies:
       mce:
         specifier: workspace:*
@@ -224,8 +224,8 @@ importers:
   packages/pdf:
     dependencies:
       modern-pdf:
-        specifier: ^1.5.2
-        version: 1.5.2
+        specifier: ^1.6.0
+        version: 1.6.0
     devDependencies:
       mce:
         specifier: workspace:*
@@ -244,8 +244,8 @@ importers:
   packages/svg:
     dependencies:
       modern-idoc-svg:
-        specifier: ^0.3.5
-        version: 0.3.5
+        specifier: ^0.4.0
+        version: 0.4.0
       modern-path2d:
         specifier: ^1.8.5
         version: 1.8.5
@@ -2458,8 +2458,8 @@ packages:
   modern-gif@2.1.0:
     resolution: {integrity: sha512-9ZGD5b4jNUge0fvFP1bd9Hsqz5CSZI1al3EhCJ+WFkZgmn5NO1yvVwXJA/LTqro85l2Gt0+S0dDFgVYhYtLLWg==}
 
-  modern-idoc-svg@0.3.5:
-    resolution: {integrity: sha512-sak6XsMWpiVrAKSvOkaR0puRwxcQxtgGmGP6OJqQ+UqWvs/eH+LXRBAVfcZ/BVgBL69s2vjQj2rqXWyzmCshXA==}
+  modern-idoc-svg@0.4.0:
+    resolution: {integrity: sha512-58jGTBbF74M0FYoe9U6csSDkRxe7nuQRVo62Wy6pS3X6D1+ajPVFg8ZJyeUaNCxVfEBfLF3OSkyEdB9WouWgCQ==}
 
   modern-idoc@0.12.1:
     resolution: {integrity: sha512-+QsDJnhvyogjGY4g26tePlsHkpARZF1J+M5ItfnLfKgwVM+zItR7QEXFn554/2UPkYXbkjOPiDH1XL/m2hie7w==}
@@ -2475,14 +2475,17 @@ packages:
   modern-openxml@1.12.5:
     resolution: {integrity: sha512-qwO0lBFkMeh8Pzu2Vj7vuU4TERrUyFNVQGUutj8QAUM0lY+CWB07NX76kcLcXzNojbUWRkJZHkyACqb+0UaFrg==}
 
+  modern-openxml@1.13.0:
+    resolution: {integrity: sha512-8Vz2+fIOGTZLEPzXou3uMefDsCTjBeWG1/IpGlfGddpPQ7IoBoofNBrHuvR7KOI780eq7aW3BI1Bo7+wwzuTzA==}
+
   modern-palette@2.0.0:
     resolution: {integrity: sha512-wKZcom2QzK6sS6h5RLYHEkd3V3maQLzgkI+ekDCimlk7dfXa63aekZcy+7KS+8JEqIDeY/yV1CAvA7l+7u6QHA==}
 
   modern-path2d@1.8.5:
     resolution: {integrity: sha512-GhBt0+K19+8A8R0veUKqsG1kx233Obnvik5mUbNOKjniF7FaVvUjH76yXheAucB9m42YCXdMj7j00FbC6EF7XQ==}
 
-  modern-pdf@1.5.2:
-    resolution: {integrity: sha512-AY2ulLF+DmCB11j9DDNRpn5ZPtyKVWoUV2RJut71ThcQQZC2/O81jn//tX/V1y7WcagGBP9Dz6COJ+7KnsE2pQ==}
+  modern-pdf@1.6.0:
+    resolution: {integrity: sha512-KDTDHcZysFtU5dwDcUixmIt4tTYoSpDkoFcfLi/fOxyzAEmHnI3Qm4x6x8qYaUxl0snljDaJtXHirc+UxU7HtQ==}
 
   modern-text@2.0.9:
     resolution: {integrity: sha512-T/6iGksR7BQ96oTDqfwn8+pREsOlc5HemtEgYSAqLBSLU8dXH/mBTHQLFNbgX+n66Ojg1nyZiF8QH/UXDkojRQ==}
@@ -5578,7 +5581,7 @@ snapshots:
     dependencies:
       modern-palette: 2.0.0
 
-  modern-idoc-svg@0.3.5:
+  modern-idoc-svg@0.4.0:
     dependencies:
       modern-idoc: 0.12.3
       modern-text: 2.0.9
@@ -5603,6 +5606,12 @@ snapshots:
       modern-idoc: 0.12.1
       modern-path2d: 1.8.5
 
+  modern-openxml@1.13.0:
+    dependencies:
+      fflate: 0.8.3
+      modern-idoc: 0.12.3
+      modern-path2d: 1.8.5
+
   modern-palette@2.0.0: {}
 
   modern-path2d@1.8.5:
@@ -5610,7 +5619,7 @@ snapshots:
       earcut: 3.0.2
       polygon-clipping: 0.15.7
 
-  modern-pdf@1.5.2:
+  modern-pdf@1.6.0:
     dependencies:
       colord: 2.9.3
       fflate: 0.8.3

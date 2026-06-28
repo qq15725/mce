@@ -1,7 +1,7 @@
 {
   "name": "@mce/svg",
   "type": "module",
-  "version": "0.30.0",
+  "version": "0.31.0",
   "description": "SVG plugin for mce",
   "author": "wxm",
   "license": "MIT",
@@ -53,7 +53,7 @@
     "typecheck": "tsc --noEmit --project tsconfig.json"
   },
   "dependencies": {
-    "modern-idoc-svg": "^0.3.5",
+    "modern-idoc-svg": "^0.4.0",
     "modern-path2d": "^1.8.5"
   },
   "devDependencies": {

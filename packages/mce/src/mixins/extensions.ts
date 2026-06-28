@@ -123,7 +123,7 @@ declare global {
       /**
        * 插件 / 宿主注册的图片处理管线（`image → image`，如描边/调色/抠图）。
        * 数据只记录管线名与参数（`ImageFill.imagePipelines`），处理函数为运行时黑盒。
-       * 注册同 name 则覆盖。渲染端经引擎解析器烘焙，非渲染导出端经 `materializeImagePipelines` 物化。
+       * 注册同 name 则覆盖。渲染端经引擎解析器烘焙；导出端把同款解析器注入各底层导出库自行烘焙。
        */
       imagePipelines: Ref<ImagePipeline[]>
       registerImagePipeline: (pipeline: ImagePipeline) => void
@@ -165,8 +165,8 @@ export default defineMixin((editor) => {
   }
 
   // 把管线解析器注入主渲染引擎实例（非全局，多 editor 互不影响）；
-  // 图片填充加载时由该引擎实例回调，烘焙到运行时纹理。导出经各渲染调用透传同一解析器，
-  // 非渲染导出（pdf/svg/pptx）经 materializeImagePipelines 物化。
+  // 图片填充加载时由该引擎实例回调，烘焙到运行时纹理。导出端把同一个 resolveImagePipelines
+  // 透传给各底层库（渲染类经 render 选项，pdf/svg/pptx 经各自的 imagePipelineResolver 选项）。
   editor.renderEngine.value.imagePipelineResolver = (steps, image) => resolveImagePipelines(steps, image)
 
   return {

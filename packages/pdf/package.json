@@ -1,7 +1,7 @@
 {
   "name": "@mce/pdf",
   "type": "module",
-  "version": "0.30.0",
+  "version": "0.31.0",
   "description": "PDF plugin for mce",
   "author": "wxm",
   "license": "MIT",
@@ -53,7 +53,7 @@
     "typecheck": "tsc --noEmit --project tsconfig.json"
   },
   "dependencies": {
-    "modern-pdf": "^1.5.2"
+    "modern-pdf": "^1.6.0"
   },
   "devDependencies": {
     "mce": "workspace:*"

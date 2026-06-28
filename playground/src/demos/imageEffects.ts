@@ -49,6 +49,15 @@ export function loadImageEffectsDemo(editor: Editor): void {
       meta: { inCanvasIs: 'Element2D' },
     })
   })
-  editor.setDoc(nodes as any)
+  // 用一个 Frame（页）包裹所有 tile：画布预览不变，但导出 pdf/pptx 时按「页 → 子元素」成页，
+  // 否则扁平元素会被各导出器当作每个一页（pdf 因此得到空页）。
+  const rows = Math.ceil(cases.length / COLS)
+  editor.setDoc([{
+    id: 'image-effects-page',
+    name: 'Image Effects',
+    style: { left: 0, top: 0, width: COLS * CELL_W, height: rows * CELL_H, backgroundColor: '#f5f5fa' },
+    meta: { inCanvasIs: 'Element2D', inEditorIs: 'Frame' },
+    children: nodes,
+  }] as any)
   setTimeout(() => editor.exec('zoomToFit'), 100)
 }

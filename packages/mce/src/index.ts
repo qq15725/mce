@@ -25,7 +25,6 @@ export type { AnimationPreset, PresetCategory, PresetChannels } from './utils/an
 export { base64ToBytes, base64ToText } from './utils/base64'
 export * from './utils/create'
 export type { ImagePipeline } from './utils/imagePipeline'
-export { materializeImagePipelines } from './utils/imagePipeline'
 export type { Keyframe } from './utils/keyframes'
 export { matchSource } from './utils/source'
 export type { MatchSourceOptions } from './utils/source'

@@ -1,4 +1,4 @@
-import { definePlugin, matchSource, materializeImagePipelines } from 'mce'
+import { definePlugin, matchSource } from 'mce'
 
 declare global {
   namespace Mce {
@@ -64,8 +64,8 @@ export function plugin() {
             // 重依赖按需加载：仅在真正导出 SVG 时才拉取 modern-idoc-svg
             const { docToSvgString } = await import('modern-idoc-svg')
             const doc = await to('json', options)
-            await materializeImagePipelines(doc, resolveImagePipelines)
-            return await docToSvgString({ ...doc, fonts } as any)
+            // 图片处理管线下沉到 idoc-svg：注入引擎同款 resolver，由它在解析图片填充时烘焙。
+            return await docToSvgString({ ...doc, fonts } as any, { imagePipelineResolver: resolveImagePipelines })
           },
         },
       ],

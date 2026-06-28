@@ -1,12 +1,11 @@
-import type { ImagePipeline as ImagePipelineRef, PipelineImage } from 'modern-idoc'
-import { assets, createHTMLCanvas } from 'modern-canvas'
+import type { PipelineImage } from 'modern-idoc'
 
 /**
  * 图片处理管线（外部可注册）：把图片像素处理成新的图片像素（`image → image`）。
  *
- * 数据只记录管线名与参数（`ImageFill.imagePipelines`，元素类型 `ImagePipelineRef`），
- * 处理函数为运行时注册的黑盒，不入持久化数据。渲染端经引擎注入的解析器烘焙到运行时纹理；
- * 非渲染的导出端（pdf/svg/pptx）经 `materializeImagePipelines` 物化成成品图。
+ * 数据只记录管线名与参数（`ImageFill.imagePipelines`），处理函数为运行时注册的黑盒，
+ * 不入持久化数据。渲染端经引擎注入的解析器烘焙到运行时纹理；非渲染导出端（pdf/svg/pptx）
+ * 由各底层库经注入的同款解析器（`editor.resolveImagePipelines`）在自身嵌入图片时烘焙。
  */
 export interface ImagePipeline {
   /** 唯一名，对应数据 `imagePipelines[].name`。 */
@@ -15,80 +14,4 @@ export interface ImagePipeline {
   label?: string
   /** 处理函数：接收图片像素 + 参数，返回处理后的像素，可异步。 */
   process: (image: PipelineImage, params?: Record<string, any>) => PipelineImage | Promise<PipelineImage>
-}
-
-/** 把图片地址独立解码为中立像素结构。 */
-async function imageToPipelineImage(url: string): Promise<PipelineImage | undefined> {
-  const bitmap = await assets.fetchImageBitmap(url) as unknown as CanvasImageSource & { width: number, height: number }
-  const w = Math.max(1, Math.round(bitmap.width))
-  const h = Math.max(1, Math.round(bitmap.height))
-  const canvas = createHTMLCanvas(w, h)
-  const ctx = canvas?.getContext('2d')
-  if (!canvas || !ctx)
-    return undefined
-  ctx.drawImage(bitmap, 0, 0, w, h)
-  const imageData = ctx.getImageData(0, 0, w, h)
-  return { data: imageData.data, width: w, height: h }
-}
-
-/** 把中立像素结构编码为 PNG dataURI。 */
-function pipelineImageToDataURL(image: PipelineImage): string | undefined {
-  const w = Math.max(1, Math.round(image.width))
-  const h = Math.max(1, Math.round(image.height))
-  const canvas = createHTMLCanvas(w, h)
-  const ctx = canvas?.getContext('2d')
-  if (!canvas || !ctx)
-    return undefined
-  const imageData = ctx.createImageData(w, h)
-  imageData.data.set(image.data)
-  ctx.putImageData(imageData, 0, 0)
-  return canvas.toDataURL('image/png')
-}
-
-type ImagePipelineResolver = (steps: ImagePipelineRef[], image: PipelineImage) => Promise<PipelineImage>
-
-/** 形如 `{ image, imagePipelines }` 的图片填充对象。 */
-function isImagePipelineFill(obj: any): obj is { image: string, imagePipelines: ImagePipelineRef[] } {
-  return obj
-    && typeof obj === 'object'
-    && typeof obj.image === 'string'
-    && Array.isArray(obj.imagePipelines)
-    && obj.imagePipelines.length > 0
-}
-
-/**
- * 导出前物化：深度遍历文档，把所有带 `imagePipelines` 的图片填充跑一遍管线，
- * 结果写回 `image`（PNG dataURI）并删除 `imagePipelines` 字段。这样数据解析类导出器
- * （pdf/svg/pptx）只看到普通图片填充，无需各自实现管线逻辑，跨端一致。
- *
- * 注意：原地修改传入的 `doc`（导出链路里 `doc` 已是 `toJSON` 出的独立快照）。
- */
-export async function materializeImagePipelines(doc: any, resolve: ImagePipelineResolver): Promise<void> {
-  const fills: { image: string, imagePipelines: ImagePipelineRef[] }[] = []
-  const seen = new Set<any>()
-  const visit = (node: any): void => {
-    if (!node || typeof node !== 'object' || seen.has(node))
-      return
-    seen.add(node)
-    if (Array.isArray(node)) {
-      node.forEach(visit)
-      return
-    }
-    if (isImagePipelineFill(node))
-      fills.push(node)
-    for (const key in node)
-      visit(node[key])
-  }
-  visit(doc)
-
-  await Promise.all(fills.map(async (fill) => {
-    const source = await imageToPipelineImage(fill.image)
-    if (!source)
-      return
-    const out = await resolve(fill.imagePipelines, source)
-    const dataURL = pipelineImageToDataURL(out)
-    if (dataURL)
-      fill.image = dataURL
-    delete (fill as any).imagePipelines
-  }))
 }

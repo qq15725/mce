@@ -1,7 +1,7 @@
 {
   "name": "@mce/openxml",
   "type": "module",
-  "version": "0.30.0",
+  "version": "0.31.0",
   "description": "Openxml plugin for mce",
   "author": "wxm",
   "license": "MIT",
@@ -53,7 +53,7 @@
     "typecheck": "tsc --noEmit --project tsconfig.json"
   },
   "dependencies": {
-    "modern-openxml": "^1.12.5"
+    "modern-openxml": "^1.13.0"
   },
   "devDependencies": {
     "mce": "workspace:*"

@@ -1,5 +1,5 @@
 import type { DocxMeta, PptxMeta, XlsxMeta } from 'modern-openxml'
-import { base64ToBytes, definePlugin, matchSource, materializeImagePipelines } from 'mce'
+import { base64ToBytes, definePlugin, matchSource } from 'mce'
 
 const PPTX_MIME = 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
 const XLSX_MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
@@ -45,8 +45,6 @@ export function plugin() {
         handle: async (options) => {
           const { [name]: specificOptions, ...jsonOptions } = options
           const doc = await to('json', jsonOptions)
-          // 物化图片处理管线：黑盒管线无法用 OOXML 原生表达，统一烘焙成成品图嵌入。
-          await materializeImagePipelines(doc, resolveImagePipelines)
           if (reverse) {
             doc.children?.reverse()
           }
@@ -153,7 +151,8 @@ export function plugin() {
       exporters: [
         makeExporter('pptx', PPTX_MIME, true, true, async (payload) => {
           const { docToPptx } = await import('modern-openxml')
-          return await docToPptx(payload) as any
+          // 图片处理管线下沉到 modern-openxml：注入引擎同款 resolver，由它在嵌入图片时烘焙。
+          return await docToPptx(payload, { imagePipelineResolver: resolveImagePipelines }) as any
         }),
         makeExporter('xlsx', XLSX_MIME, false, false, async (payload) => {
           const { docToXlsx } = await import('modern-openxml')
