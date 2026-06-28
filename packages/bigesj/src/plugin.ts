@@ -4,6 +4,7 @@ import { definePlugin } from 'mce'
 import { onBeforeMount, onScopeDispose } from 'vue'
 import { useFonts } from './composables'
 import { bidTidLoader, bigeLoader, clipboardLoader } from './loaders'
+import { imageEffectPipeline } from './pipelines'
 
 export interface PluginOptions {
   font?: boolean
@@ -28,6 +29,8 @@ export function plugin(options: PluginOptions = {}) {
   }
 
   return definePlugin((editor) => {
+    // 注册内置「图片效果」管线：还原 bige 图片样式（描边/阴影/重上色）。
+    editor.registerPipeline(imageEffectPipeline)
     return {
       name: 'bigesj',
       loaders: [

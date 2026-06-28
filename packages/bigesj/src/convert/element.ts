@@ -1,7 +1,8 @@
-import type { NormalizedElement } from 'modern-idoc'
+import type { NormalizedElement, NormalizedForeground } from 'modern-idoc'
 import type { BigeElement } from './types'
-import { clearUndef, idGenerator, isGradientFill, normalizeGradientFill } from 'modern-idoc'
+import { clearUndef, idGenerator, isGradientFill, normalizeEffect, normalizeGradientFill } from 'modern-idoc'
 import { svgToPath2DSet } from 'modern-path2d'
+import { IMAGE_EFFECT_PIPELINE } from '../pipelines'
 import { parseAnimations } from './animation'
 import { convertBackground } from './background'
 import { convertChart } from './chart'
@@ -106,34 +107,42 @@ export async function convertElement(
       meta.inPptIs = 'Picture'
       meta.lockAspectRatio = true
 
-      element.foreground = {
-        enabled: true,
-        image: el.clipUrl || el.url,
-        fillWithShape: true,
-        effects: convertImageEffects(el) as any,
-      }
+      {
+        // bige「图片样式」→ 内置 imageEffect 管线（整组 effects 包成一个步骤，保留跨层合成语义）。
+        const imageEffects = convertImageEffects(el)
+        const foreground: NormalizedForeground = {
+          enabled: true,
+          image: el.clipUrl || el.url,
+          fillWithShape: true,
+          pipelines: imageEffects?.length
+            ? [{ name: IMAGE_EFFECT_PIPELINE, params: { effects: imageEffects.map(normalizeEffect) } }]
+            : undefined,
+        }
 
-      if (el.clipUrl) {
-        meta.rawForegroundImage = el.url
-      }
+        if (el.clipUrl) {
+          meta.rawForegroundImage = el.url
+        }
 
-      if (el.maskUrl && el.maskUrl !== el.url) {
-        style.maskImage = el.maskUrl
-      }
+        if (el.maskUrl && el.maskUrl !== el.url) {
+          style.maskImage = el.maskUrl
+        }
 
-      if (el.cropping) {
-        element.foreground.cropRect = croppingToCropRect(
-          el.cropping,
-          el.style.width,
-          el.style.height,
-        )
-      }
-      else if (el.transform) {
-        element.foreground.cropRect = transformToCropRect(
-          el.transform,
-          el.style.width,
-          el.style.height,
-        )
+        if (el.cropping) {
+          foreground.cropRect = croppingToCropRect(
+            el.cropping,
+            el.style.width,
+            el.style.height,
+          )
+        }
+        else if (el.transform) {
+          foreground.cropRect = transformToCropRect(
+            el.transform,
+            el.style.width,
+            el.style.height,
+          )
+        }
+
+        element.foreground = clearUndef(foreground)
       }
       break
     case 'svg': {

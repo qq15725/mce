@@ -1,5 +1,5 @@
 import type { PdfOptionMeta } from 'modern-pdf'
-import { definePlugin } from 'mce'
+import { definePlugin, materializePipelines } from 'mce'
 
 declare global {
   namespace Mce {
@@ -18,6 +18,7 @@ export function plugin() {
     const {
       to,
       fonts,
+      resolvePipelines,
     } = editor
 
     return {
@@ -38,6 +39,9 @@ export function plugin() {
             const { pdf: pdfOptions, ...jsonOptions } = options
 
             const doc = await to('json', jsonOptions)
+
+            // 物化图片处理管线：pdf 不能矢量重现黑盒管线，统一烘焙成成品图嵌入。
+            await materializePipelines(doc, resolvePipelines)
 
             doc.children?.reverse()
 
