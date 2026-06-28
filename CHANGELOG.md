@@ -1,3 +1,28 @@
+## [0.29.8](https://github.com/qq15725/mce/compare/v0.29.7...v0.29.8) (2026-06-28)
+
+
+* feat(pipeline)!: register and materialize image processing pipelines ([86c33d5](https://github.com/qq15725/mce/commit/86c33d533281d18dcd845022199b354d21f5e18d))
+
+
+### Bug Fixes
+
+* **crdt:** apply remote dynamic-key subobject changes via setProperty ([efeadb4](https://github.com/qq15725/mce/commit/efeadb46b33102460fd65bbaece156334d2e6d25))
+* **smartGuides:** skip alignment guides when dragging flex children ([9119716](https://github.com/qq15725/mce/commit/9119716a8638e798939e6e50f3e1c543a81eb9f9))
+
+
+### Features
+
+* **collaboration:** ws heartbeat, awareness expiry, bounded offline buffer ([d946a54](https://github.com/qq15725/mce/commit/d946a5404e11bd9df00dd10300791f6e305276ad))
+* **save:** add save plugin emitting save events for external persistence ([a47a05f](https://github.com/qq15725/mce/commit/a47a05fe588e366773250ab2852b23e2a36528e2))
+
+
+### BREAKING CHANGES
+
+* foreground image styling now flows through
+`ImageFill.pipelines` instead of `foreground.effects`.
+
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
 ## [0.29.7](https://github.com/qq15725/mce/compare/v0.29.6...v0.29.7) (2026-06-26)
 
 
