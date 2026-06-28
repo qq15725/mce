@@ -38,7 +38,7 @@ export function loadImageEffectsDemo(editor: Editor): void {
         image: '/example.png',
         fillWithShape: true,
         // 整组 effects 包成单个 imageEffect 管线步骤（保留跨层合成语义），由 @mce/bigesj 烘焙。
-        ...(c.effects ? { pipelines: [{ name: IMAGE_EFFECT_PIPELINE, params: { effects: c.effects.map(normalizeEffect) } }] } : {}),
+        ...(c.effects ? { imagePipelines: [{ name: IMAGE_EFFECT_PIPELINE, params: { effects: c.effects.map(normalizeEffect) } }] } : {}),
       },
       meta: { inCanvasIs: 'Element2D', inPptIs: 'Picture' },
     })

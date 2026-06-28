@@ -1,4 +1,4 @@
-import type { Pipeline } from 'mce'
+import type { ImagePipeline } from 'mce'
 import type { NormalizedEffect, NormalizedFill, NormalizedGradientFill, PipelineImage } from 'modern-idoc'
 import { assets, createHTMLCanvas, SUPPORTS_IMAGE_BITMAP } from 'modern-canvas'
 
@@ -218,7 +218,7 @@ function canvasToPipelineImage(canvas: HTMLCanvasElement): PipelineImage | undef
  * 内置「图片效果」管线：把 bige 图片样式（描边/阴影/重上色，多层 Effect）烘焙进图片。
  * bige 转换时整组 effects 包成单个该名管线步骤，params 为 `{ effects }`。
  */
-export const imageEffectPipeline: Pipeline = {
+export const imageEffectPipeline: ImagePipeline = {
   name: IMAGE_EFFECT_PIPELINE,
   process: async (image, params) => {
     const effects = (params?.effects ?? []) as NormalizedEffect[]

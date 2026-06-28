@@ -69,6 +69,7 @@ export default defineMixin((editor) => {
       height,
       fonts: editor.fonts,
       keyframes,
+      imagePipelineResolver: editor.resolveImagePipelines,
       onKeyframe: (pixels: any, info: { duration: number, progress: number }) => onFrame(pixels, info),
     }))
   }

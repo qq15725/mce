@@ -164,8 +164,8 @@ importers:
         specifier: ^2
         version: 2.1.0
       modern-idoc:
-        specifier: ^0.12.2
-        version: 0.12.2
+        specifier: ^0.12.3
+        version: 0.12.3
       modern-text:
         specifier: ^2.0.9
         version: 2.0.9
@@ -2464,8 +2464,8 @@ packages:
   modern-idoc@0.12.1:
     resolution: {integrity: sha512-+QsDJnhvyogjGY4g26tePlsHkpARZF1J+M5ItfnLfKgwVM+zItR7QEXFn554/2UPkYXbkjOPiDH1XL/m2hie7w==}
 
-  modern-idoc@0.12.2:
-    resolution: {integrity: sha512-jAbgAixWrs4M9HSKAd3SeuIoyULc+IysyIMquly6NDwGNdoO0N0Ah+9PvXKeV5Lhkh1URRpgz0pBDV7x/xbCfw==}
+  modern-idoc@0.12.3:
+    resolution: {integrity: sha512-5DRaW+/zgC1w8r37mrOEQ1lOVTDIGMBSgMQA2KCcrdjLOp4RsxG2yfl61VrXB8s7BPU0dzg2aEEfiUNZLM/NJw==}
 
   modern-mp4@0.2.0:
     resolution: {integrity: sha512-Z2X7+B1Kru8MTI2E6mpcSqm1E7FMxYg61DXoTkwq/KnMMfeyFcMCY4UVjvklFtdw4/NnvKA93bxw7XsqtMB1Tw==}
@@ -5561,7 +5561,7 @@ snapshots:
       colord: 2.9.3
       earcut: 3.0.2
       modern-font: 0.6.1
-      modern-idoc: 0.12.2
+      modern-idoc: 0.12.3
       modern-path2d: 1.8.5
       modern-text: 2.0.9
     optionalDependencies:
@@ -5580,7 +5580,7 @@ snapshots:
 
   modern-idoc-svg@0.3.5:
     dependencies:
-      modern-idoc: 0.12.2
+      modern-idoc: 0.12.3
       modern-text: 2.0.9
 
   modern-idoc@0.12.1:
@@ -5588,7 +5588,7 @@ snapshots:
       colord: 2.9.3
       nanoid: 5.1.15
 
-  modern-idoc@0.12.2:
+  modern-idoc@0.12.3:
     dependencies:
       colord: 2.9.3
       nanoid: 5.1.15
@@ -5615,7 +5615,7 @@ snapshots:
       colord: 2.9.3
       fflate: 0.8.3
       modern-font: 0.6.1
-      modern-idoc: 0.12.2
+      modern-idoc: 0.12.3
       modern-path2d: 1.8.5
       modern-text: 2.0.9
 
@@ -5623,7 +5623,7 @@ snapshots:
     dependencies:
       diff: 9.0.0
       modern-font: 0.6.1
-      modern-idoc: 0.12.2
+      modern-idoc: 0.12.3
       modern-path2d: 1.8.5
 
   module-replacements@3.0.0-beta.8: {}

@@ -34,6 +34,7 @@ export default definePlugin((editor) => {
     upload,
     drawboardEffect,
     runExclusiveRender,
+    resolveImagePipelines,
   } = editor
 
   const insertImage: Mce.Commands['insertImage'] = async (url, options) => {
@@ -67,7 +68,7 @@ export default definePlugin((editor) => {
         // PNG 一律走直编码：renderPixels（tiling 全尺寸 RGBA）+ Sub-filter 直接编码，
         // 彻底绕过 HTMLCanvas 的面积上限（大图不再空白），体积也比 canvas.toBlob 略小。
         if (name === 'png' && supportsPngStream()) {
-          const pixels = await runExclusiveRender(() => renderPixels({ data: doc, fonts, width, height, onBefore }))
+          const pixels = await runExclusiveRender(() => renderPixels({ data: doc, fonts, width, height, onBefore, imagePipelineResolver: resolveImagePipelines }))
           return rgbaToPngBlob(pixels, width, height)
         }
 
@@ -93,6 +94,7 @@ export default definePlugin((editor) => {
           width: canvasDoc.style.width,
           height: canvasDoc.style.height,
           onBefore,
+          imagePipelineResolver: resolveImagePipelines,
         }))
 
         return await new Promise<Blob>((resolve) => {

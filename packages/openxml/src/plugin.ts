@@ -1,5 +1,5 @@
 import type { DocxMeta, PptxMeta, XlsxMeta } from 'modern-openxml'
-import { base64ToBytes, definePlugin, matchSource, materializePipelines } from 'mce'
+import { base64ToBytes, definePlugin, matchSource, materializeImagePipelines } from 'mce'
 
 const PPTX_MIME = 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
 const XLSX_MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
@@ -28,7 +28,7 @@ export function plugin() {
       upload,
       to,
       fonts,
-      resolvePipelines,
+      resolveImagePipelines,
     } = editor
 
     // pptx/xlsx/docx 三个导出器共用：to('json') → 可选 reverse → 合并 meta → 转字节 → Blob。
@@ -46,7 +46,7 @@ export function plugin() {
           const { [name]: specificOptions, ...jsonOptions } = options
           const doc = await to('json', jsonOptions)
           // 物化图片处理管线：黑盒管线无法用 OOXML 原生表达，统一烘焙成成品图嵌入。
-          await materializePipelines(doc, resolvePipelines)
+          await materializeImagePipelines(doc, resolveImagePipelines)
           if (reverse) {
             doc.children?.reverse()
           }

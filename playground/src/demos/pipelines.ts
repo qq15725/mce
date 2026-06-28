@@ -1,8 +1,8 @@
-import type { Editor, Pipeline } from 'mce'
+import type { Editor, ImagePipeline } from 'mce'
 
-// 图片处理管线（foreground.pipelines）示例：演示「外部注册自定义管线 + 数据只记管线名/参数」的完整闭环。
-// - 管线是 image → image 的黑盒函数，经 editor.registerPipeline 注册；
-// - 元素数据只写 pipelines: [{ name, params }]，渲染端按需把图片烘焙到运行时纹理；
+// 图片处理管线（foreground.imagePipelines）示例：演示「外部注册自定义管线 + 数据只记管线名/参数」的完整闭环。
+// - 管线是 image → image 的黑盒函数，经 editor.registerImagePipeline 注册；
+// - 元素数据只写 imagePipelines: [{ name, params }]，渲染端按需把图片烘焙到运行时纹理；
 // - 多个管线按数组顺序链式作用（如「灰度 → 染色」）。
 // 这些管线纯像素操作（直接改 RGBA），不依赖任何业务包；bige 的「图片样式」则走 @mce/bigesj 的内置 imageEffect 管线。
 
@@ -16,7 +16,7 @@ function hexToRgb(hex: string): [number, number, number] {
   ]
 }
 
-const grayscale: Pipeline = {
+const grayscale: ImagePipeline = {
   name: 'demo:grayscale',
   process: (img) => {
     const d = img.data
@@ -28,7 +28,7 @@ const grayscale: Pipeline = {
   },
 }
 
-const invert: Pipeline = {
+const invert: ImagePipeline = {
   name: 'demo:invert',
   process: (img) => {
     const d = img.data
@@ -41,7 +41,7 @@ const invert: Pipeline = {
   },
 }
 
-const tint: Pipeline = {
+const tint: ImagePipeline = {
   name: 'demo:tint',
   process: (img, params) => {
     const [tr, tg, tb] = hexToRgb(params?.color ?? '#ff0066')
@@ -56,19 +56,20 @@ const tint: Pipeline = {
   },
 }
 
+/** 供 demo 与 App.vue 动态测试复用的自定义管线集合。 */
+export const demoImagePipelines: ImagePipeline[] = [grayscale, invert, tint]
+
 export function loadPipelinesDemo(editor: Editor): void {
   // 注册自定义管线（同名覆盖，重复进入示例安全）。
-  editor.registerPipeline(grayscale)
-  editor.registerPipeline(invert)
-  editor.registerPipeline(tint)
+  demoImagePipelines.forEach(p => editor.registerImagePipeline(p))
 
-  const cases: { label: string, pipelines?: { name: string, params?: Record<string, any> }[] }[] = [
+  const cases: { label: string, imagePipelines?: { name: string, params?: Record<string, any> }[] }[] = [
     { label: '原图' },
-    { label: '灰度', pipelines: [{ name: 'demo:grayscale' }] },
-    { label: '反色', pipelines: [{ name: 'demo:invert' }] },
-    { label: '染色', pipelines: [{ name: 'demo:tint', params: { color: '#ff0066', strength: 0.5 } }] },
+    { label: '灰度', imagePipelines: [{ name: 'demo:grayscale' }] },
+    { label: '反色', imagePipelines: [{ name: 'demo:invert' }] },
+    { label: '染色', imagePipelines: [{ name: 'demo:tint', params: { color: '#ff0066', strength: 0.5 } }] },
     // 链式：先灰度再染色，按数组顺序依次作用
-    { label: '灰度+染色（链式）', pipelines: [{ name: 'demo:grayscale' }, { name: 'demo:tint', params: { color: '#00aaff', strength: 0.45 } }] },
+    { label: '灰度+染色（链式）', imagePipelines: [{ name: 'demo:grayscale' }, { name: 'demo:tint', params: { color: '#00aaff', strength: 0.45 } }] },
   ]
 
   const COLS = 3
@@ -82,7 +83,7 @@ export function loadPipelinesDemo(editor: Editor): void {
     nodes.push({
       id: `pl-${i}`,
       style: { left: x, top: y, width: TILE, height: TILE, backgroundColor: '#ffffff' },
-      foreground: { image: '/example.jpg', fillWithShape: true, ...(c.pipelines ? { pipelines: c.pipelines } : {}) },
+      foreground: { image: '/example.jpg', fillWithShape: true, ...(c.imagePipelines ? { imagePipelines: c.imagePipelines } : {}) },
       meta: { inCanvasIs: 'Element2D', inPptIs: 'Picture' },
     })
     nodes.push({

@@ -1,15 +1,15 @@
-import type { ImagePipeline, PipelineImage } from 'modern-idoc'
+import type { ImagePipeline as ImagePipelineRef, PipelineImage } from 'modern-idoc'
 import { assets, createHTMLCanvas } from 'modern-canvas'
 
 /**
  * 图片处理管线（外部可注册）：把图片像素处理成新的图片像素（`image → image`）。
  *
- * 数据只记录管线名与参数（`ImageFill.pipelines`），处理函数为运行时注册的黑盒，
- * 不入持久化数据。渲染端经引擎注入的解析器烘焙到运行时纹理；不过引擎的导出端
- * （pdf/svg/pptx）经 `materializePipelines` 物化成成品图。
+ * 数据只记录管线名与参数（`ImageFill.imagePipelines`，元素类型 `ImagePipelineRef`），
+ * 处理函数为运行时注册的黑盒，不入持久化数据。渲染端经引擎注入的解析器烘焙到运行时纹理；
+ * 非渲染的导出端（pdf/svg/pptx）经 `materializeImagePipelines` 物化成成品图。
  */
-export interface Pipeline {
-  /** 唯一名，对应数据 `pipelines[].name`。 */
+export interface ImagePipeline {
+  /** 唯一名，对应数据 `imagePipelines[].name`。 */
   name: string
   /** 显示名 i18n key（可选），供 UI 列表使用。 */
   label?: string
@@ -45,26 +45,26 @@ function pipelineImageToDataURL(image: PipelineImage): string | undefined {
   return canvas.toDataURL('image/png')
 }
 
-type PipelineResolver = (steps: ImagePipeline[], image: PipelineImage) => Promise<PipelineImage>
+type ImagePipelineResolver = (steps: ImagePipelineRef[], image: PipelineImage) => Promise<PipelineImage>
 
-/** 形如 `{ image, pipelines }` 的图片填充对象。 */
-function isPipelineFill(obj: any): obj is { image: string, pipelines: ImagePipeline[] } {
+/** 形如 `{ image, imagePipelines }` 的图片填充对象。 */
+function isImagePipelineFill(obj: any): obj is { image: string, imagePipelines: ImagePipelineRef[] } {
   return obj
     && typeof obj === 'object'
     && typeof obj.image === 'string'
-    && Array.isArray(obj.pipelines)
-    && obj.pipelines.length > 0
+    && Array.isArray(obj.imagePipelines)
+    && obj.imagePipelines.length > 0
 }
 
 /**
- * 导出前物化：深度遍历文档，把所有带 `pipelines` 的图片填充跑一遍管线，
- * 结果写回 `image`（PNG dataURI）并删除 `pipelines` 字段。这样数据解析类导出器
+ * 导出前物化：深度遍历文档，把所有带 `imagePipelines` 的图片填充跑一遍管线，
+ * 结果写回 `image`（PNG dataURI）并删除 `imagePipelines` 字段。这样数据解析类导出器
  * （pdf/svg/pptx）只看到普通图片填充，无需各自实现管线逻辑，跨端一致。
  *
  * 注意：原地修改传入的 `doc`（导出链路里 `doc` 已是 `toJSON` 出的独立快照）。
  */
-export async function materializePipelines(doc: any, resolve: PipelineResolver): Promise<void> {
-  const fills: { image: string, pipelines: ImagePipeline[] }[] = []
+export async function materializeImagePipelines(doc: any, resolve: ImagePipelineResolver): Promise<void> {
+  const fills: { image: string, imagePipelines: ImagePipelineRef[] }[] = []
   const seen = new Set<any>()
   const visit = (node: any): void => {
     if (!node || typeof node !== 'object' || seen.has(node))
@@ -74,7 +74,7 @@ export async function materializePipelines(doc: any, resolve: PipelineResolver):
       node.forEach(visit)
       return
     }
-    if (isPipelineFill(node))
+    if (isImagePipelineFill(node))
       fills.push(node)
     for (const key in node)
       visit(node[key])
@@ -85,10 +85,10 @@ export async function materializePipelines(doc: any, resolve: PipelineResolver):
     const source = await imageToPipelineImage(fill.image)
     if (!source)
       return
-    const out = await resolve(fill.pipelines, source)
+    const out = await resolve(fill.imagePipelines, source)
     const dataURL = pipelineImageToDataURL(out)
     if (dataURL)
       fill.image = dataURL
-    delete (fill as any).pipelines
+    delete (fill as any).imagePipelines
   }))
 }

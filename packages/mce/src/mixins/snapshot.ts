@@ -52,6 +52,7 @@ export default defineMixin((editor) => {
       height: data.style.height,
       fonts,
       data,
+      imagePipelineResolver: editor.resolveImagePipelines,
     }))
   }
 

@@ -1,8 +1,7 @@
 import type { Element2D } from 'modern-canvas'
-import type { ImagePipeline, PipelineImage } from 'modern-idoc'
+import type { ImagePipeline as ImagePipelineRef, PipelineImage } from 'modern-idoc'
 import type { Component, Ref } from 'vue'
-import type { AnimationPreset, Pipeline } from '../utils'
-import { setImagePipelineResolver } from 'modern-canvas'
+import type { AnimationPreset, ImagePipeline } from '../utils'
 import { ref, shallowRef } from 'vue'
 import { defineMixin } from '../mixin'
 
@@ -123,14 +122,14 @@ declare global {
 
       /**
        * 插件 / 宿主注册的图片处理管线（`image → image`，如描边/调色/抠图）。
-       * 数据只记录管线名与参数（`ImageFill.pipelines`），处理函数为运行时黑盒。
-       * 注册同 name 则覆盖。渲染端经引擎解析器烘焙，导出端经 `materializePipelines` 物化。
+       * 数据只记录管线名与参数（`ImageFill.imagePipelines`），处理函数为运行时黑盒。
+       * 注册同 name 则覆盖。渲染端经引擎解析器烘焙，非渲染导出端经 `materializeImagePipelines` 物化。
        */
-      pipelines: Ref<Pipeline[]>
-      registerPipeline: (pipeline: Pipeline) => void
-      getPipeline: (name: string) => Pipeline | undefined
+      imagePipelines: Ref<ImagePipeline[]>
+      registerImagePipeline: (pipeline: ImagePipeline) => void
+      getImagePipeline: (name: string) => ImagePipeline | undefined
       /** 把一串管线步骤依次作用到图片像素上（引擎解析器与导出物化共用）。 */
-      resolvePipelines: (steps: ImagePipeline[], image: PipelineImage) => Promise<PipelineImage>
+      resolveImagePipelines: (steps: ImagePipelineRef[], image: PipelineImage) => Promise<PipelineImage>
     }
   }
 }
@@ -151,13 +150,13 @@ export default defineMixin((editor) => {
   const modes = ref<string[]>([])
   const statusbarItems = shallowRef<Component[]>([])
   const animationPresets = shallowRef<AnimationPreset[]>([])
-  const pipelines = shallowRef<Pipeline[]>([])
+  const imagePipelines = shallowRef<ImagePipeline[]>([])
 
   // 依次作用管线步骤；未注册的步骤跳过（保证缺插件时不报错、仅丢该效果）。
-  const resolvePipelines = async (steps: ImagePipeline[], image: PipelineImage): Promise<PipelineImage> => {
+  const resolveImagePipelines = async (steps: ImagePipelineRef[], image: PipelineImage): Promise<PipelineImage> => {
     let current = image
     for (const step of steps) {
-      const pipeline = pipelines.value.find(p => p.name === step.name)
+      const pipeline = imagePipelines.value.find(p => p.name === step.name)
       if (!pipeline)
         continue
       current = await pipeline.process(current, step.params)
@@ -165,8 +164,10 @@ export default defineMixin((editor) => {
     return current
   }
 
-  // 注入引擎全局解析器：图片填充加载时由引擎回调，烘焙到运行时纹理。
-  setImagePipelineResolver((steps, image) => resolvePipelines(steps, image))
+  // 把管线解析器注入主渲染引擎实例（非全局，多 editor 互不影响）；
+  // 图片填充加载时由该引擎实例回调，烘焙到运行时纹理。导出经各渲染调用透传同一解析器，
+  // 非渲染导出（pdf/svg/pptx）经 materializeImagePipelines 物化。
+  editor.renderEngine.value.imagePipelineResolver = (steps, image) => resolveImagePipelines(steps, image)
 
   return {
     selectionRedirects,
@@ -241,14 +242,14 @@ export default defineMixin((editor) => {
     },
     getAnimationPreset: (id: string) => animationPresets.value.find(p => p.id === id),
 
-    pipelines,
-    registerPipeline: (pipeline: Pipeline) => {
-      const exists = pipelines.value.some(p => p.name === pipeline.name)
-      pipelines.value = exists
-        ? pipelines.value.map(p => (p.name === pipeline.name ? pipeline : p))
-        : [...pipelines.value, pipeline]
+    imagePipelines,
+    registerImagePipeline: (pipeline: ImagePipeline) => {
+      const exists = imagePipelines.value.some(p => p.name === pipeline.name)
+      imagePipelines.value = exists
+        ? imagePipelines.value.map(p => (p.name === pipeline.name ? pipeline : p))
+        : [...imagePipelines.value, pipeline]
     },
-    getPipeline: (name: string) => pipelines.value.find(p => p.name === name),
-    resolvePipelines,
+    getImagePipeline: (name: string) => imagePipelines.value.find(p => p.name === name),
+    resolveImagePipelines,
   }
 })

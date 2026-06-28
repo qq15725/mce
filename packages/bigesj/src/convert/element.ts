@@ -114,7 +114,7 @@ export async function convertElement(
           enabled: true,
           image: el.clipUrl || el.url,
           fillWithShape: true,
-          pipelines: imageEffects?.length
+          imagePipelines: imageEffects?.length
             ? [{ name: IMAGE_EFFECT_PIPELINE, params: { effects: imageEffects.map(normalizeEffect) } }]
             : undefined,
         }

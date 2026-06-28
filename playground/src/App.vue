@@ -15,10 +15,12 @@ import psd from '@mce/psd'
 import svg from '@mce/svg'
 import table from '@mce/table'
 import workflow from '@mce/workflow'
+import { IMAGE_EFFECT_PIPELINE } from '@mce/bigesj'
 import { Editor, EditorLayers, EditorLayout, EditorLayoutItem } from 'mce'
+import { normalizeEffect } from 'modern-idoc'
 import { computed } from 'vue'
 import { BroadcastChannelProvider } from './collab'
-import { loadAnimationDemo, loadArtboardDemo, loadChartDemo, loadCommentsDemo, loadConnectionDemo, loadFillStrokeDemo, loadGifDemo, loadImageEffectsDemo, loadInteractionDemo, loadLargeExportDemo, loadLayoutDemo, loadLinesDemo, loadPipelinesDemo, loadPsdDemo, loadShapesDemo, loadSmartGuidesDemo, loadTableDemo, loadTextDemo, loadVideoDemo } from './demos'
+import { demoImagePipelines, loadAnimationDemo, loadArtboardDemo, loadChartDemo, loadCommentsDemo, loadConnectionDemo, loadFillStrokeDemo, loadGifDemo, loadImageEffectsDemo, loadInteractionDemo, loadLargeExportDemo, loadLayoutDemo, loadLinesDemo, loadPipelinesDemo, loadPsdDemo, loadShapesDemo, loadSmartGuidesDemo, loadTableDemo, loadTextDemo, loadVideoDemo } from './demos'
 import 'mce/styles'
 
 const editorOptions = {
@@ -66,8 +68,19 @@ const editor = new Editor({
   ],
 })
 
+// 注册自定义管线，供 floatbar 动态测试（动态增删管线是否闪烁/消失）。
+demoImagePipelines.forEach(p => editor.registerImagePipeline(p))
+
 window.editor = editor
 window.doc = editor.doc
+
+// 动态给选中元素的前景设置图片处理管线（undefined = 清空，回到原图）。
+function setFgPipelines(imagePipelines?: { name: string, params?: Record<string, any> }[]): void {
+  const el = editor.elementSelection.value[0]
+  if (!el)
+    return
+  ;(el.foreground as any).imagePipelines = imagePipelines
+}
 
 const searchParams = new URL(window.location.href).searchParams
 const tid = searchParams.get('tid')
@@ -218,6 +231,13 @@ const element = computed(() => editor.elementSelection.value[0])
             <button @click="() => element!.meta.lockAspectRatio = !element!.meta.lockAspectRatio">
               {{ element!.meta.lockAspectRatio ? '解锁' : '锁定' }}宽高比
             </button>
+            <span style="width: 1px; align-self: stretch; background: rgba(0,0,0,.15)" />
+            <button @click="() => setFgPipelines([{ name: 'demo:grayscale' }])">灰度</button>
+            <button @click="() => setFgPipelines([{ name: 'demo:invert' }])">反色</button>
+            <button @click="() => setFgPipelines([{ name: 'demo:tint', params: { color: '#ff0066', strength: 0.5 } }])">染色</button>
+            <button @click="() => setFgPipelines([{ name: 'demo:grayscale' }, { name: 'demo:tint', params: { color: '#00aaff', strength: 0.45 } }])">灰度+染色</button>
+            <button @click="() => setFgPipelines([{ name: IMAGE_EFFECT_PIPELINE, params: { effects: [normalizeEffect({ outline: { width: 8, color: '#ff3366' } })] } }])">描边</button>
+            <button @click="() => setFgPipelines(undefined)">清空管线</button>
           </template>
           <span v-else>FLOATBAR-TOP</span>
         </div>

@@ -30,7 +30,7 @@ export function plugin(options: PluginOptions = {}) {
 
   return definePlugin((editor) => {
     // 注册内置「图片效果」管线：还原 bige 图片样式（描边/阴影/重上色）。
-    editor.registerPipeline(imageEffectPipeline)
+    editor.registerImagePipeline(imageEffectPipeline)
     return {
       name: 'bigesj',
       loaders: [
