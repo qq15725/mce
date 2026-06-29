@@ -107,15 +107,38 @@ export class Doc extends Node {
 
   set = (source: Document): this => {
     const { children = [], ...props } = source
-    const oldTransacting = this._yDoc._transacting
-    this._yDoc.reset()
-    this._yDoc._transacting = true
-    this.stopCapturing()
-    this.resetProperties()
-    this.removeChildren()
-    this.setProperties(props)
-    this.append(children)
-    this._yDoc._transacting = oldTransacting
+    const body = (): void => {
+      this._yDoc.reset()
+      this.stopCapturing()
+      this.resetProperties()
+      this.removeChildren()
+      this.setProperties(props)
+      this.append(children)
+    }
+    // set 需同时满足两点，缺一不可：
+    // ① `_transacting=true`：让 _proxyChildren 的 addChild 把新子节点**镜像进 childrenIds**
+    //    （`_isSelfTransaction()` 无参时看 `_transacting===false`，为 false 才镜像；INTERNAL 下为 true 会跳过）。
+    // ② 写入处于一个 doc.transact 内、带 LOCAL/INTERNAL origin：让 childrenIds observer 识别为自身事务而
+    //    跳过「回插视图」，否则 origin=null 时会把刚插入的子节点 moveChild 回插 → 重新 emit addChild → 再写
+    //    childrenIds，反馈循环把每个子节点重复一遍（set 后 tree/childrenIds 翻倍）。
+    // 原实现仅做 ①（直接置 _transacting=true），裸调 set() 时缺 ② → 重复；若改成仅 ②（this.transact）则
+    // init() 的 transact(false) 嵌套下丢了 ① → childrenIds 不被填充（tree 满、childrenIds 空）。故分两路：
+    if (this._yDoc._transacting === undefined) {
+      // 裸调：开 LOCAL doc.transact（满足②），其内 _transacting=true（满足①）。
+      this._yDoc.transact(body, true)
+    }
+    else {
+      // 已在外层事务内（init=INTERNAL / 协同 setDoc=LOCAL，已满足②）：强制 _transacting=true 满足①，
+      // 沿用外层 doc.transact 的 origin，完成后还原。
+      const old = this._yDoc._transacting
+      this._yDoc._transacting = true
+      try {
+        body()
+      }
+      finally {
+        this._yDoc._transacting = old
+      }
+    }
     return this
   }
 
