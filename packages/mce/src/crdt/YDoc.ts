@@ -530,21 +530,8 @@ export class YDoc extends Observable {
     }
     else {
       if (!this._rx.isReactive(node)) {
-        const handle = (node: Node) => {
-          if (node instanceof Element2D) {
-            if (!(node.text.base as any).__markRaw__) {
-              const base = this._rx.markRaw(node.text.base)
-              ;(base as any).__markRaw__ = true
-              base.setPropertyAccessor(node.text)
-              ;(node.text.base as any) = base
-            }
-          }
-        }
-        handle(node)
-        node.findOne((child) => {
-          handle(child)
-          return false
-        })
+        // 引擎内部的「资源/计算对象」（文本排版的 path 数据、yoga 布局节点等）已在各自创建时
+        // markRaw（见 modern-canvas），故此处整树 reactive 不会深度代理它们 —— 无需再逐节点特殊处理。
         node = this._rx.reactive(node) as any
         if (node.parent) {
           node.parent.children[node.getIndex()] = node
