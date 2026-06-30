@@ -155,8 +155,8 @@ importers:
         specifier: ^5
         version: 5.13.0
       modern-canvas:
-        specifier: ^0.25.2
-        version: 0.25.2(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1)
+        specifier: ^0.26.0
+        version: 0.26.0(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1)
       modern-font:
         specifier: ^0.6.1
         version: 0.6.1
@@ -167,8 +167,8 @@ importers:
         specifier: ^0.12.3
         version: 0.12.3
       modern-text:
-        specifier: ^2.0.9
-        version: 2.0.9
+        specifier: ^2.1.0
+        version: 2.1.0
       typescript:
         specifier: '>=4.7'
         version: 6.0.3
@@ -2435,8 +2435,8 @@ packages:
   mlly@1.8.2:
     resolution: {integrity: sha512-d+ObxMQFmbt10sretNDytwt85VrbkhhUA/JBGm1MPaWJ65Cl4wOgLaB1NYvJSZ0Ef03MMEU/0xpPMXUIQ29UfA==}
 
-  modern-canvas@0.25.2:
-    resolution: {integrity: sha512-vhnb3QQqTGcp6SNMM1rZP78WEnHkmOQvoeRZaZAnsUV3R9mQ4I/t7WeNTQoy3vgQW1D1UBuWNfRUZWO3zXR/ew==}
+  modern-canvas@0.26.0:
+    resolution: {integrity: sha512-FJNNyYML/c1BzcHQEPGDgAanFIObsE3pFCe6jvfwAX7F8n9qsQojUyAHJKuT+xp13pMi5gH7o8qec2IBsG8wjQ==}
     peerDependencies:
       echarts: ^5 || ^6
       lottie-web: ^5
@@ -2492,6 +2492,9 @@ packages:
 
   modern-text@2.0.9:
     resolution: {integrity: sha512-T/6iGksR7BQ96oTDqfwn8+pREsOlc5HemtEgYSAqLBSLU8dXH/mBTHQLFNbgX+n66Ojg1nyZiF8QH/UXDkojRQ==}
+
+  modern-text@2.1.0:
+    resolution: {integrity: sha512-1sNVOqrRGoCvO6sTI9JoylgydAxbUXBJgR4unLTlL6yZcQ3tkuh8Gqzi1szGshHrf0p9o7uG4JGFveGQL7u2EQ==}
 
   module-replacements@3.0.0-beta.8:
     resolution: {integrity: sha512-sc8TepP9elxoOBXEpxmhPzKKjTjbswHVcmsKGbgvm3k6jZlLu/WMV/Lfmga6IGMgHU/V3WtY2s6VEgM4nTElUQ==}
@@ -4045,8 +4048,8 @@ snapshots:
 
   '@typescript-eslint/project-service@8.56.1(typescript@6.0.3)':
     dependencies:
-      '@typescript-eslint/tsconfig-utils': 8.56.1(typescript@6.0.3)
-      '@typescript-eslint/types': 8.56.1
+      '@typescript-eslint/tsconfig-utils': 8.62.0(typescript@6.0.3)
+      '@typescript-eslint/types': 8.62.0
       debug: 4.4.3
       typescript: 6.0.3
     transitivePeerDependencies:
@@ -5562,14 +5565,14 @@ snapshots:
       pkg-types: 1.3.1
       ufo: 1.6.4
 
-  modern-canvas@0.25.2(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1):
+  modern-canvas@0.26.0(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1):
     dependencies:
       colord: 2.9.3
       earcut: 3.0.2
       modern-font: 0.6.1
       modern-idoc: 0.12.3
       modern-path2d: 1.8.6
-      modern-text: 2.0.9
+      modern-text: 2.1.0
     optionalDependencies:
       echarts: 6.1.0
       lottie-web: 5.13.0
@@ -5642,6 +5645,13 @@ snapshots:
       modern-font: 0.6.1
       modern-idoc: 0.12.3
       modern-path2d: 1.8.5
+
+  modern-text@2.1.0:
+    dependencies:
+      diff: 9.0.0
+      modern-font: 0.6.1
+      modern-idoc: 0.12.3
+      modern-path2d: 1.8.6
 
   module-replacements@3.0.0-beta.8: {}
 
