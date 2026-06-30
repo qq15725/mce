@@ -4,6 +4,7 @@ import ScrollToSelection from '../components/ScrollToSelection.vue'
 import Selection from '../components/Selection.vue'
 import { definePlugin } from '../plugin'
 import { isFlexContainer } from '../utils/helper'
+import { getLineEndpoints, parseLineShape } from '../utils/line'
 
 declare global {
   namespace Mce {
@@ -64,6 +65,62 @@ declare global {
   }
 }
 
+interface Rect { left: number, top: number, right: number, bottom: number }
+interface Point { x: number, y: number }
+
+function pointInRect(p: Point, r: Rect): boolean {
+  return p.x >= r.left && p.x <= r.right && p.y >= r.top && p.y <= r.bottom
+}
+
+// 线段相交（基于方向叉积），含共线相接的端点重合情形。
+function segmentsIntersect(a: Point, b: Point, c: Point, d: Point): boolean {
+  const cross = (o: Point, p: Point, q: Point): number =>
+    (p.x - o.x) * (q.y - o.y) - (p.y - o.y) * (q.x - o.x)
+  const d1 = cross(c, d, a)
+  const d2 = cross(c, d, b)
+  const d3 = cross(a, b, c)
+  const d4 = cross(a, b, d)
+  if (((d1 > 0 && d2 < 0) || (d1 < 0 && d2 > 0))
+    && ((d3 > 0 && d4 < 0) || (d3 < 0 && d4 > 0))) {
+    return true
+  }
+  const onSeg = (o: Point, q: Point, p: Point): boolean =>
+    Math.min(o.x, q.x) <= p.x && p.x <= Math.max(o.x, q.x)
+    && Math.min(o.y, q.y) <= p.y && p.y <= Math.max(o.y, q.y)
+  if (d1 === 0 && onSeg(c, d, a))
+    return true
+  if (d2 === 0 && onSeg(c, d, b))
+    return true
+  if (d3 === 0 && onSeg(a, b, c))
+    return true
+  if (d4 === 0 && onSeg(a, b, d))
+    return true
+  return false
+}
+
+// 折线（drawboard 坐标）与框选矩形是否相交：任一顶点落在矩形内，或任一线段穿过矩形某条边。
+function polylineIntersectsRect(poly: Point[], r: Rect): boolean {
+  const corners: Point[] = [
+    { x: r.left, y: r.top },
+    { x: r.right, y: r.top },
+    { x: r.right, y: r.bottom },
+    { x: r.left, y: r.bottom },
+  ]
+  for (let i = 0; i < poly.length - 1; i++) {
+    const a = poly[i]
+    const b = poly[i + 1]
+    if (pointInRect(a, r) || pointInRect(b, r)) {
+      return true
+    }
+    for (let j = 0; j < 4; j++) {
+      if (segmentsIntersect(a, b, corners[j], corners[(j + 1) % 4])) {
+        return true
+      }
+    }
+  }
+  return false
+}
+
 export default definePlugin((editor) => {
   const {
     isElement,
@@ -84,6 +141,7 @@ export default definePlugin((editor) => {
     setLock,
     isLock,
     exec,
+    globalToDrawboard,
   } = editor
 
   function select(target: Mce.SelectTarget) {
@@ -133,9 +191,38 @@ export default definePlugin((editor) => {
     }
   }
 
+  // 线/箭头/连线的命中折线（drawboard 坐标）：直线/箭头取两端点，连线取路由控制点。
+  // 非线类返回 null，回退到包围盒判定。线类的包围盒是覆盖两端点的大矩形，对斜线而言
+  // 一大片空白也落在盒内，直接用盒判定会把没碰到线身的框选误判为命中（见斜线示例）。
+  function linePolylineInDrawboard(node: Element2D): { x: number, y: number }[] | null {
+    let worldPts: { x: number, y: number }[] | null = null
+    if (parseLineShape(node)) {
+      worldPts = getLineEndpoints(node)
+    }
+    else {
+      const conn = (node as any).connection
+      if (conn?.isValid?.()) {
+        const refs = conn.route?.()?.getControlPointRefs?.()
+        if (refs?.length) {
+          worldPts = refs.map((p: any) => ({ x: p.x, y: p.y }))
+        }
+      }
+    }
+    if (!worldPts || worldPts.length < 2) {
+      return null
+    }
+    return worldPts.map(p => globalToDrawboard(p))
+  }
+
   function marqueeSelect(marquee = selectionMarquee.value): void {
     // 把矩形选区包装为 OBB 便于 contains 测试；后续若支持旋转 marquee 也可在此处替换。
     const area = new Obb2D(marquee)
+    const rect = {
+      left: marquee.left,
+      top: marquee.top,
+      right: marquee.left + marquee.width,
+      bottom: marquee.top + marquee.height,
+    }
     // 每个节点的 obb 在本次框选中最多算一次（flatMap 与 filter 复用），
     // 避免对 frame 等节点重复调 getObb。
     const obbCache = new Map<Element2D, Obb2D>()
@@ -146,6 +233,14 @@ export default definePlugin((editor) => {
         obbCache.set(node, obb)
       }
       return obb
+    }
+    // 线类按线身（线段/折线 vs 框选矩形）判定，其余元素按包围盒相交判定。
+    const hit = (node: Element2D): boolean => {
+      const poly = linePolylineInDrawboard(node)
+      if (poly) {
+        return polylineIntersectsRect(poly, rect)
+      }
+      return obbOf(node).overlap(area)
     }
     selection.value = root.value
       ?.children
@@ -161,7 +256,7 @@ export default definePlugin((editor) => {
       .filter((node) => {
         return 'isVisibleInTree' in node
           && node.isVisibleInTree()
-          && obbOf(node).overlap(area)
+          && hit(node)
           && !isLock(node)
           && !node.findAncestor(ancestor => isLock(ancestor))
       }) ?? []
