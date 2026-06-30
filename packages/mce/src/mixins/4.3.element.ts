@@ -293,19 +293,31 @@ export default defineMixin((editor) => {
       el?.requestRender?.()
     }
 
-    handle(el)
+    // 把本次缩放对 el 的多处 style 改动（width / height + 文字适配改的 fontSize）合并成
+    // 一次 text.update()。否则逐个改会各自触发一次重栅格——resize 拖拽时每帧重栅 3 次，
+    // 大/中等文字明显掉帧。
+    const run = (): void => {
+      handle(el)
 
-    if (options.deep) {
-      el.findOne((node) => {
-        if (isElement(node)) {
-          handle(node, true)
-        }
-        return false
-      })
+      if (options.deep) {
+        el.findOne((node) => {
+          if (isElement(node)) {
+            handle(node, true)
+          }
+          return false
+        })
+      }
+
+      options.textToFit && exec('textToFit', el)
+      options.textFontSizeToFit && exec('textFontSizeToFit', el, scaleX)
     }
 
-    options.textToFit && exec('textToFit', el)
-    options.textFontSizeToFit && exec('textFontSizeToFit', el, scaleX)
+    if (typeof (el as any).batch === 'function') {
+      ;(el as any).batch(run)
+    }
+    else {
+      run()
+    }
   }
 
   Object.assign(editor, {
