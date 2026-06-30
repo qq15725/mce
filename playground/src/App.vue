@@ -20,7 +20,7 @@ import { Editor, EditorLayers, EditorLayout, EditorLayoutItem } from 'mce'
 import { normalizeEffect } from 'modern-idoc'
 import { computed } from 'vue'
 import { BroadcastChannelProvider } from './collab'
-import { demoImagePipelines, loadAnimationDemo, loadArtboardDemo, loadChartDemo, loadCommentsDemo, loadConnectionDemo, loadFillStrokeDemo, loadGifDemo, loadImageEffectsDemo, loadInteractionDemo, loadLargeExportDemo, loadLayoutDemo, loadLinesDemo, loadPipelinesDemo, loadPsdDemo, loadShapesDemo, loadSmartGuidesDemo, loadTableDemo, loadTextDemo, loadVideoDemo } from './demos'
+import { demoImagePipelines, loadAnimationDemo, loadArtboardDemo, loadBigTextDemo, loadChartDemo, loadCommentsDemo, loadConnectionDemo, loadFillStrokeDemo, loadGifDemo, loadImageEffectsDemo, loadInteractionDemo, loadLargeExportDemo, loadLayoutDemo, loadBigParagraphDemo, loadLinesDemo, loadPipelinesDemo, loadPsdDemo, loadShapesDemo, loadSmartGuidesDemo, loadTableDemo, loadTextDemo, loadVideoDemo, loadWorkflowDemo } from './demos'
 import 'mce/styles'
 
 const editorOptions = {
@@ -108,6 +108,9 @@ else if (url) {
 else if (demo === 'connection') {
   loadConnectionDemo(editor)
 }
+else if (demo === 'workflow') {
+  loadWorkflowDemo(editor)
+}
 else if (demo === 'layout') {
   loadLayoutDemo(editor)
 }
@@ -140,6 +143,12 @@ else if (demo === 'lines') {
 }
 else if (demo === 'text') {
   loadTextDemo(editor)
+}
+else if (demo === 'bigText') {
+  loadBigTextDemo(editor)
+}
+else if (demo === 'bigParagraph') {
+  loadBigParagraphDemo(editor)
 }
 else if (demo === 'fillStroke') {
   loadFillStrokeDemo(editor)
@@ -314,6 +323,12 @@ const element = computed(() => editor.elementSelection.value[0])
           <button @click="() => loadTextDemo(editor)">
             文字示例
           </button>
+          <button @click="() => loadBigTextDemo(editor)">
+            大文本示例
+          </button>
+          <button @click="() => loadBigParagraphDemo(editor)">
+            大段文本示例
+          </button>
           <button @click="() => loadFillStrokeDemo(editor)">
             填充描边示例
           </button>
@@ -328,6 +343,9 @@ const element = computed(() => editor.elementSelection.value[0])
           </button>
           <button @click="() => loadPsdDemo(editor)">
             PSD 示例
+          </button>
+          <button @click="() => loadWorkflowDemo(editor)">
+            工作流示例
           </button>
         </div>
       </template>
