@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import ai from '@mce/ai'
 import animationPresets from '@mce/animation-presets'
-import bigesj, { options } from '@mce/bigesj'
+import bigesj, { IMAGE_EFFECT_PIPELINE, options } from '@mce/bigesj'
 import chart from '@mce/chart'
 import collaboration from '@mce/collaboration'
 import comments from '@mce/comments'
@@ -15,12 +15,11 @@ import psd from '@mce/psd'
 import svg from '@mce/svg'
 import table from '@mce/table'
 import workflow from '@mce/workflow'
-import { IMAGE_EFFECT_PIPELINE } from '@mce/bigesj'
 import { Editor, EditorLayers, EditorLayout, EditorLayoutItem } from 'mce'
 import { normalizeEffect } from 'modern-idoc'
 import { computed } from 'vue'
 import { BroadcastChannelProvider } from './collab'
-import { demoImagePipelines, loadAnimationDemo, loadArtboardDemo, loadBigTextDemo, loadChartDemo, loadCommentsDemo, loadConnectionDemo, loadFillStrokeDemo, loadGifDemo, loadImageEffectsDemo, loadInteractionDemo, loadLargeExportDemo, loadLayoutDemo, loadBigParagraphDemo, loadLinesDemo, loadPipelinesDemo, loadPsdDemo, loadShapesDemo, loadSmartGuidesDemo, loadTableDemo, loadTextDemo, loadVideoDemo, loadWorkflowDemo } from './demos'
+import { demoImagePipelines, loadAnimationDemo, loadArtboardDemo, loadBigParagraphDemo, loadBigTextDemo, loadChartDemo, loadCommentsDemo, loadConnectionDemo, loadFillStrokeDemo, loadGifDemo, loadImageEffectsDemo, loadInteractionDemo, loadLargeExportDemo, loadLayoutDemo, loadLinesDemo, loadPipelinesDemo, loadPsdDemo, loadShapesDemo, loadSmartGuidesDemo, loadTableDemo, loadTextDemo, loadTextFeaturesDemo, loadVideoDemo, loadWorkflowDemo } from './demos'
 import 'mce/styles'
 
 const editorOptions = {
@@ -77,8 +76,9 @@ window.doc = editor.doc
 // 动态给选中元素的前景设置图片处理管线（undefined = 清空，回到原图）。
 function setFgPipelines(imagePipelines?: { name: string, params?: Record<string, any> }[]): void {
   const el = editor.elementSelection.value[0]
-  if (!el)
+  if (!el) {
     return
+  }
   ;(el.foreground as any).imagePipelines = imagePipelines
 }
 
@@ -143,6 +143,9 @@ else if (demo === 'lines') {
 }
 else if (demo === 'text') {
   loadTextDemo(editor)
+}
+else if (demo === 'textFeatures') {
+  loadTextFeaturesDemo(editor)
 }
 else if (demo === 'bigText') {
   loadBigTextDemo(editor)
@@ -253,12 +256,24 @@ const element = computed(() => editor.elementSelection.value[0])
               {{ element!.meta.lockAspectRatio ? '解锁' : '锁定' }}宽高比
             </button>
             <span style="width: 1px; align-self: stretch; background: rgba(0,0,0,.15)" />
-            <button @click="() => setFgPipelines([{ name: 'demo:grayscale' }])">灰度</button>
-            <button @click="() => setFgPipelines([{ name: 'demo:invert' }])">反色</button>
-            <button @click="() => setFgPipelines([{ name: 'demo:tint', params: { color: '#ff0066', strength: 0.5 } }])">染色</button>
-            <button @click="() => setFgPipelines([{ name: 'demo:grayscale' }, { name: 'demo:tint', params: { color: '#00aaff', strength: 0.45 } }])">灰度+染色</button>
-            <button @click="() => setFgPipelines([{ name: IMAGE_EFFECT_PIPELINE, params: { effects: [normalizeEffect({ outline: { width: 8, color: '#ff3366' } })] } }])">描边</button>
-            <button @click="() => setFgPipelines(undefined)">清空管线</button>
+            <button @click="() => setFgPipelines([{ name: 'demo:grayscale' }])">
+              灰度
+            </button>
+            <button @click="() => setFgPipelines([{ name: 'demo:invert' }])">
+              反色
+            </button>
+            <button @click="() => setFgPipelines([{ name: 'demo:tint', params: { color: '#ff0066', strength: 0.5 } }])">
+              染色
+            </button>
+            <button @click="() => setFgPipelines([{ name: 'demo:grayscale' }, { name: 'demo:tint', params: { color: '#00aaff', strength: 0.45 } }])">
+              灰度+染色
+            </button>
+            <button @click="() => setFgPipelines([{ name: IMAGE_EFFECT_PIPELINE, params: { effects: [normalizeEffect({ outline: { width: 8, color: '#ff3366' } })] } }])">
+              描边
+            </button>
+            <button @click="() => setFgPipelines(undefined)">
+              清空管线
+            </button>
           </template>
           <span v-else>FLOATBAR-TOP</span>
         </div>
@@ -307,10 +322,18 @@ const element = computed(() => editor.elementSelection.value[0])
             图片管线示例
           </button>
           <span style="width: 1px; align-self: stretch; background: rgba(0,0,0,.15)" />
-          <button @click="() => exportAs('svg')">导出SVG</button>
-          <button @click="() => exportAs('png')">导出PNG</button>
-          <button @click="() => exportAs('pdf')">导出PDF</button>
-          <button @click="() => exportAs('pptx')">导出PPTX</button>
+          <button @click="() => exportAs('svg')">
+            导出SVG
+          </button>
+          <button @click="() => exportAs('png')">
+            导出PNG
+          </button>
+          <button @click="() => exportAs('pdf')">
+            导出PDF
+          </button>
+          <button @click="() => exportAs('pptx')">
+            导出PPTX
+          </button>
           <button @click="() => loadLargeExportDemo(editor)">
             大图导出示例
           </button>
@@ -320,14 +343,8 @@ const element = computed(() => editor.elementSelection.value[0])
           <button @click="() => loadLinesDemo(editor)">
             直线箭头示例
           </button>
-          <button @click="() => loadTextDemo(editor)">
+          <button @click="() => loadTextFeaturesDemo(editor)">
             文字示例
-          </button>
-          <button @click="() => loadBigTextDemo(editor)">
-            大文本示例
-          </button>
-          <button @click="() => loadBigParagraphDemo(editor)">
-            大段文本示例
           </button>
           <button @click="() => loadFillStrokeDemo(editor)">
             填充描边示例
