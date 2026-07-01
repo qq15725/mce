@@ -40,7 +40,7 @@ const {
   t,
 } = editor
 
-const opened = defineModel('opened', { default: false })
+const opened = defineModel<boolean>('opened', { default: false })
 const dom = ref<HTMLElement>()
 const { thumbnailIcon, thumbnailName } = useNode(
   computed(() => props.node),
