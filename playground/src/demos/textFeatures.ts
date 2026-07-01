@@ -82,7 +82,6 @@ export function loadTextFeaturesDemo(editor: Editor): void {
 
     // ── 填充 / 效果 ──
     { label: '渐变填充', text: frags({ content: '渐变填充', fill: { linearGradient: { angle: 90, stops: [{ offset: 0, color: '#7048e8' }, { offset: 1, color: '#f06595' }] } } }), fontSize: 32 },
-    { label: '图片填充', text: frags({ content: '图片', fill: { image: '/example.jpg' } }), fontSize: 48 },
     { label: '投影 shadow', text: '投影 Shadow', style: { color: '#ffffff', fontWeight: 700 }, effects: [{ shadowColor: '#00000088', shadowBlur: 0.12, shadowOffsetX: 0.06, shadowOffsetY: 0.06, color: '#495057' }] },
     { label: '描边效果 outline', text: '外描边', style: { color: '#ffffff', fontWeight: 700, fontSize: 36 }, effects: [{ outline: { width: 0.08, color: '#1971c2' }, color: '#ffffff' }] },
     { label: '双层描边', text: '双描边', style: { color: '#ffffff', fontWeight: 700, fontSize: 36 }, effects: [{ outline: { width: 0.05, color: '#ffffff' }, color: '#ffffff' }, { outline: { width: 0.14, color: '#f06595' }, color: '#ffffff' }] },
