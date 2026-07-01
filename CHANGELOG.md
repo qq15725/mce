@@ -1,3 +1,17 @@
+## [0.32.3](https://github.com/qq15725/mce/compare/v0.32.2...v0.32.3) (2026-07-01)
+
+### Bug Fixes
+
+* marquee selects lines by stroke, not bounding box ([ee0c946](https://github.com/qq15725/mce/commit/ee0c9467e0b56828c778e8bd806eef6555bf4a3f))
+
+### Features
+
+* **playground:** add text features demo ([b388003](https://github.com/qq15725/mce/commit/b388003421aae748e8ffd40e5c48298ecc648ea0))
+
+### Performance Improvements
+
+* coalesce resize style mutations into one text update ([8c2d836](https://github.com/qq15725/mce/commit/8c2d8368f554a2a788b79464d2d2ca9e3c586606))
+
 ## [0.32.2](https://github.com/qq15725/mce/compare/v0.32.1...v0.32.2) (2026-06-29)
 
 
