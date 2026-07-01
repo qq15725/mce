@@ -54,7 +54,7 @@
   },
   "dependencies": {
     "modern-idoc-svg": "^0.4.0",
-    "modern-path2d": "^1.8.6"
+    "modern-path2d": "^1.8.7"
   },
   "devDependencies": {
     "mce": "workspace:*"
