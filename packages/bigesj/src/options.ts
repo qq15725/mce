@@ -13,7 +13,7 @@ export const options: Options = {
     frame: { gap: 48, outline: false, thumbnail: false },
   },
   ui: {
-    ruler: { visible: true },
+    ruler: { visible: false },
     scrollbar: { visible: true },
     statusbar: { visible: true },
     toolbelt: { visible: true },
