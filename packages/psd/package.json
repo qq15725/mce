@@ -1,7 +1,7 @@
 {
   "name": "@mce/psd",
   "type": "module",
-  "version": "0.32.3",
+  "version": "0.32.4",
   "description": "PSD (Photoshop) import plugin for mce",
   "author": "wxm",
   "license": "MIT",

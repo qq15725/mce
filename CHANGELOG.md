@@ -1,3 +1,13 @@
+## [0.32.4](https://github.com/qq15725/mce/compare/v0.32.3...v0.32.4) (2026-07-02)
+
+### Bug Fixes
+
+* **bigesj:** hide ruler by default ([7937ec5](https://github.com/qq15725/mce/commit/7937ec51f7a8f9bd27b1c46c5b32d8fe90c7ace4))
+
+### Features
+
+* **toolbelt,workflow:** revamp toolbelt and workflow nodes ([13e0f22](https://github.com/qq15725/mce/commit/13e0f220373cec881126ce270c5270adfc525efc))
+
 ## [0.32.3](https://github.com/qq15725/mce/compare/v0.32.2...v0.32.3) (2026-07-01)
 
 ### Bug Fixes
