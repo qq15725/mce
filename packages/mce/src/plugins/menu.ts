@@ -85,10 +85,6 @@ export default definePlugin((editor, options) => {
       .map(v => ({ key: `copyAs:${v.name}` })),
   }))
 
-  const nodeMenu = computed(() => [
-    { key: 'addSubNode' },
-  ])
-
   const modeMenu = computed(() => ({
     key: 'mode',
     // 核心 'canvas' + 插件经 registerMode 贡献的模式（如 @mce/workflow）。
@@ -330,8 +326,6 @@ export default definePlugin((editor, options) => {
       }
       else if (selection.value.filter(isElement).length > 0) {
         return [
-          ...nodeMenu.value,
-          { type: 'divider' },
           ...editMenus1.value,
           { type: 'divider' },
           ...objectMenu1.value,
@@ -347,8 +341,6 @@ export default definePlugin((editor, options) => {
       }
       else {
         return [
-          ...nodeMenu.value,
-          { type: 'divider' },
           ...editMenus1.value,
         ]
       }

@@ -83,7 +83,7 @@ declare global {
 
 export default defineMixin((editor, options) => {
   const root = ref(
-    new Doc(options.db?.local ? 'doc' : undefined),
+    new Doc(options.db?.local ? 'doc' : undefined, { name: options.docName }),
   )
   const docLoading = ref(false)
   const fonts = markRaw(new Fonts()) as Fonts

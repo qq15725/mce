@@ -29,7 +29,7 @@ declare global {
   }
 }
 
-export default definePlugin((editor) => {
+export default definePlugin((editor, options) => {
   const {
     getAabb,
     elementSelection,
@@ -37,6 +37,7 @@ export default definePlugin((editor) => {
     getTimeRange,
   } = editor
 
+  const { docName } = options
   const RE = /\.json$/i
 
   return {
@@ -76,7 +77,7 @@ export default definePlugin((editor) => {
           } = options
 
           let id = idGenerator()
-          let name = 'Doc'
+          let name = docName ?? 'Doc'
           let elements: Element2D[] = []
           if (Array.isArray(selected)) {
             elements = selected

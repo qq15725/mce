@@ -29,9 +29,10 @@ export class Doc extends Node {
 
   constructor(
     source?: Mce.DocumentSource,
+    options?: { name?: string },
   ) {
     super({
-      name: 'Doc',
+      name: options?.name ?? 'Doc',
     })
 
     let id: string | undefined

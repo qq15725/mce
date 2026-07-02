@@ -1,6 +1,6 @@
 import type { Element2D } from 'modern-canvas'
 import type { Element } from 'modern-idoc'
-import { definePlugin } from 'mce'
+import { definePlugin, outlineIcon } from 'mce'
 import { getWorkflowPorts, toConnectionPoints } from './workflow'
 import Workflow from './Workflow.vue'
 
@@ -21,6 +21,9 @@ declare global {
        * （图片/视频生成节点用它呈现一张默认图）。
        */
       image?: string
+      /** 节点默认宽高（缺省 2048×2048）。 */
+      width?: number
+      height?: number
     }
 
     interface Options {
@@ -47,23 +50,31 @@ function placeholderImage(svg: string): string {
   return `data:image/svg+xml,${encodeURIComponent(svg)}`
 }
 
-// 图标用主题反色（on-surface）配中等强调透明度，在 surface 底色上呈现为中灰。
-const PLACEHOLDER_ICON_OPACITY = 0.4
+// 图标用主题反色（on-surface）配较低透明度，在 surface 底色上呈现为浅灰。
+const PLACEHOLDER_ICON_OPACITY = 0.18
+
+// 四角星（sparkle）路径：以 (cx,cy) 为心、r 为半径，四条内凹贝塞尔边——AI 生成占位图标。
+function sparklePath(cx: number, cy: number, r: number): string {
+  const k = r / 2
+  return `M${cx} ${cy - r}`
+    + `C${cx} ${cy - k} ${cx - k} ${cy} ${cx - r} ${cy}`
+    + `C${cx - k} ${cy} ${cx} ${cy + k} ${cx} ${cy + r}`
+    + `C${cx} ${cy + k} ${cx + k} ${cy} ${cx + r} ${cy}`
+    + `C${cx + k} ${cy} ${cx} ${cy - k} ${cx} ${cy - r}Z`
+}
+
+// 统一的「AI 生成」占位图：大 + 小两颗闪烁星，居中偏上。方形 viewBox 随方形节点等比缩放。
+function sparklePlaceholder(bg: string, icon: string): string {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none">`
+    + `<rect width="512" height="512" fill="${bg}"/>`
+    + `<path d="${sparklePath(288, 236, 96)}" fill="${icon}" fill-opacity="${PLACEHOLDER_ICON_OPACITY}"/>`
+    + `<path d="${sparklePath(196, 320, 46)}" fill="${icon}" fill-opacity="${PLACEHOLDER_ICON_OPACITY}"/>`
+    + `</svg>`
+}
 
 const PLACEHOLDER_BUILDERS: Record<string, (bg: string, icon: string) => string> = {
-  image: (bg, icon) =>
-    `<svg xmlns="http://www.w3.org/2000/svg" width="380" height="280" viewBox="0 0 380 280" fill="none">`
-    + `<rect width="380" height="280" rx="20" fill="${bg}"/>`
-    + `<rect x="124" y="92" width="132" height="96" rx="12" stroke="${icon}" stroke-opacity="${PLACEHOLDER_ICON_OPACITY}" stroke-width="6" stroke-linejoin="round"/>`
-    + `<circle cx="156" cy="124" r="12" fill="${icon}" fill-opacity="${PLACEHOLDER_ICON_OPACITY}"/>`
-    + `<path d="M132 184l40-40 26 26 22-22 36 36" stroke="${icon}" stroke-opacity="${PLACEHOLDER_ICON_OPACITY}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>`
-    + `</svg>`,
-  video: (bg, icon) =>
-    `<svg xmlns="http://www.w3.org/2000/svg" width="380" height="280" viewBox="0 0 380 280" fill="none">`
-    + `<rect width="380" height="280" rx="20" fill="${bg}"/>`
-    + `<circle cx="190" cy="140" r="48" stroke="${icon}" stroke-opacity="${PLACEHOLDER_ICON_OPACITY}" stroke-width="6"/>`
-    + `<path d="M178 116l40 24-40 24z" fill="${icon}" fill-opacity="${PLACEHOLDER_ICON_OPACITY}"/>`
-    + `</svg>`,
+  image: sparklePlaceholder,
+  video: sparklePlaceholder,
 }
 
 // Built-in templates; overridable per type via the `workflowNodes` editor option.
@@ -78,10 +89,33 @@ const DEFAULT_NODES: Record<string, Mce.WorkflowNodeTemplate> = {
 
 export function plugin() {
   return definePlugin((editor, options) => {
-    const { addElement, renderEngine, registerMode } = editor
+    const { addElement, renderEngine, registerMode, registerToolbeltItem, registerIcon } = editor
 
-    // 注册「工作流」模式，菜单的模式切换项会自动包含它。
+    // 注册「工作流」模式，菜单 / 工具腰带的模式切换项会自动包含它（图标 `$workflow` 由核心图标集提供）。
     registerMode('workflow')
+
+    // 三种工作流节点各自的独立图标（Lucide type / image / video，outline）。
+    // 供图层图标、工具腰带「+」菜单、节点标题标签共用（`$workflow<Type>`）。
+    registerIcon('workflowText', outlineIcon('M12 4v16', 'M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2', 'M9 20h6'))
+    registerIcon('workflowImage', outlineIcon('M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z', 'M11 9a2 2 0 1 1-4 0 2 2 0 0 1 4 0z', 'm21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21'))
+    registerIcon('workflowVideo', outlineIcon('m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5', 'M4 6h10a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z'))
+
+    // 向工具腰带「+」菜单贡献新增节点项（文字 / 图片 / 视频生成）。
+    // 不限模式：只要加载了本插件，「+」在任何模式下都添加工作流节点。
+    const NODE_TYPES = [
+      { type: 'text', icon: '$workflowText', kbd: '⇧T' },
+      { type: 'image', icon: '$workflowImage', kbd: '⇧I' },
+      { type: 'video', icon: '$workflowVideo', kbd: '⇧V' },
+    ]
+    for (const n of NODE_TYPES) {
+      registerToolbeltItem({
+        slot: 'create',
+        key: `workflow:${n.type}`,
+        icon: n.icon,
+        kbd: n.kbd,
+        handle: () => addWorkflowNode(n.type),
+      })
+    }
 
     // Per-field merge: user templates override the defaults, missing fields fall back.
     function getTemplate(type: string): Mce.WorkflowNodeTemplate {
@@ -115,11 +149,12 @@ export function plugin() {
       const node: Element = {
         name: t.label,
         style: {
-          width: 380,
-          height: 280,
-          borderRadius: 20,
+          // 图片/视频/文字节点默认 2048×2048（可经 workflowNodes 覆盖）。
+          width: t.width ?? 2048,
+          height: t.height ?? 2048,
+          borderRadius: 32,
           borderColor: '#ececf0',
-          borderWidth: 1,
+          borderWidth: 2,
         },
         meta: { inPptIs: 'Shape', inCanvasIs: 'Element2D', inEditorIs: `Workflow${type.charAt(0).toUpperCase()}${type.slice(1)}` },
       }
@@ -127,9 +162,10 @@ export function plugin() {
         node.foreground = { image }
       }
       else {
+        // 字号 / 内边距随 2k 尺寸等比放大，保持与图片/视频节点观感一致。
         Object.assign(node.style!, {
-          padding: 28,
-          fontSize: 16,
+          padding: 150,
+          fontSize: 88,
           lineHeight: 1.6,
           backgroundColor: '#ffffff',
         })
@@ -139,7 +175,8 @@ export function plugin() {
     }
 
     function addWorkflowNode(type: string, position?: Mce.AddElementPosition): Element2D {
-      return addElement(createWorkflowNode(type), { position, active: true })
+      // 无显式位置（如从工具腰带「+」添加）则落在屏幕中心。
+      return addElement(createWorkflowNode(type), { position: position ?? 'screenCenter', active: true, intoView: true })
     }
 
     // Write the element's default ports onto its shape so connection routing anchors
@@ -159,8 +196,18 @@ export function plugin() {
       materializePorts(startId)
       materializePorts(endId)
       return addElement({
-        style: { pointerEvents: 'none' },
-        outline: { color: '#94a3b8', width: 2, lineCap: 'round', lineJoin: 'round' },
+        // 连线可单选 / 悬停（拖拽已在选择层禁用），故不设 pointerEvents:none。
+        outline: {
+          color: '#94a3b8',
+          // 匹配 2k 节点尺寸的默认线宽（细线在 2k 卡片间几乎看不见）。
+          width: 20,
+          // 平头端：端点已有竖线标记，圆头会从竖线探出一点凸尖。
+          lineCap: 'butt',
+          lineJoin: 'round',
+          // 两端画一条垂直短线作连接点标记（引擎 canvas 绘制，随连线一起导出）。
+          headEnd: { type: 'bar', color: '#1e1e1e', width: 'sm' } as any,
+          tailEnd: { type: 'bar', color: '#1e1e1e', width: 'sm' } as any,
+        },
         connection: {
           start: { id: startId, idx: startIdx },
           end: { id: endId, idx: endIdx },
@@ -176,15 +223,21 @@ export function plugin() {
         { command: 'addWorkflowNode', handle: addWorkflowNode },
         { command: 'addWorkflowConnection', handle: addWorkflowConnection },
       ],
+      // 新增节点快捷键（与「+」菜单一致）：⇧T / ⇧I / ⇧V。内容编辑态下由核心自动抑制。
+      hotkeys: [
+        { command: 'addWorkflowNode:text', key: 'Shift+T' },
+        { command: 'addWorkflowNode:image', key: 'Shift+I' },
+        { command: 'addWorkflowNode:video', key: 'Shift+V' },
+      ],
       components: [
         { type: 'overlay', component: Workflow },
       ],
       messages: {
         en: {
           'mode:workflow': 'Workflow mode',
-          'workflow:text': 'Text',
-          'workflow:image': 'Image',
-          'workflow:video': 'Video',
+          'workflow:text': 'Text Generation',
+          'workflow:image': 'Image Generation',
+          'workflow:video': 'Video Generation',
         },
         zhHans: {
           'mode:workflow': '工作流模式',

@@ -14,6 +14,8 @@ const {
   elementSelection,
   selectionAabbInDrawboard,
   inEditorIs,
+  mode,
+  root,
 } = useEditor()
 
 const overlay = useTemplateRef('overlayTpl')
@@ -43,13 +45,16 @@ const style = computed(() => {
 })
 
 const offset = computed(() => {
-  if (
-    elementSelection.value.some(v => inEditorIs(v, 'Frame'))
-    || props.location?.startsWith('bottom')
-  ) {
+  if (props.location?.startsWith('bottom')) {
     return 32
   }
-  return 8
+  // 顶部若有 title 标签则加大偏移让位：画板（Frame，自带标题）；
+  // 工作流模式下的顶层元素（@mce/workflow 的 NodeLabel 在其上方渲染标题）。
+  const hasTopTitle = elementSelection.value.some(
+    v => inEditorIs(v, 'Frame')
+      || (mode.value === 'workflow' && (v as any).getParent?.()?.id === root.value?.id),
+  )
+  return hasTopTitle ? 32 : 8
 })
 
 function updateLocation() {

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useEditor } from '../composables/editor'
-import { addDragListener } from '../utils'
 import { Icon } from './icon'
 import Btn from './shared/Btn.vue'
 import Menu from './shared/Menu.vue'
@@ -16,93 +15,16 @@ const {
   hotkeys,
   getKbd,
   getConfigRef,
-  drawboardAabb,
   toolbeltShapeItems,
   toolbeltItems,
+  mode,
+  modes,
 } = useEditor()
 
 const config = getConfigRef<Mce.ToolbeltConfig>('ui.toolbelt')
 
-// —— 停靠式拖拽（贴边滑动 + 居中吸附）——
-// 工具栏始终贴某条边；拖手柄时沿离指针最近的边的轴滑动（实时跟随），
-// 经过该边中点时吸附居中；松手提交停靠边与沿边偏移。
-const SNAP = 12 // 居中吸附阈值（px）
-const dragging = ref(false)
-// 拖拽中的实时停靠（边 + 沿边中心偏移）；松手提交到 config。
-const dragState = ref<{ placement: NonNullable<Mce.ToolbeltConfig['placement']>, offset: number | undefined }>()
-
-const placement = computed(() => dragState.value?.placement ?? config.value?.placement ?? 'bottom')
-// 沿边偏移（工具栏中心沿轴坐标，相对画板）。undefined 表示居中（交回 CSS）。
-const offset = computed(() => (dragging.value ? dragState.value?.offset : config.value?.offset))
-
-const barStyle = computed(() => {
-  const o = offset.value
-  if (o == null) {
-    return undefined
-  }
-  // 上/下沿 x 定位、左/右沿 y 定位；居中 transform 由 placement class 提供。
-  return (placement.value === 'left' || placement.value === 'right')
-    ? { top: `${o}px` }
-    : { left: `${o}px` }
-})
-
-// 指针落在画板四边中距离最近的一边。
-function nearestEdge(px: number, py: number): NonNullable<Mce.ToolbeltConfig['placement']> {
-  const ab = drawboardAabb.value
-  const dists = { top: py, bottom: ab.height - py, left: px, right: ab.width - px } as const
-  return (Object.keys(dists) as (keyof typeof dists)[])
-    .reduce((a, b) => (dists[b] < dists[a] ? b : a))
-}
-
-function onGripDown(e: MouseEvent): void {
-  if (e.button !== 0) {
-    return
-  }
-  e.preventDefault()
-  const bar = (e.currentTarget as HTMLElement).closest('.m-toolbelt') as HTMLElement | null
-  const rect = bar?.getBoundingClientRect()
-  const halfW = (rect?.width ?? 0) / 2
-  const halfH = (rect?.height ?? 0) / 2
-  // 抓取点相对工具栏中心的偏移：拖拽时保持，避免工具栏瞬移把中心跳到指针下。
-  const grabDx = rect ? e.clientX - (rect.left + halfW) : 0
-  const grabDy = rect ? e.clientY - (rect.top + halfH) : 0
-
-  addDragListener(e, {
-    threshold: 4,
-    start: () => {
-      dragging.value = true
-    },
-    move: (ctx) => {
-      const ab = drawboardAabb.value
-      const px = ctx.movePoint.x - ab.left
-      const py = ctx.movePoint.y - ab.top
-      const place = nearestEdge(px, py)
-      const vertical = place === 'left' || place === 'right'
-      const half = vertical ? halfH : halfW
-      const axisLen = vertical ? ab.height : ab.width
-      const axisCenter = axisLen / 2
-      // 工具栏中心沿轴坐标（扣除抓取偏移），夹在画板内（留 8px 边距）。
-      const along = vertical ? py - grabDy : px - grabDx
-      const pos = Math.min(Math.max(along, half + 8), axisLen - half - 8)
-      // 靠近中点吸附居中（offset 置 undefined）。
-      dragState.value = {
-        placement: place,
-        offset: Math.abs(pos - axisCenter) < SNAP ? undefined : pos,
-      }
-    },
-    end: () => {
-      dragging.value = false
-      if (dragState.value) {
-        config.value = {
-          ...config.value,
-          placement: dragState.value.placement,
-          offset: dragState.value.offset,
-        }
-      }
-      dragState.value = undefined
-    },
-  })
-}
+// 停靠方向（上 / 下 / 左 / 右），仅由配置决定，默认底部横向。
+const placement = computed(() => config.value?.placement ?? 'bottom')
 
 // tooltip / 子菜单弹出方向随停靠方向背向工具栏，避免被画布边缘遮挡。
 const tooltipLocation = computed(() => (({
@@ -177,41 +99,52 @@ const penItems = computed(() => {
   ]
 })
 
-// 插件经 registerToolbeltItem 注册的一级按钮（如 @mce/comments 的评论工具），
+// 插件经 registerToolbeltItem 注册的一级按钮（如 @mce/comments 的评论工具；不含 slot='create' 的项），
 // 映射为与内置项同构的结构（无 children），按 placement 分前 / 后。
 const pluginItems = computed(() =>
-  toolbeltItems.value.map(it => ({
-    key: it.key,
-    icon: it.icon ?? `$${it.key}`,
-    active: it.isActive?.() ?? false,
-    handle: it.handle,
-    placement: it.placement ?? 'after',
-  })),
+  toolbeltItems.value
+    .filter(it => it.slot !== 'create')
+    .map(it => ({
+      key: it.key,
+      icon: it.icon ?? `$${it.key}`,
+      active: it.isActive?.() ?? false,
+      handle: it.handle,
+      placement: it.placement ?? 'after',
+    })),
+)
+
+// 「+」菜单：当前模式下插件经 registerToolbeltItem({ slot: 'create' }) 贡献的创建项
+// （如 workflow 的新增节点）；无则回退到内置形状 + 图片菜单。
+// 「+」菜单项：插件经 registerToolbeltItem({ slot: 'create' }) 贡献（按当前模式过滤）。
+// 无贡献项时「+」整体隐藏（不再回退到形状菜单）。
+const addChildren = computed(() =>
+  toolbeltItems.value.filter(it => it.slot === 'create' && (!it.mode || it.mode === mode.value)),
 )
 
 const items = computed(() => {
   return [
+    // 开头的「+」：悬浮弹出新增菜单（内容由插件经 slot:'create' 贡献）；无内容则不显示。
+    ...(addChildren.value.length
+      ? [{
+          key: 'add',
+          icon: '$plus',
+          active: false,
+          handle: () => {},
+          children: addChildren.value,
+        }]
+      : []),
     ...pluginItems.value.filter(it => it.placement === 'before'),
     {
-      key: ['hand'].includes(state.value || '') ? 'hand' : 'move',
-      active: state.value !== 'drawing',
-      handle: () => {
-        if (['hand'].includes(state.value || '')) {
-          //
-        }
-        else {
-          activateTool(undefined)
-        }
-      },
-      children: [
-        { key: 'move', handle: () => activateTool(undefined) },
-        { key: 'hand', handle: () => state.value = 'hand' },
-      ],
+      // 抓手工具（去掉「移动」）：再次点击退出，回到默认选择态。
+      key: 'hand',
+      active: state.value === 'hand',
+      handle: () => (state.value = state.value === 'hand' ? undefined : 'hand'),
     },
     {
       key: activeTool.value?.name === 'slice' ? 'slice' : 'frame',
       active: ['frame', 'slice'].includes(activeTool.value?.name),
-      handle: () => activateTool('frame'),
+      // 已激活画板/切片时再次点击则退出绘制（toggle），回到默认选择态。
+      handle: () => activateTool(['frame', 'slice'].includes(activeTool.value?.name) ? undefined : 'frame'),
       children: [
         { key: 'frame', handle: () => activateTool('frame') },
         { key: 'slice', handle: () => activateTool('slice') },
@@ -224,7 +157,8 @@ const items = computed(() => {
     {
       key: 'text',
       active: activeTool.value?.name === 'text',
-      handle: () => activateTool('text'),
+      // 再次点击文字工具则退出绘制模式（toggle）。
+      handle: () => activateTool(activeTool.value?.name === 'text' ? undefined : 'text'),
     },
     {
       ...(penItems.value.find(v => v.checked) ?? penItems.value[activePen.value]),
@@ -233,13 +167,24 @@ const items = computed(() => {
     ...pluginItems.value.filter(it => it.placement === 'after'),
   ]
 })
+
+// 底部模式切换（画布 / 插件贡献的模式，如 @mce/workflow 的 workflow）。
+// 仅当有插件模式注册时才显示——纯画布下单个按钮无意义。
+const modeItems = computed(() =>
+  modes.value.length
+    ? ['canvas', ...modes.value].map(m => ({
+        key: m,
+        active: mode.value === m,
+        handle: () => (mode.value = m),
+      }))
+    : [],
+)
 </script>
 
 <template>
   <div
     class="m-toolbelt"
-    :class="[`m-toolbelt--${placement}`, { 'm-toolbelt--dragging': dragging }]"
-    :style="barStyle"
+    :class="`m-toolbelt--${placement}`"
   >
     <ToolOptions
       v-if="showToolOptions"
@@ -247,28 +192,56 @@ const items = computed(() => {
       :class="`m-toolbelt__options--${placement}`"
     />
 
-    <div
-      class="m-toolbelt__grip"
-      title="拖动以停靠"
-      @mousedown="onGripDown"
-    >
-      <svg width="10" height="16" viewBox="0 0 10 16" aria-hidden="true">
-        <g fill="currentColor">
-          <circle cx="3" cy="4" r="1.1" />
-          <circle cx="7" cy="4" r="1.1" />
-          <circle cx="3" cy="8" r="1.1" />
-          <circle cx="7" cy="8" r="1.1" />
-          <circle cx="3" cy="12" r="1.1" />
-          <circle cx="7" cy="12" r="1.1" />
-        </g>
-      </svg>
-    </div>
-
     <template
       v-for="(tool, key) in items" :key="key"
     >
       <div class="m-toolbelt__group">
+        <!-- 有子项：悬浮主按钮弹出菜单（取消原下拉箭头）；点击主按钮激活当前工具 -->
+        <Menu
+          v-if="(tool as any).children?.length"
+          open-on-hover
+          close-on-leave
+          :items="(tool as any).children"
+          :offset="6"
+          :location="menuLocation"
+        >
+          <template #activator="{ props: slotProps }">
+            <Btn
+              icon
+              class="m-toolbelt__btn"
+              :class="{ 'm-toolbelt__add': tool.key === 'add' }"
+              :active="tool.active || (tool as any).checked || false"
+              v-bind="slotProps"
+              @click="tool.handle"
+            >
+              <Icon :icon="(tool as any).icon ?? `$${tool.key}`" />
+            </Btn>
+          </template>
+
+          <template #title="{ item }">
+            {{ t(item.key) }}
+          </template>
+
+          <template #kbd="{ item }">
+            <template v-if="item.kbd">
+              {{ item.kbd }}
+            </template>
+            <template v-else-if="hotkeys.has(`setState:${item.key}`)">
+              {{ getKbd(`setState:${item.key}`) }}
+            </template>
+            <template v-else-if="hotkeys.has(`activateTool:${item.key}`)">
+              {{ getKbd(`activateTool:${item.key}`) }}
+            </template>
+          </template>
+
+          <template #prepend="{ item }">
+            <Icon class="m-toolbelt__icon" :icon="item.icon ?? `$${item.key}`" />
+          </template>
+        </Menu>
+
+        <!-- 无子项：悬浮显示 tooltip -->
         <Tooltip
+          v-else
           :location="tooltipLocation"
           :offset="12"
           show-arrow
@@ -298,37 +271,36 @@ const items = computed(() => {
             </template>
           </template>
         </Tooltip>
+      </div>
+    </template>
 
-        <template v-if="(tool as any).children?.length">
-          <Menu
-            :items="(tool as any).children"
-            :offset="12"
-            :location="menuLocation"
-          >
-            <template #activator="{ props }">
-              <Btn icon class="m-toolbelt__arrow" v-bind="props">
-                <Icon icon="$arrowDown" />
-              </Btn>
-            </template>
+    <template v-if="modeItems.length">
+      <div class="m-toolbelt__divider" />
 
-            <template #title="{ item }">
-              {{ t(item.key) }}
-            </template>
+      <div class="m-toolbelt__modes">
+        <Tooltip
+          v-for="m in modeItems"
+          :key="m.key"
+          :location="tooltipLocation"
+          :offset="12"
+          show-arrow
+        >
+          <template #activator="{ props: slotProps }">
+            <Btn
+              icon
+              class="m-toolbelt__mode"
+              :active="m.active"
+              v-bind="slotProps"
+              @click="m.handle"
+            >
+              <Icon :icon="`$${m.key}`" />
+            </Btn>
+          </template>
 
-            <template #kbd="{ item }">
-              <template v-if="hotkeys.has(`setState:${item.key}`)">
-                {{ getKbd(`setState:${item.key}`) }}
-              </template>
-              <template v-else-if="hotkeys.has(`activateTool:${item.key}`)">
-                {{ getKbd(`activateTool:${item.key}`) }}
-              </template>
-            </template>
-
-            <template #prepend="{ item }">
-              <Icon class="m-toolbelt__icon" :icon="`$${item.key}`" />
-            </template>
-          </Menu>
-        </template>
+          <template #default>
+            <span>{{ t(`mode:${m.key}`) }}</span>
+          </template>
+        </Tooltip>
       </div>
     </template>
   </div>
@@ -336,17 +308,18 @@ const items = computed(() => {
 
 <style lang="scss">
   .m-toolbelt {
+    $root: &;
     pointer-events: auto !important;
     position: absolute;
     display: flex;
     align-items: center;
-    gap: 2px;
-    padding: 6px;
-    // 偏暗的拟态浮层、圆角更大、阴影更柔、带细描边。
+    gap: 4px;
+    padding: 8px;
+    // 纯白大圆角胶囊、更宽松间距、柔和阴影、细描边。
     background: rgb(var(--m-theme-surface));
-    border: 1px solid rgba(var(--m-theme-on-surface), .08);
-    border-radius: 14px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, .16), 0 1px 3px rgba(0, 0, 0, .08);
+    border: 1px solid rgba(var(--m-theme-on-surface), .06);
+    border-radius: 18px;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, .12), 0 2px 6px rgba(0, 0, 0, .06);
     cursor: default;
 
     // —— 横向（上 / 下）——
@@ -379,12 +352,6 @@ const items = computed(() => {
 
     &--right {
       right: 18px;
-    }
-
-    &--dragging {
-      cursor: grabbing;
-      box-shadow: 0 12px 32px rgba(0, 0, 0, .24);
-      user-select: none;
     }
 
     // 选项面板：贴着工具栏、朝画布一侧浮出（下停靠→在上方，上停靠→在下方，左右同理）。
@@ -421,25 +388,6 @@ const items = computed(() => {
       margin-right: 10px;
     }
 
-    &__grip {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: rgba(var(--m-theme-on-surface), .35);
-      cursor: grab;
-      flex-shrink: 0;
-
-      &:hover {
-        color: rgba(var(--m-theme-on-surface), .6);
-      }
-    }
-
-    // 竖向时手柄横置（点阵转 90°），并与按钮列对齐。
-    &--left &__grip,
-    &--right &__grip {
-      transform: rotate(90deg);
-    }
-
     &__kbd {
       font-size: 0.75rem;
       white-space: nowrap;
@@ -461,28 +409,80 @@ const items = computed(() => {
 
     &__btn {
       font-size: 20px;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+    }
+
+    // 激活工具：浅灰圆角高亮（参考图风格），覆盖 Btn 默认的主色高亮。
+    // `& &__btn` 提高特异性以压过 Btn 的 hover / active 规则。
+    & &__btn {
+      &.m-btn--active,
+      &.m-btn--active:hover {
+        color: rgb(var(--m-theme-on-surface));
+        background: rgba(var(--m-theme-on-surface), .08);
+      }
+    }
+
+    // 开头的「+」：固定深色圆角块（主操作，恒高亮，不随选中态变化）。
+    & &__add {
+      &,
+      &:hover,
+      &.m-btn--active {
+        color: rgb(var(--m-theme-surface));
+        background: rgb(var(--m-theme-on-surface));
+      }
+    }
+
+    // —— 底部模式切换：分隔线 + 分段控件（选中项为白色浮起卡片）——
+    &__divider {
+      flex-shrink: 0;
+      background: rgba(var(--m-theme-on-surface), .1);
+      width: 1px;
+      height: 20px;
+      margin: 0 2px;
+    }
+
+    &--left &__divider,
+    &--right &__divider {
+      width: 20px;
+      height: 1px;
+      margin: 2px 0;
+    }
+
+    &__modes {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 3px;
+      border-radius: 13px;
+      background: rgba(var(--m-theme-on-surface), .05);
+    }
+
+    &--left &__modes,
+    &--right &__modes {
+      flex-direction: column;
+    }
+
+    &__mode {
+      font-size: 20px;
       width: 32px;
       height: 32px;
-      border-radius: 8px;
+      border-radius: 9px;
+      color: rgba(var(--m-theme-on-surface), .5);
+    }
+
+    & &__mode {
+      &.m-btn--active,
+      &.m-btn--active:hover {
+        color: rgb(var(--m-theme-on-surface));
+        background: rgb(var(--m-theme-surface));
+        box-shadow: 0 2px 6px rgba(0, 0, 0, .12), 0 0 0 1px rgba(0, 0, 0, .04);
+      }
     }
 
     &__icon {
       font-size: 1rem;
-    }
-
-    &__arrow {
-      width: 14px;
-      height: 32px;
-      font-size: 0.625rem;
-      border-radius: 6px;
-      opacity: .5;
-    }
-
-    // 竖向时箭头转为按钮下方的横条。
-    &--left &__arrow,
-    &--right &__arrow {
-      width: 32px;
-      height: 14px;
     }
   }
 </style>

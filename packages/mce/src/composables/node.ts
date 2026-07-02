@@ -17,6 +17,12 @@ export function useNode(
 
   const thumbnailIcon = computed(() => {
     const node = nodeRef.value
+    // 工作流节点（inEditorIs = Workflow<Type>）用各自独立图标（$workflowText/Image/Video），
+    // 由 @mce/workflow 经 registerIcon 提供。
+    const inEditor = (node as any).meta?.inEditorIs
+    if (typeof inEditor === 'string' && inEditor.startsWith('Workflow')) {
+      return `$${inEditor[0].toLowerCase()}${inEditor.slice(1)}`
+    }
     if (inEditorIs(node, 'Frame')) {
       return '$frame'
     }

@@ -19,6 +19,8 @@ declare global {
       sizeToFit?: boolean
       active?: boolean
       regenId?: boolean
+      /** 添加后把新元素带入视口（已在视口内则不动）。 */
+      intoView?: boolean
     }
 
     interface ResizeElementOptions {
@@ -68,6 +70,7 @@ export default defineMixin((editor) => {
       position,
       active,
       regenId,
+      intoView,
     } = options
 
     const parentAabb = parent ? getAabb(parent) : undefined
@@ -257,6 +260,11 @@ export default defineMixin((editor) => {
 
     if (active) {
       selection.value = elements
+    }
+
+    if (intoView) {
+      // 已在视口内则不动，否则平滑带入视图（如从工具腰带添加的较大工作流节点）。
+      exec('zoomTo', elements, { intoView: true, behavior: 'smooth' })
     }
 
     if (!isArray && !parent) {

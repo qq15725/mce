@@ -3,6 +3,7 @@ import type { Element2D } from 'modern-canvas'
 import type { WorkflowPort } from './workflow'
 import { Icon, useEditor } from 'mce'
 import { computed, ref } from 'vue'
+import NodeLabel from './NodeLabel.vue'
 import { getWorkflowPorts, INPUT_PORT, OUTPUT_PORT } from './workflow'
 
 const {
@@ -16,6 +17,30 @@ const {
   exec,
   t,
 } = useEditor()
+
+// 端口「+」磁吸：每个端口是一个大的透明命中圆，可见的「+」居中于其内。
+// 仅当鼠标进入该圆时（元素自身 pointermove）才把「+」朝指针移动、离开(pointerleave)回中心——
+// 只走端口自身 DOM 事件 + 直接改 transform，不监听 document/画布、不写响应式，性能开销极小。
+const MAX_PULL = 40
+function onPortMove(e: PointerEvent): void {
+  const host = e.currentTarget as HTMLElement
+  const dot = host.firstElementChild as HTMLElement | null
+  if (!dot) {
+    return
+  }
+  const r = host.getBoundingClientRect()
+  const dx = e.clientX - (r.left + r.width / 2)
+  const dy = e.clientY - (r.top + r.height / 2)
+  const dist = Math.hypot(dx, dy) || 1
+  const pull = Math.min(dist, MAX_PULL)
+  dot.style.transform = `translate(${(dx / dist) * pull}px, ${(dy / dist) * pull}px)`
+}
+function onPortLeave(e: PointerEvent): void {
+  const dot = (e.currentTarget as HTMLElement).firstElementChild as HTMLElement | null
+  if (dot) {
+    dot.style.transform = ''
+  }
+}
 
 const NODE_TYPES = [
   { type: 'text', icon: '$text', kbd: '⇧T' },
@@ -43,6 +68,15 @@ const selectedNode = computed<Element2D | undefined>(() => {
     return undefined
   return el
 })
+
+// 工作流模式下的顶层元素（画板 / 节点，排除连线）——给每个加图层图标+名称标签。
+const topLabels = computed<Element2D[]>(() =>
+  mode.value === 'workflow'
+    ? (root.value?.children ?? []).filter(
+        (el): el is Element2D => isElement(el) && !(el as any).connection?.isValid?.(),
+      )
+    : [],
+)
 
 interface ScreenPort { kind: PortKind, idx: number, x: number, y: number }
 
@@ -180,13 +214,16 @@ const previewPath = computed(() => {
   return `M ${from.x} ${from.y} C ${from.x + dx} ${from.y} ${to.x - dx} ${to.y} ${to.x} ${to.y}`
 })
 
+// 端口用 transform 定位（避免 left/top 重排）；magnetic 位移在内部「+」dot 上，互不影响。
 function portStyle(p: ScreenPort): Record<string, string> {
-  return { left: `${p.x}px`, top: `${p.y}px` }
+  return { transform: `translate(${p.x}px, ${p.y}px)` }
 }
 </script>
 
 <template>
   <div v-if="mode === 'workflow'" class="m-workflow">
+    <NodeLabel v-for="el in topLabels" :key="el.id" :node="el" />
+
     <svg v-if="drag" class="m-workflow__preview">
       <path :d="previewPath" />
     </svg>
@@ -197,8 +234,12 @@ function portStyle(p: ScreenPort): Record<string, string> {
       class="m-workflow__port"
       :style="portStyle(port)"
       @pointerdown="startConnection(port, $event)"
+      @pointermove="onPortMove"
+      @pointerleave="onPortLeave"
     >
-      <Icon icon="$plus" />
+      <span class="m-workflow__port-dot">
+        <Icon icon="$plus" />
+      </span>
     </div>
 
     <template v-if="menu">
@@ -248,22 +289,37 @@ function portStyle(p: ScreenPort): Record<string, string> {
     }
   }
 
+  // 大的透明命中圆：鼠标进入其范围即触发磁吸，把内部「+」移向指针。
   &__port {
     position: absolute;
+    left: 0;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 96px;
+    height: 96px;
+    margin: -48px 0 0 -48px;
+    border-radius: 50%;
+    background: transparent;
+    cursor: crosshair;
+    pointer-events: auto;
+    user-select: none;
+  }
+
+  // 可见的「+」圆点，居中于命中圆，磁吸时以 transform 平滑移向指针。
+  &__port-dot {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 18px;
     height: 18px;
-    margin: -9px 0 0 -9px;
     border-radius: 50%;
     background: rgb(var(--m-theme-primary, 30 200 230));
     color: rgb(var(--m-theme-on-primary, 255 255 255));
     font-size: 12px;
-    cursor: crosshair;
-    pointer-events: auto;
-    user-select: none;
     box-shadow: 0 0 0 2px rgb(var(--m-theme-surface, 255 255 255));
+    transition: transform .1s ease-out;
   }
 
   &__backdrop {

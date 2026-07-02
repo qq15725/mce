@@ -62,20 +62,22 @@ async function setupFonts(editor: Editor, api: Record<string, any>): Promise<voi
     loadFont,
   } = useFonts()
 
+  // 只负责把用到的字体灌进 editor.fonts；字体就绪后的重排由引擎自动完成
+  // （modern-canvas SceneTree 订阅 fonts 'load' → 重排树内全部文字），无需手动 text.update()。
   function preloadNode(node: Node) {
     if (isElement(node)) {
       if (node.style.fontFamily) {
-        loadFont(node.style.fontFamily).then(() => node.text.update())
+        loadFont(node.style.fontFamily)
       }
 
       node.text.content.forEach((p) => {
         p.fragments.forEach((f) => {
           if (f.fontFamily) {
-            loadFont(f.fontFamily).then(() => node.text.update())
+            loadFont(f.fontFamily)
           }
         })
         if (p.fontFamily) {
-          loadFont(p.fontFamily).then(() => node.text.update())
+          loadFont(p.fontFamily)
         }
       })
     }

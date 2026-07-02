@@ -19,6 +19,7 @@ const {
   renderEngine,
   drawboardDom,
   isLock,
+  mode,
 } = useEditor()
 
 const editing = ref(false)
@@ -60,6 +61,7 @@ async function onPointerdown(event: PointerEvent) {
     ]"
   >
     <div
+      v-if="mode !== 'workflow'"
       class="m-frame__name"
       @dblclick.prevent.stop="onDblclick"
       @pointerdown="onPointerdown"

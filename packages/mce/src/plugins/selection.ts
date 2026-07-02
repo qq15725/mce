@@ -258,6 +258,8 @@ export default definePlugin((editor) => {
           && node.isVisibleInTree()
           && hit(node)
           && !isLock(node)
+          // 框选排除连线：连线随端点自动路由，纳入多选会让整体拖拽出问题。
+          && !(node as any).connection?.isValid?.()
           && !node.findAncestor(ancestor => isLock(ancestor))
       }) ?? []
   }

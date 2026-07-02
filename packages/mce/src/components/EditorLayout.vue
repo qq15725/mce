@@ -226,6 +226,7 @@ function onEnginePointerDown(
 
   const {
     allowTopFrame = false,
+    noEnter = false,
   } = options
 
   function isIncluded(node: any): node is Element2D {
@@ -234,6 +235,10 @@ function onEnginePointerDown(
       && (allowTopFrame || (!node.children.some(node => isElement(node)) || !isFrameNode(node, true)))
       && !node.findAncestor(ancestor => isLock(ancestor))
   }
+
+  // 连线可单选 / 悬停，但不可拖拽：拖拽（transform）时排除连线。
+  const isConnection = (node: any): boolean => isElement(node) && Boolean(node.connection?.isValid?.())
+  const selectionHasConnection = (): boolean => elementSelection.value.some(isConnection)
 
   const downState = state.value
   const startPos = { x: clientX, y: clientY }
@@ -276,7 +281,7 @@ function onEnginePointerDown(
 
   const _dx = Math.abs(currentPos.x - _lastClickPos.x)
   const _dy = Math.abs(currentPos.y - _lastClickPos.y)
-  const isDoubleClick = now - _lastClickTime < 300 && _dx < 5 && _dy < 5
+  const isDoubleClick = !noEnter && now - _lastClickTime < 300 && _dx < 5 && _dy < 5
   if (isDoubleClick) {
     _lastClickTime = 0
     doubleclickStrategy.value({ event: downEvent as any, editor })
@@ -386,13 +391,15 @@ function onEnginePointerDown(
         break
       default:
         if (inSelection) {
-          if (canStartDrag()) {
+          // 选区内含连线则不启动拖拽（连线不可拖）。
+          if (canStartDrag() && !selectionHasConnection()) {
             dragging = true
             exec('startTransform', downEvent)
           }
         }
         else {
-          if (element) {
+          // 按住的是连线：仅允许单选（pointerup 时 onActivate 选中），不进入拖拽。
+          if (element && !isConnection(element)) {
             if (canStartDrag()) {
               dragging = true
               onDrag(moveEvent)

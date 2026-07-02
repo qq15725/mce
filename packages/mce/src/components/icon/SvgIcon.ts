@@ -17,14 +17,28 @@ export const SvgIcon = defineComponent({
             'aria-hidden': 'true',
           }, [
             Array.isArray(props.icon)
-              ? props.icon.map(path => Array.isArray(path)
-                  ? createElementVNode('path', {
-                      'd': path[0],
-                      'fill-opacity': path[1],
+              ? props.icon.map((path) => {
+                  // 对象条目：可携带 stroke/fill 等属性（用于连线类描边图标）。
+                  if (path && typeof path === 'object' && !Array.isArray(path)) {
+                    const p = path as Record<string, any>
+                    return createElementVNode('path', {
+                      'd': p.d,
+                      'fill': p.fill ?? 'none',
+                      'stroke': p.stroke,
+                      'stroke-width': p.strokeWidth,
+                      'stroke-linecap': p.strokeLinecap,
+                      'stroke-linejoin': p.strokeLinejoin,
                     }, null)
-                  : createElementVNode('path', {
-                      d: path,
-                    }, null))
+                  }
+                  return Array.isArray(path)
+                    ? createElementVNode('path', {
+                        'd': path[0],
+                        'fill-opacity': path[1],
+                      }, null)
+                    : createElementVNode('path', {
+                        d: path,
+                      }, null)
+                })
               : createElementVNode('path', {
                   d: props.icon,
                 }, null),

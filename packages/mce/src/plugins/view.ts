@@ -7,6 +7,8 @@ declare global {
 
     interface PointerDownOptions {
       allowTopFrame?: boolean
+      /** 跳过双击进入内容编辑（如从节点标题转发的指针，只想拖拽/选中，不进元素文字编辑）。 */
+      noEnter?: boolean
     }
 
     interface Commands {

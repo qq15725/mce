@@ -8,6 +8,8 @@ declare global {
   namespace Mce {
     interface Options {
       doc?: DocumentSource
+      /** 新建空白文档时的默认名字，缺省为 'Doc'。有内容 source 时以 source 自身 name 为准。 */
+      docName?: string
     }
 
     interface InternalDocument extends Document {
@@ -138,7 +140,7 @@ export default definePlugin((editor, options) => {
       return oldDoc
     }
 
-    const doc = source instanceof Doc ? source : new Doc(source)
+    const doc = source instanceof Doc ? source : new Doc(source, { name: options.docName })
     releaseTextures(oldDoc)
     doc.init()
     root.value = doc
@@ -159,7 +161,7 @@ export default definePlugin((editor, options) => {
     try {
       await waitUntilFontLoad()
       const data = await load(source)
-      const doc = new Doc(data)
+      const doc = new Doc(data, { name: options.docName })
       if (config.value.db.local) {
         await doc.loadIndexeddb()
       }

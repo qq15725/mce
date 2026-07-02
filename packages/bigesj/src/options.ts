@@ -16,8 +16,7 @@ export const options: Options = {
     ruler: { visible: true },
     scrollbar: { visible: true },
     statusbar: { visible: true },
-    toolbelt: { visible: false },
-    madeWith: { visible: false },
+    toolbelt: { visible: true },
   },
   interaction: {
     transform: {

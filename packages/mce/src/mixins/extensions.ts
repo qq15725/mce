@@ -1,6 +1,7 @@
 import type { Element2D } from 'modern-canvas'
 import type { ImagePipeline as ImagePipelineRef, PipelineImage } from 'modern-idoc'
 import type { Component, Ref } from 'vue'
+import type { IconValue } from '../composables/icon'
 import type { AnimationPreset, ImagePipeline } from '../utils'
 import { ref, shallowRef } from 'vue'
 import { defineMixin } from '../mixin'
@@ -42,10 +43,21 @@ declare global {
       icon?: string
       /** 是否激活（高亮）。渲染时调用，读响应式状态即可自动更新。 */
       isActive?: () => boolean
-      /** 点击处理。 */
-      handle: () => void
+      /** 点击处理（分隔线项可省略）。 */
+      handle?: () => void
       /** 放置在内置工具之前 / 之后（默认 after）。 */
       placement?: 'before' | 'after'
+      /**
+       * 放入工具腰带「+」新建菜单（而非作为一级按钮）。有此类项时「+」菜单用它们
+       * （按当前模式过滤），否则回退到内置形状菜单。供 @mce/workflow 的新增节点使用。
+       */
+      slot?: 'create'
+      /** slot='create' 时：限定仅某编辑模式显示（缺省则所有模式）。 */
+      mode?: string
+      /** slot='create' 时：菜单项的快捷键提示（如 ⇧T）。 */
+      kbd?: string
+      /** slot='create' 时：分隔线分组。 */
+      type?: 'divider'
     }
 
     interface Editor {
@@ -87,8 +99,8 @@ declare global {
        * 合并进 IconsSymbol 的 aliases，从而让 `$<name>` 可解析。供 @mce/table、@mce/chart
        * 等把自己的图标随插件携带，核心图标集不再硬编码它们。
        */
-      icons: Ref<Record<string, string>>
-      registerIcon: (name: string, path: string) => void
+      icons: Ref<Record<string, IconValue>>
+      registerIcon: (name: string, path: IconValue) => void
 
       /**
        * 插件注册的编辑模式（除核心 'canvas' 外，如 @mce/workflow 的 'workflow'）。
@@ -105,11 +117,13 @@ declare global {
       registerStatusbarItem: (component: Component) => void
 
       /**
-       * 插件向工具腰带追加的一级按钮（如 @mce/comments 的评论工具）。
+       * 插件向工具腰带追加的一级按钮（如 @mce/comments 的评论工具）或「+」菜单创建项。
        * Toolbelt 据此渲染，核心不再硬编码插件工具。
+       * `registerToolbeltItem` 返回移除函数；也可用 `unregisterToolbeltItem` 按引用移除。
        */
       toolbeltItems: Ref<ToolbeltItem[]>
-      registerToolbeltItem: (item: ToolbeltItem) => void
+      registerToolbeltItem: (item: ToolbeltItem) => () => void
+      unregisterToolbeltItem: (item: ToolbeltItem) => void
 
       /**
        * 插件注册的动画预设（进入 / 退出 / 强调）。核心不内置任何预设——
@@ -146,7 +160,7 @@ export default defineMixin((editor) => {
   const editingStates = new Set<string>()
   const toolbeltShapeItems = ref<string[]>([])
   const toolbeltItems = ref<Mce.ToolbeltItem[]>([])
-  const icons = ref<Record<string, string>>({})
+  const icons = ref<Record<string, IconValue>>({})
   const modes = ref<string[]>([])
   const statusbarItems = shallowRef<Component[]>([])
   const animationPresets = shallowRef<AnimationPreset[]>([])
@@ -212,12 +226,19 @@ export default defineMixin((editor) => {
     },
 
     toolbeltItems,
+    unregisterToolbeltItem: (item: Mce.ToolbeltItem) => {
+      toolbeltItems.value = toolbeltItems.value.filter(it => it !== item)
+    },
     registerToolbeltItem: (item: Mce.ToolbeltItem) => {
       toolbeltItems.value = [...toolbeltItems.value, item]
+      // 返回移除函数：调用即从工具腰带移除该项（按引用精确移除）。
+      return () => {
+        toolbeltItems.value = toolbeltItems.value.filter(it => it !== item)
+      }
     },
 
     icons,
-    registerIcon: (name: string, path: string) => {
+    registerIcon: (name: string, path: IconValue) => {
       icons.value[name] = path
     },
 

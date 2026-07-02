@@ -4,7 +4,33 @@ import { ComponentIcon, SvgIcon } from '../components/icon'
 import { logger } from '../utils/console'
 import { IconsSymbol } from './icons'
 
-export type IconValue = string | (string | [path: string, opacity: number])[] | Component
+/** 单条描边/填充路径的显式属性（用于连线类图标，fill 默认 none）。 */
+export interface IconPathSpec {
+  d: string
+  fill?: string
+  stroke?: string
+  strokeWidth?: number
+  strokeLinecap?: 'butt' | 'round' | 'square'
+  strokeLinejoin?: 'miter' | 'round' | 'bevel'
+}
+
+export type IconValue = string | (string | [path: string, opacity: number] | IconPathSpec)[] | Component
+
+/**
+ * 描边（outline）图标辅助：把若干 SVG path 的 `d` 按 Lucide 默认样式
+ * （fill none / stroke currentColor / 线宽 2 / 圆头圆角）成组，得到一个描边风格图标。
+ * 供核心图标集与插件（registerIcon）复用现成的 outline 图标（如 https://icones.js.org 的 Lucide）。
+ */
+export function outlineIcon(...ds: string[]): IconPathSpec[] {
+  return ds.map(d => ({
+    d,
+    fill: 'none',
+    stroke: 'currentColor',
+    strokeWidth: 2,
+    strokeLinecap: 'round',
+    strokeLinejoin: 'round',
+  }))
+}
 
 export function useIcon(props: MaybeRefOrGetter<IconValue | undefined>) {
   const icons = inject(IconsSymbol)
