@@ -18,13 +18,13 @@ const {
   t,
 } = useEditor()
 
-// 端口「+」磁吸：每个端口是一个大的透明命中圆，可见的「+」居中于其内。
-// 仅当鼠标进入该圆时（元素自身 pointermove）才把「+」朝指针移动、离开(pointerleave)回中心——
+// 端口「+」磁吸：命中区是朝外的半圆（hitClip），可见的「+」是它的兄弟节点（不被裁）。
+// 仅当鼠标进入该半圆时（命中区自身 pointermove）把「+」朝指针移动、离开(pointerleave)回中心——
 // 只走端口自身 DOM 事件 + 直接改 transform，不监听 document/画布、不写响应式，性能开销极小。
-const MAX_PULL = 40
+const MAX_PULL = 24
 function onPortMove(e: PointerEvent): void {
   const host = e.currentTarget as HTMLElement
-  const dot = host.firstElementChild as HTMLElement | null
+  const dot = host.nextElementSibling as HTMLElement | null
   if (!dot) {
     return
   }
@@ -36,7 +36,7 @@ function onPortMove(e: PointerEvent): void {
   dot.style.transform = `translate(${(dx / dist) * pull}px, ${(dy / dist) * pull}px)`
 }
 function onPortLeave(e: PointerEvent): void {
-  const dot = (e.currentTarget as HTMLElement).firstElementChild as HTMLElement | null
+  const dot = (e.currentTarget as HTMLElement).nextElementSibling as HTMLElement | null
   if (dot) {
     dot.style.transform = ''
   }
@@ -78,7 +78,7 @@ const topLabels = computed<Element2D[]>(() =>
     : [],
 )
 
-interface ScreenPort { kind: PortKind, idx: number, x: number, y: number }
+interface ScreenPort { kind: PortKind, idx: number, x: number, y: number, dx: number, dy: number }
 
 // The selected node's ports, resolved by type and projected to drawboard space.
 const ports = computed<ScreenPort[]>(() => {
@@ -99,9 +99,20 @@ const ports = computed<ScreenPort[]>(() => {
       idx: p.idx,
       x: a.left + a.width * p.x + dx * PORT_GAP,
       y: a.top + a.height * p.y + dy * PORT_GAP,
+      dx,
+      dy,
     }
   })
 })
+
+// 命中区裁成「朝外的半圆」：只有节点外侧那半个扇形能触发吸附，
+// 内侧（靠 resize 手柄一侧）不拦截指针，避免挡住选框缩放手柄。
+function hitClip(p: ScreenPort): string {
+  if (Math.abs(p.dx) >= Math.abs(p.dy)) {
+    return p.dx >= 0 ? 'inset(0 0 0 50%)' : 'inset(0 50% 0 0)'
+  }
+  return p.dy >= 0 ? 'inset(50% 0 0 0)' : 'inset(0 0 50% 0)'
+}
 
 interface DragState {
   port: ScreenPort
@@ -233,10 +244,14 @@ function portStyle(p: ScreenPort): Record<string, string> {
       :key="`${port.kind}:${port.idx}`"
       class="m-workflow__port"
       :style="portStyle(port)"
-      @pointerdown="startConnection(port, $event)"
-      @pointermove="onPortMove"
-      @pointerleave="onPortLeave"
     >
+      <div
+        class="m-workflow__port-hit"
+        :style="{ clipPath: hitClip(port) }"
+        @pointerdown="startConnection(port, $event)"
+        @pointermove="onPortMove"
+        @pointerleave="onPortLeave"
+      />
       <span class="m-workflow__port-dot">
         <Icon icon="$plus" />
       </span>
@@ -296,36 +311,47 @@ function portStyle(p: ScreenPort): Record<string, string> {
     }
   }
 
-  // 大的透明命中圆：鼠标进入其范围即触发磁吸，把内部「+」移向指针。
+  // 端口锚点：仅用 transform 定位到端口坐标，本身 0 尺寸、不拦截事件。
   &__port {
+    position: absolute;
+    left: 0;
+    top: 0;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  // 命中区：以锚点为中心的小圆，clip-path 裁成「朝外的半圆」（见 hitClip）。
+  // clip-path 同时裁掉指针命中区，内侧不再拦截 → 不挡 resize 手柄。
+  &__port-hit {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 64px;
+    height: 64px;
+    margin: -32px 0 0 -32px;
+    border-radius: 50%;
+    background: transparent;
+    cursor: crosshair;
+    pointer-events: auto;
+  }
+
+  // 可见的「+」圆点，居中于锚点；磁吸时以 transform 平滑移向指针；不拦截事件（交互走命中区）。
+  &__port-dot {
     position: absolute;
     left: 0;
     top: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 96px;
-    height: 96px;
-    margin: -48px 0 0 -48px;
-    border-radius: 50%;
-    background: transparent;
-    cursor: crosshair;
-    pointer-events: auto;
-    user-select: none;
-  }
-
-  // 可见的「+」圆点，居中于命中圆，磁吸时以 transform 平滑移向指针。
-  &__port-dot {
-    display: flex;
-    align-items: center;
-    justify-content: center;
     width: 18px;
     height: 18px;
+    margin: -9px 0 0 -9px;
     border-radius: 50%;
     background: rgb(var(--m-theme-primary, 30 200 230));
     color: rgb(var(--m-theme-on-primary, 255 255 255));
     font-size: 12px;
     box-shadow: 0 0 0 2px rgb(var(--m-theme-surface, 255 255 255));
+    pointer-events: none;
     transition: transform .1s ease-out;
   }
 
