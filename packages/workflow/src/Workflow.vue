@@ -242,27 +242,34 @@ function portStyle(p: ScreenPort): Record<string, string> {
       </span>
     </div>
 
-    <template v-if="menu">
-      <div class="m-workflow__backdrop" @pointerdown="closeMenu" />
-      <div class="m-workflow__menu" :style="{ left: `${menu.x}px`, top: `${menu.y}px` }">
-        <div class="m-workflow__menu-title">
-          {{ t('creator') }}
-        </div>
-        <button
-          v-for="n in NODE_TYPES"
-          :key="n.type"
-          type="button"
-          class="m-workflow__menu-item"
-          @click="chooseNodeType(n.type)"
+    <!-- 创建节点菜单：teleport 到 body 并用客户端坐标 + 高 z-index，
+         escape 工作流覆盖层的 z-index 上下文，盖过顶部/底部浮动条。 -->
+    <Teleport to="body">
+      <template v-if="menu">
+        <div class="m-workflow__backdrop" @pointerdown="closeMenu" />
+        <div
+          class="m-workflow__menu"
+          :style="{ left: `${menu.x + drawboardAabb.left}px`, top: `${menu.y + drawboardAabb.top}px` }"
         >
-          <span class="m-workflow__menu-item-main">
-            <Icon :icon="n.icon" />
-            {{ t(`workflow:${n.type}`) }}
-          </span>
-          <span class="m-workflow__menu-kbd">{{ n.kbd }}</span>
-        </button>
-      </div>
-    </template>
+          <div class="m-workflow__menu-title">
+            {{ t('creator') }}
+          </div>
+          <button
+            v-for="n in NODE_TYPES"
+            :key="n.type"
+            type="button"
+            class="m-workflow__menu-item"
+            @click="chooseNodeType(n.type)"
+          >
+            <span class="m-workflow__menu-item-main">
+              <Icon :icon="n.icon" />
+              {{ t(`workflow:${n.type}`) }}
+            </span>
+            <span class="m-workflow__menu-kbd">{{ n.kbd }}</span>
+          </button>
+        </div>
+      </template>
+    </Teleport>
   </div>
 </template>
 
@@ -325,11 +332,14 @@ function portStyle(p: ScreenPort): Record<string, string> {
   &__backdrop {
     position: fixed;
     inset: 0;
+    // 高于顶部/底部浮动条（Overlay z-index 1500+），让创建节点菜单浮在最上层。
+    z-index: 2000;
     pointer-events: auto;
   }
 
   &__menu {
-    position: absolute;
+    position: fixed;
+    z-index: 2001;
     min-width: 200px;
     padding: 6px;
     background: rgb(var(--m-theme-surface, 255 255 255));
