@@ -55,7 +55,7 @@
     "typecheck": "tsc --noEmit --project tsconfig.json"
   },
   "dependencies": {
-    "ag-psd": "^31.0.0"
+    "ag-psd": "^31.0.2"
   },
   "devDependencies": {
     "mce": "workspace:*"
