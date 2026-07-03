@@ -44,10 +44,16 @@ export default definePlugin((editor) => {
         }
         return acc
       }, {} as Partial<NormalizedStyle>)
+    // 描边(text.outline)与阴影/特效(text.effects)既不在 style 字段内、也不随 ...text 展开带走，
+    // 需显式从 toJSON 取，否则格式刷刷不上。注意：本项目文字阴影存在 text.effects[].shadow（非元素级
+    // el.shadow），描边存在 text.outline，都在这里补齐。
+    const textJson = text.toJSON()
     source = {
       ...text,
       fill,
       style,
+      outline: textJson.outline,
+      effects: textJson.effects,
     }
     exec('setState', 'painting')
     elementSelection.value = []
