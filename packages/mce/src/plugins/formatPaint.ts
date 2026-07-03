@@ -21,6 +21,9 @@ export default definePlugin((editor) => {
   } = editor
 
   let source: NormalizedText | undefined
+  // 阴影是元素级独立属性（el.shadow，与 style/fill/outline 并列），不属于文本样式，
+  // 需单独随格式刷带走，否则永远刷不上。
+  let sourceShadow: any
 
   function activateFormatPaint() {
     const el = elementSelection.value?.[0]
@@ -29,6 +32,7 @@ export default definePlugin((editor) => {
     }
     const text = el.text
     const fill = exec('getTextFill')
+    sourceShadow = (el as any).shadow?.toJSON?.()
     // 文本样式的真值源是 el.style（getTextStyle/setTextStyle 均以此为准），
     // 故以 getDefaultTextStyle() 的键集合作为字段白名单，逐项取其有效值
     // （getTextStyle 已含文本选区/片段聚合逻辑），跳过未设置字段以免污染 source。
@@ -54,6 +58,9 @@ export default definePlugin((editor) => {
       return
     targets.forEach((target) => {
       if (target.text?.textContent) {
+        // 文本样式的真值源是元素 style（描边 textStroke* 等在此；text.style 不生效），
+        // 故先把采集到的样式回写到 target.style，再重建文本内容。
+        Object.assign(target.style, source!.style)
         target.text = {
           ...source,
           content: [
@@ -64,6 +71,10 @@ export default definePlugin((editor) => {
             },
           ],
         }
+        // 阴影：元素级独立属性，单独复制（含来源无阴影时清空，保持格式一致）。
+        if (sourceShadow !== undefined) {
+          (target as any).shadow = sourceShadow
+        }
         exec('textToFit', target)
       }
     })
@@ -71,6 +82,7 @@ export default definePlugin((editor) => {
 
   function exitFormatPaint() {
     source = undefined
+    sourceShadow = undefined
     state.value === 'painting' && exec('setState', undefined)
   }
 
