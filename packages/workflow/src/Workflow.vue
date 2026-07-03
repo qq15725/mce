@@ -220,9 +220,15 @@ const previewPath = computed(() => {
   const d = drag.value
   if (!d)
     return ''
-  const { from, to } = d
-  const dx = Math.max(40, Math.abs(to.x - from.x) * 0.5)
-  return `M ${from.x} ${from.y} C ${from.x + dx} ${from.y} ${to.x - dx} ${to.y} ${to.x} ${to.y}`
+  const { from, to, port } = d
+  // 沿端口的朝外方向出线（右侧端口向右、左侧端口向左…），另一端对称进入，
+  // 否则会像左侧加号也从右边出。
+  const gap = Math.max(40, Math.abs(to.x - from.x) * 0.5)
+  const c1x = from.x + port.dx * gap
+  const c1y = from.y + port.dy * gap
+  const c2x = to.x - port.dx * gap
+  const c2y = to.y - port.dy * gap
+  return `M ${from.x} ${from.y} C ${c1x} ${c1y} ${c2x} ${c2y} ${to.x} ${to.y}`
 })
 
 // 端口用 transform 定位（避免 left/top 重排）；magnetic 位移在内部「+」dot 上，互不影响。
