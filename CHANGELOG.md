@@ -1,3 +1,12 @@
+## [0.32.5](https://github.com/qq15725/mce/compare/v0.32.4...v0.32.5) (2026-07-03)
+
+### Bug Fixes
+
+* **formatPaint:** paint text stroke and shadow ([b327e73](https://github.com/qq15725/mce/commit/b327e7311c1df689418d00c48e852d6a85e87380))
+* **workflow:** connection preview exits along port direction ([f640369](https://github.com/qq15725/mce/commit/f640369c7b0ec65dc4d6b30241724ed277daddbd))
+* **workflow:** port magnet is a smaller outward half-circle ([b9bf35a](https://github.com/qq15725/mce/commit/b9bf35a8d6c27e70b0dcda625e5519d1693ac17b))
+* **workflow:** render create-node menu above floatbars ([7b51cea](https://github.com/qq15725/mce/commit/7b51cead3491f0f12e2018ee5d2df73932a740b3))
+
 ## [0.32.4](https://github.com/qq15725/mce/compare/v0.32.3...v0.32.4) (2026-07-02)
 
 ### Bug Fixes
