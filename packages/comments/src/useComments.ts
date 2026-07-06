@@ -9,6 +9,8 @@ export interface CommentAuthor {
   name?: string
   color?: string
   initials?: string
+  /** 头像 URL（有则渲染图片，否则回退首字母）。 */
+  avatar?: string
 }
 
 /** 线程中的单条消息。 */
@@ -37,10 +39,16 @@ export interface CommentsApi {
   addThread: (node: any, offset: { x: number, y: number }, body: string) => string
   /** 向线程追加回复。 */
   reply: (node: any, threadId: string, body: string) => void
+  /** 编辑线程内某条消息的正文。 */
+  editMessage: (node: any, threadId: string, messageId: string, body: string) => void
+  /** 删除线程内某条消息；删首条（根消息）等同于删除整个线程（与 Figma 一致）。 */
+  removeMessage: (node: any, threadId: string, messageId: string) => void
   /** 解决 / 取消解决。 */
   resolve: (node: any, threadId: string, resolved: boolean) => void
   /** 删除线程。 */
   remove: (node: any, threadId: string) => void
+  /** 当前用户（用于判断消息是否本人所发，从而显示编辑 / 删除）。 */
+  me: () => CommentAuthor
   /** 全局画布坐标 → 画板（屏幕）像素。 */
   toScreen: (p: { x: number, y: number }) => { x: number, y: number }
   /** 画板（屏幕）像素 → 全局画布坐标。 */
@@ -106,7 +114,7 @@ export function createCommentsStore(editor: Editor): CommentsApi {
 
   function author(): CommentAuthor {
     const u = (editor as any).presence?.localUser?.value
-    return { name: u?.name || '我', color: u?.color || '#1C7ED6', id: u?.id }
+    return { name: u?.name || '我', color: u?.color || '#1C7ED6', id: u?.id, avatar: u?.avatar }
   }
 
   function threadsOf(node: any): any[] {
@@ -145,6 +153,27 @@ export function createCommentsStore(editor: Editor): CommentsApi {
     }))
   }
 
+  function editMessage(node: any, threadId: string, messageId: string, body: string): void {
+    mutateThread(node, threadId, t => ({
+      ...t,
+      messages: (t.messages ?? []).map((m: any) => (m.id === messageId ? { ...m, body } : m)),
+    }))
+  }
+
+  function removeMessage(node: any, threadId: string, messageId: string): void {
+    const t = threadsOf(node).find(x => x.id === threadId)
+    if (!t) {
+      return
+    }
+    const msgs = (t.messages ?? []) as CommentMessage[]
+    // 删根消息 = 删除整个线程（与 Figma 一致）；否则仅删该条回复。
+    if (msgs[0]?.id === messageId) {
+      remove(node, threadId)
+      return
+    }
+    mutateThread(node, threadId, () => ({ ...t, messages: msgs.filter(m => m.id !== messageId) }))
+  }
+
   function resolve(node: any, threadId: string, resolved: boolean): void {
     mutateThread(node, threadId, t => ({ ...t, resolved }))
   }
@@ -158,7 +187,7 @@ export function createCommentsStore(editor: Editor): CommentsApi {
   const toScreen = editor.globalToDrawboard
   const toWorld = editor.drawboardToGlobal
 
-  return { threads, addThread, reply, resolve, remove, toScreen, toWorld }
+  return { threads, addThread, reply, editMessage, removeMessage, resolve, remove, me: author, toScreen, toWorld }
 }
 
 /** 组件内读取评论数据层。 */

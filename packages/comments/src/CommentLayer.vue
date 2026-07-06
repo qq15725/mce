@@ -10,6 +10,12 @@ const comments = useComments()
 // 评论是工具：activeTool==='comment' 即处于评论态（与移动等单选互斥）。
 const isComment = computed(() => activeTool.value?.name === 'comment')
 
+// 当前用户 id：用于判断某条消息是否本人所发（从而显示编辑 / 删除）。
+const meId = computed(() => comments.me().id)
+function canManage(c: { author?: { id?: string } }): boolean {
+  return !meId.value || meId.value === c.author?.id
+}
+
 // pin 定位依赖所属元素世界矩阵。订阅各所属元素的 updateGlobalTransform：元素自身变换改变即触发，
 // 父级移动也会在引擎 _process 级联触发（仅真有变化才发，空闲不发），不蹭全局渲染帧。
 // 相机平移缩放由 toScreen 读 camera 响应式自动跟随。
@@ -83,11 +89,29 @@ const activeId = ref<string>()
 const activeThread = computed(() => comments.threads.value.find(th => th.id === activeId.value))
 const activePos = computed(() => (activeThread.value ? anchorScreen(activeThread.value) : null))
 const replyText = ref('')
+const replyInput = ref<HTMLTextAreaElement>()
+
+// —— 消息级操作（⋯ 菜单 / 行内编辑）——
+const menuId = ref<string>() // 打开 ⋯ 菜单的消息 id
+const editingId = ref<string>() // 正在编辑的消息 id
+const editingText = ref('')
 
 // —— 新建草稿（点击放置）——
 const draft = ref<{ node: any, offset: { x: number, y: number }, world: { x: number, y: number }, text: string }>()
 const draftPos = computed(() => (draft.value ? comments.toScreen(draft.value.world) : null))
 const draftInput = ref<HTMLTextAreaElement>()
+
+/** textarea 随内容自增高（上限由 CSS max-height 控制）。 */
+function autoGrow(el?: HTMLTextAreaElement | null): void {
+  if (!el) {
+    return
+  }
+  el.style.height = 'auto'
+  el.style.height = `${el.scrollHeight}px`
+}
+function onInput(e: Event): void {
+  autoGrow(e.target as HTMLTextAreaElement)
+}
 
 function clientToDrawboard(e: PointerEvent): { x: number, y: number } {
   return { x: e.clientX - drawboardAabb.value.left, y: e.clientY - drawboardAabb.value.top }
@@ -124,6 +148,9 @@ function openThread(id: string): void {
   draft.value = undefined
   activeId.value = activeId.value === id ? undefined : id
   replyText.value = ''
+  menuId.value = undefined
+  editingId.value = undefined
+  nextTick(() => replyInput.value?.focus())
 }
 
 function submitReply(): void {
@@ -133,6 +160,7 @@ function submitReply(): void {
   }
   comments.reply(th.node, th.id, replyText.value.trim())
   replyText.value = ''
+  nextTick(() => autoGrow(replyInput.value))
 }
 
 function toggleResolve(): void {
@@ -144,13 +172,49 @@ function toggleResolve(): void {
   activeId.value = undefined
 }
 
-function removeThread(): void {
+// —— ⋯ 菜单：编辑 / 删除某条消息 ——
+function toggleMenu(id: string): void {
+  menuId.value = menuId.value === id ? undefined : id
+}
+
+function startEdit(c: { id: string, body: string }): void {
+  menuId.value = undefined
+  editingId.value = c.id
+  editingText.value = c.body
+  nextTick(() => {
+    const el = document.querySelector<HTMLTextAreaElement>('.m-comments__edit-input')
+    el?.focus()
+    autoGrow(el)
+  })
+}
+
+function submitEdit(): void {
+  const th = activeThread.value
+  if (!th || !editingId.value) {
+    return
+  }
+  const body = editingText.value.trim()
+  if (body) {
+    comments.editMessage(th.node, th.id, editingId.value, body)
+  }
+  editingId.value = undefined
+}
+
+function cancelEdit(): void {
+  editingId.value = undefined
+}
+
+function removeMessage(c: { id: string }): void {
   const th = activeThread.value
   if (!th) {
     return
   }
-  comments.remove(th.node, th.id)
-  activeId.value = undefined
+  menuId.value = undefined
+  const isRoot = th.messages[0]?.id === c.id
+  comments.removeMessage(th.node, th.id, c.id)
+  if (isRoot) {
+    activeId.value = undefined // 删根消息 = 删整线程 → 关闭面板
+  }
 }
 
 function initial(name?: string): string {
@@ -166,12 +230,18 @@ function fmtTime(ts?: number): string {
   return `${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`
 }
 
-// Esc 链式退出：关草稿 → 关弹窗 → 退出评论模式。
+// Esc 链式退出：退编辑 → 关菜单 → 关草稿 → 关弹窗 → 退出评论模式。
 function onKeydown(e: KeyboardEvent): void {
   if (e.key !== 'Escape') {
     return
   }
-  if (draft.value) {
+  if (editingId.value) {
+    editingId.value = undefined
+  }
+  else if (menuId.value) {
+    menuId.value = undefined
+  }
+  else if (draft.value) {
     draft.value = undefined
   }
   else if (activeId.value) {
@@ -214,100 +284,172 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown, true))
       @pointerdown.stop
       @click.stop="openThread(p.thread.id)"
     >
-      {{ initial(p.thread.messages[0]?.author?.name) }}
+      <img
+        v-if="p.thread.messages[0]?.author?.avatar"
+        class="m-comments__pin-avatar"
+        :src="p.thread.messages[0]!.author!.avatar"
+        alt=""
+      >
+      <template v-else>
+        {{ initial(p.thread.messages[0]?.author?.name) }}
+      </template>
       <span v-if="p.thread.messages.length > 1" class="m-comments__pin-count">
         {{ p.thread.messages.length }}
       </span>
     </button>
 
-    <!-- 线程弹窗 -->
+    <!-- 线程弹窗（Figma 版式：顶部 resolve/关闭 · 消息列表(悬浮 ⋯) · 底部回复框内嵌发送） -->
     <div
       v-if="activeThread && activePos"
       class="m-comments__panel"
       :style="{ left: `${activePos.x + 16}px`, top: `${activePos.y}px` }"
       @pointerdown.stop
     >
-      <button
-        type="button"
-        class="m-comments__close"
-        :title="t('comment:close')"
-        @click="activeId = undefined"
-      >
-        <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M6 6L18 18M18 6L6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
-        </svg>
-      </button>
+      <div class="m-comments__head">
+        <button
+          type="button"
+          class="m-comments__resolve"
+          :class="{ 'm-comments__resolve--on': activeThread.resolved }"
+          :title="activeThread.resolved ? t('comment:reopen') : t('comment:resolve')"
+          @click="toggleResolve"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6" />
+            <path d="M8.5 12.2l2.4 2.4 4.6-4.9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+        <div class="m-comments__head-spacer" />
+        <button
+          type="button"
+          class="m-comments__icon-btn"
+          :title="t('comment:close')"
+          @click="activeId = undefined"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6 6L18 18M18 6L6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
 
       <div class="m-comments__list">
-        <div v-for="c in activeThread.messages" :key="c.id" class="m-comments__item">
+        <div
+          v-for="(c, i) in activeThread.messages"
+          :key="c.id"
+          class="m-comments__item"
+        >
           <span class="m-comments__avatar" :style="{ backgroundColor: c.author?.color ?? '#1C7ED6' }">
-            {{ initial(c.author?.name) }}
+            <img v-if="c.author?.avatar" :src="c.author.avatar" alt="">
+            <template v-else>{{ initial(c.author?.name) }}</template>
           </span>
           <div class="m-comments__bubble">
             <div class="m-comments__meta">
               <span class="m-comments__name">{{ c.author?.name }}</span>
               <span class="m-comments__time">{{ fmtTime(c.createdAt) }}</span>
+              <button
+                v-if="canManage(c) && editingId !== c.id"
+                type="button"
+                class="m-comments__more"
+                :title="t('comment:more')"
+                @click.stop="toggleMenu(c.id)"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="5" cy="12" r="1.6" fill="currentColor" />
+                  <circle cx="12" cy="12" r="1.6" fill="currentColor" />
+                  <circle cx="19" cy="12" r="1.6" fill="currentColor" />
+                </svg>
+              </button>
+              <div v-if="menuId === c.id" class="m-comments__menu">
+                <button type="button" class="m-comments__menu-item" @click="startEdit(c)">
+                  {{ t('comment:edit') }}
+                </button>
+                <button type="button" class="m-comments__menu-item m-comments__menu-item--danger" @click="removeMessage(c)">
+                  {{ i === 0 ? t('comment:delete') : t('comment:deleteReply') }}
+                </button>
+              </div>
             </div>
-            <div class="m-comments__text">
+
+            <!-- 行内编辑 -->
+            <template v-if="editingId === c.id">
+              <textarea
+                v-model="editingText"
+                class="m-comments__input m-comments__edit-input"
+                rows="1"
+                @input="onInput"
+                @keydown.enter.exact.prevent="submitEdit"
+                @keydown.esc.stop.prevent="cancelEdit"
+              />
+              <div class="m-comments__edit-actions">
+                <button type="button" class="m-comments__btn" @click="cancelEdit">
+                  {{ t('comment:cancel') }}
+                </button>
+                <button type="button" class="m-comments__btn m-comments__btn--primary" @click="submitEdit">
+                  {{ t('comment:save') }}
+                </button>
+              </div>
+            </template>
+            <div v-else class="m-comments__text">
               {{ c.body }}
             </div>
           </div>
         </div>
       </div>
 
-      <div class="m-comments__reply">
-        <input
+      <!-- 底部：回复输入框 + 内嵌圆形发送按钮 -->
+      <div class="m-comments__composer">
+        <textarea
+          ref="replyInput"
           v-model="replyText"
           class="m-comments__input"
+          rows="1"
           :placeholder="t('comment:reply')"
-          @keydown.enter="submitReply"
+          @input="onInput"
+          @keydown.enter.exact.prevent="submitReply"
           @pointerdown.stop
+        />
+        <button
+          type="button"
+          class="m-comments__send"
+          :disabled="!replyText.trim()"
+          :title="t('comment:send')"
+          @click="submitReply"
         >
+          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 20V5M12 5l-6 6M12 5l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
       </div>
 
-      <div class="m-comments__actions">
-        <button type="button" class="m-comments__btn" @click="removeThread">
-          {{ t('comment:delete') }}
-        </button>
-        <button type="button" class="m-comments__btn m-comments__btn--primary" @click="toggleResolve">
-          {{ activeThread.resolved ? t('comment:reopen') : t('comment:resolve') }}
-        </button>
-      </div>
+      <!-- ⋯ 菜单外部点击关闭 -->
+      <div v-if="menuId" class="m-comments__backdrop" @pointerdown.stop="menuId = undefined" />
     </div>
 
-    <!-- 新建草稿 -->
+    <!-- 新建草稿：与回复同款输入框内嵌发送 -->
     <div
       v-if="draft && draftPos"
       class="m-comments__panel m-comments__panel--draft"
       :style="{ left: `${draftPos.x + 16}px`, top: `${draftPos.y}px` }"
       @pointerdown.stop
     >
-      <button
-        type="button"
-        class="m-comments__close"
-        :title="t('comment:close')"
-        @click="draft = undefined"
-      >
-        <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M6 6L18 18M18 6L6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
-        </svg>
-      </button>
-
-      <textarea
-        ref="draftInput"
-        v-model="draft.text"
-        class="m-comments__textarea"
-        :placeholder="t('comment:placeholder')"
-        @keydown.enter.exact.prevent="submitDraft"
-      />
-      <div class="m-comments__actions">
+      <div class="m-comments__composer">
+        <textarea
+          ref="draftInput"
+          v-model="draft.text"
+          class="m-comments__input"
+          rows="1"
+          :placeholder="t('comment:placeholder')"
+          @input="onInput"
+          @keydown.enter.exact.prevent="submitDraft"
+        />
         <button
           type="button"
-          class="m-comments__btn m-comments__btn--primary"
+          class="m-comments__send"
           :disabled="!draft.text.trim()"
+          :title="t('comment:send')"
           @click="submitDraft"
         >
-          {{ t('comment') }}
+          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 20V5M12 5l-6 6M12 5l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
         </button>
       </div>
     </div>
@@ -350,11 +492,19 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown, true))
     justify-content: center;
     cursor: pointer;
     box-shadow: 0 2px 8px rgba(0, 0, 0, .25);
+    overflow: visible;
 
     &--active {
       outline: 2px solid rgba(var(--m-theme-primary), .6);
       outline-offset: 1px;
     }
+  }
+
+  &__pin-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50% 50% 50% 2px;
+    object-fit: cover;
   }
 
   &__pin-count {
@@ -376,7 +526,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown, true))
     position: absolute;
     z-index: 11;
     pointer-events: auto;
-    width: 280px;
+    width: 300px;
     background: rgb(var(--m-theme-surface));
     color: rgb(var(--m-theme-on-surface));
     border-radius: 12px;
@@ -384,11 +534,47 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown, true))
     overflow: hidden;
   }
 
-  &__close {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    z-index: 1;
+  // 顶部工具条：resolve（左）· 关闭（右）
+  &__head {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 8px;
+    border-bottom: 1px solid rgba(var(--m-theme-on-surface), .06);
+  }
+
+  &__head-spacer {
+    flex: 1;
+  }
+
+  &__resolve {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: none;
+    color: rgba(var(--m-theme-on-surface), .55);
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(var(--m-theme-on-surface), .08);
+      color: rgba(var(--m-theme-on-surface), .85);
+    }
+
+    &--on {
+      color: #2f9e44;
+
+      &:hover {
+        color: #2f9e44;
+      }
+    }
+  }
+
+  &__icon-btn {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -408,9 +594,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown, true))
   }
 
   &__list {
-    max-height: 280px;
+    max-height: 300px;
     overflow-y: auto;
-    padding: 14px 12px 4px;
+    padding: 10px 12px 4px;
   }
 
   &__item {
@@ -430,6 +616,13 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown, true))
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
   }
 
   &__bubble {
@@ -438,8 +631,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown, true))
   }
 
   &__meta {
+    position: relative;
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: 6px;
   }
 
@@ -453,6 +647,65 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown, true))
     color: rgba(var(--m-theme-on-surface), .45);
   }
 
+  // ⋯ 更多：默认隐藏，悬浮该条消息时显示（Figma 手法）
+  &__more {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: none;
+    border-radius: 5px;
+    background: none;
+    color: rgba(var(--m-theme-on-surface), .5);
+    cursor: pointer;
+    opacity: 0;
+
+    &:hover {
+      background: rgba(var(--m-theme-on-surface), .08);
+      color: rgba(var(--m-theme-on-surface), .85);
+    }
+  }
+
+  &__item:hover &__more {
+    opacity: 1;
+  }
+
+  &__menu {
+    position: absolute;
+    top: 22px;
+    right: 0;
+    z-index: 2;
+    min-width: 120px;
+    padding: 4px;
+    background: rgb(var(--m-theme-surface));
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .22), 0 0 0 1px rgba(var(--m-theme-on-surface), .08);
+  }
+
+  &__menu-item {
+    display: block;
+    width: 100%;
+    padding: 7px 10px;
+    border: none;
+    border-radius: 5px;
+    background: none;
+    color: rgb(var(--m-theme-on-surface));
+    font-size: 0.8125rem;
+    text-align: left;
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(var(--m-theme-on-surface), .08);
+    }
+
+    &--danger {
+      color: #e03131;
+    }
+  }
+
   &__text {
     font-size: 0.8125rem;
     line-height: 1.5;
@@ -460,45 +713,71 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown, true))
     white-space: pre-wrap;
   }
 
-  &__reply {
-    padding: 4px 12px 8px;
+  &__edit-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+    margin-top: 6px;
   }
 
-  &__input,
-  &__textarea {
+  // 底部回复：输入框 + 内嵌圆形发送按钮
+  &__composer {
+    position: relative;
+    padding: 8px 12px 12px;
+  }
+
+  &__input {
+    display: block;
     width: 100%;
+    max-height: 120px;
+    min-height: 38px;
     border: 1px solid rgba(var(--m-theme-on-surface), .14);
-    border-radius: 8px;
+    border-radius: 10px;
     background: none;
     color: inherit;
     font: inherit;
     font-size: 0.8125rem;
-    padding: 8px 10px;
+    line-height: 1.4;
+    padding: 9px 40px 9px 12px;
+    resize: none;
     outline: none;
     box-sizing: border-box;
+    overflow-y: auto;
 
     &:focus {
       border-color: rgb(var(--m-theme-primary));
     }
   }
 
-  &__textarea {
-    resize: none;
-    height: 64px;
+  &__edit-input {
+    padding-right: 12px;
   }
 
-  &__panel--draft {
-    padding: 30px 10px 10px;
-  }
-
-  &__actions {
+  &__send {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
     display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-    padding: 0 12px 12px;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: rgb(var(--m-theme-primary));
+    color: rgb(var(--m-theme-on-primary));
+    cursor: pointer;
+    transition: opacity .15s, background .15s;
 
-    .m-comments__panel--draft & {
-      padding: 8px 0 0;
+    &:hover {
+      filter: brightness(0.94);
+    }
+
+    &:disabled {
+      background: rgba(var(--m-theme-on-surface), .12);
+      color: rgba(var(--m-theme-on-surface), .4);
+      cursor: not-allowed;
     }
   }
 
@@ -508,7 +787,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown, true))
     color: inherit;
     border-radius: 7px;
     padding: 0 12px;
-    height: 30px;
+    height: 28px;
     font-size: 0.8125rem;
     cursor: pointer;
 
@@ -527,11 +806,12 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown, true))
         filter: brightness(0.92);
       }
     }
+  }
 
-    &:disabled {
-      opacity: .5;
-      cursor: not-allowed;
-    }
+  &__backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
   }
 }
 </style>
