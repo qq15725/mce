@@ -175,8 +175,8 @@ export function plugin() {
     }
 
     function addWorkflowNode(type: string, position?: Mce.AddElementPosition): Element2D {
-      // 无显式位置（如从工具腰带「+」添加）则落在屏幕中心。
-      return addElement(createWorkflowNode(type), { position: position ?? 'screenCenter', active: true, intoView: true })
+      // 无显式位置（如从工具腰带「+」添加）则放在现有内容右侧（顶对齐），符合工作流从左到右的流向。
+      return addElement(createWorkflowNode(type), { position: position ?? 'right', active: true, intoView: true })
     }
 
     // Write the element's default ports onto its shape so connection routing anchors
