@@ -107,7 +107,9 @@ export default definePlugin((editor, options) => {
             },
             children: elements.map((el) => {
               const json = el.toJSON()
-              const style = json.style
+              // 无 style 的元素（如连线：位置/尺寸直写 transform，不经 style，序列化后 style 缺省）
+              // 也要能偏移，否则 style.left=… 会在 undefined 上抛 TypeError，整个导出 reject。
+              const style = (json.style ??= {})
               if (left) {
                 style.left = (style.left ?? 0) - left
               }
