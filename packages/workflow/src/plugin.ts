@@ -214,7 +214,9 @@ export function plugin() {
           mode: 'curved',
         },
         meta: { inCanvasIs: 'Element2D' },
-      })
+        // index:0 → 连线插到 children 最前（modern-canvas 按顺序渲染，0=最底层），
+        // 连线永远在节点/文字之下、不遮挡内容（原先 append 到顶层会盖住节点）。
+      }, { index: 0 })
     }
 
     return {
