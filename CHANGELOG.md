@@ -1,3 +1,9 @@
+## [0.32.9](https://github.com/qq15725/mce/compare/v0.32.8...v0.32.9) (2026-07-06)
+
+### Bug Fixes
+
+* **json:** guard style-less elements in export offset ([470db7a](https://github.com/qq15725/mce/commit/470db7a8b14575686eda1165380f4d2db05c2871))
+
 ## [0.32.8](https://github.com/qq15725/mce/compare/v0.32.7...v0.32.8) (2026-07-06)
 
 ### Features
