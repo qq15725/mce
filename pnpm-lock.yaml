@@ -158,8 +158,8 @@ importers:
         specifier: ^0.26.3
         version: 0.26.3(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1)
       modern-font:
-        specifier: ^0.6.2
-        version: 0.6.2
+        specifier: ^0.6.3
+        version: 0.6.3
       modern-gif:
         specifier: ^2
         version: 2.1.0
@@ -2428,8 +2428,8 @@ packages:
       yoga-layout:
         optional: true
 
-  modern-font@0.6.2:
-    resolution: {integrity: sha512-q2NvO8CUtO/538Tx2AI/DtaBjNyAR73qW0NmcfQ9ZGEW721uRF+Y62eRWF1Z0dSVIaEhNilUfWY+OiE2G+xr8Q==}
+  modern-font@0.6.3:
+    resolution: {integrity: sha512-3GHS277DIj1yZHYrg5XKkFY/ic7cRjJaB41IExDmq0e+zv7zvS3RGkZG/nA3bieQyHz7Wt/Ti8gz9dV2jeag9g==}
 
   modern-gif@2.1.0:
     resolution: {integrity: sha512-9ZGD5b4jNUge0fvFP1bd9Hsqz5CSZI1al3EhCJ+WFkZgmn5NO1yvVwXJA/LTqro85l2Gt0+S0dDFgVYhYtLLWg==}
@@ -3989,8 +3989,8 @@ snapshots:
 
   '@typescript-eslint/project-service@8.56.1(typescript@6.0.3)':
     dependencies:
-      '@typescript-eslint/tsconfig-utils': 8.56.1(typescript@6.0.3)
-      '@typescript-eslint/types': 8.56.1
+      '@typescript-eslint/tsconfig-utils': 8.62.1(typescript@6.0.3)
+      '@typescript-eslint/types': 8.62.1
       debug: 4.4.3
       typescript: 6.0.3
     transitivePeerDependencies:
@@ -5479,7 +5479,7 @@ snapshots:
     dependencies:
       colord: 2.9.3
       earcut: 3.2.3
-      modern-font: 0.6.2
+      modern-font: 0.6.3
       modern-idoc: 0.12.3
       modern-path2d: 1.8.7
       modern-text: 2.1.5
@@ -5489,7 +5489,7 @@ snapshots:
       modern-gif: 2.1.0
       yoga-layout: 3.2.1
 
-  modern-font@0.6.2:
+  modern-font@0.6.3:
     dependencies:
       fflate: 0.8.3
 
@@ -5528,7 +5528,7 @@ snapshots:
     dependencies:
       colord: 2.9.3
       fflate: 0.8.3
-      modern-font: 0.6.2
+      modern-font: 0.6.3
       modern-idoc: 0.12.3
       modern-path2d: 1.8.7
       modern-text: 2.1.5
@@ -5536,7 +5536,7 @@ snapshots:
   modern-text@2.1.5:
     dependencies:
       diff: 9.0.0
-      modern-font: 0.6.2
+      modern-font: 0.6.3
       modern-idoc: 0.12.3
       modern-path2d: 1.8.7
 

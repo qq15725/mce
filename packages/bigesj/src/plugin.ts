@@ -55,6 +55,7 @@ async function setupFonts(editor: Editor, api: Record<string, any>): Promise<voi
     root,
     isElement,
     renderEngine,
+    fonts,
   } = editor
 
   const {
@@ -92,14 +93,22 @@ async function setupFonts(editor: Editor, api: Record<string, any>): Promise<voi
     root.value && preloadNode(root.value)
   }
 
+  // 按需加载：内核字体库 get(family) 查到未加载的 family 时抛 'missing'（协同远端改字/粘贴/加载等
+  // 任何字体「出现」场景都覆盖，无需上层轮询/扫描 docUpdated）。加载完 fonts 'load' 会自动触发重排。
+  function onMissingFont(family: string): void {
+    loadFont(family)
+  }
+
   onBeforeMount(() => {
     on('docSet', preload)
     renderEngine.value.on('nodeEnter', preloadNode)
+    fonts.on('missing', onMissingFont)
   })
 
   onScopeDispose(() => {
     off('docSet', preload)
     renderEngine.value.off('nodeEnter', preloadNode)
+    fonts.off('missing', onMissingFont)
   })
 
   assets.awaitBy(async () => {
