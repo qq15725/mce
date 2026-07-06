@@ -1,3 +1,12 @@
+## [0.32.7](https://github.com/qq15725/mce/compare/v0.32.6...v0.32.7) (2026-07-06)
+
+### Bug Fixes
+
+* **workflow:** 连线插到 children 最前(index:0)，渲染在节点/文字之下不遮挡 ([689b158](https://github.com/qq15725/mce/commit/689b1586867e658529c16bf83f6753a1439dbfa3))
+
+### Features
+
+* **comments:** message-level edit/delete, avatars, Figma-style panel ([be0b849](https://github.com/qq15725/mce/commit/be0b849550124a52d84d910a1eeeb50944f7ad6c))
 
 ## [0.32.5](https://github.com/qq15725/mce/compare/v0.32.4...v0.32.5) (2026-07-03)
 
