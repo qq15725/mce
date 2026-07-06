@@ -1,3 +1,10 @@
+## [0.32.8](https://github.com/qq15725/mce/compare/v0.32.7...v0.32.8) (2026-07-06)
+
+### Features
+
+* **bigesj:** load fonts on demand via modern-font 'missing' event ([84bc383](https://github.com/qq15725/mce/commit/84bc383c75aad262b1a9bedb154f05b9b8daffb1))
+* **workflow:** insert new nodes to the right of existing content ([301fc9e](https://github.com/qq15725/mce/commit/301fc9e3b4038f4f1f42a3dade3bc539272443ac))
+
 ## [0.32.7](https://github.com/qq15725/mce/compare/v0.32.6...v0.32.7) (2026-07-06)
 
 ### Bug Fixes
