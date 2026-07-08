@@ -218,6 +218,13 @@ export default definePlugin((editor, options) => {
       { command: 'openDoc', key: 'CmdOrCtrl+O' },
     ],
     setup: async () => {
+      // 初始 Doc（Editor 构造器建的，未走 setDoc）也要桥接 update/history 到 editor 的
+      // docUpdated/historyChanged —— 否则空白新建（无 options.doc、也不 loadDoc）时，
+      // canUndo/canRedo ref 与 docUpdated 永不更新（撤销按钮恒灰、自动保存/建 bid 不触发）。
+      // 下方若走 setDoc(source)，其内部会先 off 再 on，故不会重复订阅。
+      root.value.on('update', onDocUpdated)
+      root.value.on('history', onHistoryChanged)
+
       const {
         doc: source,
       } = options
