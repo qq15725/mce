@@ -1,3 +1,9 @@
+## [0.32.10](https://github.com/qq15725/mce/compare/v0.32.9...v0.32.10) (2026-07-08)
+
+### Bug Fixes
+
+* **doc:** bridge initial Doc update/history events to editor ([3745b20](https://github.com/qq15725/mce/commit/3745b20273cf8ce2c4d034c0369cb2b642687cac))
+
 ## [0.32.9](https://github.com/qq15725/mce/compare/v0.32.8...v0.32.9) (2026-07-06)
 
 ### Bug Fixes
