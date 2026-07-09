@@ -167,8 +167,8 @@ importers:
         specifier: ^0.12.3
         version: 0.12.3
       modern-text:
-        specifier: ^2.1.5
-        version: 2.1.5
+        specifier: ^2.2.1
+        version: 2.2.1
       typescript:
         specifier: '>=4.7'
         version: 6.0.3
@@ -2457,8 +2457,8 @@ packages:
   modern-pdf@1.6.0:
     resolution: {integrity: sha512-KDTDHcZysFtU5dwDcUixmIt4tTYoSpDkoFcfLi/fOxyzAEmHnI3Qm4x6x8qYaUxl0snljDaJtXHirc+UxU7HtQ==}
 
-  modern-text@2.1.5:
-    resolution: {integrity: sha512-V6jfmdZC7Osa6BX6Oxzn4BsF7WGXBWuU56En33P0tCMPGqbuEtebPpdNIuvXIqxakz2Au/xxG3K45dBr/dxfiw==}
+  modern-text@2.2.1:
+    resolution: {integrity: sha512-8HdIKNvLAGWd/IjFOpu7gKhF5TA863dfWUL43yC/5HIGnHgPWe6q+5CiB2AYtazF1lZ8VSlXJQxLzdlwHAWgsg==}
 
   module-replacements@3.0.0-beta.8:
     resolution: {integrity: sha512-sc8TepP9elxoOBXEpxmhPzKKjTjbswHVcmsKGbgvm3k6jZlLu/WMV/Lfmga6IGMgHU/V3WtY2s6VEgM4nTElUQ==}
@@ -5482,7 +5482,7 @@ snapshots:
       modern-font: 0.6.3
       modern-idoc: 0.12.3
       modern-path2d: 1.8.7
-      modern-text: 2.1.5
+      modern-text: 2.2.1
     optionalDependencies:
       echarts: 6.1.0
       lottie-web: 5.13.0
@@ -5500,7 +5500,7 @@ snapshots:
   modern-idoc-svg@0.4.0:
     dependencies:
       modern-idoc: 0.12.3
-      modern-text: 2.1.5
+      modern-text: 2.2.1
 
   modern-idoc@0.12.3:
     dependencies:
@@ -5531,9 +5531,9 @@ snapshots:
       modern-font: 0.6.3
       modern-idoc: 0.12.3
       modern-path2d: 1.8.7
-      modern-text: 2.1.5
+      modern-text: 2.2.1
 
-  modern-text@2.1.5:
+  modern-text@2.2.1:
     dependencies:
       diff: 9.0.0
       modern-font: 0.6.3

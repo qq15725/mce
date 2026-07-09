@@ -74,7 +74,7 @@
     "modern-canvas": "^0.26.3",
     "modern-font": "^0.6.3",
     "modern-idoc": "^0.12.3",
-    "modern-text": "^2.1.5",
+    "modern-text": "^2.2.1",
     "y-protocols": "^1.0.7",
     "yjs": "^13.6.31"
   },
