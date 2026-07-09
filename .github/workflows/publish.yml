@@ -20,10 +20,13 @@ jobs:
           fetch-depth: 0
       - name: 🎉 Install pnpm
         uses: pnpm/action-setup@v4
-      - name: 🎉 Set node version to lts
+      - name: 🎉 Set node version to 22
         uses: actions/setup-node@v4
         with:
-          node-version: lts/*
+          # 固定到 Node 22：lts/* 会解析到 Node 24，其自带 npm 被 `npm install -g
+          # npm@latest` 就地覆盖升级时会丢失 sigstore 子依赖，导致 OIDC provenance
+          # 发布时报 Cannot find module 'sigstore'。
+          node-version: 22
           registry-url: https://registry.npmjs.org/
           cache: pnpm
       - name: ⬆️ Upgrade npm (OIDC trusted publishing requires npm >= 11.5.1)
