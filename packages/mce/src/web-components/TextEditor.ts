@@ -625,7 +625,7 @@ export class TextEditor extends HTMLElement implements PropertyAccessor {
     })
   }
 
-  pointerDown(e?: MouseEvent | PointerEvent): boolean {
+  pointerDown(e?: MouseEvent | PointerEvent, positionOnly = false): boolean {
     if (e && e.button !== 0) {
       e.preventDefault()
       e.stopPropagation()
@@ -684,7 +684,7 @@ export class TextEditor extends HTMLElement implements PropertyAccessor {
     this.selection = [index, index]
     this._updateDomSelection()
 
-    if (e && ['mousedown', 'pointerdown'].includes(e.type)) {
+    if (!positionOnly && e && ['mousedown', 'pointerdown'].includes(e.type)) {
       const onMove = (e: MouseEvent): void => {
         this.selection = [
           index,
@@ -722,6 +722,11 @@ export class TextEditor extends HTMLElement implements PropertyAccessor {
     this._textarea.focus()
     this._textarea.select()
     this._updateSelectionByDom()
+  }
+
+  /** 重新聚焦隐藏 textarea，但不改变当前选区（用于进入编辑后保留点击处光标）。 */
+  focus(): void {
+    this._textarea.focus()
   }
 
   attributeChangedCallback(name: string, _oldValue: any, newValue: any): void {

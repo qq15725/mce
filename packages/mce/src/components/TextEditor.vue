@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { TextEditor as _TextEditor } from 'modern-text/web-components'
+import type { TextEditor as _TextEditor } from '../web-components'
 import { computed, nextTick, onBeforeMount, onBeforeUnmount, ref } from 'vue'
 import { useEditor } from '../composables/editor'
 
@@ -65,15 +65,25 @@ async function startTyping(e?: PointerEvent): Promise<boolean> {
   const editor = textEditor.value!
   editor.set(element.text.base)
   await nextTick()
-  if (editor.pointerDown(e)) {
-    editor.selectAll()
+  // 有坐标（双击 / 点击进入）：光标落在点击位置；无坐标（Enter / 程序化 / 新建空文本）：进入即全选。
+  // positionOnly 定位光标但不挂拖选监听，避免进入后移动鼠标误触发选区扩展。
+  if (editor.pointerDown(e, true)) {
+    if (!e) {
+      editor.selectAll()
+    }
     // A double-click fires pointerdown → mousedown on the drawboard; the
     // trailing mousedown's default action steals focus to <body> right after
     // we focus the hidden textarea. Re-focus once the gesture settles so typed
-    // keys land in the editor instead of leaking to global hotkeys.
+    // keys land in the editor instead of leaking to global hotkeys（有坐标时仅
+    // 重新聚焦、保留点击处光标，不重新全选）。
     requestAnimationFrame(() => {
       if (state.value === 'typing') {
-        editor.selectAll()
+        if (e) {
+          editor.focus()
+        }
+        else {
+          editor.selectAll()
+        }
       }
     })
     return true

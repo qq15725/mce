@@ -52,7 +52,7 @@ declare global {
     }
 
     interface Commands {
-      editElement: () => void
+      editElement: (event?: MouseEvent) => void
       getTransform: () => TransformValue
       setTransform: (type: TransformType, value: Partial<TransformValue>, options?: TransformOptions) => void
       move: (direction: MoveDirection, distance?: number) => void
@@ -104,7 +104,7 @@ export default definePlugin((editor) => {
     },
   })
 
-  async function editElement() {
+  async function editElement(event?: MouseEvent) {
     const els = elementSelection.value
     if (els.length === 1) {
       const el = els[0]
@@ -116,7 +116,8 @@ export default definePlugin((editor) => {
         return
       }
       if (el.text.isValid()) {
-        await exec('startTyping')
+        // 透传双击坐标：光标落在点击位置（无坐标时——如 Enter 进入——保持全选）。
+        await exec('startTyping', event as any)
       }
       else if (el.foreground.isValid()) {
         state.value = 'cropping'

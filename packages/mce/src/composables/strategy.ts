@@ -97,7 +97,8 @@ function resolveSelectionTarget(context: ActiveStrategyContext): Element2D | und
 export const defaultActiveStrategy: ActiveStrategy = resolveSelectionTarget
 
 export const defaultDoubleclickStrategy: DoubleclickStrategy = (context) => {
-  context.editor.exec('editElement')
+  // 透传双击事件：进入文字编辑时光标落在点击位置（而非默认全选）。
+  context.editor.exec('editElement', context.event as any)
 }
 
 export const defaultHoverStrategy: HoverStrategy = resolveSelectionTarget
