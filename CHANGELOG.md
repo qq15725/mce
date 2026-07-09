@@ -1,3 +1,14 @@
+## [0.32.11](https://github.com/qq15725/mce/compare/v0.32.10...v0.32.11) (2026-07-09)
+
+### Bug Fixes
+
+* **readonly:** enforce read-only at command and comment chokepoints ([65b36c3](https://github.com/qq15725/mce/commit/65b36c37f0236908352b61258befad4b93a99a3e))
+
+### Features
+
+* **lock:** hoverable/selectable locked elements with red box and unlock icon ([68c6660](https://github.com/qq15725/mce/commit/68c66601a0a6a314a875495c6ffa0e234623160b))
+* **text:** place caret at click position on double-click to edit ([1fffb51](https://github.com/qq15725/mce/commit/1fffb518dfb7990db7cdfaa8e882bc0bbe86edfc))
+
 ## [0.32.10](https://github.com/qq15725/mce/compare/v0.32.9...v0.32.10) (2026-07-08)
 
 ### Bug Fixes
