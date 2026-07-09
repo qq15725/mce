@@ -4,11 +4,13 @@ import { useEditor } from 'mce'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useComments } from './useComments'
 
-const { activeTool, activateTool, drawboardAabb, getAabb, root, t } = useEditor()
+const { activeTool, activateTool, drawboardAabb, getAabb, root, t, readonly } = useEditor()
 const comments = useComments()
 
 // 评论是工具：activeTool==='comment' 即处于评论态（与移动等单选互斥）。
 const isComment = computed(() => activeTool.value?.name === 'comment')
+
+const canComment = computed(() => !readonly.value)
 
 // 当前用户 id：用于判断某条消息是否本人所发（从而显示编辑 / 删除）。
 const meId = computed(() => comments.me().id)
@@ -307,6 +309,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown, true))
     >
       <div class="m-comments__head">
         <button
+          v-if="canComment"
           type="button"
           class="m-comments__resolve"
           :class="{ 'm-comments__resolve--on': activeThread.resolved }"
@@ -346,7 +349,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown, true))
               <span class="m-comments__name">{{ c.author?.name }}</span>
               <span class="m-comments__time">{{ fmtTime(c.createdAt) }}</span>
               <button
-                v-if="canManage(c) && editingId !== c.id"
+                v-if="canComment && canManage(c) && editingId !== c.id"
                 type="button"
                 class="m-comments__more"
                 :title="t('comment:more')"
@@ -395,7 +398,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown, true))
       </div>
 
       <!-- 底部：回复输入框 + 内嵌圆形发送按钮 -->
-      <div class="m-comments__composer">
+      <div v-if="canComment" class="m-comments__composer">
         <textarea
           ref="replyInput"
           v-model="replyText"

@@ -1,6 +1,6 @@
 import type { Reactive } from 'vue'
 import { defineMixin } from '../mixin'
-import { createMapRegistry } from '../utils'
+import { createMapRegistry, isReadonlySafeCommand } from '../utils'
 
 declare global {
   namespace Mce {
@@ -40,6 +40,11 @@ export default defineMixin((editor) => {
 
   const exec: Mce.Editor['exec'] = (command, ...args) => {
     const [name, arg1] = command.split(':')
+    // 只读：一切经命令的写入口（快捷键 / 右键菜单 / 拖入 / 系统粘贴 / UI 按钮）在此统一拦截；
+    // 仅放行读取 / 视图类命令。程序化加载（loadDoc / setDoc）与协同远端不经 exec，不受影响。
+    if (editor.readonly.value && !isReadonlySafeCommand(command)) {
+      return undefined as any
+    }
     if (arg1 !== undefined) {
       (args as any).unshift(arg1)
     }

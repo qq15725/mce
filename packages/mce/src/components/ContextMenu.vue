@@ -9,6 +9,7 @@ const {
   drawboardAabb,
   drawboardContextMenuPointer,
   contextMenu,
+  readonly,
   exec,
   getKbd,
   t,
@@ -61,6 +62,10 @@ function updateLocation() {
 
 function onContextmenu(event: MouseEvent) {
   event.preventDefault()
+  // 只读：禁用一切编辑，不弹出右键菜单（与画布指针禁用保持一致）。
+  if (readonly.value) {
+    return
+  }
   isActive.value = true
   position.value = {
     x: event.clientX,

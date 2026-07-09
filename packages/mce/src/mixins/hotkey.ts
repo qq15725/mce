@@ -2,10 +2,7 @@ import type { Reactive, WritableComputedRef } from 'vue'
 import { isClient, useEventListener } from '@vueuse/core'
 import { reactive } from 'vue'
 import { defineMixin } from '../mixin'
-import { isInputEvent, isMac, isWindows } from '../utils'
-
-/** 只读模式下仍放行的快捷键命令（不改文档：视图 / 缩放 / 滚动 / 面板切换 / 复制）。 */
-const READONLY_SAFE_COMMAND = /^(?:zoom|fit|scroll|toggle|copy)/i
+import { isInputEvent, isMac, isReadonlySafeCommand, isWindows } from '../utils'
 
 declare global {
   namespace Mce {
@@ -348,8 +345,9 @@ export default defineMixin((editor) => {
             return
           }
           const command = hotkeyData.command
-          // 只读：默认拒绝,仅放行视图 / 缩放 / 滚动 / 面板切换 / 复制等不改文档的命令。
-          if (editor.readonly.value && !READONLY_SAFE_COMMAND.test(command)) {
+          // 只读：默认拒绝，仅放行读取 / 视图类命令（判定见 isReadonlySafeCommand）。
+          // exec 分支另有统一拦截，此处主要保护 handle 自定义分支（如 save）不被绕过。
+          if (editor.readonly.value && !isReadonlySafeCommand(command)) {
             return
           }
           const hotkey = hotkeys.get(command)

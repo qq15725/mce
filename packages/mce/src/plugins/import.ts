@@ -63,6 +63,13 @@ export default definePlugin((editor) => {
 
       function onDragover(e: DragEvent) {
         e.preventDefault()
+        // 只读：不接受拖入（真正的写由 exec('paste') 拦截，这里同步禁用拷贝光标反馈）。
+        if (editor.readonly.value) {
+          if (e.dataTransfer) {
+            e.dataTransfer.dropEffect = 'none'
+          }
+          return
+        }
         drawboardPointer.value = new Vector2(
           e.clientX - drawboardAabb.value.left,
           e.clientY - drawboardAabb.value.top,

@@ -397,7 +397,8 @@ export default definePlugin((editor, options) => {
             return
           }
           if (e.clipboardData) {
-            await paste(e.clipboardData)
+            // 经 exec 收口，复用只读拦截（原先直接调 paste 会绕过只读）。
+            await exec('paste', e.clipboardData)
           }
         }
 

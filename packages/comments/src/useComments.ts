@@ -121,29 +121,38 @@ export function createCommentsStore(editor: Editor): CommentsApi {
     return (node?.comments?.toJSON?.() ?? []) as any[]
   }
 
-  function addThread(node: any, offset: { x: number, y: number }, body: string): string {
-    if (!node?.comments?.setProperty) {
-      return '' // 宿主元素不支持评论（如根 Doc 非 Element2D）
+  // 评论写入的单点收口：只读拦截 + 宿主能力检查 + 逐线程写回 + bump 收敛在此。
+  // 与核心 exec() 对命令的只读拦截对应——评论不走 exec，故在此自守，避免绕过。
+  function commitThread(node: any, threadId: string, value: any): boolean {
+    if (editor.readonly.value) {
+      return false // 只读：拒绝一切评论写入
     }
+    if (!node?.comments?.setProperty) {
+      return false // 宿主元素不支持评论（如根 Doc 非 Element2D）
+    }
+    node.comments.setProperty(threadId, value)
+    bump()
+    return true
+  }
+
+  function addThread(node: any, offset: { x: number, y: number }, body: string): string {
     const id = uid('t')
-    node.comments.setProperty(id, {
+    const ok = commitThread(node, id, {
       id,
       offset,
       resolved: false,
       messages: [{ id: uid('m'), author: author(), body, createdAt: Date.now() }],
     })
-    bump()
-    return id
+    return ok ? id : ''
   }
 
-  // reply/resolve 共用：按 id 查到线程 → patch 合并 → 逐线程写回 → bump。
+  // reply/resolve 共用：按 id 查到线程 → patch 合并 → 逐线程写回。
   function mutateThread(node: any, threadId: string, patch: (t: any) => any): void {
     const t = threadsOf(node).find(x => x.id === threadId)
-    if (!t || !node?.comments?.setProperty) {
+    if (!t) {
       return
     }
-    node.comments.setProperty(threadId, patch(t))
-    bump()
+    commitThread(node, threadId, patch(t))
   }
 
   function reply(node: any, threadId: string, body: string): void {
@@ -179,8 +188,7 @@ export function createCommentsStore(editor: Editor): CommentsApi {
   }
 
   function remove(node: any, threadId: string): void {
-    node.comments.setProperty(threadId, undefined)
-    bump()
+    commitThread(node, threadId, undefined)
   }
 
   // 坐标换算复用核心 box mixin 的点级方法，避免与引擎各处公式重复。
