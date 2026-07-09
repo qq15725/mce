@@ -4,6 +4,7 @@ import { computed, onBeforeMount, onBeforeUnmount, useTemplateRef } from 'vue'
 import { useEditor } from '../composables/editor'
 import { getLineEndpoints, parseLineShape } from '../utils'
 import ForegroundCropper from './ForegroundCropper.vue'
+import { Icon } from './icon'
 import LineEditor from './LineEditor.vue'
 import PathEditor from './PathEditor.vue'
 import Transform from './shared/Transform.vue'
@@ -23,10 +24,12 @@ const {
   registerCommand,
   unregisterCommand,
   isLock,
+  setLock,
   getConfigRef,
   hoverElement,
   isContentEditing,
   readonly,
+  t,
 } = useEditor()
 
 const transformConfig = getConfigRef<Mce.TransformConfig>('interaction.transform')
@@ -96,8 +99,9 @@ const selectionObbStyles = computed(() => {
     return []
   }
 
-  // 线类（直线/箭头/连线）走沿线高亮（见 selectionLinePaths），其余元素照常画 obb 框
-  return elementSelection.value.filter(el => !hasLineVisual(el)).map((el) => {
+  // 线类（直线/箭头/连线）走沿线高亮（见 selectionLinePaths），其余元素照常画 obb 框；
+  // 锁定元素改画红框（见 lockedBoxes），此处排除。
+  return elementSelection.value.filter(el => !hasLineVisual(el) && !isLock(el)).map((el) => {
     const box = getObb(el, 'drawboard')
     return {
       id: el.instanceId,
@@ -108,6 +112,38 @@ const selectionObbStyles = computed(() => {
     }
   })
 })
+
+// 选区是否含锁定元素（锁定只能单选，故等价于「当前选中的就是一个锁定元素」）。
+const isSelectionLocked = computed(() => elementSelection.value.some(el => isLock(el)))
+
+// 锁定元素：红框 + 右下角解锁图标。图标定位到旋转后包围盒的右下角顶点，但自身保持直立。
+const lockedBoxes = computed(() => {
+  return elementSelection.value.filter(el => isLock(el)).map((el) => {
+    const box = getObb(el, 'drawboard')
+    const cos = Math.cos(box.rotation)
+    const sin = Math.sin(box.rotation)
+    const cx = box.left + box.width / 2
+    const cy = box.top + box.height / 2
+    return {
+      id: el.instanceId,
+      style: {
+        ...box.toCssStyle(),
+        borderRadius: `${(el.style.borderRadius ?? 0) * camera.value.zoom.x}px`,
+      },
+      icon: {
+        left: `${cx + (box.width / 2) * cos - (box.height / 2) * sin}px`,
+        top: `${cy + (box.width / 2) * sin + (box.height / 2) * cos}px`,
+      },
+    }
+  })
+})
+
+function unlock(instanceId: number): void {
+  const el = elementSelection.value.find(e => e.instanceId === instanceId)
+  if (el) {
+    setLock(el, false)
+  }
+}
 
 // 把全局坐标映射到画板像素的 SVG 变换；配合 vector-effect 让描边宽度不随缩放变化。
 const cameraTransform = computed(() => {
@@ -287,6 +323,22 @@ defineExpose({
       :style="selectionMarquee.toCssStyle()"
     />
 
+    <!-- 锁定元素：红框 + 右下角解锁图标（点击解除锁定） -->
+    <template v-for="item in lockedBoxes" :key="item.id">
+      <div class="m-selection__locked" :style="item.style" />
+      <button
+        type="button"
+        class="m-selection__unlock"
+        :style="item.icon"
+        :title="t('clickToUnlock')"
+        @pointerdown.stop
+        @click.stop="unlock(item.id)"
+      >
+        <Icon icon="$lock" />
+        <span class="m-selection__unlock-tip">{{ t('clickToUnlock') }}</span>
+      </button>
+    </template>
+
     <template v-if="transformValue.width && transformValue.height">
       <div
         class="m-selection__slot"
@@ -311,7 +363,7 @@ defineExpose({
     />
 
     <LineEditor
-      v-if="!readonly && isLineLike && state !== 'pathEditing' && state !== 'cropping'"
+      v-if="!readonly && !isSelectionLocked && isLineLike && state !== 'pathEditing' && state !== 'cropping'"
       :key="elementSelection[0].instanceId"
       :element="elementSelection[0]"
       :scale="[camera.zoom.x, camera.zoom.y]"
@@ -319,7 +371,7 @@ defineExpose({
     />
 
     <Transform
-      v-if="!readonly && !isLineLike && !isConnection && transformValue.width && transformValue.height && state !== 'pathEditing'"
+      v-if="!readonly && !isSelectionLocked && !isLineLike && !isConnection && transformValue.width && transformValue.height && state !== 'pathEditing'"
       ref="transformTpl"
       v-bind="transformProps"
       :model-value="transformValue"
@@ -386,6 +438,71 @@ defineExpose({
       border-style: solid;
       color: rgba(var(--m-theme-primary), 1);
       border-color: currentcolor;
+    }
+
+    // 锁定元素：红色包围盒
+    &__locked {
+      position: absolute;
+      border-width: 1.5px;
+      border-style: solid;
+      border-color: #f03e3e;
+    }
+
+    // 解锁图标：黑色圆形按钮，定位到红框右下角顶点、直立不随元素旋转
+    &__unlock {
+      position: absolute;
+      z-index: 1;
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      border: none;
+      border-radius: 50%;
+      background: #1a1a1a;
+      color: #fff;
+      font-size: 15px;
+      cursor: pointer;
+      pointer-events: auto;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .3);
+
+      &:hover {
+        background: #000;
+      }
+
+      &:hover &-tip {
+        opacity: 1;
+      }
+    }
+
+    // 悬浮解锁按钮时的深色气泡提示
+    &__unlock-tip {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 6px 10px;
+      border-radius: 6px;
+      background: rgba(38, 38, 38, .92);
+      color: #fff;
+      font-size: 12px;
+      line-height: 1;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .12s;
+
+      &::before {
+        content: '';
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 5px solid transparent;
+        border-bottom-color: rgba(38, 38, 38, .92);
+      }
     }
 
     &__lines {

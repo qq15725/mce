@@ -149,6 +149,7 @@ export default {
   'flipVertical': 'Flip vertical',
   'toggleSelectionVisible': 'Show/Hide',
   'toggleSelectionLock': 'Lock/Unlock',
+  'clickToUnlock': 'Click to unlock',
   'layerOrder': 'Layer order',
   'bringToFront': 'Bring to front',
   'bringForward': 'Bring forward',

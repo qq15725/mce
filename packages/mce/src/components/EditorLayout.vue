@@ -179,9 +179,14 @@ function onEnginePointerHover(event: PointerInputEvent) {
 
   if (!(
     isElement(hovered)
-    && !isLock(hovered)
-    && !hovered.findAncestor(ancestor => isLock(ancestor))
-    && (!hovered.children.some(node => isElement(node)) || !isFrameNode(hovered, true))
+    && (
+      // 锁定元素本身可悬停（供单选后点击解锁），不再被穿透跳过。
+      isLock(hovered)
+      || (
+        !hovered.findAncestor(ancestor => isLock(ancestor))
+        && (!hovered.children.some(node => isElement(node)) || !isFrameNode(hovered, true))
+      )
+    )
   )) {
     hovered = undefined
     cursor = undefined
@@ -231,9 +236,14 @@ function onEnginePointerDown(
 
   function isIncluded(node: any): node is Element2D {
     return isElement(node)
-      && !isLock(node)
-      && (allowTopFrame || (!node.children.some(node => isElement(node)) || !isFrameNode(node, true)))
-      && !node.findAncestor(ancestor => isLock(ancestor))
+      && (
+        // 锁定元素可被单选（供点击解锁）；未锁定元素沿用原有帧穿透 / 祖先锁定规则。
+        isLock(node)
+        || (
+          (allowTopFrame || (!node.children.some(node => isElement(node)) || !isFrameNode(node, true)))
+          && !node.findAncestor(ancestor => isLock(ancestor))
+        )
+      )
   }
 
   // 连线可单选 / 悬停，但不可拖拽：拖拽（transform）时排除连线。
@@ -362,7 +372,11 @@ function onEnginePointerDown(
 
     // 修饰键分工：Shift = 加 / 减选；Cmd/Ctrl 仅用于深选（在 activeStrategy 里解析最深元素），
     // 不参与多选。故此处只有 Shift 切换增减，Cmd/Ctrl 落到单选（即"深选单个元素"）。
-    if (_element && downEvent?.shiftKey) {
+    if (_element && isLock(_element)) {
+      selected = [_element] // 锁定元素只能单选，忽略 Shift 多选
+    }
+    else if (_element && downEvent?.shiftKey && !elementSelection.value.some(isLock)) {
+      // 当前选区含锁定元素时，Shift 加选退化为单选（落到 else），避免混入锁定项。
       if (elementSelection.value.findIndex(v => v.equal(_element)) > -1) {
         selected = elementSelection.value.filter(v => !v.equal(_element))
       }

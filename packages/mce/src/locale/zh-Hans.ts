@@ -149,6 +149,7 @@ export default {
   'flipVertical': '垂直翻转',
   'toggleSelectionVisible': '显示/隐藏',
   'toggleSelectionLock': '锁/解锁',
+  'clickToUnlock': '点击解除锁定',
   'layerOrder': '图层顺序',
   'bringToFront': '移到顶层',
   'bringForward': '上移一层',

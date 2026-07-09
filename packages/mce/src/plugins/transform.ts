@@ -92,6 +92,7 @@ export default definePlugin((editor) => {
     enterHandlers,
     snap,
     snapResize,
+    isLock,
   } = editor
 
   registerConfig<Mce.TransformConfig>('interaction.transform', {
@@ -107,6 +108,9 @@ export default definePlugin((editor) => {
     const els = elementSelection.value
     if (els.length === 1) {
       const el = els[0]
+      if (isLock(el)) {
+        return // 锁定元素不进入编辑
+      }
       // 插件贡献的进入编辑（如 @mce/table 的 tableEditing）优先；命中即停。
       if (enterHandlers.some(h => h(el, editor))) {
         return
@@ -181,6 +185,11 @@ export default definePlugin((editor) => {
 
   const setTransform: Mce.Commands['setTransform'] = (type, value, options = {}) => {
     const { event, isCorner, direction = '' } = options
+
+    // 锁定元素只能单选且不可变换（含方向键微移 / 缩放 / 旋转 / 批量），直接跳过。
+    if (elementSelection.value.some(el => isLock(el))) {
+      return
+    }
 
     if (!context) {
       initContext()
