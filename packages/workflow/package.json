@@ -52,6 +52,7 @@
     "build:code": "vite build",
     "build:tsc": "NODE_ENV=production vue-tsc --emitDeclarationOnly --project tsconfig.json",
     "build": "pnpm build:code && pnpm build:tsc",
+    "test": "vitest",
     "lint": "eslint src",
     "typecheck": "vue-tsc --noEmit --project tsconfig.json"
   },

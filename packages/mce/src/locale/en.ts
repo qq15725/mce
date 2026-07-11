@@ -130,6 +130,7 @@ export default {
   'creator': 'Create node',
   'memoryManager': 'Manage memory',
   'toolbelt': 'Toolbelt',
+  'fxaa': 'FXAA',
   'msaa': 'MSAA',
   'pixelate': 'Pixelate',
   'layers': 'Layers',

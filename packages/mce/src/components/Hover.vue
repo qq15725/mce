@@ -8,6 +8,7 @@ const {
   hoverElement,
   getObb,
   camera,
+  mode,
 } = useEditor()
 
 watch(selection, () => hoverElement.value = undefined)
@@ -24,11 +25,21 @@ const hoverLinePath = computed<string | null>(() => {
   }
   const conn = (el as any).connection
   if (conn?.isValid?.()) {
+    // 工作流模式下连线的 hover 由引擎侧流动高亮(useConnectionFlow)反馈，不再叠 SVG 蓝线。
+    if (mode.value === 'workflow') {
+      return null
+    }
     return conn.route?.()?.toData?.() ?? null
   }
   const eps = getLineEndpoints(el)
   return eps ? `M ${eps[0].x} ${eps[0].y} L ${eps[1].x} ${eps[1].y}` : null
 })
+
+// 工作流连线：hover 不画任何覆盖（蓝线已抑制，也不落到矩形框分支——它没有有意义的包围盒）。
+const isWorkflowConnection = computed(() =>
+  mode.value === 'workflow'
+  && Boolean((hoverElement.value as any)?.connection?.isValid?.()),
+)
 
 // 全局坐标→画板像素的 SVG 变换（配合 vector-effect 让描边宽度不随缩放变化）。
 const cameraTransform = computed(() => {
@@ -54,7 +65,7 @@ const hoverElementObb = computed(() => getObb(hoverElement.value, 'drawboard'))
   </svg>
 
   <div
-    v-else-if="show"
+    v-else-if="show && !isWorkflowConnection"
     class="m-hover"
     :data-name="hoverElement?.name"
     :style="{

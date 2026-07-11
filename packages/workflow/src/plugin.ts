@@ -1,6 +1,8 @@
 import type { Element2D } from 'modern-canvas'
 import type { Element } from 'modern-idoc'
+import type { WorkflowGraph } from './graph'
 import { definePlugin, outlineIcon } from 'mce'
+import { buildWorkflowGraph } from './graph'
 import { getWorkflowPorts, toConnectionPoints } from './workflow'
 import Workflow from './Workflow.vue'
 
@@ -33,12 +35,13 @@ declare global {
 
     interface Commands {
       addWorkflowNode: (type: string, position?: AddElementPosition) => Element2D
+      /** 校验不过（端点不存在 / 自环 / 重复 / 成环 / 端口方向错）时返回 undefined。 */
       addWorkflowConnection: (
         startId: string,
         startIdx: number,
         endId: string,
         endIdx: number,
-      ) => Element2D
+      ) => Element2D | undefined
     }
   }
 }
@@ -187,12 +190,58 @@ export function plugin() {
         el.shape.connectionPoints = toConnectionPoints(getWorkflowPorts(el))
     }
 
+    /**
+     * 建边前的全部校验。任一条不过就拒绝——脏边一旦落进文档就很难发现：
+     * 悬空连线的 `isValid()` 只看 id 字符串，永远为 true，于是既不被视口剔除、
+     * 又每帧参与路由计算；自环 / 环则会让下游的图遍历失去拓扑序。
+     */
+    function validateConnection(
+      graph: WorkflowGraph,
+      startId: string,
+      startIdx: number,
+      endId: string,
+      endIdx: number,
+    ): string | undefined {
+      const startEl = graph.nodes.get(startId)
+      const endEl = graph.nodes.get(endId)
+      if (!startEl || !endEl) {
+        return `端点不存在：${!startEl ? startId : endId}`
+      }
+      if (startId === endId) {
+        return `不能连接到自身：${startId}`
+      }
+      const startPort = getWorkflowPorts(startEl).find(p => p.idx === startIdx)
+      const endPort = getWorkflowPorts(endEl).find(p => p.idx === endIdx)
+      if (startPort?.kind !== 'output') {
+        return `起点 ${startId}:${startIdx} 不是输出端口`
+      }
+      if (endPort?.kind !== 'input') {
+        return `终点 ${endId}:${endIdx} 不是输入端口`
+      }
+      const duplicated = graph.out.get(startId)?.some(
+        e => e.start.idx === startIdx && e.end.id === endId && e.end.idx === endIdx,
+      )
+      if (duplicated) {
+        return `连线已存在：${startId}:${startIdx} → ${endId}:${endIdx}`
+      }
+      if (graph.hasPath(endId, startId)) {
+        return `会形成环：${endId} 已可达 ${startId}`
+      }
+      return undefined
+    }
+
     function addWorkflowConnection(
       startId: string,
       startIdx: number,
       endId: string,
       endIdx: number,
-    ): Element2D {
+    ): Element2D | undefined {
+      const graph = buildWorkflowGraph(editor.root.value?.children ?? [])
+      const invalid = validateConnection(graph, startId, startIdx, endId, endIdx)
+      if (invalid) {
+        console.warn(`[workflow] 拒绝建立连线，${invalid}`)
+        return undefined
+      }
       materializePorts(startId)
       materializePorts(endId)
       return addElement({

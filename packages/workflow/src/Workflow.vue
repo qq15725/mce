@@ -3,7 +3,9 @@ import type { Element2D } from 'modern-canvas'
 import type { WorkflowPort } from './workflow'
 import { Icon, useEditor } from 'mce'
 import { computed, ref } from 'vue'
+import { isWorkflowConnection } from './graph'
 import NodeLabel from './NodeLabel.vue'
+import { useConnectionFlow } from './useConnectionFlow'
 import { getWorkflowPorts, INPUT_PORT, OUTPUT_PORT } from './workflow'
 
 const {
@@ -17,6 +19,9 @@ const {
   exec,
   t,
 } = useEditor()
+
+// hover / 选中节点或连线时，相关连线沿数据方向流动高亮（引擎 shader 驱动）。
+useConnectionFlow()
 
 // 端口「+」磁吸：命中区是朝外的半圆（hitClip），可见的「+」是它的兄弟节点（不被裁）。
 // 仅当鼠标进入该半圆时（命中区自身 pointermove）把「+」朝指针移动、离开(pointerleave)回中心——
@@ -55,7 +60,7 @@ const PORT_GAP = 16
 
 // Any element except a connection line is a connectable node in workflow mode.
 function isConnectable(el: any): el is Element2D {
-  return isElement(el) && !el.connection?.isValid?.()
+  return isElement(el) && !isWorkflowConnection(el)
 }
 
 const selectedNode = computed<Element2D | undefined>(() => {
@@ -72,9 +77,7 @@ const selectedNode = computed<Element2D | undefined>(() => {
 // 工作流模式下的顶层元素（画板 / 节点，排除连线）——给每个加图层图标+名称标签。
 const topLabels = computed<Element2D[]>(() =>
   mode.value === 'workflow'
-    ? (root.value?.children ?? []).filter(
-        (el): el is Element2D => isElement(el) && !(el as any).connection?.isValid?.(),
-      )
+    ? (root.value?.children ?? []).filter((el): el is Element2D => isConnectable(el))
     : [],
 )
 
@@ -149,11 +152,11 @@ function connect(port: ScreenPort, sourceId: string, otherId: string, otherPorts
   const other = otherPorts.find(p => p.kind === need)
   if (!other)
     return false
-  if (port.kind === 'output')
-    exec('addWorkflowConnection', sourceId, port.idx, otherId, other.idx)
-  else
-    exec('addWorkflowConnection', otherId, other.idx, sourceId, port.idx)
-  return true
+  // 命令自身还会校验重复边 / 成环，拒绝时返回 undefined。
+  const created = port.kind === 'output'
+    ? exec('addWorkflowConnection', sourceId, port.idx, otherId, other.idx)
+    : exec('addWorkflowConnection', otherId, other.idx, sourceId, port.idx)
+  return Boolean(created)
 }
 
 function startConnection(port: ScreenPort, e: PointerEvent): void {

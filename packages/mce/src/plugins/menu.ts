@@ -212,6 +212,16 @@ export default definePlugin((editor, options) => {
       },
       { type: 'divider' },
       {
+        key: 'fxaa',
+        checked: config.value.canvas.fxaa.enabled,
+        handle: () => {
+          config.value.canvas.fxaa.enabled = !config.value.canvas.fxaa.enabled
+          if (config.value.canvas.fxaa.enabled) {
+            config.value.canvas.pixelate.enabled = false
+          }
+        },
+      },
+      {
         key: 'msaa',
         checked: config.value.canvas.msaa.enabled,
         handle: () => {
@@ -228,6 +238,7 @@ export default definePlugin((editor, options) => {
           config.value.canvas.pixelate.enabled = !config.value.canvas.pixelate.enabled
           if (config.value.canvas.pixelate.enabled) {
             config.value.canvas.msaa.enabled = false
+            config.value.canvas.fxaa.enabled = false
           }
         },
       },

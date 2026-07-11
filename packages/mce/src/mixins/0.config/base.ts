@@ -26,6 +26,10 @@ declare global {
       enabled: boolean
     }
 
+    interface FxaaConfig {
+      enabled: boolean
+    }
+
     interface WatermarkConfig {
       url?: string
       width: number
@@ -42,6 +46,7 @@ declare global {
       pixelGrid: PixelGridConfig
       pixelate: PixelateConfig
       msaa: MsaaConfig
+      fxaa: FxaaConfig
       watermark: WatermarkConfig
     }
 
@@ -117,6 +122,13 @@ export default defineMixin((editor, options) => {
     },
   })
 
+  // 轻量抗锯齿：最终合成时的 FXAA 后处理（零额外显存，见 modern-canvas SceneTree.fxaa）。
+  const fxaaConfig = registerConfig<Mce.FxaaConfig>('canvas.fxaa', {
+    default: {
+      enabled: true,
+    },
+  })
+
   const cameraConfig = registerConfig<Mce.CameraConfig>('viewport.camera', {
     default: {
       enabled: true,
@@ -145,6 +157,12 @@ export default defineMixin((editor, options) => {
     watch(
       () => msaaConfig.value.enabled,
       value => renderEngine.value.msaa = value,
+      { immediate: true },
+    )
+
+    watch(
+      () => fxaaConfig.value.enabled,
+      value => renderEngine.value.fxaa = value,
       { immediate: true },
     )
 

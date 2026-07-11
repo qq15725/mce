@@ -189,6 +189,12 @@ const model = computed({
 })
 const transforming = ref(false)
 const activeHandle = ref<Handle>()
+
+// 选框在屏幕上小于该尺寸时（zoom 很小 / 元素本身很小），8 个手柄会糊成一团、
+// 甚至盖满整个框挡住拖拽。此时只留右 / 下 / 右下角一组。
+const COMPACT_SIZE = 64
+const COMPACT_HANDLES = new Set<string>(['resize-r', 'resize-b', 'resize-br'])
+
 const computedHandles = computed<HandleObject[]>(() => {
   const shape = props.handleShape
   const size = shape === 'rect' ? 8 : 10
@@ -320,8 +326,17 @@ const computedHandles = computed<HandleObject[]>(() => {
     ]
   }
 
+  // 精简态只影响「画在框上」的手柄（resize / round）；rotate 在框外、move 是整块区域，照常保留。
+  const compact = width < COMPACT_SIZE || height < COMPACT_SIZE
+
   return handles
     .filter((handle) => {
+      if (compact && handle.type.startsWith('round')) {
+        return false
+      }
+      if (compact && handle.type.startsWith('resize') && !COMPACT_HANDLES.has(handle.type)) {
+        return false
+      }
       if (props.handles.includes(handle.type as Handle)) {
         return !(
           (!props.resizable && handle.type.startsWith('resize'))

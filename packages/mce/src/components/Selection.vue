@@ -29,6 +29,7 @@ const {
   hoverElement,
   isContentEditing,
   readonly,
+  mode,
   t,
 } = useEditor()
 
@@ -163,6 +164,10 @@ const selectionLinePaths = computed(() => {
   for (const el of elementSelection.value) {
     const conn = (el as any).connection
     if (conn?.isValid?.()) {
+      // 工作流模式下选中连线由引擎侧流动高亮(useConnectionFlow)反馈，不再叠 SVG 蓝线。
+      if (mode.value === 'workflow') {
+        continue
+      }
       const d = conn.route?.()?.toData?.()
       if (d) {
         result.push({ id: el.instanceId, d })

@@ -7,17 +7,41 @@ import { computed, nextTick, ref, useTemplateRef } from 'vue'
 // 定位在元素左上角上方，效果类似画板标题；双击标题可重命名（写入 node.name）。
 const props = defineProps<{ node: Element2D }>()
 
-const { getAabb, renderEngine, drawboardDom, exec, hoverElement, state, isLock } = useEditor()
+const { getAabb, drawboardAabb, renderEngine, drawboardDom, exec, hoverElement, state, isLock } = useEditor()
 const { thumbnailIcon, thumbnailName } = useNode(computed(() => props.node))
 
 const editing = ref(false)
 const editValue = ref('')
 const input = useTemplateRef('inputTpl')
 
+const box = computed(() => getAabb(props.node, 'drawboard'))
+
+// 节点在屏幕上小于该尺寸时（zoom 很小），标签比节点本身还宽、相邻节点的标签互相重叠，
+// 直接隐藏。与选框手柄的精简阈值同量级。
+const LABEL_MIN_SIZE = 64
+
+// 标签在节点左上角之上，最多向上探出一行；留一圈余量让平移时的出现/消失不贴着边界。
+const CULL_MARGIN = 64
+
+// 节点完全在视口外时不渲染标签。aabb 本来就要算（判定本身需要它），省下的是
+// 屏幕外那些标签的 DOM 创建与每帧 style patch——节点上百时这笔开销与
+// 「屏幕上真正能看见几个标签」完全无关。
+function inViewport(): boolean {
+  const a = box.value
+  const { width, height } = drawboardAabb.value
+  return a.left + a.width > -CULL_MARGIN
+    && a.left < width + CULL_MARGIN
+    && a.top + a.height > -CULL_MARGIN
+    && a.top < height + CULL_MARGIN
+}
+
+// 正在重命名时不隐藏，否则输入框会在缩放中途消失。
+const visible = computed(() => editing.value || (box.value.width >= LABEL_MIN_SIZE && inViewport()))
+
 // 用 transform 定位（只走合成、不触发布局重排），缩放/平移时重定位成本远低于 left/top，
 // 节点多时差异显著。translateY(-100%)/-6px 把标签摆到元素左上角上方。
 const style = computed(() => {
-  const a = getAabb(props.node, 'drawboard')
+  const a = box.value
   return { transform: `translate(${a.left}px, ${a.top}px) translateY(-100%) translateY(-6px)` }
 })
 
@@ -51,7 +75,7 @@ function onPointerdown(event: PointerEvent): void {
 </script>
 
 <template>
-  <div class="m-wf-label" :style="style">
+  <div v-if="visible" class="m-wf-label" :style="style">
     <Icon :icon="thumbnailIcon" class="m-wf-label__icon" />
     <span
       v-if="!editing"
