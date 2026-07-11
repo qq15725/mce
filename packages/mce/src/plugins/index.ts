@@ -12,6 +12,7 @@ import _edit from './edit'
 import _flexLayout from './flexLayout'
 import _formatPaint from './formatPaint'
 import _frame from './frame'
+import _frameScroll from './frameScroll'
 import _history from './history'
 import _hover from './hover'
 import _image from './image'
@@ -57,6 +58,7 @@ export const plugins = [
   _flexLayout,
   _formatPaint,
   _frame,
+  _frameScroll,
   _history,
   _hover,
   _image,

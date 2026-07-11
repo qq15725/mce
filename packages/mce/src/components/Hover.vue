@@ -2,11 +2,14 @@
 import { computed, watch } from 'vue'
 import { useEditor } from '../composables/editor'
 import { getLineEndpoints } from '../utils'
+import { frameClipPath } from '../utils/overlayClip'
 
 const {
   selection,
   hoverElement,
   getObb,
+  getAabb,
+  getAncestorFrame,
   camera,
   mode,
 } = useEditor()
@@ -48,6 +51,16 @@ const cameraTransform = computed(() => {
 })
 
 const hoverElementObb = computed(() => getObb(hoverElement.value, 'drawboard'))
+
+// 元素在可滚动画板内时，把 hover 框裁到画板可见区，避免溢出到画板外。
+const clipPath = computed(() =>
+  frameClipPath(
+    hoverElement.value,
+    hoverElementObb.value,
+    getAncestorFrame,
+    frame => getAabb(frame, 'drawboard'),
+  ),
+)
 </script>
 
 <template>
@@ -72,6 +85,7 @@ const hoverElementObb = computed(() => getObb(hoverElement.value, 'drawboard'))
       borderColor: 'currentcolor',
       borderRadius: `${(hoverElement?.style?.borderRadius ?? 0) * camera.zoom.x}px`,
       ...hoverElementObb.toCssStyle(),
+      clipPath,
     }"
   />
 </template>

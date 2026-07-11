@@ -2,7 +2,7 @@ import type { Element2D, Node } from 'modern-canvas'
 import type { ComputedRef } from 'vue'
 import { Aabb2D, Obb2D } from 'modern-canvas'
 import { Transform2D } from 'modern-path2d'
-import { computed } from 'vue'
+import { computed, ref, watchEffect } from 'vue'
 import { defineMixin } from '../mixin'
 import { noop } from '../utils'
 
@@ -34,10 +34,37 @@ export default defineMixin((editor) => {
     root,
     selection,
     getAncestorFrame,
+    isFrameNode,
     drawboardAabb,
     screenControlsOffset,
     getGlobalPointer,
   } = editor
+
+  // 画板内滚动(contentOffset)的响应式桥。引擎更新子节点 globalTransform 走 raw 写
+  // （刻意避开 proxy 的性能开销），Vue 无法感知；而 contentOffset 的两条写入路径
+  // （mce 滚轮、引擎滚动条拖拽）都经 reactive proxy。这里订阅所有画板的 contentOffset，
+  // 变化后延到下一帧（此时引擎已按新偏移重算 globalAabb/globalTransform）bump 版本号，
+  // getObb/getAabb 触达它 → 选框/悬停框/裁剪等所有覆盖层随滚动重算。
+  const frameScrollRev = ref(0)
+  let scrollRevRaf = 0
+  watchEffect(() => {
+    const visit = (nodes: readonly Node[] | undefined): void => {
+      for (const n of nodes ?? []) {
+        if (isFrameNode(n)) {
+          const co = (n as Element2D).contentOffset
+          noop(co.x, co.y)
+          visit((n as Element2D).children)
+        }
+      }
+    }
+    visit(root.value?.children)
+    if (!scrollRevRaf) {
+      scrollRevRaf = requestAnimationFrame(() => {
+        scrollRevRaf = 0
+        frameScrollRev.value++
+      })
+    }
+  })
 
   function obbToFit(element: Element2D): void {
     const min = {
@@ -123,9 +150,9 @@ export default defineMixin((editor) => {
       }
     }
     else if (isElement(node)) {
-      // for vue reactive
+      // for vue reactive（frameScrollRev：画板滚动下一帧重算，见上）
       const style = node.style
-      noop(style.left, style.top, style.width, style.height, style.rotate)
+      noop(style.left, style.top, style.width, style.height, style.rotate, frameScrollRev.value)
       obb = node.getGlobalObb()
     }
     else {
@@ -189,7 +216,7 @@ export default defineMixin((editor) => {
           if (isElement(child)) {
             // 直接读 globalAabb 聚合，省去每个子节点的 clone；noop 保留响应式订阅
             const style = child.style
-            noop(style.left, style.top, style.width, style.height, style.rotate)
+            noop(style.left, style.top, style.width, style.height, style.rotate, frameScrollRev.value)
             const box = child.globalAabb
             min.x = Math.min(min.x, box.left)
             min.y = Math.min(min.y, box.top)
@@ -206,9 +233,9 @@ export default defineMixin((editor) => {
       }
     }
     else if (isElement(node)) {
-      // for vue reactive
+      // for vue reactive（frameScrollRev：画板滚动下一帧重算，见上）
       const style = node.style
-      noop(style.left, style.top, style.width, style.height, style.rotate)
+      noop(style.left, style.top, style.width, style.height, style.rotate, frameScrollRev.value)
       aabb = node.globalAabb.clone()
     }
     else {
