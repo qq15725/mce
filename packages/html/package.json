@@ -1,7 +1,7 @@
 {
   "name": "@mce/html",
   "type": "module",
-  "version": "0.32.11",
+  "version": "0.33.0",
   "description": "HTML import plugin for mce",
   "author": "wxm",
   "license": "MIT",

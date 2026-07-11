@@ -1,3 +1,10 @@
+# [0.33.0](https://github.com/qq15725/mce/compare/v0.32.11...v0.33.0) (2026-07-11)
+
+### Features
+
+* **frame:** in-frame scrolling with engine scrollbars ([67e6232](https://github.com/qq15725/mce/commit/67e62329d560f3ef9c9de6526fcddbb8bdedf488))
+* **workflow:** graph model, connection flow highlight, node labels ([cedc39c](https://github.com/qq15725/mce/commit/cedc39ca490d8133805491dc2611407466b6db5f))
+
 ## [0.32.11](https://github.com/qq15725/mce/compare/v0.32.10...v0.32.11) (2026-07-09)
 
 ### Bug Fixes
