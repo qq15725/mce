@@ -103,6 +103,16 @@ Specialized features also ship as optional packages, registered the same way (`p
 npm i mce
 ```
 
+## 🤖 Build with AI
+
+mce ships an [Agent Skill](https://agentskills.io/) so your coding agent can integrate mce for you. Install it into your project (works with Claude Code, Cursor, Codex, OpenCode and any [skills-compatible](https://agentskills.io/clients) agent):
+
+```shell
+npx skills add qq15725/mce
+```
+
+This drops the [`mce`](skills/mce/SKILL.md) skill into your agent's skills dir. Then just ask — e.g. *"integrate mce and add a canvas editor with the table plugin"* — and the agent follows the skill: install + peer deps, mount `EditorLayout`, register `@mce/*` plugins, load / save documents, and drive it via `editor.exec`.
+
 ## 🦄 Usage
 
 ```vue
