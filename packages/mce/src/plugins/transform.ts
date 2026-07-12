@@ -140,7 +140,39 @@ export default definePlugin((editor) => {
       event?: MouseEvent
       startPoint?: { x: number, y: number }
     }
+    // 文字 corner-resize 拖拽期用 transform scale 预览、松手 bake 成 fontSize（见下）。
+    textScale?: { el: Element2D, origW: number, origH: number }
   } | undefined
+
+  // 文字缩放预览落地：把拖拽期的 transform scale 烘焙成真实 fontSize（一次重排+重栅），
+  // 复位 scale=1。Started/Ended 都调，确保拖拽被打断也不会让 el.scale 卡住。
+  function bakeTextScale(): void {
+    const ts = context?.textScale
+    if (!ts) {
+      return
+    }
+    context!.textScale = undefined
+    const el = ts.el
+    const k = el.scale.x
+    if (k === 1) {
+      return
+    }
+    // 拖拽期 style.left 含 pivot·(1-k) 补偿；bake 复位 scale=1 后该补偿失效，故先记下
+    // 当前渲染的世界左上角(=拖拽锚点)，bake 完再把 left/top 复位到它，避免锚点跳走。
+    const g = el.globalAabb
+    const worldLeft = g.min.x
+    const worldTop = g.min.y
+    el.scale.set(1, 1)
+    resizeElement(
+      el,
+      Math.max(1, ts.origW * k),
+      Math.max(1, ts.origH * k),
+      { deep: true, textFontSizeToFit: true },
+    )
+    const parentAabb = el.getParent<Element2D>()?.globalAabb
+    el.style.left = worldLeft - (parentAabb?.left ?? 0)
+    el.style.top = worldTop - (parentAabb?.top ?? 0)
+  }
 
   function initContext() {
     context = {
@@ -298,6 +330,27 @@ export default definePlugin((editor) => {
         newStyle.rotate = Math.round(newStyle.rotate * 100) / 100
       }
       else if (type === 'resize') {
+        // 文字块角手柄缩放（等比、单选、未旋转、未预缩放）：拖拽期只改元素的 transform
+        // scale——字形 atlas 按逻辑 fontSize 缓存，缩放走 GPU（与 zoom 同路径），不必每帧
+        // 按新字号重栅格化整段（那是 30fps 掉帧的根因）。fontSize 的实际改写推迟到松手时
+        // 在 selectionTransformEnded 里 bake 一次，保证静止后字形清晰。
+        const isTextScale = !isMultiple && isCorner && !transform.rotate
+          && el.text?.isValid?.() && !el.shape?.isValid?.()
+          && el.scale.x === 1 && el.scale.y === 1
+        if (isTextScale || _context.textScale?.el === el) {
+          const ts = (_context.textScale ??= { el, origW: style.width, origH: style.height })
+          const k = ts.origW > 0 ? transform.width / ts.origW : 1
+          el.scale.set(k, k)
+          // scale 绕元素中心(pivot)缩放，故要让渲染框(globalAabb)贴合目标框(transform——锚点
+          // 已由 Transform.vue 固定)，style.left/top 须补偿 pivot·(1-k)：aabb 左上 = left + pivot·(1-k)。
+          // 用「目标框 + 当前 k」绝对计算，不能沿用增量 newStyle.left（会用上一帧的 scale、逐帧
+          // 累积漂移 → 锚点跑掉）。布局宽高/字号保持不变（拖拽期不重排/重栅）。
+          const parentAabb = el.getParent<Element2D>()?.globalAabb
+          style.left = (transform.left - (parentAabb?.left ?? 0)) - el.pivot.x * (1 - k)
+          style.top = (transform.top - (parentAabb?.top ?? 0)) - el.pivot.y * (1 - k)
+          return
+        }
+
         if (isMultiple) {
           const ctx = _context.batchResize[el.instanceId]
           if (ctx) {
@@ -415,6 +468,7 @@ export default definePlugin((editor) => {
     ],
     events: {
       selectionTransformStarted: () => {
+        bakeTextScale() // 防御：上一次拖拽若未正常结束，先落地再重开
         initContext()
       },
       selectionTransformed: (ctx) => {
@@ -428,6 +482,7 @@ export default definePlugin((editor) => {
         })
       },
       selectionTransformEnded: () => {
+        bakeTextScale()
         context = undefined
       },
     },
