@@ -1,3 +1,9 @@
+## [0.33.1](https://github.com/qq15725/mce/compare/v0.33.0...v0.33.1) (2026-07-12)
+
+### Performance Improvements
+
+* **text:** scale-preview corner resize, bake fontSize on drop ([4ec46ab](https://github.com/qq15725/mce/commit/4ec46ab03d838ebe54ca047183d1f018bee6002e))
+
 # [0.33.0](https://github.com/qq15725/mce/compare/v0.32.11...v0.33.0) (2026-07-11)
 
 ### Features
