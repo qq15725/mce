@@ -58,6 +58,9 @@ const config = getConfigRef('ui.ruler')
     top: 0;
     right: 0;
     bottom: 0;
+    // 标尺盖在画布内 overlay 之上（选框 z-index:1 / 工作流节点标题 z-index:2），否则贴近视口
+    // 顶/左边缘的节点标题会探出到标尺行、压住刻度；仍低于工具条（z-index:10）。
+    z-index: 3;
 
     &__left-top {
       position: absolute;
