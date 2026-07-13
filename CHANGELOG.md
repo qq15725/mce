@@ -1,3 +1,16 @@
+## [0.34.1](https://github.com/qq15725/mce/compare/v0.34.0...v0.34.1) (2026-07-13)
+
+### Bug Fixes
+
+* **flex:** keep an element at its drop position when dragged out of a flex frame ([aa81074](https://github.com/qq15725/mce/commit/aa810745389a4d87c8168ce2e406de624d50154b))
+* **nest:** snapshot aabb before repositioning so nested elements don't jump ([4ae1792](https://github.com/qq15725/mce/commit/4ae17920feb64e419b21faef02d3c474694f8fae))
+* **playground:** center band text in large-export demo so size matches ([6bfa274](https://github.com/qq15725/mce/commit/6bfa27466d4942b3a60d41187a111e3f6ebae070))
+* **ruler:** keep rulers above canvas overlays so node titles sit under them ([cda5b18](https://github.com/qq15725/mce/commit/cda5b18a417bd904c7040b2fa728a3e6cb86a4eb))
+
+### Features
+
+* **playground:** add flex auto-layout scroll frame to artboard demo ([e656f4e](https://github.com/qq15725/mce/commit/e656f4e6e22370a39ac0f8f81111b92b66e1978b))
+
 # [0.34.0](https://github.com/qq15725/mce/compare/v0.33.2...v0.34.0) (2026-07-13)
 
 ### Bug Fixes
