@@ -15,7 +15,7 @@ function rect(id: string, x: number, y: number, w: number, h: number, color: str
 function band(id: string, y: number, h: number, color: string, label: string, text = '#1a1a2e'): any {
   return {
     id,
-    style: { left: 0, top: y, width: W, height: h, backgroundColor: color, fontSize: Math.min(72, h * 0.6), color: text, alignItems: 'center', justifyContent: 'center', textAlign: 'center' },
+    style: { left: 0, top: y, width: W, height: h, backgroundColor: color, fontSize: Math.min(72, h * 0.6), color: text, textAlign: 'center', verticalAlign: 'middle', lineHeight: h },
     text: label,
     meta: { inCanvasIs: 'Element2D' },
   }
