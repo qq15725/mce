@@ -223,6 +223,15 @@ export default definePlugin((editor) => {
         if (context) {
           const excluded = new Set(elementSelection.value.map(el => el.instanceId))
           elementSelection.value.forEach((el) => {
+            // A flex child is owned by flexLayout (reorder / enter / leave). If
+            // autoNest detached it here (its generic frame-leave), flexLayout's
+            // `drag` would go stale and reset the element to (0,0) on drop. Once
+            // flexLayout moves it out to root (parent no longer flex), autoNest
+            // resumes and can nest it into a plain frame underneath.
+            const parent = el.getParent<Element2D>()
+            if (parent && isFlexContainer(parent)) {
+              return
+            }
             nestIntoFrame(
               el,
               {

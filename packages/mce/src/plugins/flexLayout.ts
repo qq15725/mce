@@ -297,12 +297,16 @@ export default definePlugin((editor) => {
   function end(): void {
     window.removeEventListener('keydown', onKey)
     window.removeEventListener('keyup', onKey)
-    if (drag) {
+    // Only clear the reorder offset when the element is still in the flex parent
+    // it was reordering within. If it was detached mid-drag (dragged out / moved
+    // to root by autoNest), its left/top is now an absolute position — zeroing it
+    // would snap the element to (0,0).
+    if (drag && drag.el.getParent<Element2D>()?.equal(drag.parent)) {
       // Drop the temporary offset → snaps back to the (reordered) flow slot.
       drag.el.style.left = 0
       drag.el.style.top = 0
-      drag = undefined
     }
+    drag = undefined
     spaceHeld = false
     dropSlot.value = undefined
   }
