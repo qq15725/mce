@@ -145,9 +145,16 @@ export default definePlugin((editor) => {
           if (frame2.equal(options?.parent)) {
             index = options!.index
           }
+          // 先快照成数值：aabb1 是 el.globalAabb 的活引用，下面设 style.left 会同步触发
+          // el 重算 globalTransform 并原地改写 aabb1，若再读 aabb1.y 就拿到「移动后」的脏值，
+          // top 会算错、落定时跳一个 frame 原点（left 先算侥幸正确，top 被污染）。
+          const ax = aabb1.x
+          const ay = aabb1.y
+          const bx = aabb2.x
+          const by = aabb2.y
           safeMoveChild(frame2, el, index)
-          el.style.left = aabb1.x - aabb2.x
-          el.style.top = aabb1.y - aabb2.y
+          el.style.left = ax - bx
+          el.style.top = ay - by
           el.updateGlobalTransform()
           exec('layerScrollIntoView')
         }
@@ -164,9 +171,12 @@ export default definePlugin((editor) => {
       if (root.value.equal(options?.parent)) {
         index = options!.index
       }
+      // 同上：先快照，避免设 left 后 aabb1（活引用）被原地改写导致 top 读到脏值。
+      const ax = aabb1.x
+      const ay = aabb1.y
       safeMoveChild(root.value as any, el, index)
-      el.style.left = aabb1.x
-      el.style.top = aabb1.y
+      el.style.left = ax
+      el.style.top = ay
       el.updateGlobalTransform()
       exec('layerScrollIntoView')
     }

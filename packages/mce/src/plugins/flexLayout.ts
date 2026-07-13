@@ -263,11 +263,14 @@ export default definePlugin((editor) => {
       // rejects 'auto' (setWidth "auto0"), and per Figma an item dragged out of
       // auto-layout keeps its rendered size.
       const o = getObb(el)
+      // 先快照成数值：设 s.width 可能触发重算并原地改写 o，再读 o.height 会拿到脏值。
+      const ow = o.width
+      const oh = o.height
       const s = el.style as any
       if (typeof s.width !== 'number')
-        s.width = o.width
+        s.width = ow
       if (typeof s.height !== 'number')
-        s.height = o.height
+        s.height = oh
       root.value.moveChild(el, root.value.children.length)
       el.style.left = value.left
       el.style.top = value.top

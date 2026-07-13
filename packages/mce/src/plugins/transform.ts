@@ -307,14 +307,18 @@ export default definePlugin((editor) => {
       // padding，故固化时减去 padding，resize 才精确（render = value，不多出一圈 padding）。
       if (type === 'resize') {
         const g = el.globalAabb
+        // 先快照成数值：g 是 el.globalAabb 的活引用，设 s.width 会同步触发重算并原地改写 g，
+        // 再读 g.height（hug 容器改宽会重排高度）就拿到脏值。
+        const gw = g.width
+        const gh = g.height
         const s = style as any
         const num = (v: any): number => (typeof v === 'number' ? v : (Number.parseFloat(v) || 0))
         // 每边优先取单边 paddingX，回退到 padding 简写（demo 常用 style.padding: 20）。
         const pad = (side: string): number => num(s[`padding${side}`] ?? s.padding)
         if (typeof s.width !== 'number')
-          s.width = Math.max(0, g.width - pad('Left') - pad('Right'))
+          s.width = Math.max(0, gw - pad('Left') - pad('Right'))
         if (typeof s.height !== 'number')
-          s.height = Math.max(0, g.height - pad('Top') - pad('Bottom'))
+          s.height = Math.max(0, gh - pad('Top') - pad('Bottom'))
         if (s.flexGrow)
           s.flexGrow = 0
         if (s.flex)
