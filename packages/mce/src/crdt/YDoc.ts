@@ -248,7 +248,7 @@ export class YDoc extends Observable {
     return this
   }
 
-  protected _proxyProps(obj: CoreObject, yMap: Y.Map<any>, isMeta = false): void {
+  protected _proxyProps(obj: CoreObject, yMap: Y.Map<any>, isMeta = false, metaTarget?: CoreObject): void {
     const accessor: PropertyAccessor = {
       getProperty: key => yMap.doc ? yMap.get(key) : undefined,
       setProperty: (key, value) => {
@@ -296,6 +296,26 @@ export class YDoc extends Observable {
         keysChanged.forEach((key) => {
           const change = changes.keys.get(key)
           const oldValue = change?.oldValue
+          // root.meta 内联为 _yProps 顶层 `meta:` 前缀标量键（避免 root 每端独立初始化并发新建子 map
+          // 被整块 LWW 覆盖）；把前缀键路由回 root.meta，而非当成 root 自身属性处理。
+          if (metaTarget && typeof key === 'string' && (key === 'meta' || key.startsWith('meta:'))) {
+            // 旧格式：root.meta 曾整存为 'meta' 子 map。前缀方案下忽略它（不当 root 标量属性、也不迁移；
+            // inCanvasIs 等由本地重设，自定义旧 meta 极罕见，清 indexeddb 缓存即重建）。
+            if (key === 'meta') {
+              return
+            }
+            const mk = key.slice(5)
+            this.undoManager.stopCapturing()
+            if (change?.action === 'delete') {
+              metaTarget.setProperty(mk, undefined)
+              metaTarget.requestUpdate(mk, undefined, oldValue)
+            }
+            else {
+              metaTarget.setProperty(mk, yMap.get(key))
+              metaTarget.requestUpdate(mk, yMap.get(key), oldValue)
+            }
+            return
+          }
           switch (change?.action) {
             case 'add':
             case 'update':
@@ -317,6 +337,53 @@ export class YDoc extends Observable {
       }, false)
     }
     this._bindObserver(obj, '_yMap', '_yMapObserveFn', yMap, observeFn)
+  }
+
+  /**
+   * root（文档）的 meta 内联到 _yProps 顶层的 `meta:<key>` 标量键，而非嵌套子 map。
+   *
+   * 原因：root 每端各自 _proxyRoot、各自 new 一个 meta 子 map 并 set 到同一个 'meta' 键，Yjs 按
+   * clientID LWW 只保留其一、另一整块子 map（连同内容）被丢弃 → root.meta 两端各自为政。改用顶层标量键
+   * 后，每个 meta 属性是独立的 `meta:x` 键，走与 name 相同的标量 LWW：不同属性天然并集、同属性收敛一致，
+   * 无子 map 并发问题。仅 root 如此；普通元素的 meta 由创建方单端建子 map、加入方复用同一对象，不并发。
+   *
+   * accessor 只在 CRDT 层加/去前缀；meta 对象自身的 _properties / toJSON 仍是无前缀键，故序列化无损。
+   * 对端变更经顶层 observe 的 `meta:` 路由回灌（见 _proxyProps observeFn）。
+   */
+  protected _proxyRootMeta(meta: CoreObject, yProps: Y.Map<any>): void {
+    const PREFIX = 'meta:'
+    const accessor: PropertyAccessor = {
+      getProperty: key => yProps.doc ? yProps.get(PREFIX + key) : undefined,
+      setProperty: (key, value) => {
+        this._guardedTransact(() => {
+          if (value === undefined) {
+            yProps.delete(PREFIX + key)
+          }
+          else {
+            yProps.set(PREFIX + key, value)
+          }
+        })
+      },
+    }
+    // 本地初始 meta 值补入 _yProps（仅当该前缀键尚无——不覆盖远端已同步值），随后装 accessor。
+    const localEntries = definedEntries(meta.offsetGetProperties())
+    ;(meta as any).setPropertyAccessor(accessor)
+    this._guardedTransact(() => {
+      for (const [k, v] of localEntries) {
+        const pk = PREFIX + k
+        if (!yProps.has(pk)) {
+          yProps.set(pk, v)
+        }
+      }
+    })
+    // 采纳 _yProps 里已存在的前缀键（冷启动 / 迟到入会：applyUpdate 已灌满值，observe 不回放历史）。
+    yProps.forEach((v, k) => {
+      if (typeof k === 'string' && k.startsWith(PREFIX)) {
+        const mk = k.slice(PREFIX.length)
+        meta.setProperty(mk, v)
+        meta.requestUpdate(mk, v, undefined)
+      }
+    })
   }
 
   // 统一「markRaw 存 yType / 先解绑旧 observer 再挂新 observer」的重绑样板。
@@ -552,9 +619,16 @@ export class YDoc extends Observable {
       syncParentId()
       node.on('parented', syncParentId)
 
-      this._proxyProps(node, yNode)
+      const isRoot = yNode === this._yProps
+      // root：把 meta 内联为 _yProps 顶层 `meta:` 前缀键（见 _proxyRootMeta），顶层 observe 据 metaTarget 路由。
+      this._proxyProps(node, yNode, false, isRoot ? node.meta : undefined)
 
-      this._proxyProps(node.meta, this._ensureSubMap(yNode, 'meta', node.meta), true)
+      if (isRoot) {
+        this._proxyRootMeta(node.meta, this._yProps)
+      }
+      else {
+        this._proxyProps(node.meta, this._ensureSubMap(yNode, 'meta', node.meta), true)
+      }
 
       if (node instanceof Element2D) {
         ELEMENT2D_SYNCED_SUBOBJECTS.forEach((key) => {
