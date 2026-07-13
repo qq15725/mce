@@ -1,3 +1,10 @@
+## [0.33.2](https://github.com/qq15725/mce/compare/v0.33.1...v0.33.2) (2026-07-13)
+
+### Bug Fixes
+
+* **crdt:** inline root.meta as prefixed scalar keys to fix concurrent loss ([e1f9a2a](https://github.com/qq15725/mce/commit/e1f9a2a12e22142c974a626611350d30e083aa97))
+* **crdt:** keep doc title stable across collaborators ([f39ca9c](https://github.com/qq15725/mce/commit/f39ca9c234fd64bde0428b191ff26b72e022faef))
+
 ## [0.33.1](https://github.com/qq15725/mce/compare/v0.33.0...v0.33.1) (2026-07-12)
 
 ### Performance Improvements
