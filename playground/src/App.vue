@@ -19,7 +19,7 @@ import { Editor, EditorLayers, EditorLayout, EditorLayoutItem } from 'mce'
 import { normalizeEffect } from 'modern-idoc'
 import { computed } from 'vue'
 import { BroadcastChannelProvider } from './collab'
-import { demoImagePipelines, loadAnimationDemo, loadArtboardDemo, loadBigParagraphDemo, loadBigTextDemo, loadChartDemo, loadCommentsDemo, loadConnectionDemo, loadFillStrokeDemo, loadFrameScrollDemo, loadGifDemo, loadImageEffectsDemo, loadInteractionDemo, loadLargeExportDemo, loadLayoutDemo, loadLinesDemo, loadPipelinesDemo, loadPsdDemo, loadShapesDemo, loadSmartGuidesDemo, loadTableDemo, loadTextDemo, loadTextFeaturesDemo, loadVideoDemo, loadWorkflowDemo } from './demos'
+import { demoImagePipelines, loadAnimationDemo, loadArtboardDemo, loadBigParagraphDemo, loadBigTextDemo, loadChartDemo, loadCommentsDemo, loadConnectionDemo, loadFillStrokeDemo, loadGifDemo, loadImageEffectsDemo, loadInteractionDemo, loadLargeExportDemo, loadLayoutDemo, loadLinesDemo, loadPipelinesDemo, loadPsdDemo, loadShapesDemo, loadSmartGuidesDemo, loadTableDemo, loadTextDemo, loadTextFeaturesDemo, loadVideoDemo, loadWorkflowDemo } from './demos'
 import 'mce/styles'
 
 const editorOptions = {
@@ -110,9 +110,6 @@ else if (demo === 'connection') {
 }
 else if (demo === 'workflow') {
   loadWorkflowDemo(editor)
-}
-else if (demo === 'frameScroll') {
-  loadFrameScrollDemo(editor)
 }
 else if (demo === 'layout') {
   loadLayoutDemo(editor)
@@ -302,9 +299,6 @@ const element = computed(() => editor.elementSelection.value[0])
           </button>
           <button @click="() => loadArtboardDemo(editor)">
             画板示例
-          </button>
-          <button @click="() => loadFrameScrollDemo(editor)">
-            画板内滚动示例
           </button>
           <button @click="() => loadAnimationDemo(editor)">
             动画示例
