@@ -321,11 +321,15 @@ export default definePlugin((editor) => {
           s.flex = undefined
       }
 
+      // width/height 可能是 'auto'(Hug) 或 flexGrow 撑开的 flex 容器/子。move/rotate 的 offset 恒为 0，
+      // 但 'auto' + 0 会字符串拼接成 'auto0'，逐帧累加成 'auto00…'，yoga setWidth 直接崩。故仅对数字做
+      // 加法、非数字原样保留（resize 路径已在上方把 'auto' 固化为数字，此处对 resize 就是普通加法）。
+      const addNum = (v: any, off: number): any => (typeof v === 'number' ? v + off : v)
       const newStyle = {
         left: style.left + offsetStyle.left,
         top: style.top + offsetStyle.top,
-        width: style.width + offsetStyle.width,
-        height: style.height + offsetStyle.height,
+        width: addNum(style.width, offsetStyle.width),
+        height: addNum(style.height, offsetStyle.height),
         rotate: ((style.rotate + offsetStyle.rotate) + 360) % 360,
         borderRadius: Math.round(style.borderRadius + offsetStyle.borderRadius),
       }
