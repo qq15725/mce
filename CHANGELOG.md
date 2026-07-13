@@ -1,3 +1,15 @@
+# [0.34.0](https://github.com/qq15725/mce/compare/v0.33.2...v0.34.0) (2026-07-13)
+
+### Bug Fixes
+
+* **canvas:** stop clipping selection/hover boxes at frame edges ([c7332ac](https://github.com/qq15725/mce/commit/c7332ac9dcfb05a8b4619227c6056a2343a9dd19))
+* **transform:** keep auto/Hug size intact when moving a flex element ([e5fb68a](https://github.com/qq15725/mce/commit/e5fb68a0dd0c8a93a3bb95e3228efbab028eaa11))
+* **workflow:** align node title with canvas frame title, keep under toolbelt ([000d3db](https://github.com/qq15725/mce/commit/000d3db8ea299a271007cfbe500f4d87bb601768))
+
+### Features
+
+* **canvas:** pen bezier drawing + flex drag-drop reorder/nesting ([68861cd](https://github.com/qq15725/mce/commit/68861cdb5482c63857d65a7aea4c571910785881))
+
 ## [0.33.2](https://github.com/qq15725/mce/compare/v0.33.1...v0.33.2) (2026-07-13)
 
 ### Bug Fixes
