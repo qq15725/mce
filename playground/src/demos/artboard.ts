@@ -1,4 +1,5 @@
 import type { Editor } from 'mce'
+import { Flexbox } from 'modern-canvas'
 import { box } from './shared'
 
 // 裁剪画板：overflow:hidden，超出边界的内容被裁掉、画板本身不动。
@@ -41,14 +42,49 @@ function scrollFrame(name: string, style: Record<string, any>): any {
 
 const CARD = ['#0ea5e9', '#22c55e', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6', '#ef4444', '#6366f1', '#eab308', '#f97316', '#06b6d4', '#a855f7']
 
-// 画板（Frame）示例：裁剪画板 + 各方向的滚动画板，一处覆盖画板的裁剪 / 嵌套 /
-// autoNest 拖入拖出 / overflow 纵向·横向·双向滚动。
-export function loadArtboardDemo(editor: Editor): void {
-  editor.setDoc([])
+// 画板（Frame）示例：裁剪画板 + 各方向的滚动画板（含一个 flex 自动布局的滚动画板），
+// 一处覆盖画板的裁剪 / 嵌套 / autoNest 拖入拖出 / overflow 纵向·横向·双向滚动 / flex + 滚动。
+export async function loadArtboardDemo(editor: Editor): Promise<void> {
+  // flex 自动布局需要 yoga 引擎，按需加载（否则 flex 画板不排布）。
+  await Flexbox.load()
 
   const pad = 24
   const gap = 16
   const listW = 460
+  const flexW = 360
+
+  // flex 自动布局 + 滚动画板：固定尺寸 + overflow:auto + display:flex(column)，子由 flex 纵向排开、
+  // 总高超过画板固定高度 → 溢出 → 纵向滚动。经 setDoc 建树（flex 布局在建树阶段解析）。
+  editor.setDoc([{
+    ...scrollFrame('flex 滚动（自动布局）', {
+      left: listW + 800,
+      top: 640,
+      width: flexW,
+      height: 560,
+      display: 'flex',
+      flexDirection: 'column',
+      gap,
+      padding: pad,
+      alignItems: 'stretch',
+    }),
+    children: Array.from({ length: 10 }, (_, i) => ({
+      id: `fs-flex-${i}`,
+      style: {
+        width: flexW - pad * 2,
+        height: 120,
+        flexShrink: 0,
+        borderRadius: 10,
+        fontSize: 16,
+        color: '#ffffff',
+        textAlign: 'center',
+        verticalAlign: 'middle',
+        lineHeight: 120,
+      },
+      fill: CARD[i % CARD.length],
+      text: `行 ${i + 1}`,
+      meta: { inCanvasIs: 'Element2D' },
+    })),
+  }])
 
   // ── 裁剪画板 ──────────────────────────────────────────────
   // 画板 A（原点、active 选中）：内含越过右/下边界的溢出块，验证 overflow:hidden 裁剪。
