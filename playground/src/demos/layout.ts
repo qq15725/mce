@@ -20,9 +20,11 @@ function layoutChild(id: string, label: string, color: string, w: number, h: num
   }
 }
 
-// 顶层画板（Frame），刻意偏移到非 (0,0) 处：用来测「往偏移画板里画/拖元素」时坐标换算是否正确
-// （元素 style.left/top 相对画板原点，早前会漏减一个画板原点导致落定跳位）。
-function offsetFrame(id: string, name: string, left: number, top: number, w: number, h: number): any {
+// 顶层「自动布局画板」（Frame + display:flex），刻意偏移到非 (0,0) 处：既测「往偏移画板里画/拖
+// 元素」的坐标换算，又测偏移的 flex 画板本身不会被 yoga 根强制回 (0,0)——画板自身由 root 绝对定位、
+// 其子由 flex 排布。往里拖元素应按主轴插入并保持偏移不跳位。
+function offsetFrame(id: string, name: string, left: number, top: number, dir: 'row' | 'column'): any {
+  const colors = ['#6366f1', '#06b6d4', '#22c55e']
   return {
     id,
     name,
@@ -30,32 +32,17 @@ function offsetFrame(id: string, name: string, left: number, top: number, w: num
     style: {
       left,
       top,
-      width: w,
-      height: h,
-      overflow: 'hidden',
+      display: 'flex',
+      flexDirection: dir,
+      gap: 16,
+      padding: 24,
+      alignItems: 'center',
+      justifyContent: 'flex-start',
+      width: 'auto',
+      height: 'auto',
       backgroundColor: '#eef2ff',
     },
-    children: [
-      // 画板内已有一个子块（相对画板原点定位），作为拖入 / 相对定位的参照。
-      {
-        id: `${id}-c1`,
-        style: {
-          left: 40,
-          top: 40,
-          width: 120,
-          height: 80,
-          borderRadius: 8,
-          fontSize: 16,
-          color: '#ffffff',
-          textAlign: 'center',
-          verticalAlign: 'middle',
-          lineHeight: 80,
-        },
-        fill: '#6366f1',
-        text: '内',
-        meta: { inCanvasIs: 'Element2D' },
-      },
-    ],
+    children: colors.map((color, i) => layoutChild(`${id}-c${i + 1}`, String(i + 1), color, 120, 80)),
   }
 }
 
@@ -122,9 +109,9 @@ export async function loadLayoutDemo(editor: Editor): Promise<void> {
         },
       ],
     },
-    // 两个偏移的顶层画板（非 (0,0)）：在里面画/拖元素，验证落定坐标不跳位。
-    offsetFrame('frame-a', '画板 A', 120, 360, 420, 300),
-    offsetFrame('frame-b', '画板 B', 640, 360, 420, 300),
+    // 两个偏移的顶层自动布局画板（非 (0,0)）：在里面画/拖元素，验证 flex 排布 + 落定坐标不跳位。
+    offsetFrame('frame-a', '画板 A（row）', 120, 400, 'row'),
+    offsetFrame('frame-b', '画板 B（column）', 720, 400, 'column'),
   ] as any)
   setTimeout(() => editor.exec('zoomToFit'), 150)
 }
