@@ -463,14 +463,22 @@ function onEnginePointerDown(
     currentPos = { x: upEvent.clientX, y: upEvent.clientY }
 
     switch (downState) {
-      case 'drawing':
-        drawingTool?.end?.(
-          camera.value.toGlobal({
-            x: currentPos.x - drawboardAabb.value.left,
-            y: currentPos.y - drawboardAabb.value.top,
-          }),
-        )
+      case 'drawing': {
+        const p = camera.value.toGlobal({
+          x: currentPos.x - drawboardAabb.value.left,
+          y: currentPos.y - drawboardAabb.value.top,
+        })
+        drawingTool?.end?.(p)
+        // 新建元素落定：命中画板则嵌入——flex 画板按主轴插入到正确位置，普通画板绝对嵌入。
+        // 仅限「单发」绘制工具（矩形/椭圆/线/箭头/铅笔）：它们 end 里 activateTool(undefined) 清空了
+        // 工具、且 active:true 已选中刚建的元素，故此刻 elementSelection[0] 就是新元素。钢笔多点绘制
+        // 期间 activeTool 仍是 'pen'（且不 active 选中），跳过——它经 placeElementByBox 自管嵌入，
+        // 否则会把绘制前的旧选中元素误嵌进光标下的画板。
+        const created = elementSelection.value[0]
+        if (created && drawingTool && !activeTool.value)
+          exec('nestIntoFrame', created, { pointer: p } as any)
         break
+      }
       case 'hand':
         grabbing.value = false
         break

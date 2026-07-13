@@ -1,6 +1,7 @@
 import type { Element2D } from 'modern-canvas'
 import type { FlexDirection } from 'modern-idoc'
-import { toRaw } from 'vue'
+import { h, ref } from 'vue'
+import FlexDropIndicator from '../components/FlexDropIndicator.vue'
 import { definePlugin } from '../plugin'
 import { isFlexContainer } from '../utils/helper'
 
@@ -43,15 +44,18 @@ declare global {
  * drag start + the current children order (the order array updates
  * synchronously on `moveChild`, but the rendered transforms only catch up on
  * the next tick — so reading them back with `getObb` mid-drag is stale and
- * makes the swap oscillate at the boundary). Structural changes run on the raw
- * (non-reactive) nodes, else the canvas hands a Proxy to yoga's embind which
- * throws a Proxy-invariant error and drops the child.
+ * makes the swap oscillate at the boundary). Structural moves use the reactive
+ * nodes directly — modern-canvas markRaw's the yoga node so there's no embind
+ * Proxy crash, and the Vue tree (layers panel) stays in sync (toRaw would
+ * desync the panel from the canvas).
  */
 export default definePlugin((editor) => {
   const {
     isElement,
     elementSelection,
     getObb,
+    getGlobalPointer,
+    root,
   } = editor
 
   interface Drag {
@@ -67,6 +71,10 @@ export default definePlugin((editor) => {
   }
   let drag: Drag | undefined
 
+  let spaceHeld = false
+  // 插入指示线的槽位(世界坐标),拖拽中由 innerMove 填充、进出/结束清空。
+  const dropSlot = ref<{ horizontal: boolean, main: number, crossStart: number, crossEnd: number } | undefined>()
+
   function flexParentOf(el: Element2D | undefined): Element2D | undefined {
     const parent = el?.getParent<Element2D>()
     return parent && isElement(parent) && isFlexContainer(parent)
@@ -76,6 +84,34 @@ export default definePlugin((editor) => {
 
   function elementChildren(parent: Element2D): Element2D[] {
     return parent.children.filter(c => isElement(c)) as Element2D[]
+  }
+
+  /**
+   * The INNERMOST flex container whose world AABB contains the pointer. Auto-layout
+   * can be any element (not just a top-level frame), so we walk the whole tree.
+   * Innermost + pointer-based (Figma-style): hovering a nested auto-layout joins
+   * the nested one; hovering an outer frame's gap joins the outer. Excludes the
+   * dragged element itself and anything nested inside it.
+   */
+  function flexFrameAt(el: Element2D, pointer: { x: number, y: number }): Element2D | undefined {
+    let hit: Element2D | undefined
+    const visit = (node: Element2D): void => {
+      for (const child of node.children) {
+        if (!isElement(child))
+          continue
+        const c = child as Element2D
+        if (c.equal(el) || c.findAncestor(n => n.equal(el)))
+          continue
+        if (isFlexContainer(c)) {
+          const aabb = c.globalAabb
+          if (aabb.contains(pointer) && (!hit || aabb.getArea() < hit.globalAabb.getArea()))
+            hit = c
+        }
+        visit(c)
+      }
+    }
+    visit(root.value as any)
+    return hit
   }
 
   /** el's slot main-start and the siblings' main-axis centres, for one order. */
@@ -94,75 +130,178 @@ export default definePlugin((editor) => {
     return { elStart, centers }
   }
 
-  function start(): void {
-    drag = undefined
-    const el = elementSelection.value[0]
-    if (elementSelection.value.length !== 1 || !el)
-      return
-    const parent = flexParentOf(el)
-    if (!parent)
-      return
-    const dir = (parent.style as any).flexDirection ?? 'row'
+  /** Insert index for a main-axis centre among `order` (reverse-aware). */
+  function insertIndex(d: Drag, dragMain: number, order: Element2D[]): number {
+    const { centers } = layout(d, order)
+    const before = centers.filter(c => c < dragMain).length
+    return d.reverse ? centers.length - before : before
+  }
+
+  /** Snapshot a flex container's layout params (sizes/gap/dir/content-start). */
+  function snapshot(parent: Element2D, el: Element2D): Drag {
+    const s = parent.style as any
+    const dir = s.flexDirection ?? 'row'
     const horizontal = dir === 'row' || dir === 'row-reverse'
     const children = elementChildren(parent)
-    const main = (o: any) => (horizontal ? o.left : o.top)
     const mainSize = (o: any) => (horizontal ? o.width : o.height)
-
     const size = new Map<number, number>()
     children.forEach(c => size.set(c.instanceId, mainSize(getObb(c))))
-    const first = getObb(children[0])
-    // Infer the gap from the first two slots (avoids parsing style units).
-    const gap = children[1]
-      ? main(getObb(children[1])) - (main(first) + mainSize(first))
-      : 0
-    const elObb = getObb(el)
-
-    drag = {
+    // contentStart / crossSlot / gap come from the container geometry + style,
+    // NOT from a child's getObb position: right after moveChild the layout has
+    // not reflowed yet (getObb is the stale pre-move position), which made
+    // elStart wrong so the element didn't follow the cursor on re-entering flex.
+    const num = (v: any): number => (typeof v === 'number' ? v : (Number.parseFloat(v) || 0))
+    const fa = parent.globalAabb
+    const padMain = horizontal ? num(s.paddingLeft ?? s.padding) : num(s.paddingTop ?? s.padding)
+    const padCross = horizontal ? num(s.paddingTop ?? s.padding) : num(s.paddingLeft ?? s.padding)
+    return {
       el,
       parent,
       horizontal,
       reverse: typeof dir === 'string' && dir.endsWith('-reverse'),
-      gap,
-      contentStart: main(first),
-      crossSlot: horizontal ? elObb.top : elObb.left,
+      gap: num(s.gap),
+      contentStart: (horizontal ? fa.x : fa.y) + padMain,
+      crossSlot: (horizontal ? fa.y : fa.x) + padCross,
       size,
     }
   }
 
-  function move(value: Mce.TransformValue): void {
+  function onKey(e: KeyboardEvent): void {
+    if (e.code === 'Space')
+      spaceHeld = e.type === 'keydown'
+  }
+
+  /** Reorder within the current flex parent + follow the cursor. */
+  function innerMove(value: Mce.TransformValue): void {
     if (!drag)
       return
     const d = drag
     const dragMain = d.horizontal ? value.left + value.width / 2 : value.top + value.height / 2
 
-    let order = elementChildren(d.parent)
-    let { elStart, centers } = layout(d, order)
-    const before = centers.filter(c => c < dragMain).length
-    const index = d.reverse ? centers.length - before : before
+    // Reorder decision from the analytic layout (stable: reading siblings' getObb
+    // right after moveChild is stale and oscillates at the boundary).
+    const order = elementChildren(d.parent)
+    const index = insertIndex(d, dragMain, order)
     if (index !== order.findIndex(c => c.equal(d.el))) {
-      toRaw(d.parent).moveChild(toRaw(d.el), index)
-      order = elementChildren(d.parent)
-      ;({ elStart } = layout(d, order))
+      d.parent.moveChild(d.el, index)
     }
 
-    // Follow the cursor: offset over the (analytically derived) flow slot.
-    if (d.horizontal) {
-      d.el.style.left = value.left - elStart
-      d.el.style.top = value.top - d.crossSlot
+    // Cursor offset from the element's REAL flow slot: clear the offset, reflow
+    // the container, then read the element's true getObb position. The analytic
+    // slot (size accumulation) drifts when siblings are flex containers / hug /
+    // shrink; the real yoga result doesn't. reflow makes getObb non-stale here.
+    d.el.style.left = 0
+    d.el.style.top = 0
+    d.parent.updateGlobalTransform()
+    const slot = getObb(d.el)
+    d.el.style.left = value.left - slot.left
+    d.el.style.top = value.top - slot.top
+
+    // Insertion indicator at the element's slot main-start, across the container.
+    const fa = d.parent.globalAabb
+    const main = d.horizontal ? slot.left : slot.top
+    dropSlot.value = d.horizontal
+      ? { horizontal: true, main, crossStart: fa.y, crossEnd: fa.y + fa.height }
+      : { horizontal: false, main, crossStart: fa.x, crossEnd: fa.x + fa.width }
+  }
+
+  /**
+   * Per-frame flex drag state machine: enter a flex frame (insert at the
+   * main-axis index), leave one (detach to root, restore absolute pos so it
+   * keeps following the cursor; autoNest then nests into any plain frame
+   * underneath), or reorder within the current one. Space temporarily
+   * suppresses joining. Structural moves use reactive nodes (engine markRaw's
+   * the yoga node → no embind crash, and the layers panel stays in sync).
+   */
+  function move(value: Mce.TransformValue): void {
+    const el = elementSelection.value[0]
+    if (elementSelection.value.length !== 1 || !el)
+      return
+    dropSlot.value = undefined
+    // Pointer-based hit-test (Figma-style): the cursor — not the (possibly large)
+    // dragged box — decides which flex frame, so hovering a nested auto-layout
+    // enters the nested one while hovering an outer frame's gap enters the outer.
+    const pointer = getGlobalPointer()
+    const targetFlex = spaceHeld ? undefined : flexFrameAt(el, pointer)
+    const currentFlex = flexParentOf(el)
+
+    // Reorder within the current flex frame (cursor over it, not a deeper child).
+    if (targetFlex && targetFlex.equal(currentFlex)) {
+      if (!drag || !drag.parent.equal(targetFlex))
+        drag = snapshot(targetFlex, el)
+      innerMove(value)
+      return
     }
-    else {
-      d.el.style.top = value.top - elStart
-      d.el.style.left = value.left - d.crossSlot
+
+    // Enter another flex frame — a nested child, a sibling, or a fresh one — at
+    // the main-axis index (index from the element box, level from the cursor).
+    if (targetFlex) {
+      const d0 = snapshot(targetFlex, el)
+      const dragMain = d0.horizontal ? value.left + value.width / 2 : value.top + value.height / 2
+      const idx = insertIndex(d0, dragMain, elementChildren(targetFlex))
+      // Clear any stale offset before joining (else the leftover left/top stacks
+      // onto the new slot), then force one reflow so the element's flex slot takes
+      // effect immediately. Otherwise layout is deferred to next tick — the element
+      // still renders at its pre-join position while innerMove's offset is computed
+      // from the (analytic) new slot, so it doesn't follow the cursor.
+      el.style.left = 0
+      el.style.top = 0
+      targetFlex.moveChild(el, idx)
+      // Reflow the CONTAINER (not just el): the siblings must re-flow to open the
+      // element's slot, otherwise they stay put and the element renders on top of
+      // them at a stale position while its offset targets the analytic slot.
+      targetFlex.updateGlobalTransform()
+      drag = snapshot(targetFlex, el)
+      innerMove(value)
+      return
+    }
+
+    // Leave flex frame → detach to root + restore absolute (cursor) position.
+    if (currentFlex) {
+      // Freeze the flex-resolved size first: a flex child may be auto-sized
+      // (width/height 'auto'); once absolutely positioned the engine relayout
+      // rejects 'auto' (setWidth "auto0"), and per Figma an item dragged out of
+      // auto-layout keeps its rendered size.
+      const o = getObb(el)
+      const s = el.style as any
+      if (typeof s.width !== 'number')
+        s.width = o.width
+      if (typeof s.height !== 'number')
+        s.height = o.height
+      root.value.moveChild(el, root.value.children.length)
+      el.style.left = value.left
+      el.style.top = value.top
+      el.updateGlobalTransform()
+      drag = undefined
+    }
+  }
+
+  function start(): void {
+    drag = undefined
+    spaceHeld = false
+    window.addEventListener('keydown', onKey)
+    window.addEventListener('keyup', onKey)
+    // Pre-snapshot when the drag starts already inside a flex frame (first
+    // frame's reorder needs it); the move() state machine handles the rest.
+    const el = elementSelection.value[0]
+    if (elementSelection.value.length === 1 && el) {
+      const parent = flexParentOf(el)
+      if (parent)
+        drag = snapshot(parent, el)
     }
   }
 
   function end(): void {
+    window.removeEventListener('keydown', onKey)
+    window.removeEventListener('keyup', onKey)
     if (drag) {
       // Drop the temporary offset → snaps back to the (reordered) flow slot.
       drag.el.style.left = 0
       drag.el.style.top = 0
       drag = undefined
     }
+    spaceHeld = false
+    dropSlot.value = undefined
   }
 
   // ── Container-level flex commands (UI builds panels on top of these,
@@ -224,6 +363,12 @@ export default definePlugin((editor) => {
 
   return {
     name: 'mce:flexLayout',
+    components: [
+      {
+        type: 'overlay',
+        component: () => h(FlexDropIndicator, { slot: dropSlot.value }),
+      },
+    ],
     commands: [
       { command: 'enableFlexLayout', handle: enableFlexLayout },
       { command: 'disableFlexLayout', handle: disableFlexLayout },
@@ -241,4 +386,8 @@ export default definePlugin((editor) => {
       selectionTransformEnded: end,
     },
   }
-})
+  // Run after transform's setTransform: on drag-OUT, transform sees the element
+  // still in flex (its move is flex-suppressed → no-op), then we detach it and
+  // set its absolute cursor position — so transform can't overwrite it with a
+  // stale "style.left + offset" and make it jump on the first frame.
+}, { enforce: 'post' })

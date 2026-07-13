@@ -1,7 +1,7 @@
 import type { Shape } from 'modern-idoc'
 import { Path2D } from 'modern-path2d'
 import { definePlugin } from '../plugin'
-import { createShapeElement, getTaperedArrowPath } from '../utils'
+import { createShapeElement, getTaperedArrowPath, placeElementByBox } from '../utils'
 
 declare global {
   namespace Mce {
@@ -27,6 +27,7 @@ export default definePlugin((editor) => {
     addElement,
     activateTool,
     registerConfig,
+    root,
   } = editor
 
   const drawStyle = registerConfig<Mce.DrawStyleConfig>('interaction.drawStyle', {
@@ -47,10 +48,7 @@ export default definePlugin((editor) => {
           const minY = Math.min(move.y, start.y)
           const maxX = Math.max(move.x, start.x)
           const maxY = Math.max(move.y, start.y)
-          el.style.left = minX
-          el.style.top = minY
-          el.style.width = Math.max(1, maxX - minX)
-          el.style.height = Math.max(1, maxY - minY)
+          placeElementByBox(el, { left: minX, top: minY, width: maxX - minX, height: maxY - minY }, root.value)
         },
         end: () => {
           activateTool(undefined)
@@ -92,11 +90,7 @@ export default definePlugin((editor) => {
               el.shape.paths = [
                 { data: path.toData() },
               ]
-              const box = path.getBoundingBox()
-              el.style.left = box.left
-              el.style.top = box.top
-              el.style.width = box.width
-              el.style.height = box.height
+              placeElementByBox(el, path.getBoundingBox(), root.value)
             },
             end: () => {
               activateTool(undefined)
@@ -126,11 +120,7 @@ export default definePlugin((editor) => {
               el.shape.paths = [
                 { data },
               ]
-              const box = new Path2D(data).getBoundingBox()
-              el.style.left = box.left
-              el.style.top = box.top
-              el.style.width = box.width
-              el.style.height = box.height
+              placeElementByBox(el, new Path2D(data).getBoundingBox(), root.value)
             },
             // 画完退出工具、进入选中态（与其他形状一致）。
             end: () => {

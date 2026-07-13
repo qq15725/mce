@@ -83,6 +83,11 @@ export default definePlugin((editor) => {
         e.preventDefault()
         if (e.dataTransfer) {
           await exec('paste', e.dataTransfer)
+          // 落定后：粘贴 / 外部拖入的元素命中画板则嵌入（flex 画板按主轴插入到正确位置）。
+          const p = editor.getGlobalPointer()
+          editor.elementSelection.value.forEach(el =>
+            exec('nestIntoFrame', el, { pointer: p } as any),
+          )
         }
       }
 

@@ -1,8 +1,31 @@
+import type { Element2D } from 'modern-canvas'
 import type { ComponentInternalInstance, ComponentPublicInstance, InjectionKey, VNodeChild } from 'vue'
 import type { DeepMaybe } from '../types'
 import { shallowRef } from 'vue'
 
 export function noop(..._args: any): void {}
+
+/**
+ * 用世界坐标包围盒定位一个绘制中的元素。元素的 `style.left/top` 相对其父，若元素已被嵌入
+ * 画板（frame），需减去父的世界原点，否则会偏移一个 frame origin。所有绘制工具
+ * （pen / pencil / line / arrow / rectangle / ellipse …）统一走这里，避免各自重复
+ * 「box → style」四行、并漏掉「相对父」转换。父为 root（世界原点）时减 0，等价于旧行为。
+ */
+export function placeElementByBox(
+  el: Element2D,
+  box: { left: number, top: number, width: number, height: number },
+  root: { equal: (n: any) => boolean },
+): void {
+  const parent = el.getParent<Element2D>()
+  // 顶层画布(root)的子直接用世界坐标（root 的坐标原点即世界原点，其 globalAabb 只是内容
+  // 包围盒、不能当原点用）；只有嵌入画板(frame)时才减去父的世界原点——与 autoNest 的嵌入
+  // 坐标换算保持一致。
+  const origin = parent && !root.equal(parent) ? parent.globalAabb : undefined
+  el.style.left = box.left - (origin?.x ?? 0)
+  el.style.top = box.top - (origin?.y ?? 0)
+  el.style.width = box.width || 1
+  el.style.height = box.height || 1
+}
 
 /**
  * 节点是否为 flex/自动布局容器（其子节点由布局引擎定位，而非绝对 left/top）。

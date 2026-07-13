@@ -301,6 +301,26 @@ export default definePlugin((editor) => {
     els.forEach((el) => {
       const style = el.style
 
+      // 切 Fixed sizing（Figma auto-layout）：flex 子 / 容器的 width/height 可能是 'auto'(Hug) 或由
+      // Fill(flexGrow) 撑开——resize 时固化为具体值并脱离 Fill，让 resize 的尺寸权威（否则被父 flex
+      // 布局 / 自身 hug 覆盖，且 'auto' + offset = NaN）。style.width 是 content-box、globalAabb 含
+      // padding，故固化时减去 padding，resize 才精确（render = value，不多出一圈 padding）。
+      if (type === 'resize') {
+        const g = el.globalAabb
+        const s = style as any
+        const num = (v: any): number => (typeof v === 'number' ? v : (Number.parseFloat(v) || 0))
+        // 每边优先取单边 paddingX，回退到 padding 简写（demo 常用 style.padding: 20）。
+        const pad = (side: string): number => num(s[`padding${side}`] ?? s.padding)
+        if (typeof s.width !== 'number')
+          s.width = Math.max(0, g.width - pad('Left') - pad('Right'))
+        if (typeof s.height !== 'number')
+          s.height = Math.max(0, g.height - pad('Top') - pad('Bottom'))
+        if (s.flexGrow)
+          s.flexGrow = 0
+        if (s.flex)
+          s.flex = undefined
+      }
+
       const newStyle = {
         left: style.left + offsetStyle.left,
         top: style.top + offsetStyle.top,
@@ -378,21 +398,26 @@ export default definePlugin((editor) => {
 
         const roundFactor = newStyle.rotate ? 100 : 1
 
-        resizeElement(
-          el,
-          Math.max(1, Math.round(newStyle.width * roundFactor) / roundFactor),
-          Math.max(1, Math.round(newStyle.height * roundFactor) / roundFactor),
-          inEditorIs(el, 'Frame')
-            ? undefined
-            : el.shape.isValid()
-              ? { deep: true }
-              : isCorner
-                ? { deep: true, textFontSizeToFit: true }
-                : { deep: true, textToFit: true },
-        )
+        // flex / auto-layout 容器：子的尺寸由布局决定，绝不能 deep-resize 子——deep 会按比例缩放
+        // 每个子，叠加到 flex 布局上，子的高/宽会爆炸（含文字子时尤其明显）。这里只改容器自身尺寸
+        // （下面 Object.assign(style, newStyle)），flex 会自行重排子。
+        if (!isFlexContainer(el)) {
+          resizeElement(
+            el,
+            Math.max(1, Math.round(newStyle.width * roundFactor) / roundFactor),
+            Math.max(1, Math.round(newStyle.height * roundFactor) / roundFactor),
+            inEditorIs(el, 'Frame')
+              ? undefined
+              : el.shape.isValid()
+                ? { deep: true }
+                : isCorner
+                  ? { deep: true, textFontSizeToFit: true }
+                  : { deep: true, textToFit: true },
+          )
 
-        newStyle.width = el.style.width
-        newStyle.height = el.style.height
+          newStyle.width = el.style.width
+          newStyle.height = el.style.height
+        }
       }
 
       Object.assign(style, newStyle)
