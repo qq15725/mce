@@ -311,6 +311,9 @@ const modeItems = computed(() =>
     $root: &;
     pointer-events: auto !important;
     position: absolute;
+    // 工具条固定于画布之上：高于画布内 overlay（选框 z-index:1 / 工作流层 z-index:2 等），
+    // 使工作流节点标题、选框等溢出到工具条区域时被工具条盖住；低于选中元素浮动条（2000）。
+    z-index: 10;
     display: flex;
     align-items: center;
     gap: 4px;

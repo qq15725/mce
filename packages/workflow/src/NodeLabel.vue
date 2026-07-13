@@ -7,8 +7,14 @@ import { computed, nextTick, ref, useTemplateRef } from 'vue'
 // 定位在元素左上角上方，效果类似画板标题；双击标题可重命名（写入 node.name）。
 const props = defineProps<{ node: Element2D }>()
 
-const { getAabb, drawboardAabb, renderEngine, drawboardDom, exec, hoverElement, state, isLock } = useEditor()
+const { getAabb, drawboardAabb, renderEngine, drawboardDom, exec, hoverElement, selection, state, isLock } = useEditor()
 const { thumbnailIcon, thumbnailName } = useNode(computed(() => props.node))
+
+// hover / 选中时标题加深，与 canvas 画板标题（Frame.vue 的 --hover/--selected）一致。
+const active = computed(() =>
+  Boolean(hoverElement.value?.equal(props.node))
+  || selection.value.some((v: any) => v.equal(props.node)),
+)
 
 const editing = ref(false)
 const editValue = ref('')
@@ -42,7 +48,12 @@ const visible = computed(() => editing.value || (box.value.width >= LABEL_MIN_SI
 // 节点多时差异显著。translateY(-100%)/-6px 把标签摆到元素左上角上方。
 const style = computed(() => {
   const a = box.value
-  return { transform: `translate(${a.left}px, ${a.top}px) translateY(-100%) translateY(-6px)` }
+  // maxWidth = 节点屏幕宽：标题不超过节点宽度、超出即省略，与 canvas 画板标题（Frame.vue 的
+  // max-width:100%）一致的省略策略。此处 transform 定位无父级尺寸约束，故显式取 box 宽。
+  return {
+    transform: `translate(${a.left}px, ${a.top}px) translateY(-100%) translateY(-6px)`,
+    maxWidth: `${Math.max(0, a.width)}px`,
+  }
 })
 
 async function onDblclick(): Promise<void> {
@@ -75,7 +86,7 @@ function onPointerdown(event: PointerEvent): void {
 </script>
 
 <template>
-  <div v-if="visible" class="m-wf-label" :style="style">
+  <div v-if="visible" class="m-wf-label" :class="{ 'm-wf-label--active': active }" :style="style">
     <Icon :icon="thumbnailIcon" class="m-wf-label__icon" />
     <span
       v-if="!editing"
@@ -109,12 +120,17 @@ function onPointerdown(event: PointerEvent): void {
   align-items: center;
   gap: 5px;
   font-size: 0.75rem;
-  line-height: 1.4;
-  color: rgba(var(--m-theme-on-surface), .55);
+  line-height: 1.5;
+  color: rgba(var(--m-theme-on-surface), .5);
   pointer-events: none;
   user-select: none;
   white-space: nowrap;
-  max-width: 360px;
+  // max-width 由内联 style 动态取节点屏幕宽（见 style computed），与 canvas 画板标题的省略策略一致。
+
+  // hover / 选中时标题加深，与 canvas 画板标题（Frame.vue --hover/--selected）一致。
+  &--active {
+    color: rgba(var(--m-theme-on-surface), 1);
+  }
 
   &__icon {
     font-size: 1rem;
