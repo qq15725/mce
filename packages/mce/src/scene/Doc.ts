@@ -60,7 +60,14 @@ export class Doc extends Node {
 
     const _doc = new YDoc(id, vueReactivity)
     _doc._yProps.set('id', this.id)
-    _doc._yProps.set('name', this.name)
+    // 文档标题是「随文档」的协同内容，不是「随客户端」的本地配置。root 顶层 props 走
+    // _proxyProps(isMeta=false)，没有加入时的本地↔远端对账：两端并发写同一个 _yProps.name
+    // 会按随机 clientID 做 LWW，加入协同的一端若用本地默认标题（未配 docName → 'Doc'）就可能
+    // 胜出、把房主已有的真实标题冲掉（文档标题错乱）。故仅在显式提供标题时写入；未配标题的
+    // 加入方不参与竞争，_yProps.name 由房主唯一写入，经 observe 采纳。
+    if (options?.name !== undefined) {
+      _doc._yProps.set('name', options.name)
+    }
     _doc.on('update', (update, origin) => this._enqueueYUpdate(update, origin))
     _doc.on('history', um => this.emit('history', um))
     _doc._proxyRoot(this)
