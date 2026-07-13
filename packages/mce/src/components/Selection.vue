@@ -3,7 +3,6 @@ import type { Element2D } from 'modern-canvas'
 import { computed, onBeforeMount, onBeforeUnmount, useTemplateRef } from 'vue'
 import { useEditor } from '../composables/editor'
 import { getLineEndpoints, parseLineShape } from '../utils'
-import { overflowClips } from '../utils/overlayClip'
 import ForegroundCropper from './ForegroundCropper.vue'
 import { Icon } from './icon'
 import LineEditor from './LineEditor.vue'
@@ -31,9 +30,6 @@ const {
   isContentEditing,
   readonly,
   mode,
-  getAabb,
-  getAncestorFrame,
-  drawboardAabb,
   t,
 } = useEditor()
 
@@ -209,22 +205,6 @@ function onEnd(ctx: Mce.TransformContext) {
 
 const transformValue = computed(() => exec('getTransform'))
 
-// 单选元素落在可滚动画板内时，把选框(含手柄)裁到画板可见区，避免溢出画板外。
-// 裁剪挂在无变换的全覆盖 wrapper 上（Transform 根带旋转/位移，直接裁无法对齐画板矩形）。
-const selectionClip = computed<string | undefined>(() => {
-  if (elementSelection.value.length !== 1) {
-    return undefined
-  }
-  const el = elementSelection.value[0]
-  const frame = getAncestorFrame(el)
-  if (!frame || !overflowClips(frame)) {
-    return undefined
-  }
-  const fr = getAabb(frame, 'drawboard')
-  const { width: W, height: H } = drawboardAabb.value
-  return `inset(${fr.top}px ${W - (fr.left + fr.width)}px ${H - (fr.top + fr.height)}px ${fr.left}px)`
-})
-
 // A pure connection line is positioned/sized by its route, so the box
 // move/resize/rotate handles are meaningless — suppress them.
 const isConnection = computed(() => {
@@ -398,7 +378,6 @@ defineExpose({
     <div
       v-if="!readonly && !isSelectionLocked && !isLineLike && !isConnection && transformValue.width && transformValue.height && state !== 'pathEditing'"
       class="m-selection__clip"
-      :style="{ clipPath: selectionClip }"
     >
       <Transform
         ref="transformTpl"
