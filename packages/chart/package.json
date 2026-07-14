@@ -1,7 +1,7 @@
 {
   "name": "@mce/chart",
   "type": "module",
-  "version": "0.34.3",
+  "version": "0.35.0",
   "description": "Chart plugin for mce",
   "author": "wxm",
   "license": "MIT",

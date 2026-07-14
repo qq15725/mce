@@ -1,7 +1,7 @@
 {
   "name": "@mce/animation-presets",
   "type": "module",
-  "version": "0.34.3",
+  "version": "0.35.0",
   "description": "Animation preset pack for mce",
   "author": "wxm",
   "license": "MIT",

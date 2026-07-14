@@ -1,3 +1,9 @@
+# [0.35.0](https://github.com/qq15725/mce/compare/v0.34.3...v0.35.0) (2026-07-14)
+
+### Features
+
+* extract flex auto-layout into @mce/flex plugin ([2ed3be3](https://github.com/qq15725/mce/commit/2ed3be325f68d069bcaf041e3d387b56e63ea0d6))
+
 ## [0.34.3](https://github.com/qq15725/mce/compare/v0.34.2...v0.34.3) (2026-07-14)
 
 ### Bug Fixes
