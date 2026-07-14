@@ -43,8 +43,8 @@ export default definePlugin((editor) => {
           const el = addElement({
             name: t('frame'),
             style: {
-              // auto：裁剪 + 内容溢出时悬停显示可拖拽滚动条（引擎 Element2D 渲染）。
-              overflow: 'auto',
+              // hidden：只裁剪超出边界的内容，不显示滚动条、不滚动（需要滚动的画板显式设 auto/scroll）。
+              overflow: 'hidden',
             },
             meta: {
               inPptIs: 'GroupShape',
