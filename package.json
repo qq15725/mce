@@ -16,6 +16,11 @@
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
     "release": "bumpp package.json packages/*/package.json --commit \"release: v%s\" --push --all --tag"
   },
+  "pnpm": {
+    "overrides": {
+      "typescript": "6.0.3"
+    }
+  },
   "devDependencies": {
     "@antfu/eslint-config": "^9.1.0",
     "@types/node": "^26.1.1",
