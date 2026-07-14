@@ -1,3 +1,9 @@
+## [0.34.2](https://github.com/qq15725/mce/compare/v0.34.1...v0.34.2) (2026-07-14)
+
+### Bug Fixes
+
+* **frame:** default new frames to overflow:hidden ([967bbab](https://github.com/qq15725/mce/commit/967bbab33cf95827f0a7d9132b6babd1b86870d2))
+
 ## [0.34.1](https://github.com/qq15725/mce/compare/v0.34.0...v0.34.1) (2026-07-13)
 
 ### Bug Fixes
