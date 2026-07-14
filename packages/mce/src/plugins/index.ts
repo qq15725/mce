@@ -9,7 +9,6 @@ import _clipboard from './clipboard'
 import _components from './components'
 import _doc from './doc'
 import _edit from './edit'
-import _flexLayout from './flexLayout'
 import _formatPaint from './formatPaint'
 import _frame from './frame'
 import _frameScroll from './frameScroll'
@@ -55,7 +54,6 @@ export const plugins = [
   _components,
   _doc,
   _edit,
-  _flexLayout,
   _formatPaint,
   _frame,
   _frameScroll,

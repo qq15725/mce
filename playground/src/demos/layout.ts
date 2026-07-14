@@ -1,5 +1,4 @@
 import type { Editor } from 'mce'
-import { Flexbox } from 'modern-canvas'
 
 function layoutChild(id: string, label: string, color: string, w: number, h: number): any {
   return {
@@ -47,8 +46,6 @@ function offsetFrame(id: string, name: string, left: number, top: number, dir: '
 }
 
 export async function loadLayoutDemo(editor: Editor): Promise<void> {
-  // 编辑器声明支持 flex 布局，但底层 yoga 引擎需要按需加载。
-  await Flexbox.load()
   // 顶层 flex 容器作为 yoga 根节点，其自身 left/top 会被强制为 (0,0)，
   // 因此把两个示例容器嵌套进一个外层 flex 容器，由父级布局排开它们。
   editor.setDoc([

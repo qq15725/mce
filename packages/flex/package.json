@@ -1,0 +1,57 @@
+{
+  "name": "@mce/flex",
+  "type": "module",
+  "version": "0.34.3",
+  "private": false,
+  "description": "Flex / auto-layout plugin for ModernCanvasEditor",
+  "keywords": [
+    "mce",
+    "mce-plugin",
+    "flex"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/qq15725/mce#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qq15725/mce.git",
+    "directory": "packages/flex"
+  },
+  "bugs": "https://github.com/qq15725/mce/issues",
+  "author": "wxm",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./styles": {
+      "default": "./dist/index.css"
+    },
+    "./*.mjs": "./*.js",
+    "./*": "./*"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build:code": "vite build",
+    "build:tsc": "NODE_ENV=production vue-tsc --emitDeclarationOnly --project tsconfig.json",
+    "build": "pnpm build:code && pnpm build:tsc",
+    "lint": "eslint src",
+    "typecheck": "vue-tsc --noEmit --project tsconfig.json"
+  },
+  "peerDependencies": {
+    "mce": "^0",
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.7",
+    "mce": "workspace:*",
+    "modern-canvas": "^0.27.5",
+    "modern-idoc": "^0.12.4"
+  }
+}

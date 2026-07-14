@@ -1,5 +1,4 @@
 import type { Editor } from 'mce'
-import { Flexbox } from 'modern-canvas'
 import { box } from './shared'
 
 // 裁剪画板：overflow:hidden，超出边界的内容被裁掉、画板本身不动。
@@ -45,9 +44,6 @@ const CARD = ['#0ea5e9', '#22c55e', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6', 
 // 画板（Frame）示例：裁剪画板 + 各方向的滚动画板（含一个 flex 自动布局的滚动画板），
 // 一处覆盖画板的裁剪 / 嵌套 / autoNest 拖入拖出 / overflow 纵向·横向·双向滚动 / flex + 滚动。
 export async function loadArtboardDemo(editor: Editor): Promise<void> {
-  // flex 自动布局需要 yoga 引擎，按需加载（否则 flex 画板不排布）。
-  await Flexbox.load()
-
   const pad = 24
   const gap = 16
   const listW = 460

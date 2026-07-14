@@ -12,6 +12,7 @@ import mp4 from '@mce/mp4'
 import openxml from '@mce/openxml'
 import pdf from '@mce/pdf'
 import psd from '@mce/psd'
+import flex from '@mce/flex'
 import svg from '@mce/svg'
 import table from '@mce/table'
 import workflow from '@mce/workflow'
@@ -48,6 +49,7 @@ const editor = new Editor({
   ...editorOptions,
   debug: true,
   plugins: [
+    flex(),
     bigesj({ font: true }),
     gaoding(),
     openxml(),

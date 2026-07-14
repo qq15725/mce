@@ -56,6 +56,7 @@ packages/
   workflow/   # 节点图模式插件（@mce/workflow，含 Workflow 组件）
   collaboration/ # 实时协同插件（@mce/collaboration：传输 provider + 在场感知；CRDT 文档模型 YDoc 仍在核心）
   comments/   # 评论插件（@mce/comments：评论工具 + 锚定元素的 pin + 线程弹窗；评论存 element.comments，随元素移动/复制，经 CRDT 逐线程同步）
+  flex/       # Flex 自动布局插件（@mce/flex：容器级 flex 命令 + 子元素拖拽重排 + 插入指示线；插件 setup 内 await Flexbox.load() 按需加载 yoga 引擎，核心不再内置）
 playground/   # 演示与测试应用
 ```
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import { useEditor } from 'mce'
 import { computed } from 'vue'
-import { useEditor } from '../composables'
 
 // 拖拽进入 / 内排 auto-layout(flex)画板时,在被拖元素的流式槽位处画一条主轴方向的蓝色
 // 插入指示线(Figma 风格)。槽位由 flexLayout 拖拽逻辑算好(世界坐标)后经 props 传入,拖拽

@@ -32,7 +32,7 @@
 - Infinite canvas with pan / zoom, rulers, scrollbars, pixel grid and checkerboard
 - Smart guides & snapping, alignment / distribution, z-order arrange, tidy-up
 - Multi-select & marquee, transform (move / resize / rotate / flip), foreground crop
-- Frames (artboards) with auto-nesting, and Flex auto-layout (drag-to-reorder)
+- Frames (artboards) with auto-nesting, and Flex auto-layout (drag-to-reorder) via `@mce/flex`
 
 **Content**
 - Shapes, pen / freehand paths, lines & arrows
@@ -96,6 +96,7 @@ Specialized features also ship as optional packages, registered the same way (`p
 | `@mce/workflow` | Node-graph editing mode |
 | `@mce/collaboration` | Real-time collaboration: transport providers + presence (cursors / selection / avatars) |
 | `@mce/comments` | Comments: comment tool + pins anchored to elements + threads (stored on `element.comments`) |
+| `@mce/flex` | Flex / auto-layout: container-level flex commands + drag-to-reorder children (loads the yoga layout engine on demand) |
 
 ## 📦 Install
 
@@ -124,12 +125,14 @@ This drops the [`mce`](skills/mce/SKILL.md) skill into your agent's skills dir. 
   import '@mce/chart/styles'
   import '@mce/collaboration/styles'
   import '@mce/comments/styles'
+  import '@mce/flex/styles'
   import '@mce/table/styles'
   import '@mce/workflow/styles'
   import ai from '@mce/ai'
   import chart from '@mce/chart'
   import collaboration from '@mce/collaboration'
   import comments from '@mce/comments'
+  import flex from '@mce/flex'
   import gif from '@mce/gif'
   import mp4 from '@mce/mp4'
   import openxml from '@mce/openxml'
@@ -153,6 +156,7 @@ This drops the [`mce`](skills/mce/SKILL.md) skill into your agent's skills dir. 
       workflow(),
       collaboration(), // registers the collaboration + presence plugins
       comments(),
+      flex(), // loads the yoga layout engine on setup
     ],
     // @mce/gif bundles its encoding worker by default. To self-host it
     // (e.g. under a strict CSP), pass `gifWorkerUrl` explicitly:

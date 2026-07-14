@@ -115,6 +115,25 @@ importers:
         specifier: workspace:*
         version: link:../mce
 
+  packages/flex:
+    dependencies:
+      vue:
+        specifier: ^3.5.0
+        version: 3.5.39(typescript@6.0.3)
+    devDependencies:
+      '@vitejs/plugin-vue':
+        specifier: ^6.0.7
+        version: 6.0.7(vite@8.1.4(@types/node@26.1.1)(esbuild@0.27.3)(jiti@2.7.0)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.9.0))(vue@3.5.39(typescript@6.0.3))
+      mce:
+        specifier: workspace:*
+        version: link:../mce
+      modern-canvas:
+        specifier: ^0.27.5
+        version: 0.27.5(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1)
+      modern-idoc:
+        specifier: ^0.12.4
+        version: 0.12.4
+
   packages/gaoding:
     devDependencies:
       mce:
@@ -303,6 +322,9 @@ importers:
       '@mce/comments':
         specifier: workspace:*
         version: link:../packages/comments
+      '@mce/flex':
+        specifier: workspace:^
+        version: link:../packages/flex
       '@mce/gaoding':
         specifier: workspace:*
         version: link:../packages/gaoding

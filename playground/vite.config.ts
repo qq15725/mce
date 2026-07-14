@@ -39,6 +39,7 @@ export default defineConfig(() => {
         alias: {
           '@': fileURLToPath(new URL('./src', import.meta.url)),
           '@mce/ai': fileURLToPath(new URL('../packages/ai/src/index.ts', import.meta.url)),
+          '@mce/flex': fileURLToPath(new URL('../packages/flex/src/index.ts', import.meta.url)),
           '@mce/bigesj': fileURLToPath(new URL('../packages/bigesj/src/index.ts', import.meta.url)),
           '@mce/chart': fileURLToPath(new URL('../packages/chart/src/index.ts', import.meta.url)),
           '@mce/html': fileURLToPath(new URL('../packages/html/src/index.ts', import.meta.url)),

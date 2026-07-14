@@ -40,11 +40,11 @@ npm i mce
 # peer deps (install the ones your features use):
 npm i vue@^3.5 yoga-layout@^3 lottie-web@^5 modern-gif@^2
 # optional feature plugins, each its own package:
-npm i @mce/table @mce/chart @mce/workflow @mce/collaboration @mce/comments @mce/openxml @mce/gif @mce/svg @mce/pdf @mce/mp4
+npm i @mce/table @mce/chart @mce/workflow @mce/collaboration @mce/comments @mce/flex @mce/openxml @mce/gif @mce/svg @mce/pdf @mce/mp4
 ```
 
 - **ESM only** — the host bundler must handle ESM (Vite, modern webpack). No CJS build.
-- `yoga-layout` (flex auto-layout), `lottie-web` (keyframe→lottie), `modern-gif` (gif export) are **peer deps**: the core imports them, so they must resolve in the host or those features break.
+- `yoga-layout` (flex auto-layout, used by `@mce/flex` — its plugin `setup` runs `Flexbox.load()` on demand), `lottie-web` (keyframe→lottie), `modern-gif` (gif export) are **peer deps**: they must resolve in the host or those features break.
 - **Version alignment** — `@mce/*` plugins declare `mce: ^0` as a peer; keep `mce` and every `@mce/*` on the same minor (they release together).
 
 ## 2. Minimal integration (smallest working editor)
@@ -86,6 +86,7 @@ import '@mce/chart/styles'
 import '@mce/workflow/styles'
 import '@mce/collaboration/styles'
 import '@mce/comments/styles'
+import '@mce/flex/styles'
 import table from '@mce/table'
 import chart from '@mce/chart'
 import workflow from '@mce/workflow'
@@ -193,6 +194,7 @@ Each is a separate package; default export = plugin factory; register in `plugin
 | `@mce/workflow` | Node-graph / flowchart mode (`registerMode`) |
 | `@mce/collaboration` | Realtime multiplayer (transport provider + presence); CRDT doc model is in core |
 | `@mce/comments` | Comment tool + anchored pins + thread popovers |
+| `@mce/flex` | Flex / auto-layout: container flex commands (`enableFlexLayout` / `setFlexStyle` / …) + drag-to-reorder children; loads yoga on `setup` |
 | `@mce/ai` | AI actions |
 | `@mce/animation-presets` | Enter/exit/emphasis animation presets (core ships none) |
 | `@mce/html` | HTML import loader |
@@ -205,7 +207,8 @@ For a plugin's actual commands/exports, read `node_modules/@mce/<pkg>/dist/**/*.
 
 - **Guessing command/option names** → silently no-op. Verify in source (see "Where to find the truth").
 - **Missing plugin styles** → a plugin's editor UI (table/chart/comments/workflow/collaboration) is invisible. Import `@mce/<pkg>/styles` for every UI plugin you register.
-- **Peer deps unresolved** → flex layout / gif / lottie features throw. Install `yoga-layout`, `lottie-web`, `modern-gif` as needed.
+- **Peer deps unresolved** → flex layout / gif / lottie features throw. Install `yoga-layout` (for `@mce/flex`), `lottie-web`, `modern-gif` as needed.
+- **Flex not laying out** → register `@mce/flex` and create flex elements *after* the editor is ready (its `setup` loads yoga async); `Element2D`s built before yoga resolves get no flex node.
 - **No parent size** → `EditorLayout` collapses to 0×0. The wrapping element must have a concrete width/height.
 - **ESM-only / SSR** → the editor is client-only (WebGL). In Nuxt/SSR, create the `Editor` and render `EditorLayout` on the client (`<ClientOnly>` / `onMounted`).
 - **Headless** → there is no default chrome beyond canvas + optional overlays; build toolbars/inspectors yourself with `EditorLayoutItem` + `useEditor()`.

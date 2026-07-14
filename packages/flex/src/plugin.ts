@@ -1,9 +1,10 @@
 import type { Element2D } from 'modern-canvas'
 import type { FlexDirection } from 'modern-idoc'
+import { definePlugin, isFlexContainer } from 'mce'
+import { Flexbox } from 'modern-canvas'
+
 import { h, ref } from 'vue'
-import FlexDropIndicator from '../components/FlexDropIndicator.vue'
-import { definePlugin } from '../plugin'
-import { isFlexContainer } from '../utils/helper'
+import FlexDropIndicator from './FlexDropIndicator.vue'
 
 declare global {
   namespace Mce {
@@ -49,7 +50,7 @@ declare global {
  * Proxy crash, and the Vue tree (layers panel) stays in sync (toRaw would
  * desync the panel from the canvas).
  */
-export default definePlugin((editor) => {
+const flexLayout = definePlugin((editor) => {
   const {
     isElement,
     elementSelection,
@@ -370,6 +371,8 @@ export default definePlugin((editor) => {
 
   return {
     name: 'mce:flexLayout',
+    // yoga (flex 布局引擎) 需异步加载后才能创建 Flexbox 节点；未 load 时子元素不参与 flow。
+    setup: () => Flexbox.load(),
     components: [
       {
         type: 'overlay',
@@ -398,3 +401,7 @@ export default definePlugin((editor) => {
   // set its absolute cursor position — so transform can't overwrite it with a
   // stale "style.left + offset" and make it jump on the first frame.
 }, { enforce: 'post' })
+
+export function plugin() {
+  return flexLayout
+}
