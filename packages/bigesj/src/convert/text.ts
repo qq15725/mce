@@ -1,6 +1,6 @@
-import type { NormalizedParagraph, NormalizedTextContent, StyleObject, TextDeformation } from 'modern-idoc'
+import type { _EffectV0, Effect, NormalizedParagraph, NormalizedTextContent, StyleObject, TextDeformation } from 'modern-idoc'
 import type { BigeElement } from './types'
-import { normalizeCRLF } from 'modern-idoc'
+import { normalizeCRLF, normalizeGradientFill } from 'modern-idoc'
 import { getStyle } from './style'
 
 const highlightReferImage
@@ -46,7 +46,7 @@ export function convertTextStyle(
   return style
 }
 
-export async function convertTextEffects(el: BigeElement): Promise<Partial<StyleObject>[] | undefined> {
+export async function convertTextEffects(el: BigeElement): Promise<(_EffectV0 & Effect)[] | undefined> {
   const effects = el.textFlower ?? el.textEffects ?? []
 
   if (!effects.length) {
@@ -54,8 +54,12 @@ export async function convertTextEffects(el: BigeElement): Promise<Partial<Style
   }
 
   return await Promise.all(
+    // 与老渲染 parseTextEffects 一致：不按 enable 过滤（老渲染 `if (filling)` 只看对象是否存在）。
+    // 单元用 normalizeEffect 的输入类型 `_EffectV0 & Effect`：位移/斜切/描边/阴影沿用扁平字段
+    // （由内核 normalizeEffect 转结构化——注意文字描边**只能**走 textStroke*，直接给结构化 outline
+    // 会渲染成填充块而非描边）；仅填充改走结构化 fill（渐变必须 normalizeGradientFill，见下）。
     [...effects].reverse().map(async (effect) => {
-      const result: Partial<StyleObject> = {
+      const result: _EffectV0 & Effect = {
         transformOrigin: 'center top',
       }
       const { offset, skew, stroke, shadow, filling } = effect
@@ -84,10 +88,13 @@ export async function convertTextEffects(el: BigeElement): Promise<Partial<Style
           // const { image, repeat } = imageContent
         }
         else if (gradient) {
-          result.color = `linear-gradient(${90 - gradient.angle}deg, ${gradient.stops.map((stop: any) => `${stop.color} ${stop.offset * 100}%`).join(',')})`
+          // 渐变必须转成规范化对象（normalizeGradientFill → { linearGradient }）：新内核只认规范化渐变，
+          // 不认原始 `linear-gradient(...)` 字符串（会整段渲染成黑）。与顶层 text.fill 同一套（见 element.ts）。
+          const css = `linear-gradient(${90 - gradient.angle}deg, ${gradient.stops.map((stop: any) => `${stop.color} ${stop.offset * 100}%`).join(',')})`
+          result.fill = { enabled: true, ...normalizeGradientFill(css) }
         }
         else if (color) {
-          result.color = color
+          result.fill = { color }
         }
       }
       return result
