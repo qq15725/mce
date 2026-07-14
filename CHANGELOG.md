@@ -1,3 +1,9 @@
+## [0.34.3](https://github.com/qq15725/mce/compare/v0.34.2...v0.34.3) (2026-07-14)
+
+### Bug Fixes
+
+* **bigesj:** output normalized gradient fill/outline for text effect layers ([5e3abef](https://github.com/qq15725/mce/commit/5e3abeff341d4167b0b2451c6fed440bfa3084dc))
+
 ## [0.34.2](https://github.com/qq15725/mce/compare/v0.34.1...v0.34.2) (2026-07-14)
 
 ### Bug Fixes
