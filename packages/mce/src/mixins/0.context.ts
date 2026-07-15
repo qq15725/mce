@@ -24,6 +24,8 @@ const DEFAULT_THEME_TOKENS: ThemeTokens = {
   // 表面（面板/卡片/节点）与其上前景
   'surface': { light: '#ffffff', dark: '#171717' },
   'on-surface': { light: '#1e1e1e', dark: '#e5e7eb' },
+  // 抬升亮面（比 surface 更亮）：工具栏胶囊、图片/视频工作流节点底等。
+  'surface-bright': { light: '#ffffff', dark: '#262626' },
   // 反色表面（tooltip / 深色浮层）与其上前景
   'surface-variant': { light: '#232529', dark: '#e5e7eb' },
   'on-surface-variant': { light: '#ffffff', dark: '#171717' },

@@ -77,7 +77,8 @@ function mediaNode(o: NodeBase, inEditorIs: 'WorkflowImage' | 'WorkflowVideo'): 
       borderRadius: 32,
       borderColor: '@border-color',
       borderWidth: 2,
-      backgroundColor: '@surface',
+      // 图片/视频节点用抬升亮面（与文字节点 @surface 区分）。
+      backgroundColor: '@surface-bright',
     },
     foreground: { image: sparkleImage() },
     shape: { connectionPoints: [INPUT, OUTPUT] },

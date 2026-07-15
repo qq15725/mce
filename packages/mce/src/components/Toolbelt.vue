@@ -318,8 +318,8 @@ const modeItems = computed(() =>
     align-items: center;
     gap: 4px;
     padding: 8px;
-    // 纯白大圆角胶囊、更宽松间距、柔和阴影、细描边。
-    background: rgb(var(--m-theme-surface));
+    // 抬升亮面大圆角胶囊、更宽松间距、柔和阴影、细描边。
+    background: rgb(var(--m-theme-surface-bright));
     border: 1px solid rgba(var(--m-theme-on-surface), .06);
     border-radius: 18px;
     box-shadow: 0 8px 28px rgba(0, 0, 0, .12), 0 2px 6px rgba(0, 0, 0, .06);

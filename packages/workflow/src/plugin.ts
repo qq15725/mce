@@ -157,6 +157,8 @@ export function plugin() {
       }
       if (image) {
         node.foreground = { image }
+        // 图片/视频节点用抬升亮面，与文字节点(@surface)区分、暗色下更醒目。
+        node.style!.backgroundColor = '@surface-bright'
       }
       else {
         // 字号 / 内边距随 2k 尺寸等比放大，保持与图片/视频节点观感一致。
