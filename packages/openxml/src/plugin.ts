@@ -44,7 +44,8 @@ export function plugin() {
         saveAs: true,
         handle: async (options) => {
           const { [name]: specificOptions, ...jsonOptions } = options
-          const doc = await to('json', jsonOptions)
+          // 非 render 序列化导出：语义色 token 按浅色主题烤成实际色（可被 options 覆盖）。
+          const doc = await to('json', { theme: 'light', ...jsonOptions })
           if (reverse) {
             doc.children?.reverse()
           }

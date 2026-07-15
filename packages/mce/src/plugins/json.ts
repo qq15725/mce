@@ -11,7 +11,7 @@ declare global {
        * 不设则保留原始 token（getDoc / 复制粘贴走这条，保持自适应）。
        * render 类导出传当前 editor.theme 跟随；pptx/idoc 等非 render 传 'light'。
        */
-      resolveTheme?: string
+      theme?: string
     }
 
     interface JsonData {
@@ -50,7 +50,9 @@ export default definePlugin((editor, options) => {
   const { docName } = options
   const RE = /\.json$/i
 
-  // 把序列化后元素 JSON 里的语义色 token 就地烤成指定主题的实际色（style + 文字 fragment + 递归子元素）。
+  // 把元素 JSON 里的语义色 token 烤成指定主题的实际色（style + 文字 fragment + 递归子元素）。
+  // style 由 el.toJSON() 克隆过、可原地改；但 text.content 与 live 元素共享引用，必须重建新对象、
+  // 绝不原地改，否则会把文档里的 token 永久烤成字面值（污染 live / getDoc / 撤销栈）。
   function bakeTheme(json: any, theme: string): any {
     const tokens = themeTokens.value
     const resolve = (c: any): any =>
@@ -62,10 +64,20 @@ export default definePlugin((editor, options) => {
           s[k] = resolve(s[k])
       }
     }
-    json.text?.content?.forEach((p: any) =>
-      p.fragments?.forEach((f: any) => { if (f.color != null) f.color = resolve(f.color) }),
-    )
-    json.children?.forEach((c: any) => bakeTheme(c, theme))
+    if (json.text?.content) {
+      json.text = {
+        ...json.text,
+        content: json.text.content.map((p: any) => ({
+          ...p,
+          fragments: p.fragments?.map((f: any) =>
+            f.color != null ? { ...f, color: resolve(f.color) } : f,
+          ),
+        })),
+      }
+    }
+    if (json.children) {
+      json.children = json.children.map((c: any) => bakeTheme(c, theme))
+    }
     return json
   }
 
@@ -103,7 +115,7 @@ export default definePlugin((editor, options) => {
           const {
             selected = false,
             scale = 1,
-            resolveTheme,
+            theme,
           } = options
 
           let id = idGenerator()
@@ -149,7 +161,7 @@ export default definePlugin((editor, options) => {
               json.meta ??= {}
               json.meta.inPptIs = 'Slide'
               // 语义色 token → 实际色（仅在调用方指定主题时；否则保留 token 维持自适应）。
-              return resolveTheme ? bakeTheme(json, resolveTheme) : json
+              return theme ? bakeTheme(json, theme) : json
             }),
             meta: {
               inPptIs: 'Pptx',

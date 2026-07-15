@@ -63,7 +63,8 @@ export function plugin() {
           handle: async (options) => {
             // 重依赖按需加载：仅在真正导出 SVG 时才拉取 modern-idoc-svg
             const { docToSvgString } = await import('modern-idoc-svg')
-            const doc = await to('json', options)
+            // 非 render 序列化导出：语义色 token 按浅色主题烤成实际色（可被 options 覆盖）。
+            const doc = await to('json', { theme: 'light', ...options })
             // 图片处理管线下沉到 idoc-svg：注入引擎同款 resolver，由它在解析图片填充时烘焙。
             return await docToSvgString({ ...doc, fonts } as any, { imagePipelineResolver: resolveImagePipelines })
           },
