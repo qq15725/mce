@@ -259,8 +259,25 @@ export default definePlugin((editor) => {
     if (previewMode.value && scrollDriven.value)
       editor.currentTime.value = 0
   }
+  // 滚轮是否落在可自身滚动、且该方向尚未到尽头的浮层内（如评论列表）。是则让其原生滚动，不驱动播放头。
+  function overNativeScrollable(target: EventTarget | null, dx: number, dy: number): boolean {
+    let el = target instanceof Element ? target : null
+    while (el && el !== document.body) {
+      if (el instanceof HTMLElement) {
+        const style = getComputedStyle(el)
+        if (dy && /auto|scroll/.test(style.overflowY) && el.scrollHeight > el.clientHeight)
+          return true
+        if (dx && /auto|scroll/.test(style.overflowX) && el.scrollWidth > el.clientWidth)
+          return true
+      }
+      el = el.parentElement
+    }
+    return false
+  }
   function onWheel(e: WheelEvent): void {
     if (!previewMode.value || !scrollDriven.value)
+      return
+    if (overNativeScrollable(e.target, e.deltaX, e.deltaY))
       return
     e.preventDefault()
     scrollProgress = Math.min(1, Math.max(0, scrollProgress + e.deltaY / 2000))

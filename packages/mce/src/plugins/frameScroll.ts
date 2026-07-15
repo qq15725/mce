@@ -84,6 +84,25 @@ export default definePlugin((editor) => {
     )
   }
 
+  // 滚轮是否落在可自身滚动、且尚未滚到该方向尽头的浮层（如评论列表）内。
+  // 这类浮层作为 overlay 挂在 drawboard 内，dom.contains 为 true，若不排除会被画板滚动吞掉原生滚动。
+  function overNativeScrollable(target: EventTarget | null, boundary: Element, dx: number, dy: number): boolean {
+    let el = target instanceof Element ? target : null
+    while (el && el !== boundary) {
+      if (el instanceof HTMLElement) {
+        const style = getComputedStyle(el)
+        if (dy && /auto|scroll/.test(style.overflowY) && el.scrollHeight > el.clientHeight) {
+          return true
+        }
+        if (dx && /auto|scroll/.test(style.overflowX) && el.scrollWidth > el.clientWidth) {
+          return true
+        }
+      }
+      el = el.parentElement
+    }
+    return false
+  }
+
   function onWheel(e: WheelEvent): void {
     // ⌘/Ctrl+滚轮是缩放，交给引擎相机。
     if (e.ctrlKey || e.metaKey) {
@@ -91,6 +110,10 @@ export default definePlugin((editor) => {
     }
     const dom = drawboardDom.value
     if (!dom || !dom.contains(e.target as any)) {
+      return
+    }
+    // 滚轮落在可原生滚动的浮层（评论列表等）上：交给浏览器原生滚动，不驱动画板。
+    if (overNativeScrollable(e.target, dom, e.deltaX, e.deltaY)) {
       return
     }
     const gp = clientToGlobal(e.clientX, e.clientY)
