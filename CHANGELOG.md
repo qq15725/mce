@@ -1,3 +1,15 @@
+# [0.36.0](https://github.com/qq15725/mce/compare/v0.35.0...v0.36.0) (2026-07-15)
+
+### Bug Fixes
+
+* **crdt:** restore dynamic-keyed comments on cold load ([9d4323d](https://github.com/qq15725/mce/commit/9d4323d4327bbb4e34ee695a1ed595e86d7140f6))
+* **interactions:** let native scroll work over scrollable overlays (comment list) ([24bbe2b](https://github.com/qq15725/mce/commit/24bbe2b6dc2340bb111fd5643f9832e352db6e02))
+
+### Features
+
+* **theme:** editor theme tokens driving canvas and DOM ([777cb34](https://github.com/qq15725/mce/commit/777cb3499ead7f3e9e630c7b875e097526e276d3))
+* **theme:** theme-aware exports across gif/mp4/openxml/pdf/svg ([c46b1ff](https://github.com/qq15725/mce/commit/c46b1ffe1550682c6de8af6ee4d4d75be3b6e687))
+
 # [0.35.0](https://github.com/qq15725/mce/compare/v0.34.3...v0.35.0) (2026-07-14)
 
 ### Features
