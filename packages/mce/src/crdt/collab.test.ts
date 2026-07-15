@@ -394,4 +394,34 @@ describe('协同：表格 / 评论子对象', () => {
     a.destroy()
     b.destroy()
   })
+
+  it('comments 冷加载：评论先存在，后连端一次性 apply 全量状态仍可见（刷新回归）', async () => {
+    // 复现「评论完保存后刷新，评论不见了」：评论写入后，全新端冷加载（applyUpdate 一次性灌入
+    // 全量快照、无逐 key observe）。comments 是按线程 id 动态存键的子对象，其属性声明源自已存键，
+    // 冷加载时内部存储尚空 → 若不按 yMap 实存键回灌，toJSON 读空、评论全丢。
+    const a = new Doc([])
+    const el = new Element2D()
+    a.append(el)
+    await flush()
+    el.comments.setProperty('t1', {
+      id: 't1',
+      offset: { x: 5, y: 6 },
+      resolved: false,
+      messages: [{ id: 'm1', author: 'u1', body: 'hi', createdAt: 1 }],
+    })
+    await flush()
+
+    // 全新端冷加载 a 的全量状态（等价 BOS 快照恢复 / 刷新后采纳服务端权威内容）
+    const b = new Doc([])
+    b._yDoc.applyUpdate(a._yDoc.encodeStateAsUpdate(), REMOTE)
+    await flush()
+
+    const r = find(b, el.id)
+    expect(r).toBeTruthy()
+    expect(r.comments.toJSON()).toEqual(el.comments.toJSON())
+    expect(r.comments.toJSON()).toMatchObject([{ id: 't1', resolved: false }])
+
+    a.destroy()
+    b.destroy()
+  })
 })

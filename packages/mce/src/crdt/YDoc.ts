@@ -248,7 +248,11 @@ export class YDoc extends Observable {
     return this
   }
 
-  protected _proxyProps(obj: CoreObject, yMap: Y.Map<any>, isMeta = false, metaTarget?: CoreObject): void {
+  // dynamicKeyed：属性声明源自当前已存键的「动态 key」子对象（meta 按 key、comments 按线程 id）。
+  // 这类对象冷加载（applyUpdate 一次性灌入全量状态、无逐 key observe）时 _properties 尚空 →
+  // getPropertyDeclarations() 为空 → setPropertyAccessor 依声明回灌一条也进不来 → toJSON 读空
+  // （表现：刷新后评论 / 动态 meta 全部消失）。故对它们额外按「yMap 实存键」显式回灌内部存储。
+  protected _proxyProps(obj: CoreObject, yMap: Y.Map<any>, dynamicKeyed = false, metaTarget?: CoreObject): void {
     const accessor: PropertyAccessor = {
       getProperty: key => yMap.doc ? yMap.get(key) : undefined,
       setProperty: (key, value) => {
@@ -265,7 +269,7 @@ export class YDoc extends Observable {
       },
     }
 
-    if (isMeta) {
+    if (dynamicKeyed) {
       ;(obj as any)._propertyAccessor = undefined
       const oldValues: Record<string, any> = {}
       yMap.forEach((_value, key) => {
@@ -632,7 +636,8 @@ export class YDoc extends Observable {
 
       if (node instanceof Element2D) {
         ELEMENT2D_SYNCED_SUBOBJECTS.forEach((key) => {
-          this._proxyProps((node as any)[key], this._ensureSubMap(yNode, key, (node as any)[key]))
+          // comments 按线程 id 动态存键（同 meta），冷加载须按 yMap 实存键回灌，否则刷新后评论全丢。
+          this._proxyProps((node as any)[key], this._ensureSubMap(yNode, key, (node as any)[key]), key === 'comments')
         })
         node.text.update()
         // 表格的单元格是 back 层内部 Element2D，由 table 模型在 update() 时构建（cells→节点）。
