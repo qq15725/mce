@@ -140,7 +140,18 @@ export default defineMixin((editor, options) => {
       renderEngine,
       camera,
       drawboardEffect,
+      theme,
+      themeTokens,
     } = editor
+
+    // 底纹家族：config 的 style 只保留 grid / dot（明暗不再进枚举，旧的 gridDark/dotDark 归一到家族）。
+    function checkerboardFamily(base: string): any {
+      return base === 'dot' || base === 'dotDark' ? 'dot' : 'grid'
+    }
+    // 底纹颜色走主题解析：token → 当前主题实际色（默认预设 checkerboard / checkerboard-dot）。
+    function themeColor(token: string): string {
+      return themeTokens.value[token]?.[theme.value] ?? token
+    }
 
     Object.keys(config.value).forEach((key) => {
       const value = (options as any)[key]
@@ -193,8 +204,18 @@ export default defineMixin((editor, options) => {
 
     watch(
       () => checkerboardConfig.value.style,
-      value => drawboardEffect.value.checkerboardStyle = value,
+      style => drawboardEffect.value.checkerboardStyle = checkerboardFamily(style),
       { immediate: true },
+    )
+
+    // 底纹颜色随 theme / 调色板变化重解析并回灌引擎（明暗切换由此驱动，不再靠 style 枚举）。
+    watch(
+      () => [theme.value, themeTokens.value] as const,
+      () => {
+        drawboardEffect.value.checkerboardColor = themeColor('background')
+        drawboardEffect.value.checkerboardDotColor = themeColor('background-dot')
+      },
+      { immediate: true, deep: true },
     )
 
     watch(

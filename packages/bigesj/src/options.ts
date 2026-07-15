@@ -8,7 +8,7 @@ export const options: Options = {
     screenPadding: { left: 110, top: 60, right: 110, bottom: 60 },
   },
   canvas: {
-    checkerboard: { enabled: true, style: 'grid' },
+    checkerboard: { enabled: true, style: 'dot' },
     pixelGrid: { enabled: true },
     frame: { gap: 48, outline: false, thumbnail: false },
   },

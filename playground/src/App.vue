@@ -5,6 +5,7 @@ import bigesj, { IMAGE_EFFECT_PIPELINE, options } from '@mce/bigesj'
 import chart from '@mce/chart'
 import collaboration from '@mce/collaboration'
 import comments from '@mce/comments'
+import flex from '@mce/flex'
 import gaoding from '@mce/gaoding'
 import gif from '@mce/gif'
 import html from '@mce/html'
@@ -12,7 +13,6 @@ import mp4 from '@mce/mp4'
 import openxml from '@mce/openxml'
 import pdf from '@mce/pdf'
 import psd from '@mce/psd'
-import flex from '@mce/flex'
 import svg from '@mce/svg'
 import table from '@mce/table'
 import workflow from '@mce/workflow'
@@ -23,30 +23,8 @@ import { BroadcastChannelProvider } from './collab'
 import { demoImagePipelines, loadAnimationDemo, loadArtboardDemo, loadBigParagraphDemo, loadBigTextDemo, loadChartDemo, loadCommentsDemo, loadConnectionDemo, loadFillStrokeDemo, loadGifDemo, loadImageEffectsDemo, loadInteractionDemo, loadLargeExportDemo, loadLayoutDemo, loadLinesDemo, loadPipelinesDemo, loadPsdDemo, loadShapesDemo, loadSmartGuidesDemo, loadTableDemo, loadTextDemo, loadTextFeaturesDemo, loadVideoDemo, loadWorkflowDemo } from './demos'
 import 'mce/styles'
 
-const editorOptions = {
-  ...options,
-  viewport: {
-    ...options.viewport,
-    screenPadding: { left: 100, top: 100, right: 100, bottom: 100 },
-  },
-  canvas: {
-    ...options.canvas,
-    watermark: {
-      url: '/example.jpg',
-      width: 100,
-      alpha: 0.05,
-      rotation: 0.5236,
-    },
-  },
-  ui: {
-    ...options.ui,
-    toolbelt: { visible: true },
-    timeline: { visible: true },
-  },
-}
-
 const editor = new Editor({
-  ...editorOptions,
+  ...options,
   debug: true,
   plugins: [
     flex(),
@@ -74,6 +52,11 @@ demoImagePipelines.forEach(p => editor.registerImagePipeline(p))
 
 window.editor = editor
 window.doc = editor.doc
+
+// 明暗主题切换：驱动画布语义色 token（@surface / @on-surface / @outline）随之解析。
+function toggleTheme(): void {
+  editor.setTheme(editor.theme.value === 'dark' ? 'light' : 'dark')
+}
 
 // 动态给选中元素的前景设置图片处理管线（undefined = 清空，回到原图）。
 function setFgPipelines(imagePipelines?: { name: string, params?: Record<string, any> }[]): void {
@@ -365,6 +348,9 @@ const element = computed(() => editor.elementSelection.value[0])
           </button>
           <button @click="() => loadWorkflowDemo(editor)">
             工作流示例
+          </button>
+          <button @click="toggleTheme">
+            主题: {{ editor.theme.value === 'dark' ? '🌙 暗' : '☀️ 亮' }}
           </button>
         </div>
       </template>

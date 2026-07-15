@@ -5,6 +5,15 @@ import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {
+    interface ExportOptions {
+      /**
+       * 把元素颜色里的语义色 token（`@surface` 等）烤成该主题的实际色。
+       * 不设则保留原始 token（getDoc / 复制粘贴走这条，保持自适应）。
+       * render 类导出传当前 editor.theme 跟随；pptx/idoc 等非 render 传 'light'。
+       */
+      resolveTheme?: string
+    }
+
     interface JsonData {
       id: string
       style: {
@@ -35,10 +44,30 @@ export default definePlugin((editor, options) => {
     elementSelection,
     root,
     getTimeRange,
+    themeTokens,
   } = editor
 
   const { docName } = options
   const RE = /\.json$/i
+
+  // 把序列化后元素 JSON 里的语义色 token 就地烤成指定主题的实际色（style + 文字 fragment + 递归子元素）。
+  function bakeTheme(json: any, theme: string): any {
+    const tokens = themeTokens.value
+    const resolve = (c: any): any =>
+      (typeof c === 'string' && c[0] === '@') ? (tokens[c.slice(1)]?.[theme] ?? c) : c
+    const s = json.style
+    if (s) {
+      for (const k of ['backgroundColor', 'borderColor', 'outlineColor', 'color'] as const) {
+        if (s[k] != null)
+          s[k] = resolve(s[k])
+      }
+    }
+    json.text?.content?.forEach((p: any) =>
+      p.fragments?.forEach((f: any) => { if (f.color != null) f.color = resolve(f.color) }),
+    )
+    json.children?.forEach((c: any) => bakeTheme(c, theme))
+    return json
+  }
 
   return {
     name: 'mce:json',
@@ -74,6 +103,7 @@ export default definePlugin((editor, options) => {
           const {
             selected = false,
             scale = 1,
+            resolveTheme,
           } = options
 
           let id = idGenerator()
@@ -118,7 +148,8 @@ export default definePlugin((editor, options) => {
               }
               json.meta ??= {}
               json.meta.inPptIs = 'Slide'
-              return json
+              // 语义色 token → 实际色（仅在调用方指定主题时；否则保留 token 维持自适应）。
+              return resolveTheme ? bakeTheme(json, resolveTheme) : json
             }),
             meta: {
               inPptIs: 'Pptx',

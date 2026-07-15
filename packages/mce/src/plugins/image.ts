@@ -35,6 +35,7 @@ export default definePlugin((editor) => {
     drawboardEffect,
     runExclusiveRender,
     resolveImagePipelines,
+    theme,
   } = editor
 
   const insertImage: Mce.Commands['insertImage'] = async (url, options) => {
@@ -50,6 +51,8 @@ export default definePlugin((editor) => {
       name,
       saveAs: true,
       handle: async (options) => {
+        // 图片是 render 类导出：语义色 token 烤成当前主题实际色，使导出图与画布一致（可被 options 覆盖）。
+        options = { resolveTheme: theme.value, ...options }
         const doc = await to('json', options)
         const width = Math.max(1, Math.floor(doc.style.width))
         const height = Math.max(1, Math.floor(doc.style.height))

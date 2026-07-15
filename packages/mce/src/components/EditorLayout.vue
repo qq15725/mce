@@ -71,7 +71,48 @@ const {
   drawboardAabb,
   activeTool,
   isContentEditing,
+  theme,
+  themeTokens,
 } = editor
+
+// 语义色主题覆盖 DOM 的 --m-theme-* 变量：把 themeTokens 按当前主题解析成 RGB 三元组，
+// 以内联 style 绑到 .m-editor 根元素上——内联样式盖过样式表默认值，故 theme token 优先级 > css var。
+// token 名直接映射同名变量：surface→--m-theme-surface、on-surface→--m-theme-on-surface、
+// background→--m-theme-background、on-background→--m-theme-on-background 等。
+function hexToRgbTriplet(color?: string): string | undefined {
+  if (!color)
+    return undefined
+  let h = color.trim()
+  if (h[0] !== '#')
+    return undefined
+  h = h.slice(1)
+  // 短写扩展 + 去 alpha：#rgb/#rgba → 逐位翻倍，#rrggbbaa → 取前 6 位（DOM 变量只要 RGB 三元组）。
+  if (h.length === 3 || h.length === 4)
+    h = h.slice(0, 3).replace(/./g, c => c + c)
+  if (h.length === 8)
+    h = h.slice(0, 6)
+  if (h.length !== 6)
+    return undefined
+  const n = Number.parseInt(h, 16)
+  if (Number.isNaN(n))
+    return undefined
+  return `${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}`
+}
+// 少数 token 对应非 --m-theme- 前缀的变量；其余一律映射同名 --m-theme-<token>。
+// 画布专用 token（outline / background-dot）无对应 DOM 变量，映射后不被样式表引用、无副作用。
+const CSS_VAR_ALIAS: Record<string, string> = {
+  'border-color': '--m-border-color',
+}
+const themeVars = computed<Record<string, string>>(() => {
+  const th = theme.value
+  const out: Record<string, string> = {}
+  for (const [name, map] of Object.entries(themeTokens.value)) {
+    const rgb = hexToRgbTriplet(map?.[th])
+    if (rgb)
+      out[CSS_VAR_ALIAS[name] ?? `--m-theme-${name}`] = rgb
+  }
+  return out
+})
 
 // Prop wins when provided, otherwise use the editor's configured strategy.
 const activeStrategy = computed(() => props.activeStrategy ?? editor.activeStrategy)
@@ -591,6 +632,7 @@ const slotProps = {
       activeTool && `m-editor--drawing-tool-${activeTool.name}`,
       grabbing && `m-editor--grabbing`,
     ]"
+    :style="themeVars"
   >
     <Main>
       <div
@@ -668,17 +710,8 @@ const slotProps = {
 }
 
 .m-editor {
-  --m-theme-primary: 69, 151, 248;
-  --m-theme-on-primary: 255, 255, 255;
-  --m-theme-secondary: 244, 36, 253;
-  --m-theme-on-secondary: 255, 255, 255;
-  --m-theme-surface: 255, 255, 255;
-  --m-theme-on-surface: 30, 30, 30;
-  --m-theme-surface-variant: 35, 37, 41;
-  --m-theme-on-surface-variant: 255, 255, 255;
-  --m-theme-background: 240, 242, 245;
-  --m-theme-on-background: 56, 56, 56;
-  --m-border-color: 0, 0, 0;
+  // 语义色变量（--m-theme-* / --m-border-color）由 editor.theme + themeTokens 经内联 style 注入，
+  // 见 script 中的 themeVars（默认预设已覆盖全部，故此处不再写静态默认值）。以下为非色变量。
   --m-border-opacity: .08;
   --m-high-emphasis-opacity: 1;
   --m-medium-emphasis-opacity: 0.5;

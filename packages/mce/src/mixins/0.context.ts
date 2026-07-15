@@ -1,4 +1,4 @@
-import type { Assets, Cursor } from 'modern-canvas'
+import type { Assets, Cursor, ThemeTokens } from 'modern-canvas'
 import type { Vector2Like } from 'modern-path2d'
 import type { IndexCharacter as _IndexCharacter } from 'modern-text/web-components'
 import type { Ref } from 'vue'
@@ -9,6 +9,34 @@ import { Vector2 } from 'modern-path2d'
 import { computed, markRaw, onBeforeMount, onScopeDispose, reactive, ref, watch } from 'vue'
 import { defineMixin } from '../mixin'
 import { Doc } from '../scene'
+
+// 核心内置 token 调色板：语义色 → 各主题实际色。宿主可经 options.themeTokens 覆盖 / 扩展。
+// 元素颜色写 `@surface` / `@on-surface` / `@outline` 即随 editor.theme 自适应。
+// 核心内置 token 调色板：补齐全部 --m-theme-* 语义色 + 画布专用色。
+// 元素/画布颜色写 `@<token>` 随 editor.theme 自适应；DOM 侧由 EditorLayout 映射到同名 CSS 变量
+// （token 优先级 > css var 默认值）。宿主可经 options.themeTokens 覆盖 / 扩展。
+const DEFAULT_THEME_TOKENS: ThemeTokens = {
+  // 品牌色（明暗一致）
+  'primary': { light: '#4597f8', dark: '#4597f8' },
+  'on-primary': { light: '#ffffff', dark: '#ffffff' },
+  'secondary': { light: '#f424fd', dark: '#f424fd' },
+  'on-secondary': { light: '#ffffff', dark: '#ffffff' },
+  // 表面（面板/卡片/节点）与其上前景
+  'surface': { light: '#ffffff', dark: '#171717' },
+  'on-surface': { light: '#1e1e1e', dark: '#e5e7eb' },
+  // 反色表面（tooltip / 深色浮层）与其上前景
+  'surface-variant': { light: '#232529', dark: '#e5e7eb' },
+  'on-surface-variant': { light: '#ffffff', dark: '#171717' },
+  // 背景（画布底纹底色 + DOM 编辑器底）与其上前景
+  'background': { light: '#f0f2f5', dark: '#141414' },
+  'on-background': { light: '#383838', dark: '#a3a3a3' },
+  // 边框：DOM 侧 rgba(var(--m-border-color), --m-border-opacity) 只取 RGB（黑/白）；
+  // 画布节点边框用完整 hex8——alpha 决定描边浓度（light ~7.5% 黑 ≈ #ececf0、dark ~25% 白 ≈ #525252），
+  // 二者由同一 token 驱动，DOM 分割线不受 alpha 影响。
+  'border-color': { light: '#00000013', dark: '#ffffff40' },
+  // 画布点阵点色（无对应 DOM 变量）
+  'background-dot': { light: '#aaaaaa', dark: '#505050' },
+}
 
 declare global {
   namespace Mce {
@@ -36,6 +64,10 @@ declare global {
     interface Options {
       /** 启动即只读：仅浏览 / 平移 / 缩放，禁用一切编辑。运行时可改 `editor.readonly.value`。 */
       readonly?: boolean
+      /** 语义色主题（默认 'light'）。元素颜色为 `@token` 时按此主题解析。运行时用 `setTheme`。 */
+      theme?: string
+      /** 覆盖 / 扩展 token 调色板；与核心内置默认（surface/on-surface/outline）深合并。 */
+      themeTokens?: ThemeTokens
     }
 
     interface Editor {
@@ -62,6 +94,12 @@ declare global {
       hoverElement: Ref<Element2D | undefined>
       state: Ref<State | undefined>
       mode: Ref<Mode>
+      /** 当前语义色主题；驱动画布与图片/视频导出的 token 解析。改它或用 setTheme 即时生效。 */
+      theme: Ref<string>
+      /** 生效的 token 调色板（核心默认 ⊕ options.themeTokens）。 */
+      themeTokens: Ref<ThemeTokens>
+      /** 切换语义色主题（等价于写 editor.theme.value）。 */
+      setTheme: (theme: string) => void
       /** 前端只读模式：禁用一切编辑（选择拖动 / 变换 / 工具 / 双击编辑 / 变更类快捷键），仅保留浏览 / 平移 / 缩放。 */
       readonly: Ref<boolean>
       getGlobalPointer: () => Vector2Like
@@ -120,6 +158,20 @@ export default defineMixin((editor, options) => {
   const state = ref<Mce.State>()
   const mode = ref<Mce.Mode>(options.mode ?? 'canvas')
   const readonly = ref<boolean>(options.readonly ?? false)
+
+  // 语义色主题：token 调色板（默认 ⊕ 宿主）注入引擎；theme 变更即时重解析全树 token 色。
+  const themeTokens = ref<ThemeTokens>({
+    ...DEFAULT_THEME_TOKENS,
+    ...options.themeTokens,
+  })
+  const theme = ref<string>(options.theme ?? 'light')
+  _renderEngine.themeTokens = themeTokens.value
+  _renderEngine.theme = theme.value
+  watch(theme, v => renderEngine.value.theme = v)
+  watch(themeTokens, v => renderEngine.value.themeTokens = v, { deep: true })
+  function setTheme(next: string): void {
+    theme.value = next
+  }
 
   function setCursor(mode: Cursor | undefined): void {
     renderEngine.value.input.setCursor(mode)
@@ -250,6 +302,9 @@ export default defineMixin((editor, options) => {
     drawboardContextMenuPointer,
     state,
     mode,
+    theme,
+    themeTokens,
+    setTheme,
     readonly,
     setCursor,
     getGlobalPointer,

@@ -12,11 +12,12 @@ const OUTPUT = { idx: 1, x: 1, y: 0.5, ang: 0 }
 
 interface NodeBase { id: string, name: string, left: number, top: number }
 
-// 富文本段落：标题(粗体深色) + 若干灰色正文行。空行用空格占位以保留行高。
+// 富文本段落：标题(粗体) + 若干正文行，统一用 @on-surface 语义色随主题自适应（标题靠 fontWeight 区分）。
+// 空行用空格占位以保留行高。
 function content(title: string, body: string[]): any[] {
   return [
-    { fragments: [{ content: title, color: '#1f2937', fontWeight: 700 }] },
-    ...body.map(line => ({ fragments: [{ content: line || ' ', color: '#9ca3af' }] })),
+    { fragments: [{ content: title, color: '@on-surface', fontWeight: 700 }] },
+    ...body.map(line => ({ fragments: [{ content: line || ' ', color: '@on-surface' }] })),
   ]
 }
 
@@ -29,12 +30,11 @@ function sparklePath(cx: number, cy: number, r: number): string {
     + `C${cx} ${cy + k} ${cx + k} ${cy} ${cx + r} ${cy}`
     + `C${cx + k} ${cy} ${cx} ${cy - k} ${cx} ${cy - r}Z`
 }
+// 透明底 + 中性灰图标：底色交给节点 @surface token 在画布层随主题绘制，图标明暗皆可辨。
 function sparkleImage(): string {
-  const bg = '#ffffff'
-  const icon = '#1e1e1e'
+  const icon = '#9ca3af'
   const op = 0.18
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none">`
-    + `<rect width="512" height="512" fill="${bg}"/>`
     + `<path d="${sparklePath(288, 236, 96)}" fill="${icon}" fill-opacity="${op}"/>`
     + `<path d="${sparklePath(196, 320, 46)}" fill="${icon}" fill-opacity="${op}"/>`
     + `</svg>`
@@ -51,9 +51,9 @@ function textNode(o: NodeBase & { title: string, body: string[] }): any {
       width: SIZE,
       height: SIZE,
       borderRadius: 32,
-      borderColor: '#ececf0',
+      borderColor: '@border-color',
       borderWidth: 2,
-      backgroundColor: '#ffffff',
+      backgroundColor: '@surface',
       padding: 150,
       fontSize: 88,
       lineHeight: 1.6,
@@ -75,8 +75,9 @@ function mediaNode(o: NodeBase, inEditorIs: 'WorkflowImage' | 'WorkflowVideo'): 
       width: SIZE,
       height: SIZE,
       borderRadius: 32,
-      borderColor: '#ececf0',
+      borderColor: '@border-color',
       borderWidth: 2,
+      backgroundColor: '@surface',
     },
     foreground: { image: sparkleImage() },
     shape: { connectionPoints: [INPUT, OUTPUT] },

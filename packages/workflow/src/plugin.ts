@@ -67,15 +67,15 @@ function sparklePath(cx: number, cy: number, r: number): string {
 }
 
 // 统一的「AI 生成」占位图：大 + 小两颗闪烁星，居中偏上。方形 viewBox 随方形节点等比缩放。
-function sparklePlaceholder(bg: string, icon: string): string {
+// 透明底：节点底色由 `@surface` token 在画布层绘制并随主题自适应，占位图只叠图标（中性灰，明暗皆可辨）。
+function sparklePlaceholder(icon: string): string {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none">`
-    + `<rect width="512" height="512" fill="${bg}"/>`
     + `<path d="${sparklePath(288, 236, 96)}" fill="${icon}" fill-opacity="${PLACEHOLDER_ICON_OPACITY}"/>`
     + `<path d="${sparklePath(196, 320, 46)}" fill="${icon}" fill-opacity="${PLACEHOLDER_ICON_OPACITY}"/>`
     + `</svg>`
 }
 
-const PLACEHOLDER_BUILDERS: Record<string, (bg: string, icon: string) => string> = {
+const PLACEHOLDER_BUILDERS: Record<string, (icon: string) => string> = {
   image: sparklePlaceholder,
   video: sparklePlaceholder,
 }
@@ -125,24 +125,16 @@ export function plugin() {
       return { ...DEFAULT_NODES[type], ...options.workflowNodes?.[type] }
     }
 
-    // 读主题 CSS 变量（RGB 三元组）拼成 rgb(...)；读不到时用 fallback。
-    function themeRgb(name: string, fallback: string): string {
-      const el = editor.drawboardDom.value
-      const raw = el && getComputedStyle(el).getPropertyValue(name).trim()
-      return `rgb(${raw || fallback})`
-    }
-
+    // 占位图图标用中性灰（明暗底皆可辨）；底色交给节点 `@surface` token 在画布层随主题绘制。
     function buildPlaceholder(type: string): string {
-      return placeholderImage(PLACEHOLDER_BUILDERS[type](
-        themeRgb('--m-theme-surface', '255, 255, 255'),
-        themeRgb('--m-theme-on-surface', '30, 30, 30'),
-      ))
+      return placeholderImage(PLACEHOLDER_BUILDERS[type]('#9ca3af'))
     }
 
+    // 标题与正文同用 `@on-surface`（随主题自适应），标题靠 fontWeight 区分。
     function buildContent(t: Mce.WorkflowNodeTemplate): any {
       return [
-        ...(t.title ? [{ fragments: [{ content: t.title, color: '#1f2937', fontWeight: 700 }] }] : []),
-        ...(t.body ?? []).map(line => ({ fragments: [{ content: line, color: '#9ca3af' }] })),
+        ...(t.title ? [{ fragments: [{ content: t.title, color: '@on-surface', fontWeight: 700 }] }] : []),
+        ...(t.body ?? []).map(line => ({ fragments: [{ content: line, color: '@on-surface' }] })),
       ]
     }
 
@@ -156,7 +148,9 @@ export function plugin() {
           width: t.width ?? 2048,
           height: t.height ?? 2048,
           borderRadius: 32,
-          borderColor: '#ececf0',
+          // 语义色 token：底 / 边框随 editor.theme 自适应（画布层解析，见核心 themeTokens）。
+          backgroundColor: '@surface',
+          borderColor: '@border-color',
           borderWidth: 2,
         },
         meta: { inPptIs: 'Shape', inCanvasIs: 'Element2D', inEditorIs: `Workflow${type.charAt(0).toUpperCase()}${type.slice(1)}` },
@@ -170,7 +164,6 @@ export function plugin() {
           padding: 150,
           fontSize: 88,
           lineHeight: 1.6,
-          backgroundColor: '#ffffff',
         })
         node.text = { content: buildContent(t) }
       }
