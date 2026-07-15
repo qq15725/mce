@@ -13,7 +13,6 @@ export function plugin() {
     const {
       to,
       renderFrames,
-      theme,
     } = editor
 
     return {
@@ -30,8 +29,8 @@ export function plugin() {
             // 重依赖 modern-mp4 按需加载：仅在真正导出 MP4 时才拉取编码器
             const { MP4Encoder } = await import('modern-mp4')
             const { onProgress, ...restOptions } = options
-            // render 类导出：语义色 token 烤成当前主题实际色，使导出与画布一致（可被 options 覆盖）。
-            const data = to('json', { theme: theme.value, ...restOptions })
+            // render 类导出：JSON 原样保留 token，主题解析由 renderFrames 在渲染期完成。
+            const data = to('json', restOptions)
             const width = Math.floor(data.style.width / 2) * 2
             const height = Math.floor(data.style.height / 2) * 2
             const framerate = 30

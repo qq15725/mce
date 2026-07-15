@@ -68,6 +68,9 @@ export default defineMixin((editor) => {
       width,
       height,
       fonts: editor.fonts,
+      // 语义色 token 在渲染期由引擎按主题解析（JSON 原样保留 token，不烤色）。
+      theme: editor.theme.value,
+      themeTokens: editor.themeTokens.value,
       keyframes,
       imagePipelineResolver: editor.resolveImagePipelines,
       onKeyframe: (pixels: any, info: { duration: number, progress: number }) => onFrame(pixels, info),

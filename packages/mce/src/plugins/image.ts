@@ -36,6 +36,7 @@ export default definePlugin((editor) => {
     runExclusiveRender,
     resolveImagePipelines,
     theme,
+    themeTokens,
   } = editor
 
   const insertImage: Mce.Commands['insertImage'] = async (url, options) => {
@@ -51,8 +52,7 @@ export default definePlugin((editor) => {
       name,
       saveAs: true,
       handle: async (options) => {
-        // 图片是 render 类导出：语义色 token 烤成当前主题实际色，使导出图与画布一致（可被 options 覆盖）。
-        options = { theme: theme.value, ...options }
+        // 图片是 render 类导出：JSON 原样保留 token，主题解析在渲染期由引擎完成（见下方 render/renderPixels）。
         const doc = await to('json', options)
         const width = Math.max(1, Math.floor(doc.style.width))
         const height = Math.max(1, Math.floor(doc.style.height))
@@ -71,7 +71,7 @@ export default definePlugin((editor) => {
         // PNG 一律走直编码：renderPixels（tiling 全尺寸 RGBA）+ Sub-filter 直接编码，
         // 彻底绕过 HTMLCanvas 的面积上限（大图不再空白），体积也比 canvas.toBlob 略小。
         if (name === 'png' && supportsPngStream()) {
-          const pixels = await runExclusiveRender(() => renderPixels({ data: doc, fonts, width, height, onBefore, imagePipelineResolver: resolveImagePipelines }))
+          const pixels = await runExclusiveRender(() => renderPixels({ data: doc, fonts, width, height, onBefore, imagePipelineResolver: resolveImagePipelines, theme: theme.value, themeTokens: themeTokens.value }))
           return rgbaToPngBlob(pixels, width, height)
         }
 
@@ -98,6 +98,8 @@ export default definePlugin((editor) => {
           height: canvasDoc.style.height,
           onBefore,
           imagePipelineResolver: resolveImagePipelines,
+          theme: theme.value,
+          themeTokens: themeTokens.value,
         }))
 
         return await new Promise<Blob>((resolve) => {
