@@ -1,3 +1,13 @@
+## [0.36.1](https://github.com/qq15725/mce/compare/v0.36.0...v0.36.1) (2026-07-15)
+
+### Bug Fixes
+
+* **workflow:** use Object.assign to set media node backgroundColor ([60f0088](https://github.com/qq15725/mce/commit/60f00883e13e3ca47e955280a835aef061d1f4cb))
+
+### Features
+
+* **theme:** add surface-bright token for toolbelt and media nodes ([41392bf](https://github.com/qq15725/mce/commit/41392bfe71e87c5e857426570852722b15f2f5a4)), closes [#262626](https://github.com/qq15725/mce/issues/262626) [#171717](https://github.com/qq15725/mce/issues/171717)
+
 # [0.36.0](https://github.com/qq15725/mce/compare/v0.35.0...v0.36.0) (2026-07-15)
 
 ### Bug Fixes
