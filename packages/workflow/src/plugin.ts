@@ -149,7 +149,8 @@ export function plugin() {
           height: t.height ?? 2048,
           borderRadius: 32,
           // 语义色 token：底 / 边框随 editor.theme 自适应（画布层解析，见核心 themeTokens）。
-          backgroundColor: '@surface',
+          // 图片/视频节点(image)用抬升亮面，与文字节点区分、暗色下更醒目。
+          backgroundColor: image ? '@surface-bright' : '@surface',
           borderColor: '@border-color',
           borderWidth: 2,
         },
@@ -157,9 +158,6 @@ export function plugin() {
       }
       if (image) {
         node.foreground = { image }
-        // 图片/视频节点用抬升亮面，与文字节点(@surface)区分、暗色下更醒目。
-        // 用 Object.assign：node.style 类型为 'none' | StyleObject，不能直接取属性。
-        Object.assign(node.style!, { backgroundColor: '@surface-bright' })
       }
       else {
         // 字号 / 内边距随 2k 尺寸等比放大，保持与图片/视频节点观感一致。
