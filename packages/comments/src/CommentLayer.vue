@@ -536,6 +536,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown, true))
     border-radius: 12px;
     box-shadow: 0 12px 32px rgba(0, 0, 0, .2), 0 0 0 1px rgba(var(--m-theme-on-surface), .06);
     overflow: hidden;
+    // 覆盖评论模式下从 .m-editor 继承的「加号」光标与禁选：面板内正常指针、消息文本可选中复制。
+    cursor: auto;
+    user-select: text;
   }
 
   // 顶部工具条：resolve（左）· 关闭（右）
