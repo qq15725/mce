@@ -155,5 +155,9 @@ export function loadWorkflowDemo(editor: Editor): void {
 
   // 切到工作流模式：Workflow.vue overlay 据此显示端口加号 / 拖拽建节点 / 节点标题等。
   editor.mode.value = 'workflow'
-  setTimeout(() => editor.exec('zoomToFit'), 120)
+  setTimeout(() => {
+    editor.exec('zoomToFit')
+    // 展示「生成中」流动 shimmer：把「分镜图 1」标记为生成中（宿主异步生成时按此开/关）。
+    editor.exec('setWorkflowGenerating', 'wf-img1', true)
+  }, 120)
 }

@@ -2,9 +2,11 @@ import type { Element2D } from 'modern-canvas'
 import type { Element } from 'modern-idoc'
 import type { WorkflowGraph } from './graph'
 import { definePlugin, outlineIcon } from 'mce'
+import { reactive } from 'vue'
 import { buildWorkflowGraph } from './graph'
 import { getWorkflowPorts, toConnectionPoints } from './workflow'
 import Workflow from './Workflow.vue'
+import WorkflowGenerating from './WorkflowGenerating.vue'
 
 declare global {
   namespace Mce {
@@ -42,6 +44,13 @@ declare global {
         endId: string,
         endIdx: number,
       ) => Element2D | undefined
+      /** 标记 / 取消节点「生成中」态：显示流动 shimmer 覆盖层（运行时 UI 态，不落文档）。 */
+      setWorkflowGenerating: (id: string, generating?: boolean) => void
+    }
+
+    interface Editor {
+      /** 「生成中」节点 id 集合（响应式，运行时态）。用 setWorkflowGenerating 增删。 */
+      workflowGenerating: Set<string>
     }
   }
 }
@@ -93,6 +102,18 @@ const DEFAULT_NODES: Record<string, Mce.WorkflowNodeTemplate> = {
 export function plugin() {
   return definePlugin((editor, options) => {
     const { addElement, renderEngine, registerMode, registerToolbeltItem, registerIcon } = editor
+
+    // 「生成中」节点集合：运行时 UI 态（不落 style/文档/CRDT）。WorkflowGenerating 覆盖层据此渲染 shimmer。
+    const generating = reactive(new Set<string>())
+    editor.workflowGenerating = generating
+    function setWorkflowGenerating(id: string, on = true): void {
+      if (on) {
+        generating.add(id)
+      }
+      else {
+        generating.delete(id)
+      }
+    }
 
     // 注册「工作流」模式，菜单 / 工具腰带的模式切换项会自动包含它（图标 `$workflow` 由核心图标集提供）。
     registerMode('workflow')
@@ -267,6 +288,7 @@ export function plugin() {
       commands: [
         { command: 'addWorkflowNode', handle: addWorkflowNode },
         { command: 'addWorkflowConnection', handle: addWorkflowConnection },
+        { command: 'setWorkflowGenerating', handle: setWorkflowGenerating },
       ],
       // 新增节点快捷键（与「+」菜单一致）：⇧T / ⇧I / ⇧V。内容编辑态下由核心自动抑制。
       hotkeys: [
@@ -276,6 +298,9 @@ export function plugin() {
       ],
       components: [
         { type: 'overlay', component: Workflow },
+        // 「生成中」覆盖层：任意模式下都渲染（生成是异步流程，不限于工作流模式）。
+        // slot 'workflow-generating' 供宿主完全覆盖默认 shimmer（作用域收 node / box）。
+        { type: 'overlay', component: WorkflowGenerating, slot: 'workflow-generating' },
       ],
       messages: {
         en: {

@@ -207,6 +207,8 @@ const element = computed(() => editor.elementSelection.value[0])
 <template>
   <div style="width: 100vw; height: 100vh">
     <EditorLayout :editor="editor">
+      <!-- 自定义「生成中」效果可用此插槽完全覆盖默认 shimmer（作用域收 node / box）：
+      <template #workflow-generating="{ node }"> ... </template> -->
       <template #selection />
       <template #selection.transform />
 
