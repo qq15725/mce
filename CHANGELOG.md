@@ -1,3 +1,11 @@
+## [0.36.2](https://github.com/qq15725/mce/compare/v0.36.1...v0.36.2) (2026-07-16)
+
+### Bug Fixes
+
+* **comments:** allow selecting text and normal cursor in the panel ([c9d7076](https://github.com/qq15725/mce/commit/c9d7076e63831c661c2b6267fd92169b2c6aa211))
+* **comments:** let the thread list scroll; add scrollable demo thread ([5a265b8](https://github.com/qq15725/mce/commit/5a265b8e25562eea5178a539272147ef0fcb9c68))
+* **comments:** stop the message ⋯ menu being clipped by the list ([0f9c3ad](https://github.com/qq15725/mce/commit/0f9c3ad4f2c93197b8cc94cd8ff351bc4a4b627f))
+
 ## [0.36.1](https://github.com/qq15725/mce/compare/v0.36.0...v0.36.1) (2026-07-15)
 
 ### Bug Fixes
