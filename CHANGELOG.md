@@ -1,3 +1,11 @@
+## [0.36.3](https://github.com/qq15725/mce/compare/v0.36.2...v0.36.3) (2026-07-16)
+
+### Features
+
+* **bigesj:** default connection flow to grow ([a34db3b](https://github.com/qq15725/mce/commit/a34db3be84032eaacd63fe8119ef531c282d5941))
+* **workflow:** connection flow presets + theme-token connection colors ([c02827a](https://github.com/qq15725/mce/commit/c02827a0603bf029f96cc88fc9d2fb92a3a455b3))
+* **workflow:** generating shimmer overlay for nodes ([e011f9a](https://github.com/qq15725/mce/commit/e011f9a6375c5f6cd632950483529bef4cadfd46))
+
 ## [0.36.2](https://github.com/qq15725/mce/compare/v0.36.1...v0.36.2) (2026-07-16)
 
 ### Bug Fixes
