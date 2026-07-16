@@ -306,6 +306,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown, true))
       class="m-comments__panel"
       :style="{ left: `${activePos.x + 16}px`, top: `${activePos.y}px` }"
       @pointerdown.stop
+      @wheel.stop
     >
       <div class="m-comments__head">
         <button
