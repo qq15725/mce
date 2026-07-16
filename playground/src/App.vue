@@ -58,6 +58,12 @@ function toggleTheme(): void {
   editor.setTheme(editor.theme.value === 'dark' ? 'light' : 'dark')
 }
 
+// 切换「生成中」shimmer：作用于选中节点，无选中则用工作流示例的「分镜图 1」。
+function toggleGenerating(): void {
+  const id = editor.elementSelection.value[0]?.id ?? 'wf-img1'
+  editor.exec('setWorkflowGenerating', id, !editor.workflowGenerating.has(id))
+}
+
 // 动态给选中元素的前景设置图片处理管线（undefined = 清空，回到原图）。
 function setFgPipelines(imagePipelines?: { name: string, params?: Record<string, any> }[]): void {
   const el = editor.elementSelection.value[0]
@@ -353,6 +359,9 @@ const element = computed(() => editor.elementSelection.value[0])
           </button>
           <button @click="toggleTheme">
             主题: {{ editor.theme.value === 'dark' ? '🌙 暗' : '☀️ 亮' }}
+          </button>
+          <button @click="toggleGenerating">
+            生成中 ({{ editor.workflowGenerating?.size ?? 0 }})
           </button>
         </div>
       </template>
