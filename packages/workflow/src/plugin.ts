@@ -1,8 +1,10 @@
 import type { Element2D } from 'modern-canvas'
 import type { Element } from 'modern-idoc'
 import type { WorkflowGraph } from './graph'
+import { flowStreakEffect } from 'modern-canvas'
 import { definePlugin, outlineIcon } from 'mce'
-import { reactive } from 'vue'
+import { reactive, ref, watch } from 'vue'
+import { flowArrowEffect, flowDashEffect, flowGrowEffect } from './flowEffects'
 import { buildWorkflowGraph } from './graph'
 import { getWorkflowPorts, toConnectionPoints } from './workflow'
 import Workflow from './Workflow.vue'
@@ -46,14 +48,38 @@ declare global {
       ) => Element2D | undefined
       /** 标记 / 取消节点「生成中」态：显示流动 shimmer 覆盖层（运行时 UI 态，不落文档）。 */
       setWorkflowGenerating: (id: string, generating?: boolean) => void
+      /** 运行时切换连线流动预设（streak / arrow / grow / dash）。 */
+      setConnectionFlowEffect: (effect: WorkflowFlowEffect) => void
     }
 
     interface Editor {
       /** 「生成中」节点 id 集合（响应式，运行时态）。用 setWorkflowGenerating 增删。 */
       workflowGenerating: Set<string>
+      /** 连线流动配置（响应式）：effect 预设 + 是否常显。 */
+      workflowConnectionFlow: { effect: WorkflowFlowEffect, always: boolean }
     }
+
+    interface Options {
+      /** 连线「能量流动」配置。 */
+      connectionFlow?: {
+        /** 流动预设：'streak'(默认流光) / 'arrow'(行进箭头) / 'grow'(生长线) / 'dash'(数据流虚线)。 */
+        effect?: WorkflowFlowEffect
+        /** 'hover'(默认，悬停/选中相关连线) / 'always'(所有连线常显)。 */
+        trigger?: 'hover' | 'always'
+      }
+    }
+
+    /** 连线流动预设名。 */
+    type WorkflowFlowEffect = 'streak' | 'arrow' | 'grow' | 'dash'
   }
 }
+
+const FLOW_PRESETS = {
+  streak: flowStreakEffect,
+  arrow: flowArrowEffect,
+  grow: flowGrowEffect,
+  dash: flowDashEffect,
+} as const
 
 // 图片/视频节点的默认占位图：内联 SVG（主题 surface 圆角底 + on-surface 反色图标）。
 // 颜色在「插入节点时」从主题 CSS 变量解析后烤进 data URI——SVG data URI 是独立文档，
@@ -113,6 +139,21 @@ export function plugin() {
       else {
         generating.delete(id)
       }
+    }
+
+    // 连线流动配置：effect 预设切换（引擎 flowEffect 槽，registerEffect 重编译）+ always 常显开关。
+    const connectionFlow = reactive({
+      effect: (options.connectionFlow?.effect ?? 'streak') as Mce.WorkflowFlowEffect,
+      always: options.connectionFlow?.trigger === 'always',
+    })
+    editor.workflowConnectionFlow = connectionFlow
+    watch(
+      () => connectionFlow.effect,
+      (name) => { (renderEngine.value as any).flowEffect = FLOW_PRESETS[name] ?? flowStreakEffect },
+      { immediate: true },
+    )
+    function setConnectionFlowEffect(effect: Mce.WorkflowFlowEffect): void {
+      connectionFlow.effect = effect
     }
 
     // 注册「工作流」模式，菜单 / 工具腰带的模式切换项会自动包含它（图标 `$workflow` 由核心图标集提供）。
@@ -262,15 +303,16 @@ export function plugin() {
       return addElement({
         // 连线可单选 / 悬停（拖拽已在选择层禁用），故不设 pointerEvents:none。
         outline: {
-          color: '#94a3b8',
+          // 线体柔和浅灰（画布点阵同源），端点用深色强调（随主题翻转始终显眼）。
+          color: '@background-dot',
           // 匹配 2k 节点尺寸的默认线宽（细线在 2k 卡片间几乎看不见）。
           width: 20,
           // 平头端：端点已有竖线标记，圆头会从竖线探出一点凸尖。
           lineCap: 'butt',
           lineJoin: 'round',
           // 两端画一条垂直短线作连接点标记（引擎 canvas 绘制，随连线一起导出）。
-          headEnd: { type: 'bar', color: '#1e1e1e', width: 'sm' } as any,
-          tailEnd: { type: 'bar', color: '#1e1e1e', width: 'sm' } as any,
+          headEnd: { type: 'bar', color: '@on-surface', width: 'sm' } as any,
+          tailEnd: { type: 'bar', color: '@on-surface', width: 'sm' } as any,
         },
         connection: {
           start: { id: startId, idx: startIdx },
@@ -289,6 +331,7 @@ export function plugin() {
         { command: 'addWorkflowNode', handle: addWorkflowNode },
         { command: 'addWorkflowConnection', handle: addWorkflowConnection },
         { command: 'setWorkflowGenerating', handle: setWorkflowGenerating },
+        { command: 'setConnectionFlowEffect', handle: setConnectionFlowEffect },
       ],
       // 新增节点快捷键（与「+」菜单一致）：⇧T / ⇧I / ⇧V。内容编辑态下由核心自动抑制。
       hotkeys: [

@@ -90,12 +90,12 @@ function connector(id: string, start: string, end: string): any {
   return {
     id,
     outline: {
-      color: '#94a3b8',
+      color: '@background-dot',
       width: 20,
       lineCap: 'butt',
       lineJoin: 'round',
-      headEnd: { type: 'bar', color: '#1e1e1e', width: 'sm' },
-      tailEnd: { type: 'bar', color: '#1e1e1e', width: 'sm' },
+      headEnd: { type: 'bar', color: '@on-surface', width: 'sm' },
+      tailEnd: { type: 'bar', color: '@on-surface', width: 'sm' },
     },
     connection: { start: { id: start, idx: OUTPUT.idx }, end: { id: end, idx: INPUT.idx }, mode: 'curved' },
     meta: { inCanvasIs: 'Element2D' },

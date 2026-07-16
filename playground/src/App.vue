@@ -26,6 +26,9 @@ import 'mce/styles'
 const editor = new Editor({
   ...options,
   debug: true,
+  // 连线流动：hover / 选中相关节点或连线时才显示（与原交互一致）。
+  // 预设可在顶部「连线: xxx」按钮切换（streak / arrow / grow / dash）。
+  connectionFlow: { effect: 'arrow' },
   plugins: [
     flex(),
     bigesj({ font: true }),
@@ -62,6 +65,14 @@ function toggleTheme(): void {
 function toggleGenerating(): void {
   const id = editor.elementSelection.value[0]?.id ?? 'wf-img1'
   editor.exec('setWorkflowGenerating', id, !editor.workflowGenerating.has(id))
+}
+
+// 循环切换连线流动预设：streak → arrow → grow → dash。
+const FLOW_EFFECTS = ['streak', 'arrow', 'grow', 'dash'] as const
+function cycleFlowEffect(): void {
+  const cur = editor.workflowConnectionFlow?.effect ?? 'streak'
+  const next = FLOW_EFFECTS[(FLOW_EFFECTS.indexOf(cur) + 1) % FLOW_EFFECTS.length]
+  editor.exec('setConnectionFlowEffect', next)
 }
 
 // 动态给选中元素的前景设置图片处理管线（undefined = 清空，回到原图）。
@@ -362,6 +373,9 @@ const element = computed(() => editor.elementSelection.value[0])
           </button>
           <button @click="toggleGenerating">
             生成中 ({{ editor.workflowGenerating?.size ?? 0 }})
+          </button>
+          <button @click="cycleFlowEffect">
+            连线: {{ editor.workflowConnectionFlow?.effect ?? 'streak' }}
           </button>
         </div>
       </template>
