@@ -95,6 +95,7 @@ const replyInput = ref<HTMLTextAreaElement>()
 
 // —— 消息级操作（⋯ 菜单 / 行内编辑）——
 const menuId = ref<string>() // 打开 ⋯ 菜单的消息 id
+const menuPos = ref<{ top: string, left: string }>() // ⋯ 菜单固定定位坐标（视口坐标，避免被列表 overflow 裁剪）
 const editingId = ref<string>() // 正在编辑的消息 id
 const editingText = ref('')
 
@@ -175,8 +176,19 @@ function toggleResolve(): void {
 }
 
 // —— ⋯ 菜单：编辑 / 删除某条消息 ——
-function toggleMenu(id: string): void {
-  menuId.value = menuId.value === id ? undefined : id
+// ⋯ 菜单用 fixed 定位（不受列表 overflow 裁剪）：从按钮位置算坐标，靠近视口底则上翻、右对齐并夹进视口。
+function toggleMenu(id: string, event: MouseEvent): void {
+  if (menuId.value === id) {
+    menuId.value = undefined
+    return
+  }
+  menuId.value = id
+  const r = (event.currentTarget as HTMLElement).getBoundingClientRect()
+  const menuW = 120
+  const menuH = 84 // 约两项高度
+  const top = r.bottom + menuH > window.innerHeight ? r.top - menuH : r.bottom + 4
+  const left = Math.max(8, Math.min(r.right - menuW, window.innerWidth - menuW - 8))
+  menuPos.value = { top: `${top}px`, left: `${left}px` }
 }
 
 function startEdit(c: { id: string, body: string }): void {
@@ -354,7 +366,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown, true))
                 type="button"
                 class="m-comments__more"
                 :title="t('comment:more')"
-                @click.stop="toggleMenu(c.id)"
+                @click.stop="toggleMenu(c.id, $event)"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
                   <circle cx="5" cy="12" r="1.6" fill="currentColor" />
@@ -362,7 +374,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown, true))
                   <circle cx="19" cy="12" r="1.6" fill="currentColor" />
                 </svg>
               </button>
-              <div v-if="menuId === c.id" class="m-comments__menu">
+              <div v-if="menuId === c.id" class="m-comments__menu" :style="menuPos">
                 <button type="button" class="m-comments__menu-item" @click="startEdit(c)">
                   {{ t('comment:edit') }}
                 </button>
@@ -681,11 +693,10 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown, true))
   }
 
   &__menu {
-    position: absolute;
-    top: 22px;
-    right: 0;
-    z-index: 2;
-    min-width: 120px;
+    // fixed：坐标由 JS 从按钮位置算出（见 toggleMenu），不被列表 overflow 裁剪。
+    position: fixed;
+    z-index: 20;
+    width: 120px;
     padding: 4px;
     background: rgb(var(--m-theme-surface));
     border-radius: 8px;
