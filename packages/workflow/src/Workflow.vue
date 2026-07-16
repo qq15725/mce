@@ -345,6 +345,7 @@ function portStyle(p: ScreenPort): Record<string, string> {
   }
 
   // 可见的「+」圆点，居中于锚点；磁吸时以 transform 平滑移向指针；不拦截事件（交互走命中区）。
+  // 描边式：surface 白底圆 + primary 描边环 + primary 加号（随主题）。
   &__port-dot {
     position: absolute;
     left: 0;
@@ -352,14 +353,16 @@ function portStyle(p: ScreenPort): Record<string, string> {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 18px;
-    height: 18px;
-    margin: -9px 0 0 -9px;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
     border-radius: 50%;
-    background: rgb(var(--m-theme-primary, 30 200 230));
-    color: rgb(var(--m-theme-on-primary, 255 255 255));
-    font-size: 12px;
-    box-shadow: 0 0 0 2px rgb(var(--m-theme-surface, 255 255 255));
+    background: rgb(var(--m-theme-surface, 255 255 255));
+    color: rgb(var(--m-theme-primary, 69 151 248));
+    font-size: 13px;
+    box-shadow:
+      inset 0 0 0 1px rgb(var(--m-theme-primary, 69 151 248)),
+      0 1px 3px rgba(0, 0, 0, .14);
     pointer-events: none;
     transition: transform .1s ease-out;
   }
