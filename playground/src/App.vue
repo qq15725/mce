@@ -26,9 +26,6 @@ import 'mce/styles'
 const editor = new Editor({
   ...options,
   debug: true,
-  // 连线流动：hover / 选中相关节点或连线时才显示（与原交互一致）。
-  // 预设可在顶部「连线: xxx」按钮切换（streak / arrow / grow / dash）。
-  connectionFlow: { effect: 'arrow' },
   plugins: [
     flex(),
     bigesj({ font: true }),

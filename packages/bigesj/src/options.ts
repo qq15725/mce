@@ -33,4 +33,7 @@ export const options: Options = {
       src: 'https://bige.cdn.bcebos.com/files/202006/cBNrzOsE_rAQB.woff',
     },
   },
-}
+  // 工作流连线流动默认样式：bigesj 集成默认用生长线(grow)。
+  // connectionFlow 由 @mce/workflow 全局合并进 Options，本包未直接依赖 workflow，故整体断言接入。
+  connectionFlow: { effect: 'grow' },
+} as Options
