@@ -59,7 +59,7 @@
     "echarts": "^6.1.0"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^6.0.7",
+    "@vitejs/plugin-vue": "^6.0.8",
     "mce": "workspace:*"
   },
   "peerDependencies": {
