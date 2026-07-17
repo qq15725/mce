@@ -24,7 +24,7 @@ const WIDTH_BOOST_GL1 = 1.6
 
 export function useConnectionFlow(): void {
   const editor = useEditor()
-  const { mode, hoverElement, elementSelection, root, renderEngine, drawboardDom } = editor
+  const { mode, hoverElement, elementSelection, root, renderEngine, drawboardDom, state } = editor
 
   let flowing = new Set<Element2D>()
   let themeColorSynced = false
@@ -75,6 +75,13 @@ export function useConnectionFlow(): void {
     // 读一下当前 effect，建立依赖：切换预设时重跑，让 widthBoost 跟着更新。
     void (editor as any).workflowConnectionFlow?.effect
     if (mode.value === 'workflow') {
+      // 拖动 / 变换进行中挂起 flow：相连连线随节点每帧重路由，若仍开 flow 则每帧重算
+      // 弧长 UV（modern-path2d updateLengths/getPoint/distanceTo），连线越多掉帧越明显。
+      // 读 state.value 建立依赖，松手后 state 复位、watchEffect 重跑自动恢复流动。
+      if (state.value === 'moving' || state.value === 'transforming') {
+        sync(new Set())
+        return
+      }
       // always 模式：所有工作流连线常显流动（供演示 / 宿主整体展示）。
       if ((editor as any).workflowConnectionFlow?.always) {
         for (const child of root.value?.children ?? []) {
