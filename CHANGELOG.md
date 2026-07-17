@@ -1,3 +1,14 @@
+## [0.36.5](https://github.com/qq15725/mce/compare/v0.36.4...v0.36.5) (2026-07-17)
+
+### Bug Fixes
+
+* **workflow:** follow theme primary for port handle + theme demo ([a75a467](https://github.com/qq15725/mce/commit/a75a4674f22e4d264d233e5a8b882e78ae09cfe1))
+* **workflow:** follow theme/brand color changes for active flow ([39b5629](https://github.com/qq15725/mce/commit/39b562916d0bc2eaba23b994019f585e497e5e3f))
+
+### Performance Improvements
+
+* **workflow:** suspend connection flow & floatbar while dragging ([76bfbfa](https://github.com/qq15725/mce/commit/76bfbfad092d4fe76721472cd23fff999b391e20))
+
 ## [0.36.4](https://github.com/qq15725/mce/compare/v0.36.3...v0.36.4) (2026-07-17)
 
 ### Bug Fixes
