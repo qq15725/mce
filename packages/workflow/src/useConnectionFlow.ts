@@ -1,6 +1,6 @@
 import type { Element2D } from 'modern-canvas'
 import { useEditor } from 'mce'
-import { onBeforeUnmount, watchEffect } from 'vue'
+import { nextTick, onBeforeUnmount, watch, watchEffect } from 'vue'
 import { isWorkflowConnection } from './graph'
 
 /**
@@ -24,25 +24,28 @@ const WIDTH_BOOST_GL1 = 1.6
 
 export function useConnectionFlow(): void {
   const editor = useEditor()
-  const { mode, hoverElement, elementSelection, root, renderEngine, drawboardDom, state } = editor
+  const { mode, hoverElement, elementSelection, root, renderEngine, drawboardDom, state, theme, themeTokens } = editor
 
   let flowing = new Set<Element2D>()
-  let themeColorSynced = false
 
   // 亮段颜色取主题主色（CSS 变量是 RGB 三元组）；读不到就用引擎默认的蓝。
-  // 首次点亮时才读取——drawboard 挂载后才有主题上下文。
+  // 首次点亮时 drawboard 已挂载才有主题上下文；主题 / 品牌色变化时经下方 watch 重读，
+  // 让已点亮连线的流动色实时跟随（此前只读一次，切品牌色后流动一直停在旧色）。
   function syncThemeColor(): void {
-    if (themeColorSynced) {
-      return
-    }
     const el = drawboardDom.value
     const raw = el && getComputedStyle(el).getPropertyValue('--m-theme-primary').trim()
     if (raw) {
       renderEngine.value.flowColor = `rgb(${raw})` as any
     }
     // 周期不再写死：由各 flow 预设的 uFlowPeriod 默认值决定（箭头/生长/虚线各有合适间距）。
-    themeColorSynced = true
   }
+
+  // 主题 / 品牌色变化：themeTokens.primary 更新后，DOM 的 --m-theme-primary 由 EditorLayout
+  // 的 computed 在下一 tick 才写入，故等 nextTick 再读，重设引擎 flowColor。
+  watch(
+    [theme, () => themeTokens.value.primary],
+    () => nextTick(syncThemeColor),
+  )
 
   function sync(next: Set<Element2D>): void {
     for (const el of flowing) {
