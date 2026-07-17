@@ -18,9 +18,9 @@ import table from '@mce/table'
 import workflow from '@mce/workflow'
 import { Editor, EditorLayers, EditorLayout, EditorLayoutItem } from 'mce'
 import { normalizeEffect } from 'modern-idoc'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { BroadcastChannelProvider } from './collab'
-import { demoImagePipelines, loadAnimationDemo, loadArtboardDemo, loadBigParagraphDemo, loadBigTextDemo, loadChartDemo, loadCommentsDemo, loadConnectionDemo, loadFillStrokeDemo, loadGifDemo, loadImageEffectsDemo, loadInteractionDemo, loadLargeExportDemo, loadLayoutDemo, loadLinesDemo, loadPipelinesDemo, loadPsdDemo, loadShapesDemo, loadSmartGuidesDemo, loadTableDemo, loadTextDemo, loadTextFeaturesDemo, loadVideoDemo, loadWorkflowDemo } from './demos'
+import { BRAND_PRESETS, demoImagePipelines, loadAnimationDemo, loadArtboardDemo, loadBigParagraphDemo, loadBigTextDemo, loadChartDemo, loadCommentsDemo, loadConnectionDemo, loadFillStrokeDemo, loadGifDemo, loadImageEffectsDemo, loadInteractionDemo, loadLargeExportDemo, loadLayoutDemo, loadLinesDemo, loadPipelinesDemo, loadPsdDemo, loadShapesDemo, loadSmartGuidesDemo, loadTableDemo, loadTextDemo, loadTextFeaturesDemo, loadThemeDemo, loadVideoDemo, loadWorkflowDemo, setBrandPrimary } from './demos'
 import 'mce/styles'
 
 const editor = new Editor({
@@ -170,6 +170,9 @@ else if (demo === 'psd') {
 else if (demo === 'largeExport') {
   loadLargeExportDemo(editor)
 }
+else if (demo === 'theme') {
+  loadThemeDemo(editor)
+}
 
 // 协同演示：用 BroadcastChannel 在同浏览器多标签间同步（零服务端）。
 // 既可带 ?room=xxx 自动加入，也可点 demobar 上的「开启协同 / 新标签加入」按钮。
@@ -216,6 +219,13 @@ if (room) {
 }
 
 const element = computed(() => editor.elementSelection.value[0])
+
+// 品牌主色演示：切换后选择框(画布层)与工作流端口「+」(DOM 层)应一起跟随。
+const brandColor = ref('#4597f8')
+function applyBrand(color: string): void {
+  brandColor.value = color
+  setBrandPrimary(editor, color)
+}
 </script>
 
 <template>
@@ -365,6 +375,26 @@ const element = computed(() => editor.elementSelection.value[0])
           <button @click="() => loadWorkflowDemo(editor)">
             工作流示例
           </button>
+          <button @click="() => loadThemeDemo(editor)">
+            主题色示例
+          </button>
+          <span style="width: 1px; align-self: stretch; background: rgba(0,0,0,.15)" />
+          <button
+            v-for="b in BRAND_PRESETS"
+            :key="b.color"
+            :title="`品牌主色：${b.name}（选择框 + 端口一起跟随）`"
+            :style="{
+              background: b.color,
+              color: '#fff',
+              fontWeight: brandColor === b.color ? 'bold' : undefined,
+              outline: brandColor === b.color ? '2px solid rgba(0,0,0,.55)' : undefined,
+              outlineOffset: '1px',
+            }"
+            @click="() => applyBrand(b.color)"
+          >
+            {{ b.name }}
+          </button>
+          <span style="width: 1px; align-self: stretch; background: rgba(0,0,0,.15)" />
           <button @click="toggleTheme">
             主题: {{ editor.theme.value === 'dark' ? '🌙 暗' : '☀️ 亮' }}
           </button>

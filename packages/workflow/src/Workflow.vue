@@ -345,9 +345,9 @@ function portStyle(p: ScreenPort): Record<string, string> {
   }
 
   // 可见的「+」圆点，居中于锚点；磁吸时以 transform 平滑移向指针；不拦截事件（交互走命中区）。
-  // 描边式：surface 白底圆 + 选择框蓝描边环 + 蓝加号。
-  // 颜色钉在编辑器选择框色(mce 默认 primary #4597f8)，不跟宿主品牌 --m-theme-primary
-  // ——工作流覆盖层可能落在宿主品牌色作用域(如橙)，那样就跟画布里的选择框对不上了。
+  // 描边式：surface 白底圆 + primary 描边环 + primary 加号。
+  // 跟随 --m-theme-primary，与画布选择框(Selection.vue 同样用 --m-theme-primary)保持一致；
+  // 默认 fallback 为 mce 主色 #4597f8(69 151 248)。
   &__port-dot {
     position: absolute;
     left: 0;
@@ -360,10 +360,10 @@ function portStyle(p: ScreenPort): Record<string, string> {
     margin: -10px 0 0 -10px;
     border-radius: 50%;
     background: rgb(var(--m-theme-surface, 255 255 255));
-    color: #4597f8;
+    color: rgb(var(--m-theme-primary, 69 151 248));
     font-size: 13px;
     box-shadow:
-      inset 0 0 0 1px #4597f8,
+      inset 0 0 0 1px rgb(var(--m-theme-primary, 69 151 248)),
       0 1px 3px rgba(0, 0, 0, .14);
     pointer-events: none;
     transition: transform .1s ease-out;
