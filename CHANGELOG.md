@@ -1,3 +1,10 @@
+## [0.36.4](https://github.com/qq15725/mce/compare/v0.36.3...v0.36.4) (2026-07-17)
+
+### Bug Fixes
+
+* **flex:** declare yoga-layout as a direct dependency ([70bace9](https://github.com/qq15725/mce/commit/70bace907d9658b28b3ee9aafaa26157facc3690))
+* **workflow:** pin port + color to selection blue ([86a0129](https://github.com/qq15725/mce/commit/86a01297b082eb0a8d204e600f5432637280eb5d)), closes [#4597f8](https://github.com/qq15725/mce/issues/4597f8)
+
 ## [0.36.3](https://github.com/qq15725/mce/compare/v0.36.2...v0.36.3) (2026-07-16)
 
 ### Features
