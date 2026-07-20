@@ -30,6 +30,13 @@ declare global {
       /** 节点默认宽高（缺省 2048×2048）。 */
       width?: number
       height?: number
+      /**
+       * 文字节点的内边距 / 字号 / 行高（仅无 image 的文字类节点生效，缺省 80 / 88 / 1.6）。
+       * 随 2k 尺寸等比设定；接入方觉得留白过多/过少时可在此微调，无需改内核。
+       */
+      padding?: number
+      fontSize?: number
+      lineHeight?: number
     }
 
     interface Options {
@@ -192,11 +199,12 @@ export function plugin() {
       return placeholderImage(PLACEHOLDER_BUILDERS[type]('#9ca3af'))
     }
 
-    // 标题与正文同用 `@on-surface`（随主题自适应），标题靠 fontWeight 区分。
+    // 标题 `@on-surface` + 加粗；正文用弱化前景 `@on-surface-muted`，与标题拉开层次
+    // （二者同色时整块灰度一致、只靠字重区分，观感偏"糊"）。两个 token 都随主题自适应。
     function buildContent(t: Mce.WorkflowNodeTemplate): any {
       return [
         ...(t.title ? [{ fragments: [{ content: t.title, color: '@on-surface', fontWeight: 700 }] }] : []),
-        ...(t.body ?? []).map(line => ({ fragments: [{ content: line, color: '@on-surface' }] })),
+        ...(t.body ?? []).map(line => ({ fragments: [{ content: line, color: '@on-surface-muted' }] })),
       ]
     }
 
@@ -223,10 +231,12 @@ export function plugin() {
       }
       else {
         // 字号 / 内边距随 2k 尺寸等比放大，保持与图片/视频节点观感一致。
+        // padding 取约 0.9 倍字号（2048 宽下每边 ≈3.9%）：更早的 150 是 1.7 倍字号，
+        // 左右留白过宽、正文可用宽度被压掉一成半，观感偏空。
         Object.assign(node.style!, {
-          padding: 150,
-          fontSize: 88,
-          lineHeight: 1.6,
+          padding: t.padding ?? 80,
+          fontSize: t.fontSize ?? 88,
+          lineHeight: t.lineHeight ?? 1.6,
         })
         node.text = { content: buildContent(t) }
       }

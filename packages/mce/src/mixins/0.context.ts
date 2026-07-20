@@ -9,35 +9,63 @@ import { Vector2 } from 'modern-path2d'
 import { computed, markRaw, onBeforeMount, onScopeDispose, reactive, ref, watch } from 'vue'
 import { defineMixin } from '../mixin'
 import { Doc } from '../scene'
+import { expandVariations, mergeThemes, themesToTokens, tokensToThemes } from '../utils/theme'
 
-// 核心内置 token 调色板：语义色 → 各主题实际色。宿主可经 options.themeTokens 覆盖 / 扩展。
-// 元素颜色写 `@surface` / `@on-surface` / `@outline` 即随 editor.theme 自适应。
-// 核心内置 token 调色板：补齐全部 --m-theme-* 语义色 + 画布专用色。
+// 核心内置调色板：按**主题**组织（对齐 Vuetify 的 themes 结构），补齐全部 --m-theme-* 语义色 + 画布专用色。
 // 元素/画布颜色写 `@<token>` 随 editor.theme 自适应；DOM 侧由 EditorLayout 映射到同名 CSS 变量
-// （token 优先级 > css var 默认值）。宿主可经 options.themeTokens 覆盖 / 扩展。
-const DEFAULT_THEME_TOKENS: ThemeTokens = {
-  // 品牌色（明暗一致）
-  'primary': { light: '#4597f8', dark: '#4597f8' },
-  'on-primary': { light: '#ffffff', dark: '#ffffff' },
-  'secondary': { light: '#f424fd', dark: '#f424fd' },
-  'on-secondary': { light: '#ffffff', dark: '#ffffff' },
-  // 表面（面板/卡片/节点）与其上前景
-  'surface': { light: '#ffffff', dark: '#171717' },
-  'on-surface': { light: '#1e1e1e', dark: '#e5e7eb' },
-  // 抬升亮面（比 surface 更亮）：工具栏胶囊、图片/视频工作流节点底等。
-  'surface-bright': { light: '#ffffff', dark: '#262626' },
-  // 反色表面（tooltip / 深色浮层）与其上前景
-  'surface-variant': { light: '#232529', dark: '#e5e7eb' },
-  'on-surface-variant': { light: '#ffffff', dark: '#171717' },
-  // 背景（画布底纹底色 + DOM 编辑器底）与其上前景
-  'background': { light: '#f0f2f5', dark: '#141414' },
-  'on-background': { light: '#383838', dark: '#a3a3a3' },
-  // 边框：DOM 侧 rgba(var(--m-border-color), --m-border-opacity) 只取 RGB（黑/白）；
-  // 画布节点边框用完整 hex8——alpha 决定描边浓度（light ~7.5% 黑 ≈ #ececf0、dark ~25% 白 ≈ #525252），
-  // 二者由同一 token 驱动，DOM 分割线不受 alpha 影响。
-  'border-color': { light: '#00000013', dark: '#ffffff40' },
-  // 画布点阵点色（无对应 DOM 变量）
-  'background-dot': { light: '#aaaaaa', dark: '#505050' },
+// （token 优先级 > css var 默认值）。宿主可经 options.theme.themes 覆盖 / 扩展。
+//
+// 各 token 的取值意图（明暗成对给出）：
+// - primary / secondary：品牌色，明暗一致
+// - surface / on-surface：面板卡片节点底 + 其上前景。亮色前景用 #333 而非近黑——大段文字用近黑
+//   压得过重，#333 观感更松弛、对比度仍远超 AA
+// - on-surface-muted：表面上的**弱化**前景（说明性/占位文案），与 on-surface 拉开层次。取值同占位
+//   图标的中性灰，明暗一致即可：它在亮底上比 on-surface 浅、暗底上比 on-surface 深，主次都成立
+// - surface-bright：抬升亮面（比 surface 更亮），工具栏胶囊、图片/视频工作流节点底
+// - surface-variant / on-surface-variant：反色表面（tooltip / 深色浮层）与其上前景
+// - border-color：DOM 侧 rgba(var(--m-border-color), --m-border-opacity) 只取 RGB（黑/白）；画布节点
+//   边框用完整 hex8——alpha 决定描边浓度（亮 ~7.5% 黑 ≈ #ececf0、暗 ~25% 白 ≈ #525252），
+//   二者同源且 DOM 分割线不受 alpha 影响
+// - background-dot：画布点阵点色（无对应 DOM 变量）
+const DEFAULT_THEMES: Record<string, Mce.ThemeDefinition> = {
+  light: {
+    dark: false,
+    colors: {
+      'primary': '#4597f8',
+      'on-primary': '#ffffff',
+      'secondary': '#f424fd',
+      'on-secondary': '#ffffff',
+      'surface': '#ffffff',
+      'on-surface': '#333333',
+      'on-surface-muted': '#9ca3af',
+      'surface-bright': '#ffffff',
+      'surface-variant': '#232529',
+      'on-surface-variant': '#ffffff',
+      'background': '#f0f2f5',
+      'on-background': '#383838',
+      'border-color': '#00000013',
+      'background-dot': '#aaaaaa',
+    },
+  },
+  dark: {
+    dark: true,
+    colors: {
+      'primary': '#4597f8',
+      'on-primary': '#ffffff',
+      'secondary': '#f424fd',
+      'on-secondary': '#ffffff',
+      'surface': '#171717',
+      'on-surface': '#e5e7eb',
+      'on-surface-muted': '#9ca3af',
+      'surface-bright': '#262626',
+      'surface-variant': '#e5e7eb',
+      'on-surface-variant': '#171717',
+      'background': '#141414',
+      'on-background': '#a3a3a3',
+      'border-color': '#ffffff40',
+      'background-dot': '#505050',
+    },
+  },
 }
 
 declare global {
@@ -63,12 +91,60 @@ declare global {
 
     type EditorNodeType = 'Doc' | 'Frame' | 'Slice' | 'Element'
 
+    /**
+     * 单个主题的定义（对齐 Vuetify 的 ThemeDefinition）。
+     */
+    interface ThemeDefinition {
+      /**
+       * 是否为暗色主题。仅作标记供宿主/组件判断（如选浅底还是深底图标），不参与 `@token` 解析。
+       */
+      dark?: boolean
+      /** 语义色：token 名 → 色值（hex）。元素颜色写 `@<token>` 即按当前主题取这里的值。 */
+      colors?: Record<string, string>
+    }
+
+    /**
+     * 自动色阶：为列出的 token 各生成 `-lighten-1..N` / `-darken-1..N`（每级 ±10% 明度）。
+     * 生成的是**实体 token**，画布解析、DOM 变量、图片/视频/JSON 导出一并可用。
+     */
+    interface ThemeVariations {
+      /** 要生成色阶的 token 名，如 `['primary', 'on-surface']`。 */
+      colors: string[]
+      /** 变浅档数（0 = 不生成）。 */
+      lighten?: number
+      /** 变深档数（0 = 不生成）。 */
+      darken?: number
+    }
+
+    /**
+     * 主题配置（对齐 Vuetify 的 ThemeOptions）：按**主题**组织，每个主题下再列 colors。
+     * 与旧的 `themeTokens`（按 token 组织）等价，内部会归一，二者可混用。
+     */
+    interface ThemeConfig {
+      /** 初始主题名（默认 'light'）。 */
+      defaultTheme?: string
+      /** 各主题定义；与核心内置默认按「主题 → colors」两级深合并。 */
+      themes?: Record<string, ThemeDefinition>
+      /**
+       * 自动色阶，**默认不生成**（每个 token × 档数都会进 token 表与 CSS 变量，按需开启即可）。
+       * 合并完成后统一展开，故对内核默认色与宿主自定义色同样生效。
+       */
+      variations?: false | ThemeVariations
+    }
+
     interface Options {
       /** 启动即只读：仅浏览 / 平移 / 缩放，禁用一切编辑。运行时可改 `editor.readonly.value`。 */
       readonly?: boolean
-      /** 语义色主题（默认 'light'）。元素颜色为 `@token` 时按此主题解析。运行时用 `setTheme`。 */
-      theme?: string
-      /** 覆盖 / 扩展 token 调色板；与核心内置默认（surface/on-surface/outline）深合并。 */
+      /**
+       * 语义色主题。传字符串＝仅指定初始主题名（等价 `{ defaultTheme: name }`）；
+       * 传对象＝Vuetify 式配置，可同时给初始主题与各主题调色板。
+       */
+      theme?: string | ThemeConfig
+      /**
+       * 覆盖 / 扩展 token 调色板（按 token 组织：`{ 'on-surface': { light, dark } }`）。
+       * @deprecated 改用 `theme.themes[name].colors`（按主题组织，与 Vuetify 一致）。
+       * 仍受支持：与 `theme.themes` 归一后一并深合并，同 token 以本项为准。
+       */
       themeTokens?: ThemeTokens
     }
 
@@ -98,7 +174,17 @@ declare global {
       mode: Ref<Mode>
       /** 当前语义色主题；驱动画布与图片/视频导出的 token 解析。改它或用 setTheme 即时生效。 */
       theme: Ref<string>
-      /** 生效的 token 调色板（核心默认 ⊕ options.themeTokens）。 */
+      /**
+       * 生效的主题定义（核心默认 ⊕ options.theme.themes ⊕ options.themeTokens，按主题 → colors 深合并）。
+       * 运行时改这里即可换调色板，`themeTokens` 会随之重算。
+       */
+      themes: Ref<Record<string, ThemeDefinition>>
+      /** 当前主题的定义（含 `dark` 标记），等价 `themes.value[theme.value]`。 */
+      currentTheme: Ref<ThemeDefinition | undefined>
+      /**
+       * 生效的 token 调色板，由 `themes` 归一而来（按 token 组织，引擎与 DOM 侧消费的形态）。
+       * **只读**：要改调色板请写 `themes`。
+       */
       themeTokens: Ref<ThemeTokens>
       /** 切换语义色主题（等价于写 editor.theme.value）。 */
       setTheme: (theme: string) => void
@@ -161,12 +247,25 @@ export default defineMixin((editor, options) => {
   const mode = ref<Mce.Mode>(options.mode ?? 'canvas')
   const readonly = ref<boolean>(options.readonly ?? false)
 
-  // 语义色主题：token 调色板（默认 ⊕ 宿主）注入引擎；theme 变更即时重解析全树 token 色。
-  const themeTokens = ref<ThemeTokens>({
-    ...DEFAULT_THEME_TOKENS,
-    ...options.themeTokens,
-  })
-  const theme = ref<string>(options.theme ?? 'light')
+  // 语义色主题：配置按主题组织（Vuetify 式），内部归一成 ThemeTokens 注入引擎；
+  // theme 变更即时重解析全树 token 色。
+  // 合并顺序：核心默认 → options.theme.themes → options.themeTokens（旧写法优先级最高，便于渐进迁移）。
+  const themeConfig: Mce.ThemeConfig = typeof options.theme === 'string'
+    ? { defaultTheme: options.theme }
+    : options.theme ?? {}
+  // 色阶在**合并之后**展开：宿主覆盖过的基色也能按其新值生成变体（先展开就会拿默认色算）。
+  const themes = ref<Record<string, Mce.ThemeDefinition>>(
+    expandVariations(
+      mergeThemes(
+        mergeThemes(DEFAULT_THEMES, themeConfig.themes),
+        options.themeTokens ? tokensToThemes(options.themeTokens) : undefined,
+      ),
+      themeConfig.variations,
+    ),
+  )
+  const themeTokens = computed<ThemeTokens>(() => themesToTokens(themes.value))
+  const theme = ref<string>(themeConfig.defaultTheme ?? 'light')
+  const currentTheme = computed<Mce.ThemeDefinition | undefined>(() => themes.value[theme.value])
   _renderEngine.themeTokens = themeTokens.value
   _renderEngine.theme = theme.value
   watch(theme, v => renderEngine.value.theme = v)
@@ -305,6 +404,8 @@ export default defineMixin((editor, options) => {
     state,
     mode,
     theme,
+    themes,
+    currentTheme,
     themeTokens,
     setTheme,
     readonly,
