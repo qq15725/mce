@@ -1,3 +1,9 @@
+## [0.36.7](https://github.com/qq15725/mce/compare/v0.36.6...v0.36.7) (2026-07-20)
+
+### Bug Fixes
+
+* **selection:** keep the selection layer above plugin overlays ([7f74c2b](https://github.com/qq15725/mce/commit/7f74c2bcb7025fda58cdfeb08bff3d292ba7dd54))
+
 ## [0.36.6](https://github.com/qq15725/mce/compare/v0.36.5...v0.36.6) (2026-07-17)
 
 ## [0.36.5](https://github.com/qq15725/mce/compare/v0.36.4...v0.36.5) (2026-07-17)
