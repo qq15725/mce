@@ -412,6 +412,10 @@ defineExpose({
     right: 0;
     top: 0;
     bottom: 0;
+    // 画布内 overlay 的层级约定（见 Rulers / Toolbelt 注释）：选框 1 < 工作流层 2 < 标尺 3 < 工具条 10。
+    // 必须显式声明：不写就是 auto，与同为 auto 的后注册 overlay（如工作流「生成中」shimmer）只能按
+    // 文档顺序比较，插件注册在内核之后就会把选框和手柄整片盖住、拖不动也看不见。
+    z-index: 1;
 
     &__slot {
       position: absolute;

@@ -68,6 +68,9 @@ function boxStyle(box: Aabb2D, radius: number): Record<string, string> {
   position: absolute;
   inset: 0;
   pointer-events: none;
+  // 盖住节点内容（canvas 绘制，天然在 DOM overlay 之下）即可，**不能盖住选框**：
+  // 层级约定见 Selection（选框 z-index:1）。这里保持 auto，低于选框。
+  z-index: 0;
 
   &__item {
     position: absolute;
