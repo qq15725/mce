@@ -1,3 +1,9 @@
+## [0.36.8](https://github.com/qq15725/mce/compare/v0.36.7...v0.36.8) (2026-07-20)
+
+### Features
+
+* **theme:** Vuetify-style theme config with optional color variations ([4de8253](https://github.com/qq15725/mce/commit/4de82533e22f44f41d858e452e6b5067719f4bf9)), closes [#333](https://github.com/qq15725/mce/issues/333)
+
 ## [0.36.7](https://github.com/qq15725/mce/compare/v0.36.6...v0.36.7) (2026-07-20)
 
 ### Bug Fixes
