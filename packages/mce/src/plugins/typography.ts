@@ -215,7 +215,10 @@ export default definePlugin((editor) => {
       ) {
         element.style.width = boundingBox.width
         element.style.height = boundingBox.height
-        element.requestRender()
+        // 必须 requestDraw 而非 requestRender：改尺寸后背景 / shape（圆角）几何要重画，
+        // 而只有 needsDraw 才驱动 _redraw。改 size 本会经 size 回调自动 requestDraw，但当
+        // boundingBox 高度恰等于当前值时 setter 短路、不触发回调，圆角就停在旧几何（直角）。
+        element.requestDraw()
       }
     }
 
