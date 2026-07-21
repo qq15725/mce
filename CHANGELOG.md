@@ -1,3 +1,13 @@
+## [0.36.9](https://github.com/qq15725/mce/compare/v0.36.8...v0.36.9) (2026-07-21)
+
+### Bug Fixes
+
+* **typography:** request a draw, not just a render, after fitting ([d372878](https://github.com/qq15725/mce/commit/d372878072fd4762dedb4f335257d61d93052563))
+
+### Features
+
+* **workflow:** skeleton bars for generating text nodes, fit height on create ([d0aa6e5](https://github.com/qq15725/mce/commit/d0aa6e5c1073a296bb041e35fd207f2046c6d01a))
+
 ## [0.36.8](https://github.com/qq15725/mce/compare/v0.36.7...v0.36.8) (2026-07-20)
 
 ### Features
