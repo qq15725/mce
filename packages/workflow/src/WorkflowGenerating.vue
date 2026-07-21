@@ -10,6 +10,14 @@ const generating = (useEditor() as any).workflowGenerating as Set<string> | unde
 
 const CULL_MARGIN = 64
 
+// 文字节点骨架条：3 行，宽度交错（相对节点宽，中间行最长）。百分比布局，随节点缩放自适应。
+const SKELETON_BARS = ['62%', '92%', '48%']
+
+/** 文字节点（meta.inEditorIs === 'WorkflowText'）用横条骨架，其余用整块 shimmer。 */
+function isTextNode(node: Element2D): boolean {
+  return (node.meta as any)?.inEditorIs === 'WorkflowText'
+}
+
 function inViewport(a: Aabb2D): boolean {
   const { width, height } = drawboardAabb.value
   return a.left + a.width > -CULL_MARGIN
@@ -55,9 +63,18 @@ function boxStyle(box: Aabb2D, radius: number): Record<string, string> {
       class="m-wf-generating__item"
       :style="boxStyle(box, radius)"
     >
-      <!-- 作用域插槽：宿主可用 <template #workflow-generating="{ node, box }"> 完全替换默认 shimmer -->
+      <!-- 作用域插槽：宿主可用 <template #workflow-generating="{ node, box }"> 完全替换默认加载态 -->
       <slot :node="node" :box="box">
-        <div class="m-wf-generating__shimmer" />
+        <!-- 文字节点：横条骨架（模拟文案行，长短交错），与图片/视频的整块 shimmer 区分 -->
+        <div v-if="isTextNode(node)" class="m-wf-generating__skeleton">
+          <div
+            v-for="(w, i) in SKELETON_BARS"
+            :key="i"
+            class="m-wf-generating__bar"
+            :style="{ width: w }"
+          />
+        </div>
+        <div v-else class="m-wf-generating__shimmer" />
       </slot>
     </div>
   </div>
@@ -91,11 +108,50 @@ function boxStyle(box: Aabb2D, radius: number): Record<string, string> {
     background-size: 300% 100%;
     animation: m-wf-generating-flow var(--m-wf-generating-duration, 1.5s) ease-in-out infinite;
   }
+
+  // 文字节点骨架：跟随主题的表面色底 + 垂直居中的主色横条（模拟文案行，左实右淡出）。
+  // 颜色全走主题 token（--m-theme-surface / --m-theme-primary），随站点主色与明暗自适应，
+  // 不硬编码。padding 收窄，让横条更靠近节点左右边、留白不过多。
+  &__skeleton {
+    width: 100%;
+    height: 100%;
+    padding: 5% 6%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8%;
+    background: rgb(var(--m-theme-surface, 255, 255, 255));
+  }
+
+  &__bar {
+    height: 7%;
+    border-radius: 999px;
+    // 形状：右端羽化淡出（mask），做出骨架行的收尾。
+    // 动效：主色高光带**横向流过**（参考稿是流动的两帧，不是静态呼吸），单向连续循环。
+    -webkit-mask-image: linear-gradient(90deg, #000 55%, transparent 100%);
+    mask-image: linear-gradient(90deg, #000 55%, transparent 100%);
+    background: linear-gradient(
+      90deg,
+      rgba(var(--m-theme-primary), 0.16) 0%,
+      rgba(var(--m-theme-primary), 0.5) 50%,
+      rgba(var(--m-theme-primary), 0.16) 100%
+    );
+    background-size: 200% 100%;
+    animation: m-wf-generating-bar-flow var(--m-wf-generating-duration, 1.4s) linear infinite;
+  }
 }
 
+// 图片/视频整块 shimmer 的往返流动（保持原样）。
 @keyframes m-wf-generating-flow {
   0% { background-position: 0% 0%; }
   50% { background-position: 100% 0%; }
   100% { background-position: 0% 0%; }
+}
+
+// 文字骨架条的单向高光流动：高光从右往左连续流过。
+@keyframes m-wf-generating-bar-flow {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
 }
 </style>

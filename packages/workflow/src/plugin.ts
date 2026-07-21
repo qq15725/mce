@@ -134,7 +134,7 @@ const DEFAULT_NODES: Record<string, Mce.WorkflowNodeTemplate> = {
 
 export function plugin() {
   return definePlugin((editor, options) => {
-    const { addElement, renderEngine, registerMode, registerToolbeltItem, registerIcon } = editor
+    const { addElement, exec, waitUntilFontLoad, renderEngine, registerMode, registerToolbeltItem, registerIcon } = editor
 
     // 「生成中」节点集合：运行时 UI 态（不落 style/文档/CRDT）。WorkflowGenerating 覆盖层据此渲染 shimmer。
     const generating = reactive(new Set<string>())
@@ -245,7 +245,14 @@ export function plugin() {
 
     function addWorkflowNode(type: string, position?: Mce.AddElementPosition): Element2D {
       // 无显式位置（如从工具腰带「+」添加）则放在现有内容右侧（顶对齐），符合工作流从左到右的流向。
-      return addElement(createWorkflowNode(type), { position: position ?? 'right', active: true, intoView: true })
+      const el = addElement(createWorkflowNode(type), { position: position ?? 'right', active: true, intoView: true })
+      // 文字节点按内容自适应高度（typography autoHeight）：占位/正文文案高度不定，固定 2048 会
+      // 拖出一大截空白框。图片/视频节点是定框撑图，不动。字体异步加载完成后再 fit，避免字形宽度为 0
+      // 时算错高度（fire-and-forget，不阻塞返回）。
+      if (type === 'text') {
+        void waitUntilFontLoad().then(() => exec('textToFit', el))
+      }
+      return el
     }
 
     // Write the element's default ports onto its shape so connection routing anchors
