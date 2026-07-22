@@ -1,3 +1,9 @@
+## [0.36.10](https://github.com/qq15725/mce/compare/v0.36.9...v0.36.10) (2026-07-22)
+
+### Bug Fixes
+
+* **typography:** visible caret, and select all when entering edit mode ([7dcbc02](https://github.com/qq15725/mce/commit/7dcbc02970859d7ded72a1db46edebc2079a96c2))
+
 ## [0.36.9](https://github.com/qq15725/mce/compare/v0.36.8...v0.36.9) (2026-07-21)
 
 ### Bug Fixes
