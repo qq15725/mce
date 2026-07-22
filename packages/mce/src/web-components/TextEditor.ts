@@ -364,12 +364,16 @@ export class TextEditor extends HTMLElement implements PropertyAccessor {
     }
     left += char?.left ?? 0
     top += char?.top ?? 0
+    // 光标可能落在没有对应字符的位置（空文本 / 行尾 / 越界），此时 char 为空。
+    // 高度必须回退到「字号 × 行高」——取 0 的话光标虽然 display:block 但高度为 0，看着就是不渲染。
+    const { fontSize, lineHeight } = this.text.computedStyle
+    const fallbackSize = fontSize * (Number.isFinite(lineHeight) ? Number(lineHeight) : 1)
     this._cursorPosition = {
       color: char?.color,
       left,
       top,
-      height: char?.height ?? 0,
-      width: char?.width ?? 0,
+      height: char?.height || fallbackSize,
+      width: char?.width || fontSize,
     }
   }
 
@@ -804,12 +808,27 @@ export class TextEditor extends HTMLElement implements PropertyAccessor {
       && this._selectedChars.length === 0
     ) {
       const _cursorPosition = this._cursorPosition
+      // 粗细：这里是元素局部坐标系，写死 1px 会跟着画布缩放一起缩小（画布 25% 时屏幕上只剩
+      // 0.25px，几乎看不见）。按宿主的实际屏幕缩放反算，使其在屏幕上恒定约 1.5px。
+      const host = this.shadowRoot!.host as HTMLElement
+      const scale = host.clientWidth ? host.getBoundingClientRect().width / host.clientWidth : 1
+      const thickness = Math.max(1, 1.5 / (scale || 1))
       this._cursor.style.display = 'block'
-      this._cursor.style.backgroundColor = _cursorPosition.color ?? 'rgba(var(--color))'
+      // 颜色：CSSOM 会静默丢弃无效值，所以这里「先清空 → 试着设 → 没设进去就回退」。
+      // 两种值都设不进去：带 var() 的（原来的 `rgba(var(--color))` 从没生效过，光标一直透明）、
+      // 以及画布文字色可能是 `@on-surface` 这类未解析的主题 token。
+      const rgb = getComputedStyle(host).getPropertyValue('--color').trim()
+      this._cursor.style.backgroundColor = ''
+      if (_cursorPosition.color) {
+        this._cursor.style.backgroundColor = _cursorPosition.color
+      }
+      if (!this._cursor.style.backgroundColor) {
+        this._cursor.style.backgroundColor = rgb ? `rgb(${rgb})` : '#000'
+      }
       this._cursor.style.left = `${_cursorPosition.left}px`
       this._cursor.style.top = `${_cursorPosition.top}px`
-      this._cursor.style.height = this.text.isVertical ? '1px' : `${_cursorPosition.height}px`
-      this._cursor.style.width = this.text.isVertical ? `${_cursorPosition.width}px` : '1px'
+      this._cursor.style.height = this.text.isVertical ? `${thickness}px` : `${_cursorPosition.height}px`
+      this._cursor.style.width = this.text.isVertical ? `${_cursorPosition.width}px` : `${thickness}px`
     }
     else {
       this._cursor.style.display = 'none'

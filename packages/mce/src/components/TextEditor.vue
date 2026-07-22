@@ -65,25 +65,19 @@ async function startTyping(e?: PointerEvent): Promise<boolean> {
   const editor = textEditor.value!
   editor.set(element.text.base)
   await nextTick()
-  // 有坐标（双击 / 点击进入）：光标落在点击位置；无坐标（Enter / 程序化 / 新建空文本）：进入即全选。
-  // positionOnly 定位光标但不挂拖选监听，避免进入后移动鼠标误触发选区扩展。
+  // 进入编辑一律全选（双击 / Enter / 程序化都一样）：进来就能整段替换，与设计稿一致；
+  // 想在某处插入光标，进入后再单击即可。pointerDown 仍要调用——它负责聚焦隐藏 textarea
+  // 并初始化选区状态；positionOnly 不挂拖选监听，避免进入后移动鼠标误触发选区扩展。
   if (editor.pointerDown(e, true)) {
-    if (!e) {
-      editor.selectAll()
-    }
+    editor.selectAll()
     // A double-click fires pointerdown → mousedown on the drawboard; the
     // trailing mousedown's default action steals focus to <body> right after
     // we focus the hidden textarea. Re-focus once the gesture settles so typed
-    // keys land in the editor instead of leaking to global hotkeys（有坐标时仅
-    // 重新聚焦、保留点击处光标，不重新全选）。
+    // keys land in the editor instead of leaking to global hotkeys.
     requestAnimationFrame(() => {
       if (state.value === 'typing') {
-        if (e) {
-          editor.focus()
-        }
-        else {
-          editor.selectAll()
-        }
+        editor.focus()
+        editor.selectAll()
       }
     })
     return true
