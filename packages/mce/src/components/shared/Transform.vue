@@ -47,6 +47,9 @@ const props = withDefaults(defineProps<{
   threshold?: number
   resizeStrategy?: 'free' | 'lockAspectRatio'
   lockAspectRatioStrategy?: 'all' | 'diagonal'
+  /** 只留四角 resize 手柄，隐藏边中 resize-t/l/r/b。与 resizeStrategy/lockAspectRatioStrategy 正交：
+   *  硬锁宽高比（如工作流图片/视频节点）设此项，只能拖四角等比缩放；text/多选不设，保留边手柄。 */
+  resizeCornerOnly?: boolean
   handleStyle?: '8-points' | '4-points'
   handleShape?: 'rect' | 'circle'
   handles?: Handle[]
@@ -335,6 +338,15 @@ const computedHandles = computed<HandleObject[]>(() => {
         return false
       }
       if (compact && handle.type.startsWith('resize') && !COMPACT_HANDLES.has(handle.type)) {
+        return false
+      }
+      // 只留四角（resizeCornerOnly，如工作流图片/视频节点硬锁宽高比）：边中手柄 resize-t/l/r/b 无意义，
+      // 只留四角 resize-tl/tr/bl/br 发起等比缩放。text / 多选不设此项，保留边手柄（拖边改宽重排等）。
+      if (
+        props.resizeCornerOnly
+        && handle.type.startsWith('resize-')
+        && handle.type.split('-')[1].length === 1
+      ) {
         return false
       }
       if (props.handles.includes(handle.type as Handle)) {

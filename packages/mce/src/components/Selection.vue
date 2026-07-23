@@ -47,7 +47,9 @@ const transformProps = computed(() => {
       }
       else {
         if (el.meta.lockAspectRatio) {
+          // 硬锁宽高比（工作流图片/视频节点）：等比缩放 + 只留四角手柄（resizeCornerOnly），拖动不变形。
           props.resizeStrategy = 'lockAspectRatio'
+          props.resizeCornerOnly = true
         }
       }
     }

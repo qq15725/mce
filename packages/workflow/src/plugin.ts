@@ -224,9 +224,15 @@ export function plugin() {
           borderColor: '@border-color',
           borderWidth: 2,
         },
-        meta: { inPptIs: 'Shape', inCanvasIs: 'Element2D', inEditorIs: `Workflow${type.charAt(0).toUpperCase()}${type.slice(1)}` },
+        // 视频节点从创建即 Video2D：宿主生成后只需设顶层 src，视频纹理便渲染（Video2D._drawContent
+        // 在 foreground 之后画，直接盖住占位图）。节点类由 modern-canvas 在创建时按 inCanvasIs 定死，
+        // 运行时改不了——若建成 Element2D，之后再设 src 也永远渲染不出视频。
+        // lockAspectRatio：图片/视频节点（有占位图者）锁定宽高比——选中后只出四角手柄、拖动等比缩放，
+        // 不会把图/视频拉变形。Selection 读此 meta 决定 resizeStrategy。文字节点自适应高度，不锁。
+        meta: { inPptIs: 'Shape', inCanvasIs: type === 'video' ? 'Video2D' : 'Element2D', inEditorIs: `Workflow${type.charAt(0).toUpperCase()}${type.slice(1)}`, lockAspectRatio: Boolean(image) },
       }
       if (image) {
+        // 占位图作 foreground：无 src 时 Video2D 无纹理，只显示占位图；设 src 后视频画在其上。
         node.foreground = { image }
       }
       else {

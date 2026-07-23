@@ -169,7 +169,10 @@ export default definePlugin((editor) => {
       // （可能 endTime=0）后 RAF 仍在推进，循环一个零长时间轴会让 currentTime 退化为 NaN，
       // 连累整张画布渲染空白。先停播放并把播放头归位，再按新内容重算时长。
       function onDocSet() {
-        paused.value = true
+        // 尊重「面板隐藏 ⇔ 自动播放」：面板开着（编辑态）载文档时暂停到起点，避免切文档时
+        // RAF 在旧/零长时间轴上推进；面板隐藏（如灵感广场纯预览）则保持自动播放，否则载入
+        // 带视频的文档后时间轴被永久暂停，视频卡在首帧不动。
+        paused.value = config.value.visible
         timeline.value.currentTime = timeline.value.startTime
         updateEndTime()
       }
