@@ -42,6 +42,32 @@ declare global {
   }
 }
 
+/**
+ * 为新建元素生成带自增序号的唯一 name：按「基名」在既有 name 集合里取最大数字后缀 + 1。
+ *
+ * - 基名（去掉已有数字后缀）相同的元素各自独立计数（如「图片1」「图片2」，「文字」独立从 1 起）。
+ * - 中文基名直接接数字（`图片1`），英文/ASCII 基名加空格（`Frame 1`，贴近 Figma 习惯）。
+ * - `used` 传入已占用的 name 集合，返回值会写回其中，供同一批插入的后续元素继续自增。
+ */
+function nextIndexedName(name: string, used: Set<string>): string {
+  // 已带数字后缀的名字先剥掉后缀，避免出现「图片1 1」这类叠加。
+  const base = name.replace(/\s*\d+$/, '') || name
+  const sep = /[\u4E00-\u9FA5]$/.test(base) ? '' : ' '
+  const esc = base.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const re = new RegExp(`^${esc}\\s?(\\d+)$`)
+  let max = 0
+  for (const n of used) {
+    if (n === base)
+      continue
+    const m = re.exec(n)
+    if (m)
+      max = Math.max(max, Number(m[1]))
+  }
+  const next = `${base}${sep}${max + 1}`
+  used.add(next)
+  return next
+}
+
 export default defineMixin((editor) => {
   const {
     root,
@@ -81,6 +107,8 @@ export default defineMixin((editor) => {
     const elements = root.value.transact(() => {
       const index = offsetIndex
       const values = isArray ? value : [value]
+      // 画布已占用的 name 集合，供新元素按基名自增去重（同一批插入的元素也会累加进来）。
+      const usedNames = new Set(root.value.findAll(n => Boolean(n.name)).map(n => n.name))
       const elements = values.map((data) => {
         let _parent
         if (parent && parent.id !== root.value.id) {
@@ -100,6 +128,9 @@ export default defineMixin((editor) => {
           delete value.id
         }
         const el = root.value.proxyNode(Node.parse(value)) as Element2D
+        // 有基础 name 的元素（工作流节点、带名素材等）追加自增序号去重；无名元素维持无名。
+        if (el.name)
+          el.name = nextIndexedName(el.name, usedNames)
         if (index === undefined) {
           _parent.appendChild(el)
         }
