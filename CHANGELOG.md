@@ -1,3 +1,10 @@
+## [0.36.12](https://github.com/qq15725/mce/compare/v0.36.11...v0.36.12) (2026-07-24)
+
+### Features
+
+* **element:** auto-number default name on add so duplicate names are distinguishable ([ee90b75](https://github.com/qq15725/mce/commit/ee90b7534a010bb1a3e338267e7bc8dc01d12bf6))
+* **workflow:** make node ports configurable per type; allow disabling a type as connection source ([304a529](https://github.com/qq15725/mce/commit/304a529809e40b9a2308ba067751ded70d575357))
+
 ## [0.36.11](https://github.com/qq15725/mce/compare/v0.36.10...v0.36.11) (2026-07-23)
 
 ## [0.36.10](https://github.com/qq15725/mce/compare/v0.36.9...v0.36.10) (2026-07-22)
