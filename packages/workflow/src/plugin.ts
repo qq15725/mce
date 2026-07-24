@@ -37,6 +37,12 @@ declare global {
       padding?: number
       fontSize?: number
       lineHeight?: number
+      /**
+       * 该类型节点暴露的连线端口开关（缺省 input+output 皆开）。
+       * 设 `{ output: false }` 即「此类型不能作为其他节点的输入源」——不显示输出「+」手柄、
+       * 从它拉线/以它作连线起点都被拒；但仍可作下游接收上游。见 WorkflowPortConfig。
+       */
+      ports?: import('./workflow').WorkflowPortConfig
     }
 
     interface Options {
@@ -60,6 +66,8 @@ declare global {
     }
 
     interface Editor {
+      /** 按 workflowNodes 配置解析某元素在工作流模式下暴露的端口（input/output）。 */
+      workflowPortsOf: (el: import('modern-canvas').Element2D) => import('./workflow').WorkflowPort[]
       /** 「生成中」节点 id 集合（响应式，运行时态）。用 setWorkflowGenerating 增删。 */
       workflowGenerating: Set<string>
       /** 连线流动配置（响应式）：effect 预设 + 是否常显。 */
@@ -194,6 +202,16 @@ export function plugin() {
       return { ...DEFAULT_NODES[type], ...options.workflowNodes?.[type] }
     }
 
+    // 端口配置按类型预解析（DEFAULT_NODES ∪ 接入方 workflowNodes 的并集）：交给 getWorkflowPorts，
+    // 令渲染「+」手柄、连线校验、拖拽落点三处口径一致；未配置的类型走默认 input+output。
+    const portsByType: Record<string, import('./workflow').WorkflowPortConfig> = {}
+    for (const type of new Set([...Object.keys(DEFAULT_NODES), ...Object.keys(options.workflowNodes ?? {})])) {
+      const ports = getTemplate(type).ports
+      if (ports)
+        portsByType[type] = ports
+    }
+    editor.workflowPortsOf = el => getWorkflowPorts(el, portsByType)
+
     // 占位图图标用中性灰（明暗底皆可辨）；底色交给节点 `@surface` token 在画布层随主题绘制。
     function buildPlaceholder(type: string): string {
       return placeholderImage(PLACEHOLDER_BUILDERS[type]('#9ca3af'))
@@ -266,7 +284,7 @@ export function plugin() {
     function materializePorts(id: string): void {
       const el = (renderEngine.value as any).nodeMap.get(id) as Element2D | undefined
       if (el && !(el.shape?.connectionPoints?.length))
-        el.shape.connectionPoints = toConnectionPoints(getWorkflowPorts(el))
+        el.shape.connectionPoints = toConnectionPoints(getWorkflowPorts(el, portsByType))
     }
 
     /**
@@ -289,8 +307,8 @@ export function plugin() {
       if (startId === endId) {
         return `不能连接到自身：${startId}`
       }
-      const startPort = getWorkflowPorts(startEl).find(p => p.idx === startIdx)
-      const endPort = getWorkflowPorts(endEl).find(p => p.idx === endIdx)
+      const startPort = getWorkflowPorts(startEl, portsByType).find(p => p.idx === startIdx)
+      const endPort = getWorkflowPorts(endEl, portsByType).find(p => p.idx === endIdx)
       if (startPort?.kind !== 'output') {
         return `起点 ${startId}:${startIdx} 不是输出端口`
       }

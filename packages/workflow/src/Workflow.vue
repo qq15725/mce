@@ -6,7 +6,6 @@ import { computed, ref } from 'vue'
 import { isWorkflowConnection } from './graph'
 import NodeLabel from './NodeLabel.vue'
 import { useConnectionFlow } from './useConnectionFlow'
-import { getWorkflowPorts, INPUT_PORT, OUTPUT_PORT } from './workflow'
 
 const {
   mode,
@@ -18,6 +17,7 @@ const {
   isElement,
   exec,
   t,
+  workflowPortsOf,
 } = useEditor()
 
 // hover / 选中节点或连线时，相关连线沿数据方向流动高亮（引擎 shader 驱动）。
@@ -89,7 +89,7 @@ const ports = computed<ScreenPort[]>(() => {
   if (!el)
     return []
   const a = getAabb(el, 'drawboard')
-  return getWorkflowPorts(el).map((p) => {
+  return workflowPortsOf(el).map((p) => {
     // Push the handle outward along the direction from the box center to the
     // port, so it sits just outside the edge (works for any side/corner).
     let dx = p.x - 0.5
@@ -180,7 +180,7 @@ function startConnection(port: ScreenPort, e: PointerEvent): void {
     const target = findNodeAt(drop, sourceId)
     if (target) {
       drag.value = undefined
-      connect(port, sourceId, target.id, getWorkflowPorts(target))
+      connect(port, sourceId, target.id, workflowPortsOf(target))
     }
     else {
       // 落在空白处：弹出节点类型菜单，保留预览连线直到菜单关闭（选择/取消）
@@ -209,7 +209,7 @@ function chooseNodeType(type: string): void {
   const h = node.style.height as number
   node.style.left = m.port.kind === 'output' ? m.position.x : m.position.x - w
   node.style.top = m.position.y - h / 2
-  connect(m.port, m.sourceId, node.id, [INPUT_PORT, OUTPUT_PORT])
+  connect(m.port, m.sourceId, node.id, workflowPortsOf(node))
 }
 
 function closeMenu(): void {
