@@ -2,7 +2,7 @@
 import type { Element2D } from 'modern-canvas'
 import type { WorkflowPort } from './workflow'
 import { Icon, useEditor } from 'mce'
-import { computed, ref } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { isWorkflowConnection } from './graph'
 import NodeLabel from './NodeLabel.vue'
 import { useConnectionFlow } from './useConnectionFlow'
@@ -133,6 +133,39 @@ interface MenuState {
   sourceId: string
 }
 const menu = ref<MenuState>()
+const menuEl = ref<HTMLElement>()
+const menuStyle = ref<{ left: string, top: string }>()
+
+/**
+ * Keep the creator menu inside the viewport.
+ *
+ * The menu is `position: fixed` at the pointer-release point, so dropping a connection near the
+ * bottom or right edge used to render it partly (or almost entirely) off-screen. Measure it once
+ * it is in the DOM and clamp, flipping above/left of the pointer when there is no room below/right.
+ */
+const MENU_VIEWPORT_MARGIN = 8
+
+watch(menu, async (m) => {
+  if (!m) {
+    menuStyle.value = undefined
+    return
+  }
+  const left = m.x + drawboardAabb.value.left
+  const top = m.y + drawboardAabb.value.top
+  // Paint at the raw point first so the menu never flashes at (0, 0) before measuring.
+  menuStyle.value = { left: `${left}px`, top: `${top}px` }
+  await nextTick()
+  const el = menuEl.value
+  if (!el)
+    return
+  const { width, height } = el.getBoundingClientRect()
+  const maxLeft = Math.max(MENU_VIEWPORT_MARGIN, window.innerWidth - width - MENU_VIEWPORT_MARGIN)
+  const maxTop = Math.max(MENU_VIEWPORT_MARGIN, window.innerHeight - height - MENU_VIEWPORT_MARGIN)
+  menuStyle.value = {
+    left: `${Math.min(Math.max(left, MENU_VIEWPORT_MARGIN), maxLeft)}px`,
+    top: `${Math.min(Math.max(top, MENU_VIEWPORT_MARGIN), maxTop)}px`,
+  }
+})
 
 function toDrawboard(e: PointerEvent | MouseEvent): { x: number, y: number } {
   return { x: e.clientX - drawboardAabb.value.left, y: e.clientY - drawboardAabb.value.top }
@@ -272,8 +305,9 @@ function portStyle(p: ScreenPort): Record<string, string> {
       <template v-if="menu">
         <div class="m-workflow__backdrop" @pointerdown="closeMenu" />
         <div
+          ref="menuEl"
           class="m-workflow__menu"
-          :style="{ left: `${menu.x + drawboardAabb.left}px`, top: `${menu.y + drawboardAabb.top}px` }"
+          :style="menuStyle"
         >
           <div class="m-workflow__menu-title">
             {{ t('creator') }}
@@ -381,6 +415,10 @@ function portStyle(p: ScreenPort): Record<string, string> {
     position: fixed;
     z-index: 2001;
     min-width: 200px;
+    // Clamping keeps the box inside the viewport; this is the last resort for a menu
+    // taller than the viewport itself.
+    max-height: calc(100vh - 16px);
+    overflow-y: auto;
     padding: 6px;
     background: rgb(var(--m-theme-surface, 255 255 255));
     border-radius: 12px;
