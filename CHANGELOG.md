@@ -1,3 +1,9 @@
+## [0.36.13](https://github.com/qq15725/mce/compare/v0.36.12...v0.36.13) (2026-07-27)
+
+### Bug Fixes
+
+* **workflow:** keep the creator menu inside the viewport ([e05a45a](https://github.com/qq15725/mce/commit/e05a45ac7ecc0d831db69cf0d1da158c55ee80a5))
+
 ## [0.36.12](https://github.com/qq15725/mce/compare/v0.36.11...v0.36.12) (2026-07-24)
 
 ### Features
