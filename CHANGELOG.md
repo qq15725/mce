@@ -1,3 +1,9 @@
+## [0.36.14](https://github.com/qq15725/mce/compare/v0.36.13...v0.36.14) (2026-07-29)
+
+### Features
+
+* **workflow:** node corners default to square, radius configurable ([73e170b](https://github.com/qq15725/mce/commit/73e170b8f8c2eb03f5b06fbfd2e0093d979cfdfd))
+
 ## [0.36.13](https://github.com/qq15725/mce/compare/v0.36.12...v0.36.13) (2026-07-27)
 
 ### Bug Fixes
