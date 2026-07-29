@@ -1,3 +1,9 @@
+## [0.36.16](https://github.com/qq15725/mce/compare/v0.36.15...v0.36.16) (2026-07-29)
+
+### Bug Fixes
+
+* **element:** regenerate ids for the whole subtree on regenId ([1533de9](https://github.com/qq15725/mce/commit/1533de96e4326f8cedb0a87806ae0e6d612188c2))
+
 ## [0.36.15](https://github.com/qq15725/mce/compare/v0.36.14...v0.36.15) (2026-07-29)
 
 ### Bug Fixes

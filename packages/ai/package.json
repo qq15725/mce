@@ -1,7 +1,7 @@
 {
   "name": "@mce/ai",
   "type": "module",
-  "version": "0.36.15",
+  "version": "0.36.16",
   "description": "AI plugin for mce",
   "author": "wxm",
   "license": "MIT",
