@@ -69,7 +69,13 @@ export default defineMixin((editor) => {
     }
 
     const nodes = Array.isArray(node) ? node : [node]
-    nodes.forEach(node => node.findOne(handle))
+    // findOne 只遍历后代、不含节点自身，故传进来的节点要单独跑一次 handle。
+    // 导出（json exporter → renderFrames）传的正是「顶层元素数组」：漏掉自身会让
+    // 单个顶层视频/动画元素算出 0 时长 —— gif/mp4 一帧不渲染，导出 0 字节文件。
+    nodes.forEach((node) => {
+      handle(node)
+      node.findOne(handle)
+    })
 
     return range
   }
