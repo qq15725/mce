@@ -1,3 +1,9 @@
+## [0.36.15](https://github.com/qq15725/mce/compare/v0.36.14...v0.36.15) (2026-07-29)
+
+### Bug Fixes
+
+* **timeline:** include the given nodes themselves in getTimeRange ([ceaac5a](https://github.com/qq15725/mce/commit/ceaac5a485cf6fe7a55759861591d11c98c54212))
+
 ## [0.36.14](https://github.com/qq15725/mce/compare/v0.36.13...v0.36.14) (2026-07-29)
 
 ### Features
