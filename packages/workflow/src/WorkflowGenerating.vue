@@ -38,7 +38,7 @@ const items = computed(() => {
     .map((node) => {
       const box = getAabb(node, 'drawboard')
       // 节点圆角是画布单位（workflow 节点默认 32），屏幕圆角随缩放。
-      const radius = ((node.style as any)?.json?.borderRadius ?? 32) * zoom
+      const radius = ((node.style as any)?.json?.borderRadius ?? 0) * zoom
       return { node, box, radius }
     })
     .filter(({ box }) => box.width > 1 && inViewport(box))

@@ -31,6 +31,11 @@ declare global {
       width?: number
       height?: number
       /**
+       * 节点圆角，缺省 0（直角）。需要圆角的接入方按 2k 尺寸自行给值（如 32）。
+       * 生成中的覆盖层会读节点实际圆角跟随，无需另配（见 WorkflowGenerating）。
+       */
+      borderRadius?: number
+      /**
        * 文字节点的内边距 / 字号 / 行高（仅无 image 的文字类节点生效，缺省 80 / 88 / 1.6）。
        * 随 2k 尺寸等比设定；接入方觉得留白过多/过少时可在此微调，无需改内核。
        */
@@ -235,7 +240,7 @@ export function plugin() {
           // 图片/视频/文字节点默认 2048×2048（可经 workflowNodes 覆盖）。
           width: t.width ?? 2048,
           height: t.height ?? 2048,
-          borderRadius: 32,
+          borderRadius: t.borderRadius ?? 0,
           // 语义色 token：底 / 边框随 editor.theme 自适应（画布层解析，见核心 themeTokens）。
           // 图片/视频节点(image)用抬升亮面，与文字节点区分、暗色下更醒目。
           backgroundColor: image ? '@surface-bright' : '@surface',
