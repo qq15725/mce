@@ -21,21 +21,28 @@ export interface ComponentDef {
 export type InstanceOverrides = Record<string, any>
 
 /**
- * 递归剥离子树里的 id，使实例化后每个节点都获得新 id。
- * （addElement 的 regenId 只清顶层 id，子节点 id 会冲突。）
+ * 递归剥离子树里的 id，使落入画布后每个节点都获得新 id（Node.parse 见缺 id 会自动发新的）。
+ *
+ * 组件实例化与 `addElement` 的 `regenId` 共用这一份 —— 只剥顶层的话，子节点会带着源文档的 id
+ * 进来，与文档里已存在的同 id 节点撞车（复制整块画板到另一个文件里粘贴两次即现：先粘的那块被
+ * 搬空、后粘的那块出现两份）。
+ *
+ * **结构共享**：只重建「节点对象自身 + children 数组」，style/text/shape 等叶子对象与入参共享
+ * 引用，不做深拷贝——它是粘贴/复制的必经之路，整块画板深拷两遍纯属浪费。因此本函数只保证
+ * 「不修改入参」；调用方若要就地改结果（如叠加 override），自己先 cloneDeep。
  */
 export function stripNodeIds<T>(node: T): T {
-  const clone = cloneDeep(node)
-  const walk = (n: any): void => {
-    if (n && typeof n === 'object') {
-      delete n.id
-      if (Array.isArray(n.children)) {
-        n.children.forEach(walk)
-      }
-    }
+  if (Array.isArray(node)) {
+    return node.map(item => stripNodeIds(item)) as T
   }
-  walk(clone)
-  return clone
+  if (!node || typeof node !== 'object') {
+    return node
+  }
+  const { id: _dropped, ...rest } = node as any
+  if (Array.isArray(rest.children)) {
+    rest.children = rest.children.map((child: any) => stripNodeIds(child))
+  }
+  return rest as T
 }
 
 /**
@@ -66,6 +73,7 @@ export function applyOverrides<T>(node: T, overrides: InstanceOverrides = {}): T
  * 返回的 JSON 交给 addElement(regenId) 落入画布。
  */
 export function instantiateComponent(def: ComponentDef, overrides: InstanceOverrides = {}): any {
-  // stripNodeIds 已返回全新深拷贝，直接原地叠加 override，省去 applyOverrides 内部的二次深拷贝
-  return applyOverridesInPlace(stripNodeIds(def.node), overrides)
+  // override 是就地写（applyOverridesInPlace 会改到嵌套对象），而 stripNodeIds 只做结构共享，
+  // 故这里自己深拷一份再剥 id —— 整条链上只此一次深拷贝，master 不会被实例的 override 改脏。
+  return applyOverridesInPlace(stripNodeIds(cloneDeep(def.node)), overrides)
 }

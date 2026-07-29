@@ -26,6 +26,20 @@ describe('stripNodeIds', () => {
     stripNodeIds(master)
     expect(JSON.stringify(master)).toBe(snapshot)
   })
+
+  it('结构共享：重建节点与 children，叶子对象仍共享引用（不深拷）', () => {
+    const r = stripNodeIds(master) as any
+    expect(r).not.toBe(master)
+    expect(r.children[0]).not.toBe(master.children[0])
+    expect(r.style).toBe(master.style)
+    expect(r.children[0].text).toBe(master.children[0].text)
+  })
+
+  it('接受数组（addElement 批量落入时整批剥）', () => {
+    const r = stripNodeIds([{ id: 'a', children: [{ id: 'b' }] }]) as any[]
+    expect('id' in r[0]).toBe(false)
+    expect('id' in r[0].children[0]).toBe(false)
+  })
 })
 
 describe('applyOverrides', () => {

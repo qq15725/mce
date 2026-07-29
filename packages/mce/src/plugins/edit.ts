@@ -54,6 +54,7 @@ export default definePlugin((editor, options) => {
     canLoad,
     load,
     addElements,
+    frames,
     hoverElement,
     to,
     exporters,
@@ -271,11 +272,23 @@ export default definePlugin((editor, options) => {
     }
     if (elements.length) {
       addElements(elements, {
-        position: 'screenCenter',
+        position: pastePosition(elements),
         active: true,
         regenId: true,
       })
     }
+  }
+
+  /**
+   * 粘贴落点：整批都是画板时排到现有内容右侧，否则落屏幕中心。
+   *
+   * 画板走 screenCenter 会**盖在已有画板上**（新文档里也有一个默认空画板），两块板重叠在一起，
+   * 看上去就是「粘乱了」；而画板本来就是并排铺开的东西，没有叠着放的用法。
+   * 普通元素维持 screenCenter —— 粘到视野中间才是预期。
+   */
+  function pastePosition(elements: any[]): Mce.AddElementPosition {
+    const allFrames = elements.every(el => el?.meta?.inEditorIs === 'Frame')
+    return allFrames && frames.value.length ? 'right top' : 'screenCenter'
   }
 
   const paste: Mce.Commands['paste'] = async (source) => {

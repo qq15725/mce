@@ -3,6 +3,7 @@ import type { Element } from 'modern-idoc'
 import type { Vector2Like } from 'modern-path2d'
 import { Node } from 'modern-canvas'
 import { defineMixin } from '../mixin'
+import { stripNodeIds } from '../utils/components'
 
 declare global {
   namespace Mce {
@@ -117,15 +118,17 @@ export default defineMixin((editor) => {
         else {
           _parent = root.value
         }
+        // regenId 要**递归**剥掉子树的 id（stripNodeIds，与组件实例化共用一份实现）：只删顶层的话，
+        // 子元素会带着源文档的 id 进来，粘贴第二次时与上一次的 id 撞车，节点会被从上一个父级
+        // 「搬」到新父级 —— 表现为「先粘的那块内容空了、新粘的那块出现两份」。
+        // Node.parse 见到缺 id 会自动发新 id，剥干净即可。
+        const source = regenId ? stripNodeIds(data) : data
         const value = {
-          ...data,
+          ...source,
           meta: {
             inCanvasIs: 'Element2D',
-            ...(data?.meta ?? {}),
+            ...(source?.meta ?? {}),
           },
-        }
-        if (regenId) {
-          delete value.id
         }
         const el = root.value.proxyNode(Node.parse(value)) as Element2D
         // 有基础 name 的元素（工作流节点、带名素材等）追加自增序号去重；无名元素维持无名。
