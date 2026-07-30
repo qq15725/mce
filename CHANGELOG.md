@@ -1,3 +1,9 @@
+## [0.36.17](https://github.com/qq15725/mce/compare/v0.36.16...v0.36.17) (2026-07-30)
+
+### Bug Fixes
+
+* **typography:** guard textSelection entries in isTextAllSelected ([448393f](https://github.com/qq15725/mce/commit/448393f35ba1bda973080ecf991f22b89210566c))
+
 ## [0.36.16](https://github.com/qq15725/mce/compare/v0.36.15...v0.36.16) (2026-07-29)
 
 ### Bug Fixes
