@@ -81,9 +81,15 @@ export default definePlugin((editor) => {
   })
 
   const isTextAllSelected = computed(() => {
-    return textSelection.value?.[0].isFirst
-      && textSelection.value?.[1].isLast
-      && textSelection.value?.[1].isLastSelected
+    // Guard the elements, not just the array: `textSelection` can hold a single
+    // entry (collapsed caret), and `?.[1].isLast` then throws inside this computed,
+    // taking the whole reactive update with it.
+    const selection = textSelection.value
+    return Boolean(
+      selection?.[0]?.isFirst
+      && selection?.[1]?.isLast
+      && selection?.[1]?.isLastSelected,
+    )
   })
 
   function textFontSizeToFit(element: Element2D, scale?: number): void {
