@@ -221,10 +221,25 @@ function cancel() {
   ok()
 }
 
+const { state: imageRef } = useImage(
+  computed(() => ({
+    src: props.image,
+  })),
+)
+
 function setAspectRatio(ratio: 0 | [number, number]) {
   const { left = 0, top = 0 } = view.value
   const { left: sourceLeft, top: sourceTop, width: sourceWidth, height: sourceHeight } = applyInverseMat(view.value)
-  const aspectRatio = ratio === 0 ? sourceWidth / sourceHeight : ratio[0] / ratio[1]
+  // ratio === 0 is the "fit image / original" preset: it must follow the image's own
+  // aspect ratio. Deriving it from the current view instead made this an identity
+  // transform — the button did nothing, and since no change was recorded there was
+  // nothing to undo either (Ctrl+Z then reverted some earlier edit instead).
+  const natural = imageRef.value
+  const aspectRatio = ratio === 0
+    ? (natural?.naturalWidth && natural?.naturalHeight
+        ? natural.naturalWidth / natural.naturalHeight
+        : sourceWidth / sourceHeight)
+    : ratio[0] / ratio[1]
 
   let newViewWidth = sourceWidth
   let newViewHeight = sourceWidth / aspectRatio
@@ -244,11 +259,6 @@ function setAspectRatio(ratio: 0 | [number, number]) {
   }
 }
 
-const { state: imageRef } = useImage(
-  computed(() => ({
-    src: props.image,
-  })),
-)
 const canvasRef = useTemplateRef('canvasRef')
 watch([canvasRef, imageRef], render)
 watch(internalValue, render, { deep: true })
