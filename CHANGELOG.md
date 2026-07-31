@@ -1,3 +1,9 @@
+## [0.36.19](https://github.com/qq15725/mce/compare/v0.36.18...v0.36.19) (2026-07-31)
+
+### Bug Fixes
+
+* **snapshot:** fall back to the element aabb when its JSON has no size ([0b862c2](https://github.com/qq15725/mce/commit/0b862c24b724a752f2d45c41a8746bfa2b8f2814))
+
 ## [0.36.18](https://github.com/qq15725/mce/compare/v0.36.17...v0.36.18) (2026-07-31)
 
 ### Bug Fixes
