@@ -1,3 +1,9 @@
+## [0.36.18](https://github.com/qq15725/mce/compare/v0.36.17...v0.36.18) (2026-07-31)
+
+### Bug Fixes
+
+* **cropper:** make the fit-image preset follow the image aspect ratio ([13d779e](https://github.com/qq15725/mce/commit/13d779e3c1f1f4962b59a14f03616ecc3d4b4200))
+
 ## [0.36.17](https://github.com/qq15725/mce/compare/v0.36.16...v0.36.17) (2026-07-30)
 
 ### Bug Fixes
