@@ -36,6 +36,11 @@ declare global {
        */
       borderRadius?: number
       /**
+       * 节点描边宽度，缺省 2。接入方的画布若靠底色/投影分层（而不是描边），
+       * 给 0 即可去掉这圈线；描边色仍走 `@border-color` 语义 token。
+       */
+      borderWidth?: number
+      /**
        * 文字节点的内边距 / 字号 / 行高（仅无 image 的文字类节点生效，缺省 80 / 88 / 1.6）。
        * 随 2k 尺寸等比设定；接入方觉得留白过多/过少时可在此微调，无需改内核。
        */
@@ -245,7 +250,7 @@ export function plugin() {
           // 图片/视频节点(image)用抬升亮面，与文字节点区分、暗色下更醒目。
           backgroundColor: image ? '@surface-bright' : '@surface',
           borderColor: '@border-color',
-          borderWidth: 2,
+          borderWidth: t.borderWidth ?? 2,
         },
         // 视频节点从创建即 Video2D：宿主生成后只需设顶层 src，视频纹理便渲染（Video2D._drawContent
         // 在 foreground 之后画，直接盖住占位图）。节点类由 modern-canvas 在创建时按 inCanvasIs 定死，
