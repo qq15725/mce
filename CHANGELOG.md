@@ -1,3 +1,9 @@
+## [0.36.21](https://github.com/qq15725/mce/compare/v0.36.20...v0.36.21) (2026-08-03)
+
+### Bug Fixes
+
+* **deps:** 对齐 modern-text 到 2.2.3，两版并存会让 tsc 报类型不兼容、发版构建挂掉 ([60effaa](https://github.com/qq15725/mce/commit/60effaaa8ac8666079d80e0f87ed64ff751ad715))
+
 ## [0.36.20](https://github.com/qq15725/mce/compare/v0.36.19...v0.36.20) (2026-08-03)
 
 ### Bug Fixes
