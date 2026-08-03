@@ -158,6 +158,8 @@ export function plugin() {
     // 「生成中」节点集合：运行时 UI 态（不落 style/文档/CRDT）。WorkflowGenerating 覆盖层据此渲染 shimmer。
     const generating = reactive(new Set<string>())
     editor.workflowGenerating = generating
+    // 换文档即清空：旧文档节点的 id 留在集合里既关不掉（节点已不存在）又让「生成中」计数虚高。
+    editor.on('docSet', () => generating.clear())
     function setWorkflowGenerating(id: string, on = true): void {
       if (on) {
         generating.add(id)
