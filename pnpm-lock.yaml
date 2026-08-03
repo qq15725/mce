@@ -131,8 +131,8 @@ importers:
         specifier: workspace:*
         version: link:../mce
       modern-canvas:
-        specifier: ^0.27.9
-        version: 0.27.9(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1)
+        specifier: ^0.27.16
+        version: 0.27.16(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1)
       modern-idoc:
         specifier: ^0.12.4
         version: 0.12.4
@@ -180,8 +180,8 @@ importers:
         specifier: ^5
         version: 5.13.0
       modern-canvas:
-        specifier: ^0.27.9
-        version: 0.27.9(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1)
+        specifier: ^0.27.16
+        version: 0.27.16(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1)
       modern-font:
         specifier: ^0.6.3
         version: 0.6.3
@@ -2371,8 +2371,8 @@ packages:
   mlly@1.8.2:
     resolution: {integrity: sha512-d+ObxMQFmbt10sretNDytwt85VrbkhhUA/JBGm1MPaWJ65Cl4wOgLaB1NYvJSZ0Ef03MMEU/0xpPMXUIQ29UfA==}
 
-  modern-canvas@0.27.9:
-    resolution: {integrity: sha512-3ZF3LdDOfL9HgBrfxOhNJsVG8DCIlJZiwLEZXyc8Pr7dXeVAG6RLWIS88X/+S6bSQGnJ+gyhfa63ZD80o4cX3A==}
+  modern-canvas@0.27.16:
+    resolution: {integrity: sha512-4tdUTMBiIlNl8Xl8ymhJhqU2GGpn9RmiwmBvRIaYaBaHGcForrcgks4bQ/Z+YSVseND9h2HiQGZX4DRpU8Z6qA==}
     peerDependencies:
       echarts: ^5 || ^6
       lottie-web: ^5
@@ -2419,6 +2419,9 @@ packages:
 
   modern-text@2.2.2:
     resolution: {integrity: sha512-0kZVUntZs8L6h72AL3CkGlt1GEOafYt1iTJBzzVHVXSJh5KKhO3Sxz1MsiO6Ep2KZF+odnY32BF00cWiyGNAqg==}
+
+  modern-text@2.2.3:
+    resolution: {integrity: sha512-mVs8wrAqoGR21O9C9nxNLTc+yUvMx1+iGJwYc0Rha8tGrHTzSxDaMOsAaDUzVhxUfbTzQNFwfRpUHiusy4XYdQ==}
 
   module-replacements@3.0.0:
     resolution: {integrity: sha512-tHIZqde+RlyNRobAIjfcH5UIgIrEbZbDGRL6J/x+HERX/g8O9mrm0p6knJbsTXmQtDvZ+eFP+xfOP3/9jHk6YA==}
@@ -5342,14 +5345,14 @@ snapshots:
       pkg-types: 1.3.1
       ufo: 1.6.4
 
-  modern-canvas@0.27.9(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1):
+  modern-canvas@0.27.16(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1):
     dependencies:
       colord: 2.9.3
       earcut: 3.2.3
       modern-font: 0.6.3
       modern-idoc: 0.12.4
       modern-path2d: 1.8.8
-      modern-text: 2.2.2
+      modern-text: 2.2.3
     optionalDependencies:
       echarts: 6.1.0
       lottie-web: 5.13.0
@@ -5401,6 +5404,13 @@ snapshots:
       modern-text: 2.2.2
 
   modern-text@2.2.2:
+    dependencies:
+      diff: 9.0.0
+      modern-font: 0.6.3
+      modern-idoc: 0.12.4
+      modern-path2d: 1.8.8
+
+  modern-text@2.2.3:
     dependencies:
       diff: 9.0.0
       modern-font: 0.6.3

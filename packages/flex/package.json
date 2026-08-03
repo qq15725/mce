@@ -54,7 +54,7 @@
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.8",
     "mce": "workspace:*",
-    "modern-canvas": "^0.27.9",
+    "modern-canvas": "^0.27.16",
     "modern-idoc": "^0.12.4"
   }
 }

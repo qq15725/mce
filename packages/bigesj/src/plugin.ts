@@ -1,7 +1,7 @@
 import type { Editor } from 'mce'
 import type { Node } from 'modern-canvas'
 import { definePlugin } from 'mce'
-import { onBeforeMount, onScopeDispose } from 'vue'
+import { onScopeDispose } from 'vue'
 import { useFonts } from './composables'
 import { bidTidLoader, bigeLoader, clipboardLoader } from './loaders'
 import { imageEffectPipeline } from './pipelines'
@@ -99,11 +99,14 @@ async function setupFonts(editor: Editor, api: Record<string, any>): Promise<voi
     loadFont(family)
   }
 
-  onBeforeMount(() => {
-    on('docSet', preload)
-    renderEngine.value.on('nodeEnter', preloadNode)
-    fonts.on('missing', onMissingFont)
-  })
+  // 直接注册，不要包 onBeforeMount：setupFonts 跑在 editor 的 effectScope 里，
+  // 那个钩子只在「恰好处于某个尚未挂载的组件的 setup 同步阶段」才会触发。
+  // editor.setup() 被二次调用时（宿主组件重建）会先 stop 旧 scope —— onScopeDispose 把监听器摘掉，
+  // 而新 scope 注册的 onBeforeMount 因为组件早已挂载再也不会执行，三条加载路径就此全断：
+  // 文档里的字体一个都不会被请求，整篇回退到后备字体，行宽随之变化、文字掉行错位。
+  on('docSet', preload)
+  renderEngine.value.on('nodeEnter', preloadNode)
+  fonts.on('missing', onMissingFont)
 
   onScopeDispose(() => {
     off('docSet', preload)
@@ -113,5 +116,8 @@ async function setupFonts(editor: Editor, api: Record<string, any>): Promise<voi
 
   assets.awaitBy(async () => {
     await loadBigeFonts(api.fonts, true)
+    // 清单就绪前发生的 docSet / missing 查的是空表，会被静默丢弃（missing 每个 family 只抛一次），
+    // 故补扫一遍当前文档，把漏掉的字体请回来。
+    await preload()
   })
 }
