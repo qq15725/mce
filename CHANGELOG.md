@@ -1,3 +1,5 @@
+## [0.36.22](https://github.com/qq15725/mce/compare/v0.36.21...v0.36.22) (2026-08-03)
+
 ## [0.36.21](https://github.com/qq15725/mce/compare/v0.36.20...v0.36.21) (2026-08-03)
 
 ### Bug Fixes
