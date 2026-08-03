@@ -58,9 +58,15 @@ function toggleTheme(): void {
   editor.setTheme(editor.theme.value === 'dark' ? 'light' : 'dark')
 }
 
-// 切换「生成中」shimmer：作用于选中节点，无选中则用工作流示例的「分镜图 1」。
+// 切换「生成中」shimmer：作用于选中节点，无选中则取文档里第一个图片节点
+// （节点 id 由 addWorkflowNode 运行时生成，不能写死）。
 function toggleGenerating(): void {
-  const id = editor.elementSelection.value[0]?.id ?? 'wf-img1'
+  const fallback = editor.root.value?.children
+    ?.find((n: any) => n.meta?.inEditorIs === 'WorkflowImage')
+  const id = editor.elementSelection.value[0]?.id ?? fallback?.id
+  if (!id) {
+    return
+  }
   editor.exec('setWorkflowGenerating', id, !editor.workflowGenerating.has(id))
 }
 
