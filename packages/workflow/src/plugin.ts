@@ -36,8 +36,9 @@ declare global {
        */
       borderRadius?: number
       /**
-       * 节点描边宽度，缺省 2。接入方的画布若靠底色/投影分层（而不是描边），
-       * 给 0 即可去掉这圈线；描边色仍走 `@border-color` 语义 token。
+       * 节点描边宽度。缺省按「有没有占位图」给：文字类节点 2（空白卡片全靠这圈线才看得出边界），
+       * 图片/视频这类内容铺满整框的节点 0（描边会压在图/视频边缘上，分层靠底色即可）。
+       * 接入方可按需覆盖；描边色仍走 `@border-color` 语义 token。
        */
       borderWidth?: number
       /**
@@ -250,7 +251,9 @@ export function plugin() {
           // 图片/视频节点(image)用抬升亮面，与文字节点区分、暗色下更醒目。
           backgroundColor: image ? '@surface-bright' : '@surface',
           borderColor: '@border-color',
-          borderWidth: t.borderWidth ?? 2,
+          // 描边按「内容是否铺满整框」给：图片/视频节点(image)不描边——那圈线会压在图/视频边缘上，
+          // 分层交给 @surface-bright 底色；文字节点是空白卡片，没有这圈线就看不出边界。
+          borderWidth: t.borderWidth ?? (image ? 0 : 2),
         },
         // 视频节点从创建即 Video2D：宿主生成后只需设顶层 src，视频纹理便渲染（Video2D._drawContent
         // 在 foreground 之后画，直接盖住占位图）。节点类由 modern-canvas 在创建时按 inCanvasIs 定死，
