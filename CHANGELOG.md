@@ -1,3 +1,16 @@
+## [0.36.20](https://github.com/qq15725/mce/compare/v0.36.19...v0.36.20) (2026-08-03)
+
+### Bug Fixes
+
+* **bigesj:** register the font loaders directly instead of in onBeforeMount ([3b56639](https://github.com/qq15725/mce/commit/3b56639f2c61793b3ea11bcd614cda40b43d5f74))
+* **scrollbar:** center the thumb when the canvas is empty ([e7e5201](https://github.com/qq15725/mce/commit/e7e5201d82c4fcab9d420448d5c208e66b5cea3b))
+* **workflow:** clear the generating set when the document is replaced ([64f2390](https://github.com/qq15725/mce/commit/64f239010002bcf09225923dab4fe513384cd0a6))
+
+### Features
+
+* **workflow:** 节点模板支持 borderWidth（缺省 2，给 0 即去掉描边） ([024b99e](https://github.com/qq15725/mce/commit/024b99efcf3f9383f1160ed5ed5b4259b42ee100))
+* **workflow:** no border on nodes that render a placeholder image ([8f2c519](https://github.com/qq15725/mce/commit/8f2c519ce74fb749f61949a14eb31cf4c6df14ab))
+
 ## [0.36.19](https://github.com/qq15725/mce/compare/v0.36.18...v0.36.19) (2026-07-31)
 
 ### Bug Fixes
