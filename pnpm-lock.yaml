@@ -192,8 +192,8 @@ importers:
         specifier: ^0.12.4
         version: 0.12.4
       modern-text:
-        specifier: ^2.2.2
-        version: 2.2.2
+        specifier: ^2.2.3
+        version: 2.2.3
       typescript:
         specifier: 6.0.3
         version: 6.0.3
@@ -2416,9 +2416,6 @@ packages:
 
   modern-pdf@1.6.0:
     resolution: {integrity: sha512-KDTDHcZysFtU5dwDcUixmIt4tTYoSpDkoFcfLi/fOxyzAEmHnI3Qm4x6x8qYaUxl0snljDaJtXHirc+UxU7HtQ==}
-
-  modern-text@2.2.2:
-    resolution: {integrity: sha512-0kZVUntZs8L6h72AL3CkGlt1GEOafYt1iTJBzzVHVXSJh5KKhO3Sxz1MsiO6Ep2KZF+odnY32BF00cWiyGNAqg==}
 
   modern-text@2.2.3:
     resolution: {integrity: sha512-mVs8wrAqoGR21O9C9nxNLTc+yUvMx1+iGJwYc0Rha8tGrHTzSxDaMOsAaDUzVhxUfbTzQNFwfRpUHiusy4XYdQ==}
@@ -5370,7 +5367,7 @@ snapshots:
   modern-idoc-svg@0.4.0:
     dependencies:
       modern-idoc: 0.12.4
-      modern-text: 2.2.2
+      modern-text: 2.2.3
 
   modern-idoc@0.12.4:
     dependencies:
@@ -5401,14 +5398,7 @@ snapshots:
       modern-font: 0.6.3
       modern-idoc: 0.12.4
       modern-path2d: 1.8.8
-      modern-text: 2.2.2
-
-  modern-text@2.2.2:
-    dependencies:
-      diff: 9.0.0
-      modern-font: 0.6.3
-      modern-idoc: 0.12.4
-      modern-path2d: 1.8.8
+      modern-text: 2.2.3
 
   modern-text@2.2.3:
     dependencies:
