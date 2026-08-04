@@ -76,3 +76,51 @@ describe('bakeImageEffects compositing', () => {
     expect(draws[0].a.slice(1)).toEqual([0, 0, 100, 100])
   })
 })
+
+// 主体内缩的几何：来源编辑器 createEffects 固定 `ctx.scale(0.9)` 居中，迁移过来的作品必须一致。
+// 元素框互相重叠、靠内缩留白制造缝隙的排版（如节气海报九宫格）对边距极敏感，边距一少就互相压盖。
+describe('bakeImageEffects 主体内缩', () => {
+  afterEach(() => {
+    setCanvasFactory(undefined)
+    created.length = 0
+  })
+
+  /** 取内缩用的那次 drawImage 参数（第一个建出来的 canvas 即 inset）：[x, y, w, h] */
+  function insetRect(effects: any[], w: number, h: number): number[] {
+    setCanvasFactory(recordingCanvas)
+    created.length = 0
+    bakeImageEffects({ width: w, height: h } as any, effects, w, h)
+    return drawImagesOf(created[0])[0].a.slice(1)
+  }
+
+  it('默认缩到 0.9 并居中，边距按元素尺寸各留 5%', () => {
+    expect(insetRect([{ outline: { color: '#fff', width: 10 } }], 400, 800))
+      .toEqual([20, 40, 360, 720])
+  })
+
+  it('宽高不等的元素等比内缩，不改变纵横比', () => {
+    const [, , w, h] = insetRect([{ outline: { color: '#fff', width: 10 } }], 389, 691)
+    expect(w / h).toBeCloseTo(389 / 691, 4)
+  })
+
+  it('描边宽到 5% 装不下时按需再缩', () => {
+    // 100×100 上 20px 描边：0.9 只留 5px，得缩到 1 - 2*0.2 = 0.6
+    expect(insetRect([{ outline: { color: '#fff', width: 20 } }], 100, 100))
+      .toEqual([20, 20, 60, 60])
+  })
+
+  it('内缩不低于下限，主体不会被缩没', () => {
+    const [, , w, h] = insetRect([{ outline: { color: '#fff', width: 90 } }], 100, 100)
+    expect(w).toBe(60)
+    expect(h).toBe(60)
+  })
+
+  it('无描边 / 无位移时不内缩', () => {
+    setCanvasFactory(recordingCanvas)
+    created.length = 0
+    const out = bakeImageEffects({ width: 100, height: 100 } as any, [{}], 100, 100)
+    // 只建了 out 一张画布，主图原尺寸直接合成
+    expect(created.length).toBe(1)
+    expect(drawImagesOf(out)[0].a.slice(1)).toEqual([0, 0, 100, 100])
+  })
+})

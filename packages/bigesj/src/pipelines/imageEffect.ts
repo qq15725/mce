@@ -8,6 +8,14 @@ import { assets, createHTMLCanvas, SUPPORTS_IMAGE_BITMAP } from 'modern-canvas'
  */
 export const IMAGE_EFFECT_PIPELINE = 'imageEffect'
 
+/**
+ * 有图片效果时主体的默认内缩比例，四周各留 5% 边距给描边 / 位移。
+ * 取值对齐来源编辑器（其 `createEffects` 固定 `ctx.scale(0.9)`），迁移过来的作品才不会变样。
+ */
+const INSET_SCALE = 0.9
+/** 内缩下限：描边宽到 5% 装不下时按需再缩，但不能把主体缩没了。 */
+const MIN_INSET_SCALE = 0.6
+
 type Drawable = CanvasImageSource & { width: number, height: number }
 
 function ctxOf(cvs: HTMLCanvasElement): CanvasRenderingContext2D {
@@ -113,19 +121,30 @@ export function bakeImageEffects(
   const h = Math.max(1, Math.round(height))
 
   // 实心图填满画布时，描边会超出画布被裁、位移阴影被主图盖住而完全不可见（来源编辑器靠把主体内缩留边距解决）。
-  // 故按各层最大描边宽 / 位移量内缩主体、四周留出边距，让描边/位移落在可见区（边距上限 20%，防主体过小）。
-  let pad = 0
+  // 故先把主体内缩、四周留出边距，让描边/位移落在可见区。
+  //
+  // 内缩必须**等比**且默认缩到 INSET_SCALE —— 与来源编辑器逐像素对齐（其 createEffects 固定
+  // `ctx.scale(0.9)`）。曾按「各边等距 pad = max(描边宽, 位移)」内缩，两处对不上：
+  //   ① 边距不再随元素尺寸走。来源编辑器留 5% 边距，元素越大留白越宽；等距 pad 只认描边宽度，
+  //      大元素的留白骤减。实测 389×691 的海报（描边 10+5）上下边距 35px → 15px，而这类作品的
+  //      元素框本就互相重叠（靠留白制造缝隙），边距一缩主体就压到相邻元素上、白边被盖住。
+  //   ② 宽高不等的元素，等距 pad 使两个方向缩比不同 → 图被拉伸变形（上例纵横比 0.563 → 0.543）。
+  // 描边确实宽到 5% 装不下时再按需多缩（来源编辑器此时会把描边裁掉，这里比它多留一层保护）。
+  let need = 0
   for (const e of effects) {
     if (e.outline?.width && e.outline.color)
-      pad = Math.max(pad, e.outline.width)
+      need = Math.max(need, e.outline.width)
     const t = parseTranslate(e.transform)
-    pad = Math.max(pad, Math.abs(t.x), Math.abs(t.y))
+    need = Math.max(need, Math.abs(t.x), Math.abs(t.y))
   }
-  pad = Math.min(Math.ceil(pad), Math.floor(Math.min(w, h) * 0.2))
   let base: Drawable = source
-  if (pad > 0) {
+  if (need > 0) {
+    const scale = Math.max(MIN_INSET_SCALE, Math.min(INSET_SCALE, 1 - 2 * Math.max(need / w, need / h)))
+    // 不取整：取整会让两个方向缩比略有出入，纵横比又被带偏，等比内缩的意义就没了
+    const dw = Math.max(1, w * scale)
+    const dh = Math.max(1, h * scale)
     const inset = createHTMLCanvas(w, h)!
-    ctxOf(inset).drawImage(source, pad, pad, Math.max(1, w - pad * 2), Math.max(1, h - pad * 2))
+    ctxOf(inset).drawImage(source, (w - dw) / 2, (h - dh) / 2, dw, dh)
     base = inset
   }
 
