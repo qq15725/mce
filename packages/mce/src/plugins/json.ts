@@ -29,6 +29,8 @@ declare global {
         inCanvasIs: 'Element2D'
         startTime: number
         endTime: number
+        /** 整文档导出时透传的 doc 根 meta 业务字段（应用自定义，如文档来源标记） */
+        [key: string]: any
       }
     }
 
@@ -121,6 +123,12 @@ export default definePlugin((editor, options) => {
           let id = idGenerator()
           let name = docName ?? 'Doc'
           let elements: Element2D[] = []
+          /**
+           * doc 根 meta 上的业务字段（应用记的文档来源等）。元素级 meta 一直是全量序列化的，
+           * 唯独 doc 级此前被写死成下面那几项、不读 root.meta —— 应用写进 root.meta 的东西
+           * 进不了 getDoc，保存即丢。仅整文档导出带上：导出选中元素 / 切片时那不是整份文档的 meta。
+           */
+          let docMeta: Record<string, any> | undefined
           if (Array.isArray(selected)) {
             elements = selected
           }
@@ -133,6 +141,7 @@ export default definePlugin((editor, options) => {
               id = root.value.id
               name = root.value.name
               elements = root.value.children as Element2D[]
+              docMeta = root.value.meta?.toJSON?.()
             }
           }
 
@@ -164,6 +173,8 @@ export default definePlugin((editor, options) => {
               return theme ? bakeTheme(json, theme) : json
             }),
             meta: {
+              // 业务字段在前：下面这几项是导出格式的固定契约，任何情况下都不该被文档里的同名值改写
+              ...docMeta,
               inPptIs: 'Pptx',
               inEditorIs: 'Doc',
               inCanvasIs: 'Element2D',
