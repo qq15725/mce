@@ -1,3 +1,9 @@
+## [0.36.25](https://github.com/qq15725/mce/compare/v0.36.24...v0.36.25) (2026-08-04)
+
+### Bug Fixes
+
+* **layout:** hide the floatbars while cropping ([ee17326](https://github.com/qq15725/mce/commit/ee1732699626653abbc61ed1937675ad52e9c400))
+
 ## [0.36.24](https://github.com/qq15725/mce/compare/v0.36.23...v0.36.24) (2026-08-04)
 
 ### Bug Fixes
