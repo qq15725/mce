@@ -64,12 +64,19 @@ export async function convertDoc(
     }),
   )
 
+  // 老数据的 layout 可能自带绝对定位，公众号双封面（cate_id 26 / type 10）就是靠它并排：
+  // 头图1 (0,0) 900×383、头图2 (940,0) 500×500，中间空 40px。位置互不相同即视为「数据已排好版」，
+  // 原样保留；普通多页作品的 layout 全是 (0,0)、彼此完全重叠，才需要按顺序纵向堆叠开。
+  const prePositioned = new Set(
+    children.map(v => `${v.element.style?.left ?? 0},${v.element.style?.top ?? 0}`),
+  ).size > 1
+
   let top = 0
   children = children
     .sort((a, b) => a.index - b.index)
     .map((v) => {
       const element = v.element
-      if (element.style) {
+      if (element.style && !prePositioned) {
         element.style.top = top
         top += Number(element.style.height) + gap
       }
