@@ -1,3 +1,9 @@
+## [0.36.26](https://github.com/qq15725/mce/compare/v0.36.25...v0.36.26) (2026-08-04)
+
+### Bug Fixes
+
+* **bigesj:** keep the layout positions the source data already carries ([8b769b4](https://github.com/qq15725/mce/commit/8b769b47d2e4896b0b0b535967095d4dba55541d))
+
 ## [0.36.25](https://github.com/qq15725/mce/compare/v0.36.24...v0.36.25) (2026-08-04)
 
 ### Bug Fixes
