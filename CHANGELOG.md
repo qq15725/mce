@@ -1,3 +1,9 @@
+## [0.36.24](https://github.com/qq15725/mce/compare/v0.36.23...v0.36.24) (2026-08-04)
+
+### Bug Fixes
+
+* **bigesj:** inset the subject proportionally for image effects ([0ba07b8](https://github.com/qq15725/mce/commit/0ba07b83c462f75811b69ba202e1658f313b9fa7))
+
 ## [0.36.23](https://github.com/qq15725/mce/compare/v0.36.22...v0.36.23) (2026-08-04)
 
 ### Bug Fixes
