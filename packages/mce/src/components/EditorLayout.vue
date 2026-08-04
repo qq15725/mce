@@ -647,8 +647,10 @@ const slotProps = {
           class="m-editor__canvas"
         />
 
+        <!-- 裁剪中一并隐藏：此时选框下方是裁剪工具条（selection.foreground-cropper 插槽），
+             底部浮动条会直接压在它上面；顶部的同理让位，裁剪期间只该操作裁剪自己那套 UI。 -->
         <Floatbar
-          v-if="(slots['floatbar-top'] || slots.floatbar) && !isContentEditing() && state !== 'moving' && state !== 'transforming'"
+          v-if="(slots['floatbar-top'] || slots.floatbar) && !isContentEditing() && state !== 'moving' && state !== 'transforming' && state !== 'cropping'"
           location="top-start"
           :target="state === 'typing'
             ? (componentRefs['mce:text']?.[0] as any)?.textEditor
@@ -660,7 +662,7 @@ const slotProps = {
         </Floatbar>
 
         <Floatbar
-          v-if="slots['floatbar-bottom'] && !isContentEditing() && state !== 'moving' && state !== 'transforming'"
+          v-if="slots['floatbar-bottom'] && !isContentEditing() && state !== 'moving' && state !== 'transforming' && state !== 'cropping'"
           location="bottom-start"
           :target="(componentRefs['mce:selection']?.[0] as any)?.transform?.$el"
           :middlewares="['offset', 'shift']"
