@@ -1,7 +1,7 @@
 {
   "name": "@mce/workflow",
   "type": "module",
-  "version": "0.36.22",
+  "version": "0.36.23",
   "description": "Workflow plugin for mce",
   "author": "wxm",
   "license": "MIT",

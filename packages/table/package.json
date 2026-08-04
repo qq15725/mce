@@ -1,7 +1,7 @@
 {
   "name": "@mce/table",
   "type": "module",
-  "version": "0.36.22",
+  "version": "0.36.23",
   "description": "Table plugin for mce",
   "author": "wxm",
   "license": "MIT",

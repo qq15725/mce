@@ -1,3 +1,9 @@
+## [0.36.23](https://github.com/qq15725/mce/compare/v0.36.22...v0.36.23) (2026-08-04)
+
+### Bug Fixes
+
+* **json:** keep doc root meta in full-document export ([67439cf](https://github.com/qq15725/mce/commit/67439cf398a9fadacb9e8e37b662a2b77ed0859c))
+
 ## [0.36.22](https://github.com/qq15725/mce/compare/v0.36.21...v0.36.22) (2026-08-03)
 
 ## [0.36.21](https://github.com/qq15725/mce/compare/v0.36.20...v0.36.21) (2026-08-03)
