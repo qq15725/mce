@@ -1,3 +1,9 @@
+## [0.36.27](https://github.com/qq15725/mce/compare/v0.36.26...v0.36.27) (2026-08-13)
+
+### Bug Fixes
+
+* 修复图片适配与文本编辑器重复注册 ([ac8ef94](https://github.com/qq15725/mce/commit/ac8ef9426a051a8b53cff201518a57855c55791f))
+
 ## [0.36.26](https://github.com/qq15725/mce/compare/v0.36.25...v0.36.26) (2026-08-04)
 
 ### Bug Fixes
