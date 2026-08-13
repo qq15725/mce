@@ -241,6 +241,17 @@ function setAspectRatio(ratio: 0 | [number, number]) {
         : sourceWidth / sourceHeight)
     : ratio[0] / ratio[1]
 
+  if (ratio === 0) {
+    view.value = {
+      ...view.value,
+      width: sourceWidth,
+      height: sourceHeight,
+      left: left + sourceLeft,
+      top: top + sourceTop,
+    }
+    return
+  }
+
   let newViewWidth = sourceWidth
   let newViewHeight = sourceWidth / aspectRatio
   if (newViewHeight > sourceHeight) {

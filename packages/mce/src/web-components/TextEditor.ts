@@ -87,7 +87,7 @@ export class TextEditor extends HTMLElement implements PropertyAccessor {
 
   protected static _defined = false
   static register(): void {
-    if (!this._defined) {
+    if (!customElements.get('text-editor')) {
       this._defined = true
       customElements.define('text-editor', this)
     }
