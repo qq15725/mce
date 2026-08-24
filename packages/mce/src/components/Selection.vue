@@ -35,6 +35,7 @@ const {
 
 const transformConfig = getConfigRef<Mce.TransformConfig>('interaction.transform')
 const transform = useTemplateRef('transformTpl')
+const floatbarTarget = useTemplateRef<HTMLElement>('floatbarTargetTpl')
 const transformProps = computed(() => {
   const els = elementSelection.value
   const props: Record<string, any> = { ...transformConfig.value }
@@ -288,6 +289,7 @@ function tip() {
 
 defineExpose({
   transform,
+  floatbarTarget,
 })
 </script>
 
@@ -348,6 +350,7 @@ defineExpose({
 
     <template v-if="transformValue.width && transformValue.height">
       <div
+        ref="floatbarTargetTpl"
         class="m-selection__slot"
         :style="selectionObbInDrawboard.toCssStyle()"
       >

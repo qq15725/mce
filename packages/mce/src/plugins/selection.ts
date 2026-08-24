@@ -242,7 +242,7 @@ export default definePlugin((editor) => {
       }
       return obbOf(node).overlap(area)
     }
-    selection.value = root.value
+    const hits = root.value
       ?.children
       .flatMap((node) => {
         if (
@@ -258,10 +258,12 @@ export default definePlugin((editor) => {
           && node.isVisibleInTree()
           && hit(node)
           && !isLock(node)
-          // 框选排除连线：连线随端点自动路由，纳入多选会让整体拖拽出问题。
-          && !(node as any).connection?.isValid?.()
           && !node.findAncestor(ancestor => isLock(ancestor))
       }) ?? []
+    // 同时命中节点与连线时仍只选节点，避免把自动路由的连线纳入整体拖拽；
+    // 仅命中连线时保留连线，使框选线身可以选中连接线。
+    const nonConnections = hits.filter(node => !(node as any).connection?.isValid?.())
+    selection.value = nonConnections.length ? nonConnections : hits
   }
 
   function groupSelection(inEditorIs: 'Element' | 'Frame'): void {

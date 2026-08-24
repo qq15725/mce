@@ -654,7 +654,7 @@ const slotProps = {
           location="top-start"
           :target="state === 'typing'
             ? (componentRefs['mce:text']?.[0] as any)?.textEditor
-            : (componentRefs['mce:selection']?.[0] as any)?.transform?.$el"
+            : (componentRefs['mce:selection']?.[0] as any)?.floatbarTarget"
           :middlewares="['offset', 'shift']"
         >
           <slot name="floatbar" v-bind="slotProps" />
@@ -664,7 +664,7 @@ const slotProps = {
         <Floatbar
           v-if="slots['floatbar-bottom'] && !isContentEditing() && state !== 'moving' && state !== 'transforming' && state !== 'cropping'"
           location="bottom-start"
-          :target="(componentRefs['mce:selection']?.[0] as any)?.transform?.$el"
+          :target="(componentRefs['mce:selection']?.[0] as any)?.floatbarTarget"
           :middlewares="['offset', 'shift']"
         >
           <slot name="floatbar-bottom" v-bind="slotProps" />
