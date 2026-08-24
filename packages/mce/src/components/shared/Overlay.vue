@@ -48,7 +48,8 @@ const virtualElement = {
 }
 const target = computed(() => {
   if (
-    typeof props.target === 'object'
+    props.target != null
+    && typeof props.target === 'object'
     && !('getBoundingClientRect' in props.target)
     && !(props.target instanceof Element)
     && 'x' in props.target
