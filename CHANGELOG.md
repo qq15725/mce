@@ -1,3 +1,9 @@
+## [0.36.28](https://github.com/qq15725/mce/compare/v0.36.27...v0.36.28) (2026-08-24)
+
+### Bug Fixes
+
+* **mce:** 修复滚动条与连线选择交互 ([0c66faa](https://github.com/qq15725/mce/commit/0c66faa343adbb005e8e3e8f8d2abb8f5ec79186))
+
 ## [0.36.27](https://github.com/qq15725/mce/compare/v0.36.26...v0.36.27) (2026-08-13)
 
 ### Bug Fixes
