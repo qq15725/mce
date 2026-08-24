@@ -1,7 +1,7 @@
 {
   "name": "@mce/svg",
   "type": "module",
-  "version": "0.36.28",
+  "version": "0.36.29",
   "description": "SVG plugin for mce",
   "author": "wxm",
   "license": "MIT",

@@ -1,3 +1,9 @@
+## [0.36.29](https://github.com/qq15725/mce/compare/v0.36.28...v0.36.29) (2026-08-24)
+
+### Bug Fixes
+
+* **mce:** 修复浮层空目标导致的编辑器崩溃 ([a375a50](https://github.com/qq15725/mce/commit/a375a509313266aeb354560d691bacb0701c2b0c))
+
 ## [0.36.28](https://github.com/qq15725/mce/compare/v0.36.27...v0.36.28) (2026-08-24)
 
 ### Bug Fixes
