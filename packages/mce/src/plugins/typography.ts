@@ -215,12 +215,16 @@ export default definePlugin((editor) => {
         content: element.text.content,
       })
 
-      if (
-        element.style.width !== boundingBox.width
-        || element.style.height !== boundingBox.height
-      ) {
-        element.style.width = boundingBox.width
-        element.style.height = boundingBox.height
+      const fitWidth = (strategy === 'autoWidth' && !isVertical)
+        || (strategy === 'autoHeight' && isVertical)
+      const fitHeight = (strategy === 'autoWidth' && isVertical)
+        || (strategy === 'autoHeight' && !isVertical)
+      const nextWidth = fitWidth ? boundingBox.width : element.style.width
+      const nextHeight = fitHeight ? boundingBox.height : element.style.height
+
+      if (element.style.width !== nextWidth || element.style.height !== nextHeight) {
+        element.style.width = nextWidth
+        element.style.height = nextHeight
         // 必须 requestDraw 而非 requestRender：改尺寸后背景 / shape（圆角）几何要重画，
         // 而只有 needsDraw 才驱动 _redraw。改 size 本会经 size 回调自动 requestDraw，但当
         // boundingBox 高度恰等于当前值时 setter 短路、不触发回调，圆角就停在旧几何（直角）。

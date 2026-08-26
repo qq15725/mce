@@ -38,3 +38,64 @@ describe('convertDoc 画板排布', () => {
     expect(boxesOf(doc)).toEqual(['画板 1:0,0', '画板 2:0,1700'])
   })
 })
+
+describe('convertDoc 旧文字样式', () => {
+  it('把旧数据的连续前导空格恢复为首行缩进', async () => {
+    const doc = await convertDoc({
+      content: {
+        version: 1,
+        layouts: [{
+          style: { left: 0, top: 0, width: 1242, height: 2208 },
+          elements: [{
+            type: 'text',
+            style: {
+              left: 216,
+              top: 915,
+              width: 812,
+              height: 465,
+              writingMode: 'horizontal-tb',
+              fontSize: 31,
+              letterSpacing: -2,
+              textIndent: '',
+            },
+            contents: [[
+              ...Array.from({ length: 9 }, () => ({ content: ' ' })),
+              { content: '秋光为序' },
+            ]],
+          }],
+        }],
+      },
+    })
+
+    const text = doc.children![0].children![0]
+    expect(text.style?.textIndent).toBe(62)
+    expect(text.text?.content[0].fragments[0].content).toBe('秋光为序')
+  })
+
+  it('把旧数据的 em 首行缩进转换为像素', async () => {
+    const doc = await convertDoc({
+      content: {
+        version: 1,
+        layouts: [{
+          style: { left: 0, top: 0, width: 1242, height: 2208 },
+          elements: [{
+            type: 'text',
+            style: {
+              left: 0,
+              top: 0,
+              width: 300,
+              height: 100,
+              writingMode: 'horizontal-tb',
+              fontSize: 30,
+              letterSpacing: 0,
+              textIndent: '2em',
+            },
+            contents: [[{ content: '正文' }]],
+          }],
+        }],
+      },
+    })
+
+    expect(doc.children![0].children![0].style?.textIndent).toBe(60)
+  })
+})

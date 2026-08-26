@@ -22,6 +22,35 @@ export function convertTextStyle(
     style.fontSize = Math.floor(elStyle.fontSize)
   }
 
+  const fontSize = Number(elStyle.fontSize) || 0
+  const rawTextIndent = elStyle.textIndent
+  if (typeof rawTextIndent === 'string' && rawTextIndent.trim().endsWith('em')) {
+    const em = Number.parseFloat(rawTextIndent)
+    if (Number.isFinite(em) && fontSize) {
+      style.textIndent = em * fontSize
+    }
+  }
+  else if (Number.isFinite(Number(rawTextIndent)) && rawTextIndent !== '') {
+    style.textIndent = Number(rawTextIndent)
+  }
+  else if (fontSize) {
+    const firstParagraph = el.contents?.[0] ?? []
+    let leadingSpaces = 0
+    for (const fragment of firstParagraph) {
+      const content = String(fragment.content ?? '')
+      const match = content.match(/^[\u0020\u00A0\u3000]+/u)
+      leadingSpaces += match?.[0].length ?? 0
+      if (!match || match[0].length !== content.length) {
+        break
+      }
+    }
+    // 部分旧作品用连续前导空格模拟「首行缩进 2 字符」。旧 DOM 渲染会保留该视觉效果，
+    // 转换时内容会按 white-space: normal 清理空格，因此在这里恢复为明确的 2em。
+    if (leadingSpaces >= 2) {
+      style.textIndent = fontSize * 2
+    }
+  }
+
   if (el.listStyle?.colormap) {
     style.listStyleColormap = el.listStyle?.colormap
   }
