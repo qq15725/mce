@@ -236,12 +236,14 @@ function chooseNodeType(type: string): void {
   drag.value = undefined
   if (!m)
     return
-  const node = exec('addWorkflowNode', type) as Element2D
+  const node = exec('addWorkflowNode', type, undefined, { intoView: false }) as Element2D
   // Place the node so its connecting edge sits at the drop point.
   const w = node.style.width as number
   const h = node.style.height as number
   node.style.left = m.port.kind === 'output' ? m.position.x : m.position.x - w
   node.style.top = m.position.y - h / 2
+  node.updateGlobalTransform()
+  exec('zoomTo', node, { intoView: true, behavior: 'smooth' })
   connect(m.port, m.sourceId, node.id, workflowPortsOf(node))
 }
 

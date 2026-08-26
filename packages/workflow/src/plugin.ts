@@ -62,7 +62,7 @@ declare global {
     }
 
     interface Commands {
-      addWorkflowNode: (type: string, position?: AddElementPosition) => Element2D
+      addWorkflowNode: (type: string, position?: AddElementPosition, options?: { intoView?: boolean }) => Element2D
       /** 校验不过（端点不存在 / 自环 / 重复 / 成环 / 端口方向错）时返回 undefined。 */
       addWorkflowConnection: (
         startId: string,
@@ -282,9 +282,17 @@ export function plugin() {
       return node
     }
 
-    function addWorkflowNode(type: string, position?: Mce.AddElementPosition): Element2D {
+    function addWorkflowNode(
+      type: string,
+      position?: Mce.AddElementPosition,
+      options: { intoView?: boolean } = {},
+    ): Element2D {
       // 无显式位置（如从工具腰带「+」添加）则放在现有内容右侧（顶对齐），符合工作流从左到右的流向。
-      const el = addElement(createWorkflowNode(type), { position: position ?? 'right', active: true, intoView: true })
+      const el = addElement(createWorkflowNode(type), {
+        position: position ?? 'right',
+        active: true,
+        intoView: options.intoView ?? true,
+      })
       // 文字节点按内容自适应高度（typography autoHeight）：占位/正文文案高度不定，固定 2048 会
       // 拖出一大截空白框。图片/视频节点是定框撑图，不动。字体异步加载完成后再 fit，避免字形宽度为 0
       // 时算错高度（fire-and-forget，不阻塞返回）。
