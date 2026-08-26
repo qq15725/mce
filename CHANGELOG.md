@@ -1,3 +1,9 @@
+## [0.36.30](https://github.com/qq15725/mce/compare/v0.36.29...v0.36.30) (2026-08-26)
+
+### Bug Fixes
+
+* **文字:** 修复旧数据缩进与自适应尺寸 ([c911439](https://github.com/qq15725/mce/commit/c911439a7dfaf9e90c536e064f501a7086547dee))
+
 ## [0.36.29](https://github.com/qq15725/mce/compare/v0.36.28...v0.36.29) (2026-08-24)
 
 ### Bug Fixes
