@@ -1,7 +1,7 @@
 {
   "name": "@mce/collaboration",
   "type": "module",
-  "version": "0.36.30",
+  "version": "0.36.31",
   "description": "Collaboration plugin for mce",
   "author": "wxm",
   "license": "MIT",

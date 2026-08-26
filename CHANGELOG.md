@@ -1,3 +1,9 @@
+## [0.36.31](https://github.com/qq15725/mce/compare/v0.36.30...v0.36.31) (2026-08-26)
+
+### Bug Fixes
+
+* **工作流:** 修复加号创建节点缩放偏移 ([8cb8c03](https://github.com/qq15725/mce/commit/8cb8c03ed7c6e6fa79bbd4d055a4691cd758d2e9))
+
 ## [0.36.30](https://github.com/qq15725/mce/compare/v0.36.29...v0.36.30) (2026-08-26)
 
 ### Bug Fixes
