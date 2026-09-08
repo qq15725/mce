@@ -1,3 +1,9 @@
+## [0.36.32](https://github.com/qq15725/mce/compare/v0.36.31...v0.36.32) (2026-09-08)
+
+### Bug Fixes
+
+* 修复工作流文字编辑和粘贴样式 ([e4da4d6](https://github.com/qq15725/mce/commit/e4da4d6a70afba7a960505592e825baaa7d64fe0))
+
 ## [0.36.31](https://github.com/qq15725/mce/compare/v0.36.30...v0.36.31) (2026-08-26)
 
 ### Bug Fixes
