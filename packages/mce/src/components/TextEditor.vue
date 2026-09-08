@@ -57,7 +57,8 @@ async function startTyping(e?: PointerEvent): Promise<boolean> {
     return false
   }
   if (!element.text.isValid()) {
-    element.style.textAlign = 'center'
+    if (element.meta.inEditorIs !== 'WorkflowText')
+      element.style.textAlign = 'center'
     element.text.setContent(' ')
   }
   element.text.update()

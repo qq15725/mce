@@ -7,6 +7,7 @@ import { onMounted, onScopeDispose, ref } from 'vue'
 import { definePlugin } from '../plugin'
 import { isInputEvent, SUPPORTS_CLIPBOARD } from '../utils'
 import { logger } from '../utils/console'
+import { createTextElement } from '../utils/create'
 
 declare global {
   namespace Mce {
@@ -42,6 +43,8 @@ declare global {
 
     interface Options {
       clipboard?: boolean
+      /** 外部纯文字粘贴的宿主样式；不影响编辑器内复制的元素和文件导入。 */
+      clipboardTextStyle?: () => Exclude<Element['style'], string> | undefined
     }
   }
 }
@@ -261,9 +264,24 @@ export default definePlugin((editor, options) => {
       })
       for (const type of types) {
         const blob = await item.getType(type)
-        if (await canLoad(blob)) {
-          elements.push(...(await load(blob)))
+        // 外部网页的 HTML 没有专用元素 loader 时，继续用同一剪贴板的纯文字。
+        // 编辑器内复制的 HTML 有 mce/bigesj/gaoding loader，保留完整元素样式。
+        if (type === 'text/html' && types.includes('text/plain') && options.clipboardTextStyle?.()) {
+          const doc = new DOMParser().parseFromString(await blob.text(), 'text/html')
+          if (!await canLoad(doc))
+            continue
+        }
+        const textStyle = type === 'text/plain' ? options.clipboardTextStyle?.() : undefined
+        if (textStyle) {
+          elements.push(createTextElement(await blob.text(), textStyle, editor.fonts))
           break
+        }
+        if (await canLoad(blob)) {
+          const loaded = await load(blob)
+          if (loaded.length) {
+            elements.push(...loaded)
+            break
+          }
         }
         else {
           logger.warn(`Unhandled clipboard ${blob.type}`, await blob.text())

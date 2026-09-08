@@ -187,6 +187,23 @@ export function plugin() {
     // 注册「工作流」模式，菜单 / 工具腰带的模式切换项会自动包含它（图标 `$workflow` 由核心图标集提供）。
     registerMode('workflow')
 
+    // 节点身份独立于正文是否为空；删空后仍须允许双击/Enter 编辑。
+    editor.registerEnterHandler((el, ed) => {
+      if (el.meta.inEditorIs !== 'WorkflowText')
+        return false
+      // 存量节点只在 fragment 上有颜色，新输入的空段会回退成黑色。
+      el.style.color = el.text.fill?.color ?? '@on-surface'
+      // 清理旧占位文案的深浅两档语义色，保留用户显式设置的颜色。
+      for (const paragraph of el.text.content) {
+        for (const style of [paragraph, ...paragraph.fragments]) {
+          if (style.color === '@on-surface' || style.color === '@on-surface-muted')
+            delete style.color
+        }
+      }
+      void ed.exec('startTyping')
+      return true
+    })
+
     // 三种工作流节点各自的独立图标（Lucide type / image / video，outline）。
     // 供图层图标、工具腰带「+」菜单、节点标题标签共用（`$workflow<Type>`）。
     registerIcon('workflowText', outlineIcon('M12 4v16', 'M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2', 'M9 20h6'))
@@ -230,12 +247,11 @@ export function plugin() {
       return placeholderImage(PLACEHOLDER_BUILDERS[type]('#9ca3af'))
     }
 
-    // 标题 `@on-surface` + 加粗；正文用弱化前景 `@on-surface-muted`，与标题拉开层次
-    // （二者同色时整块灰度一致、只靠字重区分，观感偏"糊"）。两个 token 都随主题自适应。
+    // 默认正文统一继承主题色，替换/粘贴/换段不会继承成几种不同颜色。
     function buildContent(t: Mce.WorkflowNodeTemplate): any {
       return [
-        ...(t.title ? [{ fragments: [{ content: t.title, color: '@on-surface', fontWeight: 700 }] }] : []),
-        ...(t.body ?? []).map(line => ({ fragments: [{ content: line, color: '@on-surface-muted' }] })),
+        ...(t.title ? [{ fragments: [{ content: t.title, fontWeight: 700 }] }] : []),
+        ...(t.body ?? []).map(line => ({ fragments: [{ content: line }] })),
       ]
     }
 
@@ -276,6 +292,7 @@ export function plugin() {
           padding: t.padding ?? 80,
           fontSize: t.fontSize ?? 88,
           lineHeight: t.lineHeight ?? 1.6,
+          color: '@on-surface',
         })
         node.text = { content: buildContent(t) }
       }

@@ -19,8 +19,8 @@ function readdirSync(root: string): string[] {
 }
 
 export function getFiles(): ImportedFile[] {
-  const mixins = readdirSync(path.resolve(__dirname, '../src/mixins'))
-  const plugins = readdirSync(path.resolve(__dirname, '../src/plugins'))
+  const mixins = readdirSync(path.resolve(__dirname, '../src/mixins')).filter(file => !/\.(?:test|spec)\.ts$/.test(file))
+  const plugins = readdirSync(path.resolve(__dirname, '../src/plugins')).filter(file => !/\.(?:test|spec)\.ts$/.test(file))
   mixins.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
   plugins.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
   const files: ImportedFile[] = []
