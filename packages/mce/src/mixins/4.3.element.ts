@@ -106,7 +106,6 @@ export default defineMixin((editor) => {
     let offsetIndex = index
 
     const elements = root.value.transact(() => {
-      const index = offsetIndex
       const values = isArray ? value : [value]
       // 画布已占用的 name 集合，供新元素按基名自增去重（同一批插入的元素也会累加进来）。
       const usedNames = new Set(root.value.findAll(n => Boolean(n.name)).map(n => n.name))
@@ -134,11 +133,11 @@ export default defineMixin((editor) => {
         // 有基础 name 的元素（工作流节点、带名素材等）追加自增序号去重；无名元素维持无名。
         if (el.name)
           el.name = nextIndexedName(el.name, usedNames)
-        if (index === undefined) {
+        if (offsetIndex === undefined) {
           _parent.appendChild(el)
         }
         else {
-          _parent.moveChild(el, index)
+          _parent.moveChild(el, offsetIndex)
         }
 
         if (offsetIndex !== undefined) {

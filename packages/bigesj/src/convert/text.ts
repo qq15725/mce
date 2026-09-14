@@ -160,16 +160,17 @@ export function getTextContents(el: BigeElement): BigeElement['contents'] {
   }
   // white-space: normal
   return el.contents.map((p: any) => {
-    let prevChar: string | undefined
+    let isStart = true
     return p
-      .map((f: any, fIndex: number) => {
+      .map((f: any) => {
+        // 老画布按 fragment 折叠空白，逐字存储的相邻空格必须保留。
+        let prevChar: string | undefined
         let content = f.content as string
         content = content.replace(/ |\r\n|\n\r|[\n\r\t\v]/g, ' ')
         content = content.replace(/<br\/>/g, '\n')
         let newContent = ''
-        let cIndex = 0
         for (const char of Array.from(content)) {
-          if (fIndex === 0 && cIndex === 0 && char === ' ') {
+          if (isStart && char === ' ') {
             // 首行空格移除
           }
           else if (prevChar === ' ' && char === ' ') {
@@ -177,9 +178,9 @@ export function getTextContents(el: BigeElement): BigeElement['contents'] {
           }
           else {
             newContent += char
+            isStart = false
           }
           prevChar = char
-          cIndex++
         }
         return {
           ...f,
