@@ -183,8 +183,8 @@ importers:
         specifier: ^0.27.16
         version: 0.27.16(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1)
       modern-font:
-        specifier: ^0.6.3
-        version: 0.6.3
+        specifier: ^0.6.4
+        version: 0.6.4
       modern-gif:
         specifier: ^2
         version: 2.1.0
@@ -2390,6 +2390,9 @@ packages:
 
   modern-font@0.6.3:
     resolution: {integrity: sha512-3GHS277DIj1yZHYrg5XKkFY/ic7cRjJaB41IExDmq0e+zv7zvS3RGkZG/nA3bieQyHz7Wt/Ti8gz9dV2jeag9g==}
+
+  modern-font@0.6.4:
+    resolution: {integrity: sha512-qyJFJDjqKl7J451VDLYsRkMcIQk5Fd4W8jUHRRUudjrsQle/mIM7BW0PFAenz6Q/403sTrYln6JOKWA8qiaLRQ==}
 
   modern-gif@2.1.0:
     resolution: {integrity: sha512-9ZGD5b4jNUge0fvFP1bd9Hsqz5CSZI1al3EhCJ+WFkZgmn5NO1yvVwXJA/LTqro85l2Gt0+S0dDFgVYhYtLLWg==}
@@ -5360,6 +5363,10 @@ snapshots:
     dependencies:
       fflate: 0.8.3
 
+  modern-font@0.6.4:
+    dependencies:
+      fflate: 0.8.3
+
   modern-gif@2.1.0:
     dependencies:
       modern-palette: 2.0.0
@@ -5395,7 +5402,7 @@ snapshots:
     dependencies:
       colord: 2.9.3
       fflate: 0.8.3
-      modern-font: 0.6.3
+      modern-font: 0.6.4
       modern-idoc: 0.12.4
       modern-path2d: 1.8.8
       modern-text: 2.2.3
@@ -5403,7 +5410,7 @@ snapshots:
   modern-text@2.2.3:
     dependencies:
       diff: 9.0.0
-      modern-font: 0.6.3
+      modern-font: 0.6.4
       modern-idoc: 0.12.4
       modern-path2d: 1.8.8
 
