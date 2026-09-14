@@ -2388,9 +2388,6 @@ packages:
       yoga-layout:
         optional: true
 
-  modern-font@0.6.3:
-    resolution: {integrity: sha512-3GHS277DIj1yZHYrg5XKkFY/ic7cRjJaB41IExDmq0e+zv7zvS3RGkZG/nA3bieQyHz7Wt/Ti8gz9dV2jeag9g==}
-
   modern-font@0.6.4:
     resolution: {integrity: sha512-qyJFJDjqKl7J451VDLYsRkMcIQk5Fd4W8jUHRRUudjrsQle/mIM7BW0PFAenz6Q/403sTrYln6JOKWA8qiaLRQ==}
 
@@ -5349,7 +5346,7 @@ snapshots:
     dependencies:
       colord: 2.9.3
       earcut: 3.2.3
-      modern-font: 0.6.3
+      modern-font: 0.6.4
       modern-idoc: 0.12.4
       modern-path2d: 1.8.8
       modern-text: 2.2.3
@@ -5358,10 +5355,6 @@ snapshots:
       lottie-web: 5.13.0
       modern-gif: 2.1.0
       yoga-layout: 3.2.1
-
-  modern-font@0.6.3:
-    dependencies:
-      fflate: 0.8.3
 
   modern-font@0.6.4:
     dependencies:
