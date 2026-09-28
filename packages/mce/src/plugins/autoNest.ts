@@ -1,5 +1,6 @@
-import type { Element2D } from 'modern-canvas'
+import type { Element2D, Node } from 'modern-canvas'
 import type { Vector2Like } from 'modern-path2d'
+import { Node2D } from 'modern-canvas'
 import { definePlugin } from '../plugin'
 import { isFlexContainer } from '../utils/helper'
 
@@ -44,8 +45,41 @@ export default definePlugin((editor) => {
   // avoids the embind Proxy crash AND keeps the Vue tree (what the layers panel
   // renders) in sync. Do NOT toRaw here — that mutates the raw node, bypassing
   // reactivity, so the canvas updates but the layers panel doesn't (they desync).
-  function safeMoveChild(parent: Element2D, el: Element2D, index: number): void {
+  function safeMoveChild(parent: Node, el: Element2D, index: number): void {
     parent.moveChild(el, index)
+  }
+
+  // 普通画板换父级时保留完整世界变换。AABB 左上角不是旋转元素的局部原点，
+  // 直接相减会同时改变位置与角度；滚动偏移也必须计入新的父级坐标系。
+  function movePreservingTransform(parent: Node, el: Element2D, index: number): void {
+    const local = el.globalTransform.clone()
+    // Doc 根节点没有二维变换，移回根节点时直接使用世界坐标。
+    if (parent instanceof Node2D) {
+      const matrix = parent.globalTransform
+      if (matrix.a * matrix.d - matrix.b * matrix.c === 0)
+        return
+      local.prepend(matrix.clone().affineInverse())
+        .translate(parent.contentOffset.x, parent.contentOffset.y)
+    }
+    const { a, b, c, d, tx, ty } = local
+    const scaleX = Math.hypot(a, b)
+    const scaleY = (a * d - b * c) / scaleX
+    if (!scaleX || !scaleY)
+      return
+    const { x: px, y: py } = el.pivot
+    safeMoveChild(parent, el, index)
+    // Node2D 用 tan(skew)，与 Transform2D.decompose 的斜切约定不同。
+    Object.assign(el.style, {
+      left: tx + px * a + py * c - px,
+      top: ty + px * b + py * d - py,
+      rotate: Math.atan2(b, a) * 180 / Math.PI,
+      scaleX,
+      scaleY,
+      skewX: Math.atan((a * c + b * d) / (scaleX * scaleY)),
+      skewY: 0,
+      transform: '',
+    })
+    el.updateGlobalTransform()
   }
 
   // Main-axis insert index in a flex frame for a world-space pointer (one-shot;
@@ -145,17 +179,7 @@ export default definePlugin((editor) => {
           if (frame2.equal(options?.parent)) {
             index = options!.index
           }
-          // 先快照成数值：aabb1 是 el.globalAabb 的活引用，下面设 style.left 会同步触发
-          // el 重算 globalTransform 并原地改写 aabb1，若再读 aabb1.y 就拿到「移动后」的脏值，
-          // top 会算错、落定时跳一个 frame 原点（left 先算侥幸正确，top 被污染）。
-          const ax = aabb1.x
-          const ay = aabb1.y
-          const bx = aabb2.x
-          const by = aabb2.y
-          safeMoveChild(frame2, el, index)
-          el.style.left = ax - bx
-          el.style.top = ay - by
-          el.updateGlobalTransform()
+          movePreservingTransform(frame2, el, index)
           exec('layerScrollIntoView')
         }
         flag = false
@@ -171,13 +195,7 @@ export default definePlugin((editor) => {
       if (root.value.equal(options?.parent)) {
         index = options!.index
       }
-      // 同上：先快照，避免设 left 后 aabb1（活引用）被原地改写导致 top 读到脏值。
-      const ax = aabb1.x
-      const ay = aabb1.y
-      safeMoveChild(root.value as any, el, index)
-      el.style.left = ax
-      el.style.top = ay
-      el.updateGlobalTransform()
+      movePreservingTransform(root.value, el, index)
       exec('layerScrollIntoView')
     }
   }
