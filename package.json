@@ -2,7 +2,7 @@
   "name": "mce-monorepo",
   "type": "module",
   "private": true,
-  "version": "0.36.35",
+  "version": "0.36.36",
   "packageManager": "pnpm@10.19.0",
   "scripts": {
     "build": "pnpm -F mce -F @mce/* build",

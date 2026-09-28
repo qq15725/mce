@@ -1,3 +1,9 @@
+## [0.36.36](https://github.com/qq15725/mce/compare/v0.36.35...v0.36.36) (2026-09-28)
+
+### Bug Fixes
+
+* 修复跨画板拖动时元素坐标与变换错位 ([0e53ba8](https://github.com/qq15725/mce/commit/0e53ba8a7d739f56cbaceb7b60ee7dc4ded8b124))
+
 ## [0.36.32](https://github.com/qq15725/mce/compare/v0.36.31...v0.36.32) (2026-09-08)
 
 ### Bug Fixes
