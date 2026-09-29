@@ -1,3 +1,9 @@
+## [0.36.37](https://github.com/qq15725/mce/compare/v0.36.36...v0.36.37) (2026-09-29)
+
+### Bug Fixes
+
+* 修复旋转标题跟随与直角吸附提示 ([6fd37e0](https://github.com/qq15725/mce/commit/6fd37e0ba8fd0a7a819f450b6874b7a64be51646))
+
 ## [0.36.36](https://github.com/qq15725/mce/compare/v0.36.35...v0.36.36) (2026-09-28)
 
 ### Bug Fixes
