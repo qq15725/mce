@@ -12,7 +12,10 @@ async function rotate(angle: number, modifiers: { shiftKey?: boolean, altKey?: b
   document.body.append(container)
   const app = createApp({ render: () => h(Transform, {
     'modelValue': value.value,
-    'onUpdate:modelValue': (next: Partial<Mce.TransformValue>) => value.value = next as typeof value.value,
+    'onUpdate:modelValue': (next: Partial<Mce.TransformValue> | undefined) => {
+      if (next)
+        value.value = { ...value.value, ...next }
+    },
   }) })
   app.mount(container)
   cleanup.push(() => {
