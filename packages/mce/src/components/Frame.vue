@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import type { Element2D } from 'modern-canvas'
-import { nextTick, ref, useTemplateRef } from 'vue'
+import { computed, nextTick, ref, useTemplateRef } from 'vue'
 import { useEditor } from '../composables'
+import { nodeLabelStyle } from '../utils/nodeLabel'
 
 defineProps<{
   outline?: boolean
@@ -20,11 +21,16 @@ const {
   drawboardDom,
   isLock,
   mode,
+  readonly,
 } = useEditor()
 
 const editing = ref(false)
+const box = computed(() => getObb(frame.value, 'drawboard'))
+const labelStyle = computed(() => nodeLabelStyle(box.value))
 
 async function onDblclick() {
+  if (readonly.value || isLock(frame.value))
+    return
   editing.value = true
   await nextTick()
   if (input.value) {
@@ -34,7 +40,7 @@ async function onDblclick() {
 }
 
 async function onPointerdown(event: PointerEvent) {
-  if (!editing.value) {
+  if (!editing.value && !isLock(frame.value)) {
     // 借用 modern-canvas 私有 API `_clonePointerEvent` 转发指针事件到画板内部命中——
     // 缺一个公开的 forwardPointer/cloneEvent API；等 modern-canvas 暴露后改。
     const cloend = (renderEngine.value.input as any)._clonePointerEvent(event)
@@ -51,7 +57,6 @@ async function onPointerdown(event: PointerEvent) {
 <template>
   <div
     v-show="frame.visible"
-    :style="getObb(frame, 'drawboard').toCssStyle()"
     class="m-frame"
     :class="[
       outline && 'm-frame--outline',
@@ -60,9 +65,11 @@ async function onPointerdown(event: PointerEvent) {
       isLock(frame) && 'm-frame--lock',
     ]"
   >
+    <div v-if="outline" class="m-frame__outline" :style="box.toCssStyle()" />
     <div
       v-if="mode !== 'workflow'"
       class="m-frame__name"
+      :style="labelStyle"
       @dblclick.prevent.stop="onDblclick"
       @pointerdown="onPointerdown"
       @pointerenter="!state && !isLock(frame) && (hoverElement = frame)"
@@ -75,6 +82,8 @@ async function onPointerdown(event: PointerEvent) {
         v-model="frame.name"
         name="frame-name"
         @blur="editing = false"
+        @keydown.enter.prevent="editing = false"
+        @keydown.esc.prevent="editing = false"
       >
     </div>
   </div>
@@ -84,8 +93,11 @@ async function onPointerdown(event: PointerEvent) {
 .m-frame {
   $root: &;
   position: absolute;
+  left: 0;
+  top: 0;
 
-  &--outline {
+  &__outline {
+    position: absolute;
     outline: 1px solid rgba(var(--m-theme-on-surface), .17);
   }
 
@@ -106,8 +118,6 @@ async function onPointerdown(event: PointerEvent) {
     position: absolute;
     top: 0;
     left: 0;
-    transform: translate(0%, -100%) translate(0px, -4px);
-    transform-origin: left bottom;
     font-size: 0.75rem;
     line-height: 1.5;
     pointer-events: auto;

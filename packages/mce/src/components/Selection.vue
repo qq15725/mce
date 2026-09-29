@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Element2D } from 'modern-canvas'
-import { computed, onBeforeMount, onBeforeUnmount, useTemplateRef } from 'vue'
+import { computed, onBeforeMount, onBeforeUnmount, ref, useTemplateRef } from 'vue'
 import { useEditor } from '../composables/editor'
 import { getLineEndpoints, parseLineShape } from '../utils'
 import ForegroundCropper from './ForegroundCropper.vue'
@@ -11,6 +11,7 @@ import Transform from './shared/Transform.vue'
 
 const {
   emit,
+  drawboardDom,
   isElement,
   exec,
   state,
@@ -188,8 +189,24 @@ const selectionLinePaths = computed(() => {
   return result
 })
 
+const rotationTip = ref<{ left: string, top: string, angle: number }>()
+
+function updateRotationTip(ctx: Mce.TransformContext) {
+  const rect = drawboardDom.value?.getBoundingClientRect()
+  if (!ctx.handle.startsWith('rotate') || !rect) {
+    rotationTip.value = undefined
+    return
+  }
+  rotationTip.value = {
+    left: `${Math.max(0, Math.min(rect.width - 65, ctx.event.clientX - rect.left + 16))}px`,
+    top: `${Math.max(0, Math.min(rect.height - 28, ctx.event.clientY - rect.top + 16))}px`,
+    angle: Math.round(((ctx.value.rotate % 360) + 360) % 360) % 360,
+  }
+}
+
 function onStart(ctx: Mce.TransformContext): void {
   emit('selectionTransformStarted', ctx)
+  updateRotationTip(ctx)
 }
 
 function onMove(ctx: Mce.TransformContext) {
@@ -197,6 +214,7 @@ function onMove(ctx: Mce.TransformContext) {
     state.value = ctx.handle === 'move' ? 'moving' : 'transforming'
   }
   emit('selectionTransformed', ctx)
+  updateRotationTip(ctx)
 }
 
 function onEnd(ctx: Mce.TransformContext) {
@@ -204,6 +222,7 @@ function onEnd(ctx: Mce.TransformContext) {
     state.value = undefined
   }
   emit('selectionTransformEnded', ctx)
+  rotationTip.value = undefined
 }
 
 const transformValue = computed(() => exec('getTransform'))
@@ -295,6 +314,9 @@ defineExpose({
 
 <template>
   <div class="m-selection">
+    <div v-if="rotationTip" class="m-selection__rotation-tip" :style="{ left: rotationTip.left, top: rotationTip.top }" role="status">
+      {{ rotationTip.angle }}°
+    </div>
     <div
       v-for="item in parentObbStyles" :key="item.id"
       class="m-selection__parent"
@@ -411,6 +433,18 @@ defineExpose({
 </template>
 
 <style lang="scss">
+.m-selection__rotation-tip {
+  position: absolute;
+  z-index: 10;
+  pointer-events: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: rgb(var(--m-theme-primary));
+  color: rgb(var(--m-theme-on-primary));
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
   .m-selection {
     position: absolute;
     left: 0;

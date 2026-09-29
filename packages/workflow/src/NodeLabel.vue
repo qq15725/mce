@@ -1,13 +1,13 @@
 <script lang="ts" setup>
 import type { Element2D } from 'modern-canvas'
-import { Icon, useEditor, useNode } from 'mce'
+import { Icon, nodeLabelStyle, useEditor, useNode } from 'mce'
 import { computed, nextTick, ref, useTemplateRef } from 'vue'
 
 // 工作流模式下顶层元素的标签：图层图标 + 图层名（复用 useNode 的显示策略），
-// 定位在元素左上角上方，效果类似画板标题；双击标题可重命名（写入 node.name）。
+// 沿元素上边显示，旋转超过直角后换到对边；双击标题可重命名（写入 node.name）。
 const props = defineProps<{ node: Element2D }>()
 
-const { getAabb, drawboardAabb, renderEngine, drawboardDom, exec, hoverElement, selection, state, isLock } = useEditor()
+const { getAabb, getObb, drawboardAabb, renderEngine, drawboardDom, exec, hoverElement, selection, state, isLock, readonly } = useEditor()
 const { thumbnailIcon, thumbnailName } = useNode(computed(() => props.node))
 
 // hover / 选中时标题加深，与 canvas 画板标题（Frame.vue 的 --hover/--selected）一致。
@@ -42,21 +42,15 @@ function inViewport(): boolean {
 }
 
 // 正在重命名时不隐藏，否则输入框会在缩放中途消失。
-const visible = computed(() => editing.value || (box.value.width >= LABEL_MIN_SIZE && inViewport()))
+const visible = computed(() => props.node.visible && (editing.value || (box.value.width >= LABEL_MIN_SIZE && inViewport())))
 
 // 用 transform 定位（只走合成、不触发布局重排），缩放/平移时重定位成本远低于 left/top，
-// 节点多时差异显著。translateY(-100%)/-6px 把标签摆到元素左上角上方。
-const style = computed(() => {
-  const a = box.value
-  // maxWidth = 节点屏幕宽：标题不超过节点宽度、超出即省略，与 canvas 画板标题（Frame.vue 的
-  // max-width:100%）一致的省略策略。此处 transform 定位无父级尺寸约束，故显式取 box 宽。
-  return {
-    transform: `translate(${a.left}px, ${a.top}px) translateY(-100%) translateY(-6px)`,
-    maxWidth: `${Math.max(0, a.width)}px`,
-  }
-})
+// 与画板标题共用旋转与切边规则。
+const style = computed(() => nodeLabelStyle(getObb(props.node, 'drawboard')))
 
 async function onDblclick(): Promise<void> {
+  if (readonly.value || isLock(props.node))
+    return
   editValue.value = thumbnailName.value
   editing.value = true
   await nextTick()
@@ -65,6 +59,8 @@ async function onDblclick(): Promise<void> {
 }
 
 function commit(): void {
+  if (!editing.value)
+    return
   editing.value = false
   const value = editValue.value.trim()
   // 置空则回退到默认名（i18n）：清掉 name 让 thumbnailName 重新推导。
@@ -73,7 +69,7 @@ function commit(): void {
 
 // 点击标题即可拖拽节点：把指针事件转发进画板并以本节点为命中目标（参考 Frame.vue）。
 function onPointerdown(event: PointerEvent): void {
-  if (editing.value) {
+  if (editing.value || isLock(props.node)) {
     return
   }
   const cloned = (renderEngine.value.input as any)._clonePointerEvent(event)
@@ -104,6 +100,7 @@ function onPointerdown(event: PointerEvent): void {
       name="workflow-node-name"
       @blur="commit"
       @keydown.enter.prevent="commit"
+      @keydown.esc.prevent="editing = false"
       @pointerdown.stop
     >
   </div>

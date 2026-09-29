@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, getCurrentInstance, h, nextTick, onMounted, ref } from 'vue'
 import { addDragListener } from '../../utils'
+import { snapRotation } from '../../utils/rotationSnap'
 
 interface Point {
   x: number
@@ -486,7 +487,7 @@ function onPointerDown(event?: MouseEvent, index?: number): boolean {
             rotatedCurrentPoint.x - centerPoint.x,
           ) / DEG_TO_RAD
 
-          updated.rotate = rotate + endAngle - startAngle
+          updated.rotate = snapRotation(rotate + endAngle - startAngle, ctx.event)
         }
       }
       else if (isRound) {
