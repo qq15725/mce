@@ -1,6 +1,6 @@
 import type { Element2D } from 'modern-canvas'
 import type { Reactive, Ref } from 'vue'
-import { render } from 'modern-canvas'
+import { render, renderAudio } from 'modern-canvas'
 import { ref } from 'vue'
 import { defineMixin } from '../mixin'
 import { createMapRegistry } from '../utils'
@@ -10,6 +10,7 @@ declare global {
     type ExportOnProgress = (progress: number) => void
 
     interface ExportOptions {
+      signal?: AbortSignal
       scale?: number
       selected?: boolean | Element2D[]
       onProgress?: ExportOnProgress
@@ -31,6 +32,7 @@ declare global {
       height: number
       /** 帧间隔（毫秒）。 */
       step: number
+      signal?: AbortSignal
       onFrame: (pixels: Uint8ClampedArray, info: { duration: number, progress: number }) => void | Promise<void>
     }
 
@@ -44,6 +46,8 @@ declare global {
       exportProgress: Ref<number>
       /** 按 step 逐帧渲染时间轴并回调像素，供 gif/mp4 等视频导出复用。 */
       renderFrames: (options: RenderFramesOptions) => Promise<void>
+      /** 按导出树的时间轴混合视频原声。 */
+      renderAudio: typeof renderAudio
     }
   }
 }
@@ -57,14 +61,16 @@ export default defineMixin((editor) => {
   const exporting = ref(false)
   const exportProgress = ref(0)
 
-  const renderFrames: Mce.Editor['renderFrames'] = async ({ data, width, height, step, onFrame }) => {
+  const renderFrames: Mce.Editor['renderFrames'] = async ({ data, width, height, step, onFrame, signal }) => {
+    signal?.throwIfAborted()
     const { startTime, endTime } = data.meta
     const keyframes = Array.from(
-      { length: ~~((endTime - startTime) / step) },
+      { length: Math.ceil((endTime - startTime) / step) },
       (_, i) => startTime + i * step,
     )
     await editor.runExclusiveRender(() => render({
       data,
+      signal,
       width,
       height,
       fonts: editor.fonts,
@@ -73,7 +79,10 @@ export default defineMixin((editor) => {
       themeTokens: editor.themeTokens.value,
       keyframes,
       imagePipelineResolver: editor.resolveImagePipelines,
-      onKeyframe: (pixels: any, info: { duration: number, progress: number }) => onFrame(pixels, info),
+      onKeyframe: (pixels: any, info: { currentTime: number }) => onFrame(pixels, {
+        duration: Math.min(step, endTime - info.currentTime),
+        progress: Math.min(1, (info.currentTime + step - startTime) / (endTime - startTime)),
+      }),
     }))
   }
 
@@ -104,6 +113,7 @@ export default defineMixin((editor) => {
     registerExporter,
     unregisterExporter,
     renderFrames,
+    renderAudio,
     export: to,
     to,
   })

@@ -1,7 +1,7 @@
 {
   "name": "mce",
   "type": "module",
-  "version": "0.36.37",
+  "version": "0.36.38",
   "description": "A headless infinite canvas editor framework built on WebGL rendering, supports exporting to image, video, and PPT. Only the ESM.",
   "author": "wxm",
   "license": "MIT",
@@ -71,10 +71,10 @@
     "@vueuse/core": "^14.3.0",
     "diff": "^9.0.0",
     "lodash-es": "^4.18.1",
-    "modern-canvas": "^0.27.16",
+    "modern-canvas": "^0.27.22",
     "modern-font": "^0.6.4",
     "modern-idoc": "^0.12.4",
-    "modern-text": "^2.2.3",
+    "modern-text": "^2.2.5",
     "y-protocols": "^1.0.7",
     "yjs": "^13.6.31"
   },

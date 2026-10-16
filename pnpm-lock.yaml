@@ -131,8 +131,8 @@ importers:
         specifier: workspace:*
         version: link:../mce
       modern-canvas:
-        specifier: ^0.27.16
-        version: 0.27.16(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1)
+        specifier: ^0.27.22
+        version: 0.27.22(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1)
       modern-idoc:
         specifier: ^0.12.4
         version: 0.12.4
@@ -180,8 +180,8 @@ importers:
         specifier: ^5
         version: 5.13.0
       modern-canvas:
-        specifier: ^0.27.16
-        version: 0.27.16(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1)
+        specifier: ^0.27.22
+        version: 0.27.22(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1)
       modern-font:
         specifier: ^0.6.4
         version: 0.6.4
@@ -192,8 +192,8 @@ importers:
         specifier: ^0.12.4
         version: 0.12.4
       modern-text:
-        specifier: ^2.2.3
-        version: 2.2.3
+        specifier: ^2.2.5
+        version: 2.2.5
       typescript:
         specifier: 6.0.3
         version: 6.0.3
@@ -229,8 +229,8 @@ importers:
   packages/mp4:
     dependencies:
       modern-mp4:
-        specifier: ^0.2.0
-        version: 0.2.0(mp4box@2.1.1)
+        specifier: ^0.2.2
+        version: 0.2.2(mp4box@2.1.1)
     devDependencies:
       mce:
         specifier: workspace:*
@@ -897,6 +897,11 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
+  '@mediabunny/aac-encoder@1.61.5':
+    resolution: {integrity: sha512-PC1ZQJMX8FQlw7XjdyacVmTRCZ8DA6x8VyJXakmOQuWsddawfK+KBRhpSYD5ezqe1NdqfdmeLUwDsarjzsTSUA==}
+    peerDependencies:
+      mediabunny: ^1.0.0
+
   '@napi-rs/wasm-runtime@1.1.6':
     resolution: {integrity: sha512-ZLv/JdUfkvOy9eCnnBaGfiO+XimbjebAeO+MRQqD/B+FR1tnRN0tpKSJHRbE8sFfS6aqsXZ67TQjfwfsxULVbg==}
     peerDependencies:
@@ -1152,6 +1157,12 @@ packages:
 
   '@types/deep-eql@4.0.2':
     resolution: {integrity: sha512-c9h9dVVMigMPc4bwTvC5dxqtqJZwQPePsWjPlpSOnojbor6pGqdk541lfA7AqFQr5pB1BRdq0juY9db81BwyFw==}
+
+  '@types/dom-mediacapture-transform@0.1.12':
+    resolution: {integrity: sha512-d7/QsLRwF864A5mgIM/YrfiglHoYn7zgCcAoJgW404r+2DwnNr7EBbLnCWpmOMgH8y0te73L1AV6H1bmauaWFw==}
+
+  '@types/dom-webcodecs@0.1.13':
+    resolution: {integrity: sha512-O5hkiFIcjjszPIYyUSyvScyvrBoV3NOEEZx/pMlsu44TKzWNkLVBBxnxJz42in5n3QIolYOcBYFCPZZ0h8SkwQ==}
 
   '@types/esrecurse@4.3.1':
     resolution: {integrity: sha512-xJBAbDifo5hpffDBuHl0Y8ywswbiAp/Wi7Y/GtAgSlZyIABppyurxVueOPE8LUQOxdlgi6Zqce7uoEpqNTeiUw==}
@@ -2270,6 +2281,9 @@ packages:
   mdurl@2.0.0:
     resolution: {integrity: sha512-Lf+9+2r+Tdp5wXDXC4PcIBjTDtq4UKjCPMQhKIuzpJNW0b96kVqSwW0bT7FhRSfmAiFYgP+SCRvdrDozfh0U5w==}
 
+  mediabunny@1.61.5:
+    resolution: {integrity: sha512-IYrDTozxGVRTWQ1YdIcF+P7S7qHvvkiQYsX3WUbAHkxgAcCfEn7a/RbM9i/WiJHJ1MSYZqSxZkna1UUn4FGGBQ==}
+
   memorystream@0.3.1:
     resolution: {integrity: sha512-S3UwM3yj5mtUSEfP41UZmt/0SCoVYUcU1rkXv+BQ5Ig8ndL4sPoJNBUJERafdPb5jjHJGuMgytgKvKIf58XNBw==}
     engines: {node: '>= 0.10.0'}
@@ -2371,8 +2385,8 @@ packages:
   mlly@1.8.2:
     resolution: {integrity: sha512-d+ObxMQFmbt10sretNDytwt85VrbkhhUA/JBGm1MPaWJ65Cl4wOgLaB1NYvJSZ0Ef03MMEU/0xpPMXUIQ29UfA==}
 
-  modern-canvas@0.27.16:
-    resolution: {integrity: sha512-4tdUTMBiIlNl8Xl8ymhJhqU2GGpn9RmiwmBvRIaYaBaHGcForrcgks4bQ/Z+YSVseND9h2HiQGZX4DRpU8Z6qA==}
+  modern-canvas@0.27.22:
+    resolution: {integrity: sha512-c88bwD+AAVWQRrbDOveV1WuqOEvYXz4h+155zg8BxAQ2z0zx+lMxj01v/6LeTu1HdQtjHYUvxlS4afs8wcWEwA==}
     peerDependencies:
       echarts: ^5 || ^6
       lottie-web: ^5
@@ -2400,8 +2414,8 @@ packages:
   modern-idoc@0.12.4:
     resolution: {integrity: sha512-Tbdo3fahw5uimsvaCys/dooUUb6Gdq4N217xI75aEgkoPAktcxv/x0R4Q0E6zh+GhfCV3OxqISFOFhqAv/jc1w==}
 
-  modern-mp4@0.2.0:
-    resolution: {integrity: sha512-Z2X7+B1Kru8MTI2E6mpcSqm1E7FMxYg61DXoTkwq/KnMMfeyFcMCY4UVjvklFtdw4/NnvKA93bxw7XsqtMB1Tw==}
+  modern-mp4@0.2.2:
+    resolution: {integrity: sha512-2xPjC/bnrM587TloeC++kh9tGjRQjY0tPl8AXaOVh2Rk1Lc5GyQT4L/pzVpl4co8E/aicx3w2lZzS4bop81I8A==}
     peerDependencies:
       mp4box: '*'
 
@@ -2417,8 +2431,8 @@ packages:
   modern-pdf@1.6.0:
     resolution: {integrity: sha512-KDTDHcZysFtU5dwDcUixmIt4tTYoSpDkoFcfLi/fOxyzAEmHnI3Qm4x6x8qYaUxl0snljDaJtXHirc+UxU7HtQ==}
 
-  modern-text@2.2.3:
-    resolution: {integrity: sha512-mVs8wrAqoGR21O9C9nxNLTc+yUvMx1+iGJwYc0Rha8tGrHTzSxDaMOsAaDUzVhxUfbTzQNFwfRpUHiusy4XYdQ==}
+  modern-text@2.2.5:
+    resolution: {integrity: sha512-U3v06ZMw1NZYrC0YPSnv2E8MrmwH3y5frx3YGfkQ5ntvsy5aAjSglswqifJSwvxgS19OyS8bC7iG6WDshxxwgg==}
 
   module-replacements@3.0.0:
     resolution: {integrity: sha512-tHIZqde+RlyNRobAIjfcH5UIgIrEbZbDGRL6J/x+HERX/g8O9mrm0p6knJbsTXmQtDvZ+eFP+xfOP3/9jHk6YA==}
@@ -3664,6 +3678,10 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
+  '@mediabunny/aac-encoder@1.61.5(mediabunny@1.61.5)':
+    dependencies:
+      mediabunny: 1.61.5
+
   '@napi-rs/wasm-runtime@1.1.6(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)':
     dependencies:
       '@emnapi/core': 1.11.1
@@ -3859,6 +3877,12 @@ snapshots:
       '@types/ms': 2.1.0
 
   '@types/deep-eql@4.0.2': {}
+
+  '@types/dom-mediacapture-transform@0.1.12':
+    dependencies:
+      '@types/dom-webcodecs': 0.1.13
+
+  '@types/dom-webcodecs@0.1.13': {}
 
   '@types/esrecurse@4.3.1': {}
 
@@ -5121,6 +5145,11 @@ snapshots:
 
   mdurl@2.0.0: {}
 
+  mediabunny@1.61.5:
+    dependencies:
+      '@types/dom-mediacapture-transform': 0.1.12
+      '@types/dom-webcodecs': 0.1.13
+
   memorystream@0.3.1: {}
 
   micromark-core-commonmark@2.0.3:
@@ -5342,14 +5371,14 @@ snapshots:
       pkg-types: 1.3.1
       ufo: 1.6.4
 
-  modern-canvas@0.27.16(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1):
+  modern-canvas@0.27.22(echarts@6.1.0)(lottie-web@5.13.0)(modern-gif@2.1.0)(yoga-layout@3.2.1):
     dependencies:
       colord: 2.9.3
       earcut: 3.2.3
       modern-font: 0.6.4
       modern-idoc: 0.12.4
       modern-path2d: 1.8.8
-      modern-text: 2.2.3
+      modern-text: 2.2.5
     optionalDependencies:
       echarts: 6.1.0
       lottie-web: 5.13.0
@@ -5367,15 +5396,17 @@ snapshots:
   modern-idoc-svg@0.4.0:
     dependencies:
       modern-idoc: 0.12.4
-      modern-text: 2.2.3
+      modern-text: 2.2.5
 
   modern-idoc@0.12.4:
     dependencies:
       colord: 2.9.3
       nanoid: 5.1.16
 
-  modern-mp4@0.2.0(mp4box@2.1.1):
+  modern-mp4@0.2.2(mp4box@2.1.1):
     dependencies:
+      '@mediabunny/aac-encoder': 1.61.5(mediabunny@1.61.5)
+      mediabunny: 1.61.5
       mp4box: 2.1.1
 
   modern-openxml@1.13.0:
@@ -5398,9 +5429,9 @@ snapshots:
       modern-font: 0.6.4
       modern-idoc: 0.12.4
       modern-path2d: 1.8.8
-      modern-text: 2.2.3
+      modern-text: 2.2.5
 
-  modern-text@2.2.3:
+  modern-text@2.2.5:
     dependencies:
       diff: 9.0.0
       modern-font: 0.6.4
