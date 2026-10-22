@@ -139,7 +139,6 @@ function onPointerdown(event: MouseEvent) {
     position: absolute;
     border-radius: calc(infinity * 1px);
     background-color: rgba(var(--m-theme-on-background), var(--m-low-emphasis-opacity));
-    backdrop-filter: blur(var(--m-blur));
 
     &--active,
     &:hover {

@@ -18,6 +18,7 @@ import { createIcons, IconsSymbol } from '../composables/icons'
 import { provideOverlay } from '../composables/overlay'
 import { makeMceStrategyProps } from '../composables/strategy'
 import { Editor } from '../editor'
+import { copyCanvasFrame } from '../utils/copyCanvasFrame'
 import EditorPanels from './EditorPanels.vue'
 import Floatbar from './Floatbar.vue'
 import Layout from './shared/Layout.vue'
@@ -154,14 +155,7 @@ onBeforeUnmount(() => {
 
 function bindRenderCanvas(canvas: HTMLCanvasElement, eventTarget?: HTMLElement) {
   function onRendered(): void {
-    const target = renderEngine.value.view!
-    if (!target.width || !target.height) {
-      return
-    }
-    canvas.width = target.width
-    canvas.height = target.height
-    canvas.dataset.pixelRatio = target.dataset.pixelRatio
-    canvas.getContext('2d')?.drawImage(target, 0, 0, target.width, target.height)
+    copyCanvasFrame(canvas, renderEngine.value.view!)
   }
 
   function unbind() {

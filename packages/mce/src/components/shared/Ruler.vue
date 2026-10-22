@@ -426,7 +426,6 @@ defineExpose({
     display: block;
     pointer-events: auto;
     background-color: rgb(var(--m-theme-surface));
-    backdrop-filter: blur(var(--m-blur));
   }
 }
 
