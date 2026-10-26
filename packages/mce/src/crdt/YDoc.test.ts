@@ -343,3 +343,19 @@ describe('yDoc 快照恢复', () => {
     restored.destroy()
   })
 })
+
+it('重做更换 Y.Map 后解绑旧观察器，后续编辑只通知新观察器', () => {
+  const doc = new Doc([])
+  const oldMap = doc._yDoc._yDoc.getMap('old-observer')
+  const newMap = doc._yDoc._yDoc.getMap('new-observer')
+  const target: any = {}
+  let oldCalls = 0
+  let newCalls = 0
+  ;(doc._yDoc as any)._bindObserver(target, '_map', '_listener', oldMap, () => oldCalls++)
+  ;(doc._yDoc as any)._bindObserver(target, '_map', '_listener', newMap, () => newCalls++)
+  oldMap.set('x', 1)
+  newMap.set('x', 1)
+  expect(oldCalls).toBe(0)
+  expect(newCalls).toBe(1)
+  doc.destroy()
+})

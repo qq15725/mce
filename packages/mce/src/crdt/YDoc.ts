@@ -400,8 +400,9 @@ export class YDoc extends Observable {
     yType: Y.AbstractType<any>,
     observeFn: (...args: any[]) => void,
   ): void {
+    if (target[rawKey] && target[fnKey])
+      target[rawKey].unobserve(target[fnKey])
     target[rawKey] = this._rx.markRaw(yType)
-    target[fnKey] && yType.unobserve(target[fnKey])
     target[fnKey] = this._rx.markRaw(observeFn)
     yType.observe(observeFn)
   }

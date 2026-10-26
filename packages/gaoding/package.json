@@ -1,7 +1,7 @@
 {
   "name": "@mce/gaoding",
   "type": "module",
-  "version": "0.36.40",
+  "version": "0.36.41",
   "description": "Plugin for mce",
   "author": "wxm",
   "license": "MIT",
