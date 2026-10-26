@@ -1,8 +1,8 @@
 import type { Element2D, Node } from 'modern-canvas'
 import type { Vector2Like } from 'modern-path2d'
-import { Node2D } from 'modern-canvas'
 import { definePlugin } from '../plugin'
 import { isFlexContainer } from '../utils/helper'
+import { movePreservingTransform } from '../utils/reparent'
 
 declare global {
   namespace Mce {
@@ -47,39 +47,6 @@ export default definePlugin((editor) => {
   // reactivity, so the canvas updates but the layers panel doesn't (they desync).
   function safeMoveChild(parent: Node, el: Element2D, index: number): void {
     parent.moveChild(el, index)
-  }
-
-  // 普通画板换父级时保留完整世界变换。AABB 左上角不是旋转元素的局部原点，
-  // 直接相减会同时改变位置与角度；滚动偏移也必须计入新的父级坐标系。
-  function movePreservingTransform(parent: Node, el: Element2D, index: number): void {
-    const local = el.globalTransform.clone()
-    // Doc 根节点没有二维变换，移回根节点时直接使用世界坐标。
-    if (parent instanceof Node2D) {
-      const matrix = parent.globalTransform
-      if (matrix.a * matrix.d - matrix.b * matrix.c === 0)
-        return
-      local.prepend(matrix.clone().affineInverse())
-        .translate(parent.contentOffset.x, parent.contentOffset.y)
-    }
-    const { a, b, c, d, tx, ty } = local
-    const scaleX = Math.hypot(a, b)
-    const scaleY = (a * d - b * c) / scaleX
-    if (!scaleX || !scaleY)
-      return
-    const { x: px, y: py } = el.pivot
-    safeMoveChild(parent, el, index)
-    // Node2D 用 tan(skew)，与 Transform2D.decompose 的斜切约定不同。
-    Object.assign(el.style, {
-      left: tx + px * a + py * c - px,
-      top: ty + px * b + py * d - py,
-      rotate: Math.atan2(b, a) * 180 / Math.PI,
-      scaleX,
-      scaleY,
-      skewX: Math.atan((a * c + b * d) / (scaleX * scaleY)),
-      skewY: 0,
-      transform: '',
-    })
-    el.updateGlobalTransform()
   }
 
   // Main-axis insert index in a flex frame for a world-space pointer (one-shot;

@@ -5,6 +5,7 @@ import Selection from '../components/Selection.vue'
 import { definePlugin } from '../plugin'
 import { isFlexContainer } from '../utils/helper'
 import { getLineEndpoints, parseLineShape } from '../utils/line'
+import { movePreservingTransform } from '../utils/reparent'
 
 declare global {
   namespace Mce {
@@ -128,13 +129,11 @@ export default definePlugin((editor) => {
     selectionMarquee,
     elementSelection,
     getObb,
-    getAabb,
     root,
     findSibling,
     inEditorIs,
     isFrameNode,
     addElement,
-    addElements,
     obbToFit,
     setVisible,
     isVisible,
@@ -267,63 +266,64 @@ export default definePlugin((editor) => {
   }
 
   function groupSelection(inEditorIs: 'Element' | 'Frame'): void {
-    const elements = elementSelection.value
-    if (!elements.length) {
-      return
+    // 以场景树顺序组合，且父节点已选中时不再重复搬运其子节点。
+    const selectedIds = new Set(elementSelection.value.map(node => node.id))
+    const elements: Element2D[] = []
+    function collect(node: Node) {
+      for (const child of node.children) {
+        if (selectedIds.has(child.id))
+          elements.push(child as Element2D)
+        else
+          collect(child)
+      }
     }
-    const element = elements[0]
-    const parent = element.parent
-    const aabb = getAabb(elements, 'parent')
-    const children = elements.map((child) => {
-      const cloned = child.toJSON()
-      cloned.style.left = child.style.left - aabb.left
-      cloned.style.top = child.style.top - aabb.top
-      return cloned
+    collect(root.value)
+    if (!elements.length)
+      return
+    let parent = elements[0].parent ?? root.value
+    while (!elements.every(node => node.findAncestor(ancestor => ancestor.equal(parent))))
+      parent = parent.parent ?? root.value
+    // 放在最高的选中分支位置，避免组落到原来的画板背景之后。
+    const branches = elements.map((node) => {
+      let branch: Node = node
+      while (branch.parent && !branch.parent.equal(parent))
+        branch = branch.parent
+      return branch
     })
+    const index = Math.max(...branches.map(node => node.getIndex())) + 1
     root.value.transact(() => {
-      addElement({
+      const group = addElement({
         name: inEditorIs === 'Frame' ? 'Frame' : 'Group',
-        style: {
-          left: aabb.left,
-          top: aabb.top,
-          width: aabb.width,
-          height: aabb.height,
-        },
-        children,
-        meta: {
-          inPptIs: 'GroupShape',
-          inEditorIs,
-        },
-      }, {
-        parent,
-        index: parent ? element.getIndex() : undefined,
-        active: true,
-        regenId: true,
+        style: { left: 0, top: 0, width: 1, height: 1 },
+        meta: { inPptIs: 'GroupShape', inEditorIs },
+      }, { parent, index })
+      // 移动原节点，保留 ID、子树及引用关系。
+      elements.forEach(node => movePreservingTransform(group, node, group.children.length))
+      const left = Math.min(...elements.map(node => node.aabb.left))
+      const top = Math.min(...elements.map(node => node.aabb.top))
+      const right = Math.max(...elements.map(node => node.aabb.right))
+      const bottom = Math.max(...elements.map(node => node.aabb.bottom))
+      Object.assign(group.style, { left, top, width: right - left, height: bottom - top })
+      elements.forEach((node) => {
+        node.style.left -= left
+        node.style.top -= top
       })
-      elements.forEach(node => node.remove())
+      group.updateGlobalTransform()
+      selection.value = [group]
     })
   }
 
   function ungroupSelection() {
     const element = elementSelection.value[0]
-    if (!element || !element.children.length)
+    const parent = element?.parent
+    if (!parent || !element.children.length)
       return
-    const parent = getObb(element, 'parent')
-    const items = element.children.map((child) => {
-      const obb = getObb(child, 'parent')
-      const cloned = child.toJSON()
-      cloned.style.left = obb.left + parent.left
-      cloned.style.top = obb.top + parent.top
-      return cloned
-    })
+    const children = [...element.children] as Element2D[]
     root.value.transact(() => {
-      addElements(items, {
-        parent: element.parent,
-        index: element.getIndex(),
-        active: true,
-        regenId: true,
-      })
+      let index = element.getIndex()
+      children.forEach(child => movePreservingTransform(parent, child, index++))
       element.remove()
+      selection.value = children
     })
   }
 

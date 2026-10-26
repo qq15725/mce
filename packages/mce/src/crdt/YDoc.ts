@@ -331,11 +331,13 @@ export class YDoc extends Observable {
               obj.setProperty(key, yMap.get(key))
               obj.requestUpdate(key, yMap.get(key), oldValue)
               break
-            case 'delete':
+            case 'delete': {
               this.undoManager.stopCapturing()
+              // 撤销首次写入的变换属性时恢复默认值；undefined 会令矩阵变为 NaN。
               obj.setProperty(key, undefined)
-              obj.requestUpdate(key, undefined, oldValue)
+              obj.requestUpdate(key, obj.getProperty(key), oldValue)
               break
+            }
           }
         })
       }, false)
@@ -423,7 +425,7 @@ export class YDoc extends Observable {
   }
 
   protected _proxyChildren(node: Node, childrenIds: Y.Array<string>): void {
-    node.on('addChild', (child, newIndex) => {
+    const onAddChild = (child: Node, newIndex: number): void => {
       if (this._isSelfTransaction() || child.internalMode !== 'default') {
         return
       }
@@ -433,9 +435,9 @@ export class YDoc extends Observable {
         this._proxyNode(child)
         childrenIds.insert(newIndex, [childId])
       })
-    })
+    }
 
-    node.on('removeChild', (child, oldIndex) => {
+    const onRemoveChild = (child: Node, oldIndex: number): void => {
       if (this._isSelfTransaction() || child.internalMode !== 'default') {
         return
       }
@@ -447,7 +449,16 @@ export class YDoc extends Observable {
           childrenIds.delete(index, 1)
         }
       })
-    })
+    }
+    const bound = node as any
+    if (bound._yAddChildListener)
+      node.off('addChild', bound._yAddChildListener)
+    if (bound._yRemoveChildListener)
+      node.off('removeChild', bound._yRemoveChildListener)
+    bound._yAddChildListener = this._rx.markRaw(onAddChild)
+    bound._yRemoveChildListener = this._rx.markRaw(onRemoveChild)
+    node.on('addChild', onAddChild)
+    node.on('removeChild', onRemoveChild)
 
     node.children.forEach((child) => {
       this._proxyNode(child)
@@ -575,7 +586,7 @@ export class YDoc extends Observable {
       return node
     }
 
-    const id = node.id
+    const id = yNode?.get('id') ?? node.id
 
     if (!yNode) {
       yNode = this._yChildren.get(id)
@@ -596,10 +607,10 @@ export class YDoc extends Observable {
 
     const _node = this._nodeMap.get(id)
 
-    if (_node) {
+    if (_node)
       node = _node
-    }
-    else {
+    // Yjs 重做会创建新的 Y.Map；保留节点实例，但必须把属性与子树重新绑定到新 Map。
+    if (!_node || (node as any)._yMap !== yNode) {
       if (!this._rx.isReactive(node)) {
         // 引擎内部的「资源/计算对象」（文本排版的 path 数据、yoga 布局节点等）已在各自创建时
         // markRaw（见 modern-canvas），故此处整树 reactive 不会深度代理它们 —— 无需再逐节点特殊处理。
@@ -621,6 +632,10 @@ export class YDoc extends Observable {
         this._guardedTransact(() => yNode.set('parentId', node.parent?.id))
       }
       syncParentId()
+      const previousParented = (node as any)._yParentedListener
+      if (previousParented)
+        node.off('parented', previousParented)
+      ;(node as any)._yParentedListener = this._rx.markRaw(syncParentId)
       node.on('parented', syncParentId)
 
       const isRoot = yNode === this._yProps
@@ -670,9 +685,9 @@ export class YDoc extends Observable {
   protected _initYNode(yNode: YNode): Node {
     const id = yNode.get('id')
     let node = this._nodeMap.get(id)
-    if (!node) {
+    if (!node || (node as any)._yMap !== yNode) {
       this.undoManager.addToScope(yNode)
-      node = Node.parse({
+      node ??= Node.parse({
         // `is` 优先于 meta.inCanvasIs 决定节点类（见 Node.parse），保留它才能在对端重建出
         // Animation 等非 Element2D 子节点；Element2D 仍由 inCanvasIs 兜底。
         is: yNode.get('is') as string | undefined,

@@ -4,6 +4,7 @@ import type {
   InjectionKey,
   Ref,
 } from 'vue'
+import { Element2D } from 'modern-canvas'
 import {
   computed,
   getCurrentInstance,
@@ -15,6 +16,8 @@ import {
   useId,
 } from 'vue'
 import { addDragListener, findChildrenWithProvide } from '../utils'
+import { movePreservingTransform } from '../utils/reparent'
+import { useEditor } from './editor'
 
 export interface LayerItem {
   id: string
@@ -40,6 +43,7 @@ export const LayerKey: InjectionKey<LayerProvide> = Symbol.for('layer')
 export const LayerItemKey: InjectionKey<{ id: string }> = Symbol.for('layer-item')
 
 export function createLayer() {
+  const { root } = useEditor()
   const registered = ref<string[]>([])
   const nodeItems = new Map<string, Ref<Node>>()
   const openedItems = reactive(new Map<string, Ref<boolean>>())
@@ -104,9 +108,7 @@ export function createLayer() {
               && target.classList.contains('m-layer')
           })
           const id = (layer as HTMLElement)?.dataset?.id
-          if (id) {
-            droppingItemId.value = id
-          }
+          droppingItemId.value = id
         },
         end: () => {
           if (droppingItemId.value) {
@@ -116,6 +118,7 @@ export function createLayer() {
               to
               && from
               && !from.equal(to)
+              && !to.findAncestor(node => node.equal(from))
             ) {
               let toIndex = to.getIndex() + 1
               if (
@@ -125,10 +128,15 @@ export function createLayer() {
               ) {
                 toIndex--
               }
-              to.parent?.moveChild(
-                from,
-                toIndex,
-              )
+              const parent = to.parent
+              if (parent) {
+                root.value.transact(() => {
+                  if (from instanceof Element2D)
+                    movePreservingTransform(parent, from, toIndex)
+                  else
+                    parent.moveChild(from, toIndex)
+                })
+              }
             }
           }
           dragging.value = false
