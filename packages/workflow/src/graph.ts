@@ -30,7 +30,7 @@ export interface WorkflowGraph {
   topoSort: () => Element2D[] | undefined
 }
 
-/** 连线元素：带一个有效的 connection。其余顶层元素都是工作流节点。 */
+/** 连线元素：带一个有效的 connection。其余元素可作为工作流节点。 */
 export function isWorkflowConnection(el: any): el is Element2D {
   return Boolean(el?.connection?.isValid?.())
 }
@@ -46,7 +46,7 @@ function push(map: Map<string, WorkflowEdge[]>, key: string, edge: WorkflowEdge)
 }
 
 /**
- * 由一批同级元素（通常是 root.children）派生出邻接索引。
+ * 递归遍历场景子树派生邻接索引；成组只改变层级，不改变节点 ID 和关联。
  *
  * 边不存在节点身上——连线是平级元素，靠 `connection.start/end` 的 `{ id, idx }`
  * 引用两端。这里做的是「一次 O(V+E) 扫描建派生索引」，而不是在节点上冗余存
@@ -56,14 +56,18 @@ export function buildWorkflowGraph(children: readonly Node[]): WorkflowGraph {
   const nodes = new Map<string, Element2D>()
   const connections: Element2D[] = []
 
-  for (const child of children) {
-    if (isWorkflowConnection(child)) {
-      connections.push(child as Element2D)
-    }
-    else {
-      nodes.set((child as Element2D).id, child as Element2D)
+  function collect(items: readonly Node[]): void {
+    for (const child of items) {
+      if (isWorkflowConnection(child)) {
+        connections.push(child as Element2D)
+      }
+      else {
+        nodes.set(child.id, child as Element2D)
+      }
+      collect(child.children ?? [])
     }
   }
+  collect(children)
 
   const edges: WorkflowEdge[] = []
   const out = new Map<string, WorkflowEdge[]>()

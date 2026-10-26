@@ -5,7 +5,7 @@ import { computed } from 'vue'
 import { buildWorkflowGraph } from './graph'
 
 /**
- * 工作流的邻接索引，随 root.children 变化重建（节点移动 / 缩放不触发重建）。
+ * 工作流的邻接索引，随场景树各层 children 变化重建（节点移动 / 缩放不触发重建）。
  *
  * ```ts
  * const graph = useWorkflowGraph()

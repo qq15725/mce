@@ -2,6 +2,7 @@ import type { Element2D } from 'modern-canvas'
 import { useEditor } from 'mce'
 import { nextTick, onBeforeUnmount, watch, watchEffect } from 'vue'
 import { isWorkflowConnection } from './graph'
+import { useWorkflowGraph } from './useWorkflowGraph'
 
 /**
  * 连线「能量流动」反馈：workflow 模式下 hover / 选中节点时，相连连线加粗、
@@ -24,8 +25,9 @@ const WIDTH_BOOST_GL1 = 1.6
 
 export function useConnectionFlow(): void {
   const editor = useEditor()
-  const { mode, hoverElement, elementSelection, root, renderEngine, drawboardDom, state, theme, themeTokens } = editor
+  const { mode, hoverElement, elementSelection, renderEngine, drawboardDom, state, theme, themeTokens } = editor
 
+  const graph = useWorkflowGraph()
   let flowing = new Set<Element2D>()
 
   // 亮段颜色取主题主色（CSS 变量是 RGB 三元组）；读不到就用引擎默认的蓝。
@@ -87,7 +89,7 @@ export function useConnectionFlow(): void {
       }
       // always 模式：所有工作流连线常显流动（供演示 / 宿主整体展示）。
       if ((editor as any).workflowConnectionFlow?.always) {
-        for (const child of root.value?.children ?? []) {
+        for (const { connection: child } of graph.value.edges) {
           if (isWorkflowConnection(child)) {
             next.add(child as Element2D)
           }
@@ -110,7 +112,7 @@ export function useConnectionFlow(): void {
       }
       if (nodeIds.size) {
         // 连线与节点平级：一次线性扫描收齐所有触及种子节点的边
-        for (const child of root.value?.children ?? []) {
+        for (const { connection: child } of graph.value.edges) {
           if (
             isWorkflowConnection(child)
             && (nodeIds.has(child.connection.start?.id as string)

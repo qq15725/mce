@@ -84,3 +84,22 @@ describe('buildWorkflowGraph', () => {
     })
   })
 })
+
+it('成组、嵌套与拆组保留内部及跨组关联，组内新增节点也可解析', () => {
+  const [a, b, c, d, ab, bc, bd] = diamond()
+  const group = { ...node('group'), children: [a, { ...node('nested'), children: [b, ab] }] }
+  const children = [group, c, d, bc, bd]
+  const check = (graph: ReturnType<typeof buildWorkflowGraph>) => {
+    expect(graph.nodes.get('a')).toBe(a)
+    expect(graph.downstream('a').map(n => n.id)).toEqual(['b', 'c', 'd'])
+    expect(graph.upstream('c').map(n => n.id)).toEqual(['b', 'a'])
+    expect(graph.edges).toHaveLength(3)
+    const order = graph.topoSort()!.map(n => n.id)
+    expect(order.indexOf('a')).toBeLessThan(order.indexOf('b'))
+    expect(order.indexOf('b')).toBeLessThan(order.indexOf('c'))
+  }
+  check(buildWorkflowGraph(children))
+  group.children.push(node('new'), edge('b', 'new'))
+  expect(buildWorkflowGraph(children).downstream('a').map(n => n.id)).toContain('new')
+  check(buildWorkflowGraph([a, b, c, d, ab, bc, bd]))
+})

@@ -6,6 +6,7 @@ import { computed, nextTick, ref, watch } from 'vue'
 import { isWorkflowConnection } from './graph'
 import NodeLabel from './NodeLabel.vue'
 import { useConnectionFlow } from './useConnectionFlow'
+import { useWorkflowGraph } from './useWorkflowGraph'
 
 const {
   mode,
@@ -22,6 +23,7 @@ const {
 
 // hover / 选中节点或连线时，相关连线沿数据方向流动高亮（引擎 shader 驱动）。
 useConnectionFlow()
+const graph = useWorkflowGraph()
 
 // 端口「+」磁吸：命中区是朝外的半圆（hitClip），可见的「+」是它的兄弟节点（不被裁）。
 // 仅当鼠标进入该半圆时（命中区自身 pointermove）把「+」朝指针移动、离开(pointerleave)回中心——
@@ -67,9 +69,8 @@ const selectedNode = computed<Element2D | undefined>(() => {
   if (mode.value !== 'workflow')
     return undefined
   const el = elementSelection.value[0]
-  // 仅根节点（Doc）下的直接子元素才是工作流节点、才显示连接加号；
-  // 画板（Frame）内的元素不参与工作流连接。
-  if (!el || !isConnectable(el) || el.getParent?.()?.id !== root.value?.id)
+  // 成组后的节点仍可连接，端口跟随节点的世界坐标。
+  if (!el || !isConnectable(el) || !graph.value.nodes.has(el.id))
     return undefined
   return el
 })
@@ -77,7 +78,7 @@ const selectedNode = computed<Element2D | undefined>(() => {
 // 工作流模式下的顶层元素（画板 / 节点，排除连线）——给每个加图层图标+名称标签。
 const topLabels = computed<Element2D[]>(() =>
   mode.value === 'workflow'
-    ? (root.value?.children ?? []).filter((el): el is Element2D => isConnectable(el))
+    ? [...graph.value.nodes.values()].filter(el => isConnectable(el) && (el.parent?.id === root.value?.id || String(el.meta?.inEditorIs ?? '').startsWith('Workflow')))
     : [],
 )
 
@@ -172,7 +173,7 @@ function toDrawboard(e: PointerEvent | MouseEvent): { x: number, y: number } {
 }
 
 function findNodeAt(point: { x: number, y: number }, excludeId: string): Element2D | undefined {
-  return (root.value?.children ?? []).find((n: any) => {
+  return [...graph.value.nodes.values()].reverse().find((n: any) => {
     return isConnectable(n) && n.id !== excludeId && getAabb(n, 'drawboard').contains(point)
   }) as Element2D | undefined
 }
