@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { Element2D } from 'modern-canvas'
 import { Icon, nodeLabelStyle, useEditor, useNode } from 'mce'
-import { computed, nextTick, ref, useTemplateRef } from 'vue'
+import { computed, nextTick, ref, useTemplateRef, watch } from 'vue'
 
 // 工作流模式下顶层元素的标签：图层图标 + 图层名（复用 useNode 的显示策略），
 // 沿元素上边显示，旋转超过直角后换到对边；双击标题可重命名（写入 node.name）。
@@ -20,7 +20,17 @@ const editing = ref(false)
 const editValue = ref('')
 const input = useTemplateRef('inputTpl')
 
-const box = computed(() => getAabb(props.node, 'drawboard'))
+// 组合移动时子节点的 style 不变；引擎更新世界变换后同步标题位置与视口裁剪。
+const geometryRevision = ref(0)
+watch(() => props.node, (node, _, onCleanup) => {
+  const invalidate = () => geometryRevision.value++
+  node.on('updateGlobalTransform', invalidate)
+  onCleanup(() => node.off('updateGlobalTransform', invalidate))
+}, { immediate: true })
+const box = computed(() => {
+  void geometryRevision.value
+  return getAabb(props.node, 'drawboard')
+})
 
 // 节点在屏幕上小于该尺寸时（zoom 很小），标签比节点本身还宽、相邻节点的标签互相重叠，
 // 直接隐藏。与选框手柄的精简阈值同量级。
@@ -46,7 +56,10 @@ const visible = computed(() => props.node.visible && (editing.value || (box.valu
 
 // 用 transform 定位（只走合成、不触发布局重排），缩放/平移时重定位成本远低于 left/top，
 // 与画板标题共用旋转与切边规则。
-const style = computed(() => nodeLabelStyle(getObb(props.node, 'drawboard')))
+const style = computed(() => {
+  void geometryRevision.value
+  return nodeLabelStyle(getObb(props.node, 'drawboard'))
+})
 
 async function onDblclick(): Promise<void> {
   if (readonly.value || isLock(props.node))
