@@ -59,6 +59,8 @@ declare global {
     interface Options {
       /** Override/extend the workflow node content templates, keyed by node type. */
       workflowNodes?: Record<string, WorkflowNodeTemplate>
+      /** 工作流节点名称显示策略；默认保留组合内工作流节点的名称。 */
+      workflowLabels?: { showGrouped?: boolean }
     }
 
     interface Commands {
@@ -77,6 +79,8 @@ declare global {
     }
 
     interface Editor {
+      /** 工作流标签的宿主显示策略。 */
+      workflowLabels: { showGrouped: boolean }
       /** 按 workflowNodes 配置解析某元素在工作流模式下暴露的端口（input/output）。 */
       workflowPortsOf: (el: import('modern-canvas').Element2D) => import('./workflow').WorkflowPort[]
       /** 「生成中」节点 id 集合（响应式，运行时态）。用 setWorkflowGenerating 增删。 */
@@ -153,6 +157,7 @@ const DEFAULT_NODES: Record<string, Mce.WorkflowNodeTemplate> = {
 
 export function plugin() {
   return definePlugin((editor, options) => {
+    editor.workflowLabels = reactive({ showGrouped: options.workflowLabels?.showGrouped ?? true })
     const { addElement, exec, waitUntilFontLoad, renderEngine, registerMode, registerToolbeltItem, registerIcon } = editor
 
     // 「生成中」节点集合：运行时 UI 态（不落 style/文档/CRDT）。WorkflowGenerating 覆盖层据此渲染 shimmer。

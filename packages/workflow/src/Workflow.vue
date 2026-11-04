@@ -19,6 +19,7 @@ const {
   exec,
   t,
   workflowPortsOf,
+  workflowLabels,
 } = useEditor()
 
 // hover / 选中节点或连线时，相关连线沿数据方向流动高亮（引擎 shader 驱动）。
@@ -78,7 +79,8 @@ const selectedNode = computed<Element2D | undefined>(() => {
 // 工作流模式下的顶层元素（画板 / 节点，排除连线）——给每个加图层图标+名称标签。
 const topLabels = computed<Element2D[]>(() =>
   mode.value === 'workflow'
-    ? [...graph.value.nodes.values()].filter(el => isConnectable(el) && (el.parent?.id === root.value?.id || String(el.meta?.inEditorIs ?? '').startsWith('Workflow')))
+    ? [...graph.value.nodes.values()].filter(el => isConnectable(el) && (el.parent?.id === root.value?.id
+      || (workflowLabels.showGrouped !== false && String(el.meta?.inEditorIs ?? '').startsWith('Workflow'))))
     : [],
 )
 

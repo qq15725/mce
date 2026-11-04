@@ -1,11 +1,16 @@
-import type { Animation } from 'modern-canvas'
+import type { Animation, Video2D } from 'modern-canvas'
 import type { Ref } from 'vue'
 import { computed, onBeforeMount, onScopeDispose, ref, watch } from 'vue'
 import Timeline from '../components/timeline/Timeline.vue'
+import VideoPlayback from '../components/timeline/VideoPlayback.vue'
 import { definePlugin } from '../plugin'
 
 declare global {
   namespace Mce {
+    interface Options {
+      /** 通过 playVideo 命令预览视频时的循环策略，默认循环。 */
+      videoPlayback?: { loop?: boolean, controls?: boolean }
+    }
     interface UIConfig {
       timeline: TimelineConfig
     }
@@ -37,6 +42,8 @@ declare global {
 
     interface Commands {
       play: () => void
+      /** 同步视频自身及时间轴循环策略，并开始播放。 */
+      playVideo: (node: Video2D) => Promise<void>
       pause: () => void
       togglePlay: () => void
       seekStart: () => void
@@ -55,7 +62,7 @@ declare global {
   }
 }
 
-export default definePlugin((editor) => {
+export default definePlugin((editor, options) => {
   const {
     registerConfig,
     timeline,
@@ -70,7 +77,7 @@ export default definePlugin((editor) => {
   const paused = ref(true)
   const fps = ref(30)
   const playbackRate = ref(1)
-  const loopMode = ref<Mce.LoopMode>('loop')
+  const loopMode = ref<Mce.LoopMode>(options.videoPlayback?.loop === false ? 'none' : 'loop')
 
   const keyframeEditing = ref<Mce.KeyframeEditing | null>(null)
 
@@ -89,6 +96,16 @@ export default definePlugin((editor) => {
 
   function play() {
     paused.value = false
+  }
+
+  async function playVideo(node: Video2D) {
+    const loop = options.videoPlayback?.loop ?? true
+    node.loop = loop
+    await node.waitLoad()
+    await recomputeTimelineEndTime()
+    loopMode.value = loop ? 'loop' : 'none'
+    timeline.value.currentTime = node.globalStartTime
+    play()
   }
 
   function pause() {
@@ -127,6 +144,12 @@ export default definePlugin((editor) => {
     name: 'mce:timeline',
     components: [
       {
+        name: 'videoPlayback',
+        type: 'overlay',
+        component: VideoPlayback,
+        visible: computed(() => options.videoPlayback?.controls === true),
+      },
+      {
         name: 'timeline',
         type: 'panel',
         position: 'bottom',
@@ -141,6 +164,7 @@ export default definePlugin((editor) => {
     ],
     commands: [
       { command: 'play', handle: play },
+      { command: 'playVideo', handle: playVideo },
       { command: 'pause', handle: pause },
       { command: 'togglePlay', handle: togglePlay },
       { command: 'seekStart', handle: seekStart },
