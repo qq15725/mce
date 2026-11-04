@@ -4,12 +4,18 @@ import { computed, onBeforeMount, onScopeDispose, ref, watch } from 'vue'
 import Timeline from '../components/timeline/Timeline.vue'
 import VideoPlayback from '../components/timeline/VideoPlayback.vue'
 import { definePlugin } from '../plugin'
+import { createVideoPlayback } from '../utils/videoPlayback'
 
 declare global {
   namespace Mce {
     interface Options {
       /** 通过 playVideo 命令预览视频时的循环策略，默认循环。 */
-      videoPlayback?: { loop?: boolean, controls?: boolean }
+      videoPlayback?: {
+        loop?: boolean
+        controls?: boolean
+        /** 各视频独立预览，播放/暂停不改变全局时间轴；默认关闭。 */
+        independent?: boolean
+      }
     }
     interface UIConfig {
       timeline: TimelineConfig
@@ -36,14 +42,16 @@ declare global {
       /** 播放倍速，1 为正常速度。 */
       playbackRate: Ref<number>
       loopMode: Ref<LoopMode>
+      isVideoPlaying: (node: Video2D) => boolean
       recomputeTimelineEndTime: () => Promise<void>
       keyframeEditing: Ref<KeyframeEditing | null>
     }
 
     interface Commands {
       play: () => void
-      /** 同步视频自身及时间轴循环策略，并开始播放。 */
-      playVideo: (node: Video2D) => Promise<void>
+      /** 按宿主策略播放视频；独立模式暂停后续播，restart 或播放结束后从头播放。 */
+      playVideo: (node: Video2D, restart?: boolean) => Promise<void>
+      pauseVideo: (node: Video2D) => void
       pause: () => void
       togglePlay: () => void
       seekStart: () => void
@@ -80,6 +88,13 @@ export default definePlugin((editor, options) => {
   const loopMode = ref<Mce.LoopMode>(options.videoPlayback?.loop === false ? 'none' : 'loop')
 
   const keyframeEditing = ref<Mce.KeyframeEditing | null>(null)
+  const videos = createVideoPlayback(options.videoPlayback?.loop ?? true)
+
+  function isVideoPlaying(node: Video2D) {
+    return node.standalone
+      ? videos.isPlaying(node)
+      : !paused.value && (node.loop || timeline.value.currentTime < node.globalStartTime + node.videoDuration)
+  }
 
   // 播放语义集中在引擎 Timeline：loop 模式与倍速实时同步过去（播放推进由 RAF 喂 advance）。
   watch(loopMode, mode => timeline.value.loopMode = mode, { immediate: true })
@@ -92,13 +107,15 @@ export default definePlugin((editor, options) => {
       : 0
   }
 
-  Object.assign(editor, { paused, fps, playbackRate, loopMode, recomputeTimelineEndTime, keyframeEditing })
+  Object.assign(editor, { paused, fps, playbackRate, loopMode, recomputeTimelineEndTime, keyframeEditing, isVideoPlaying })
 
   function play() {
     paused.value = false
   }
 
-  async function playVideo(node: Video2D) {
+  async function playVideo(node: Video2D, restart = false) {
+    if (options.videoPlayback?.independent)
+      return videos.play(node, restart)
     const loop = options.videoPlayback?.loop ?? true
     node.loop = loop
     await node.waitLoad()
@@ -110,6 +127,13 @@ export default definePlugin((editor, options) => {
 
   function pause() {
     paused.value = true
+  }
+
+  function pauseVideo(node: Video2D) {
+    if (options.videoPlayback?.independent)
+      videos.pause(node)
+    else
+      pause()
   }
 
   function togglePlay() {
@@ -165,6 +189,7 @@ export default definePlugin((editor, options) => {
     commands: [
       { command: 'play', handle: play },
       { command: 'playVideo', handle: playVideo },
+      { command: 'pauseVideo', handle: pauseVideo },
       { command: 'pause', handle: pause },
       { command: 'togglePlay', handle: togglePlay },
       { command: 'seekStart', handle: seekStart },
@@ -193,6 +218,7 @@ export default definePlugin((editor, options) => {
       // （可能 endTime=0）后 RAF 仍在推进，循环一个零长时间轴会让 currentTime 退化为 NaN，
       // 连累整张画布渲染空白。先停播放并把播放头归位，再按新内容重算时长。
       function onDocSet() {
+        videos.reset()
         // 尊重「面板隐藏 ⇔ 自动播放」：面板开着（编辑态）载文档时暂停到起点，避免切文档时
         // RAF 在旧/零长时间轴上推进；面板隐藏（如灵感广场纯预览）则保持自动播放，否则载入
         // 带视频的文档后时间轴被永久暂停，视频卡在首帧不动。
@@ -258,6 +284,7 @@ export default definePlugin((editor, options) => {
       })
 
       onScopeDispose(() => {
+        videos.reset()
         stopRaf()
         timeline.value.off('ended', onEnded)
         off('docSet', onDocSet)

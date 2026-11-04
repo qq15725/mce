@@ -4,12 +4,11 @@ import { computed } from 'vue'
 import { useEditor } from '../../composables/editor'
 import { Icon } from '../icon'
 
-const { elementSelection, selectionAabbInDrawboard, paused, currentTime, exec, t, state, readonly } = useEditor()
+const { elementSelection, selectionAabbInDrawboard, isVideoPlaying, exec, t, state, readonly } = useEditor()
 const video = computed(() => elementSelection.value.length === 1 && elementSelection.value[0] instanceof Video2D
   ? elementSelection.value[0]
   : undefined)
-const playing = computed(() => !paused.value && video.value && (video.value.loop
-  || currentTime.value < video.value.globalStartTime + video.value.videoDuration))
+const playing = computed(() => video.value && isVideoPlaying(video.value))
 const position = computed(() => {
   const box = selectionAabbInDrawboard.value
   return { left: `${box.left + box.width / 2}px`, top: `${box.top + box.height / 2}px` }
@@ -26,7 +25,7 @@ const position = computed(() => {
     :title="t('togglePlay')"
     @pointerdown.stop
     @dblclick.stop
-    @click.stop="playing ? exec('pause') : exec('playVideo', video)"
+    @click.stop="playing ? exec('pauseVideo', video) : exec('playVideo', video)"
   >
     <Icon :icon="playing ? '$pause' : '$play'" />
   </button>
