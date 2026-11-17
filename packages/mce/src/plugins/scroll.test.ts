@@ -36,6 +36,12 @@ describe('滚动到新元素保持缩放', () => {
     expect(f.position.set).not.toHaveBeenCalled()
     expect(f.zoom.set).not.toHaveBeenCalled()
   })
+  it('取消导入产生空数组时不移动视口', async () => {
+    const f = fixture()
+    await f.scroll([], { intoView: true })
+    expect(f.position.set).not.toHaveBeenCalled()
+    expect(f.zoom.set).not.toHaveBeenCalled()
+  })
   it('坐标定位仍保留屏幕边距和未指定轴', async () => {
     const f = fixture()
     await f.scroll({ x: 1000 })

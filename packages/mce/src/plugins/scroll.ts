@@ -53,6 +53,8 @@ export default definePlugin((editor) => {
   })
 
   const scrollTo: Mce.Commands['scrollTo'] = async (target, options = {}) => {
+    if (Array.isArray(target) && !target.length)
+      return
     const {
       intoView,
       behavior,
