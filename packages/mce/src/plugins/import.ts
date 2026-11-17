@@ -41,6 +41,7 @@ export default definePlugin((editor) => {
       }))
     ).flat(), {
       position: 'right',
+      intoView: true,
       ...options,
     })
   }

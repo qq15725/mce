@@ -1,7 +1,7 @@
 {
   "name": "@mce/flex",
   "type": "module",
-  "version": "0.36.45",
+  "version": "0.36.46",
   "private": false,
   "description": "Flex / auto-layout plugin for ModernCanvasEditor",
   "keywords": [

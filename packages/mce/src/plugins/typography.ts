@@ -514,6 +514,7 @@ export default definePlugin((editor) => {
       {
         sizeToFit: true,
         active: true,
+        intoView: true,
         ...restOptions,
       },
     )

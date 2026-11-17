@@ -43,6 +43,7 @@ export default definePlugin((editor) => {
     return addElement(await createImageElement(url), {
       sizeToFit: true,
       position: 'right',
+      intoView: true,
       ...options,
     })
   }

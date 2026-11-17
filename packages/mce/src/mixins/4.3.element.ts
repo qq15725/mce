@@ -20,7 +20,7 @@ declare global {
       sizeToFit?: boolean
       active?: boolean
       regenId?: boolean
-      /** 添加后把新元素带入视口（已在视口内则不动）。 */
+      /** 添加后只滚动到新元素，不改变缩放（已在视口内则不动）。 */
       intoView?: boolean
     }
 
@@ -297,7 +297,7 @@ export default defineMixin((editor) => {
 
     if (intoView) {
       // 已在视口内则不动，否则平滑带入视图（如从工具腰带添加的较大工作流节点）。
-      exec('zoomTo', elements, { intoView: true, behavior: 'smooth' })
+      exec('scrollTo', elements, { intoView: true, behavior: 'smooth' })
     }
 
     if (!isArray && !parent) {

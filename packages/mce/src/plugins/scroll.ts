@@ -65,7 +65,7 @@ export default definePlugin((editor) => {
     const _screenCenter = screenCenter.value
     const offset = { x: 0, y: 0 }
     let targetPosition: { x?: number, y?: number } = {}
-    if (typeof target === 'object') {
+    if (typeof target === 'object' && !Array.isArray(target)) {
       if ('x' in target) {
         targetPosition.x = target.x
         offset.x = -screenCenterOffset.value.left

@@ -293,6 +293,7 @@ export default definePlugin((editor, options) => {
         position: pastePosition(elements),
         active: true,
         regenId: true,
+        intoView: true,
       })
     }
   }
@@ -361,6 +362,7 @@ export default definePlugin((editor, options) => {
               position: 'pointer',
               active: true,
               regenId: true,
+              intoView: true,
             })
           }
         }
@@ -394,6 +396,7 @@ export default definePlugin((editor, options) => {
         index: selection.value[0].getIndex() + 1,
         active: true,
         regenId: true,
+        intoView: true,
       },
     )
   }

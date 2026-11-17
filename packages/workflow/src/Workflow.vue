@@ -246,7 +246,7 @@ function chooseNodeType(type: string): void {
   node.style.left = m.port.kind === 'output' ? m.position.x : m.position.x - w
   node.style.top = m.position.y - h / 2
   node.updateGlobalTransform()
-  exec('zoomTo', node, { intoView: true, behavior: 'smooth' })
+  exec('scrollTo', [node], { intoView: true, behavior: 'smooth' })
   connect(m.port, m.sourceId, node.id, workflowPortsOf(node))
 }
 
