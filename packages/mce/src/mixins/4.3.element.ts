@@ -74,7 +74,6 @@ export default defineMixin((editor) => {
     root,
     rootAabb,
     isElement,
-    config,
     getAabb,
     getGlobalPointer,
     screenCenter,
@@ -88,8 +87,6 @@ export default defineMixin((editor) => {
     value: Element | Element[],
     options: Mce.AddElementOptions = {},
   ): Element2D | Element2D[] {
-    const frameGap = config.value.canvas.frame.gap
-
     const {
       parent,
       index,
@@ -195,6 +192,7 @@ export default defineMixin((editor) => {
           default: {
             const _parentAabb = parentAabb ?? rootAabb.value
             const anchor = parseAnchor(position as Mce.Anchor)
+            const frameGap = editor.getFrameGap(anchor.side === 'top' || anchor.side === 'bottom' ? 'y' : 'x')
             globalPosition = { x: 0, y: 0 }
 
             const map = {

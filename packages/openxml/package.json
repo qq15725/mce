@@ -1,7 +1,7 @@
 {
   "name": "@mce/openxml",
   "type": "module",
-  "version": "0.36.47",
+  "version": "0.36.48",
   "description": "Openxml plugin for mce",
   "author": "wxm",
   "license": "MIT",
@@ -50,6 +50,7 @@
     "build:tsc": "NODE_ENV=production tsc --emitDeclarationOnly --project tsconfig.json",
     "build": "pnpm build:code && pnpm build:tsc",
     "lint": "eslint src",
+    "test": "vitest --run",
     "typecheck": "tsc --noEmit --project tsconfig.json"
   },
   "dependencies": {

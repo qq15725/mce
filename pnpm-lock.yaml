@@ -65,6 +65,9 @@ importers:
       fflate:
         specifier: ^0.8.3
         version: 0.8.3
+      modern-idoc:
+        specifier: ^0.12.5
+        version: 0.12.5
       modern-openxml:
         specifier: ^1.13.0
         version: 1.13.0
@@ -189,8 +192,8 @@ importers:
         specifier: ^2
         version: 2.1.0
       modern-idoc:
-        specifier: ^0.12.4
-        version: 0.12.4
+        specifier: ^0.12.5
+        version: 0.12.5
       modern-text:
         specifier: ^2.2.5
         version: 2.2.5
@@ -2413,6 +2416,9 @@ packages:
 
   modern-idoc@0.12.4:
     resolution: {integrity: sha512-Tbdo3fahw5uimsvaCys/dooUUb6Gdq4N217xI75aEgkoPAktcxv/x0R4Q0E6zh+GhfCV3OxqISFOFhqAv/jc1w==}
+
+  modern-idoc@0.12.5:
+    resolution: {integrity: sha512-OPRFGmhaA+2kyqVDYKgRtnJxIxHvzT+Fn0106jErvbvFznHM3vfd0qjA5kkLfc5Ad8b4ysuCVNxyJ0nAGTmW8g==}
 
   modern-mp4@0.2.2:
     resolution: {integrity: sha512-2xPjC/bnrM587TloeC++kh9tGjRQjY0tPl8AXaOVh2Rk1Lc5GyQT4L/pzVpl4co8E/aicx3w2lZzS4bop81I8A==}
@@ -5376,7 +5382,7 @@ snapshots:
       colord: 2.9.3
       earcut: 3.2.3
       modern-font: 0.6.4
-      modern-idoc: 0.12.4
+      modern-idoc: 0.12.5
       modern-path2d: 1.8.8
       modern-text: 2.2.5
     optionalDependencies:
@@ -5395,10 +5401,15 @@ snapshots:
 
   modern-idoc-svg@0.4.0:
     dependencies:
-      modern-idoc: 0.12.4
+      modern-idoc: 0.12.5
       modern-text: 2.2.5
 
   modern-idoc@0.12.4:
+    dependencies:
+      colord: 2.9.3
+      nanoid: 5.1.16
+
+  modern-idoc@0.12.5:
     dependencies:
       colord: 2.9.3
       nanoid: 5.1.16
@@ -5412,7 +5423,7 @@ snapshots:
   modern-openxml@1.13.0:
     dependencies:
       fflate: 0.8.3
-      modern-idoc: 0.12.4
+      modern-idoc: 0.12.5
       modern-path2d: 1.8.8
 
   modern-palette@2.0.0: {}
@@ -5427,7 +5438,7 @@ snapshots:
       colord: 2.9.3
       fflate: 0.8.3
       modern-font: 0.6.4
-      modern-idoc: 0.12.4
+      modern-idoc: 0.12.5
       modern-path2d: 1.8.8
       modern-text: 2.2.5
 
@@ -5435,7 +5446,7 @@ snapshots:
     dependencies:
       diff: 9.0.0
       modern-font: 0.6.4
-      modern-idoc: 0.12.4
+      modern-idoc: 0.12.5
       modern-path2d: 1.8.8
 
   module-replacements@3.0.0: {}

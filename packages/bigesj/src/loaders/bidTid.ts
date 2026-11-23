@@ -1,16 +1,15 @@
 import type { Editor } from 'mce'
 import { convertDoc } from '../convert'
 
-export function bidTidLoader(editor: Editor, api: Record<string, any>): Mce.Loader {
+export function bidTidLoader(editor: Editor, api: Record<string, any>, templateTitleAsFirstFrameName = false): Mce.Loader {
   const {
-    config,
     http,
   } = editor
 
   return {
     name: 'bigesj:bidTid',
     test: source => typeof source === 'object' && source && !!(source.bid || source.tid),
-    load: async (source: { bid: string, tid: string }) => {
+    load: async (source: { bid: string, tid: string, templateTitle?: string }) => {
       const text = source.bid || source.tid || ''
       const load = async (id: string): Promise<Record<string, any>> => {
         return await http.request({
@@ -30,6 +29,7 @@ export function bidTidLoader(editor: Editor, api: Record<string, any>): Mce.Load
           const bigeDoc = await load(id)
           const doc = await convertDoc(bigeDoc, {
             included,
+            firstFrameName: templateTitleAsFirstFrameName && !source.bid ? bigeDoc.name || source.templateTitle : undefined,
           })
           maxTime = Math.max(maxTime, doc.meta?.maxTime ?? 0)
           return doc
@@ -53,7 +53,7 @@ export function bidTidLoader(editor: Editor, api: Record<string, any>): Mce.Load
             doc.children.push(element)
           }
         })
-        offsetX += width + config.value.canvas.frame.gap
+        offsetX += width + (editor.getFrameGap?.('x') ?? editor.config.value.canvas.frame.gap)
       })
       return doc
     },

@@ -8,6 +8,7 @@ import { imageEffectPipeline } from './pipelines'
 
 export interface PluginOptions {
   font?: boolean
+  templateTitleAsFirstFrameName?: boolean
   api?: {
     fonts?: string
     bid?: string
@@ -35,7 +36,7 @@ export function plugin(options: PluginOptions = {}) {
       name: 'bigesj',
       loaders: [
         bigeLoader(),
-        bidTidLoader(editor, _api),
+        bidTidLoader(editor, _api, options.templateTitleAsFirstFrameName),
         clipboardLoader(),
       ],
       setup: async () => {

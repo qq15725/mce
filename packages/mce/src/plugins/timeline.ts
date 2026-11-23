@@ -1,5 +1,6 @@
-import type { Animation, Video2D } from 'modern-canvas'
+import type { Animation, Node } from 'modern-canvas'
 import type { Ref } from 'vue'
+import { Video2D } from 'modern-canvas'
 import { computed, onBeforeMount, onScopeDispose, ref, watch } from 'vue'
 import Timeline from '../components/timeline/Timeline.vue'
 import VideoPlayback from '../components/timeline/VideoPlayback.vue'
@@ -15,6 +16,8 @@ declare global {
         controls?: boolean
         /** 各视频独立预览，播放/暂停不改变全局时间轴；默认关闭。 */
         independent?: boolean
+        /** Automatically start independent previews when a video or its source enters the document. */
+        autoplay?: boolean
       }
     }
     interface UIConfig {
@@ -213,12 +216,43 @@ export default definePlugin((editor, options) => {
       } = editor
 
       const updateEndTime = recomputeTimelineEndTime
+      const autoplay = options.videoPlayback?.autoplay && options.videoPlayback.independent
+      const watchedVideos = new Map<Video2D, (key: string) => void>()
+      function watchVideo(node: Node) {
+        if (!(node instanceof Video2D))
+          return
+        const preview = () => {
+          if (watchedVideos.has(node) && node.src && node.isInsideTree())
+            void videos.play(node).catch(() => {})
+        }
+        if (!watchedVideos.has(node)) {
+          const sourceChanged = (key: string) => {
+            if (key === 'src')
+              queueMicrotask(preview)
+          }
+          watchedVideos.set(node, sourceChanged)
+          node.on('updateProperty', sourceChanged)
+        }
+        preview()
+      }
+      function unwatchVideo(node: Node) {
+        if (!(node instanceof Video2D))
+          return
+        const listener = watchedVideos.get(node)
+        if (listener) {
+          node.off('updateProperty', listener)
+          watchedVideos.delete(node)
+          videos.pause(node)
+        }
+      }
 
       // 切换文档：不继承上个文档的播放态与播放头。否则从「正在播放」的文档切到新文档
       // （可能 endTime=0）后 RAF 仍在推进，循环一个零长时间轴会让 currentTime 退化为 NaN，
       // 连累整张画布渲染空白。先停播放并把播放头归位，再按新内容重算时长。
       function onDocSet() {
         videos.reset()
+        if (autoplay)
+          editor.nodes.value.forEach(watchVideo)
         // 尊重「面板隐藏 ⇔ 自动播放」：面板开着（编辑态）载文档时暂停到起点，避免切文档时
         // RAF 在旧/零长时间轴上推进；面板隐藏（如灵感广场纯预览）则保持自动播放，否则载入
         // 带视频的文档后时间轴被永久暂停，视频卡在首帧不动。
@@ -281,9 +315,20 @@ export default definePlugin((editor, options) => {
       onBeforeMount(() => {
         on('docSet', onDocSet)
         assets.on('loaded', updateEndTime)
+        if (autoplay) {
+          editor.renderEngine.value.on('nodeEnter', watchVideo)
+          editor.renderEngine.value.on('nodeExit', unwatchVideo)
+          editor.nodes.value.forEach(watchVideo)
+        }
       })
 
       onScopeDispose(() => {
+        if (autoplay) {
+          editor.renderEngine.value.off('nodeEnter', watchVideo)
+          editor.renderEngine.value.off('nodeExit', unwatchVideo)
+          for (const node of watchedVideos.keys())
+            unwatchVideo(node)
+        }
         videos.reset()
         stopRaf()
         timeline.value.off('ended', onEnded)

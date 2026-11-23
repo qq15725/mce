@@ -1,7 +1,7 @@
 {
   "name": "@mce/bigesj",
   "type": "module",
-  "version": "0.36.47",
+  "version": "0.36.48",
   "description": "Plugin for mce",
   "author": "wxm",
   "license": "MIT",
@@ -54,6 +54,7 @@
   },
   "dependencies": {
     "fflate": "^0.8.3",
+    "modern-idoc": "^0.12.5",
     "modern-openxml": "^1.13.0"
   },
   "devDependencies": {

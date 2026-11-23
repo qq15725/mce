@@ -9,6 +9,10 @@ declare global {
     interface Exporters {
       gif: Promise<Blob>
     }
+
+    interface ExportOptions {
+      gif?: { looped?: boolean }
+    }
   }
 }
 
@@ -33,19 +37,20 @@ export function plugin() {
           name: 'gif',
           saveAs: true,
           handle: async (exportOptions) => {
-            const { onProgress, ...restOptions } = exportOptions
+            const { onProgress, gif, ...restOptions } = exportOptions
             // render 类导出：JSON 原样保留 token，主题解析由 renderFrames 在渲染期完成。
             const data = to('json', restOptions)
             const width = Math.floor(data.style.width)
             const height = Math.floor(data.style.height)
             // 按需加载：modern-gif + 内联 worker 只在导出时进入内存。
             const { createGifEncoder } = await import('./encode')
-            const encoder = createGifEncoder({ width, height, workerUrl: gifWorkerUrl })
+            const encoder = createGifEncoder({ width, height, workerUrl: gifWorkerUrl, looped: gif?.looped })
             await renderFrames({
               data,
               width,
               height,
               step: 100,
+              signal: exportOptions.signal,
               onFrame: async (pixels, { duration, progress }) => {
                 await encoder.encode({ data: pixels as any, delay: duration })
                 onProgress?.(progress)

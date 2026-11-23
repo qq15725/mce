@@ -5,9 +5,12 @@ import { Encoder } from 'modern-gif'
  * 使 modern-gif 与内联 worker 落到独立异步 chunk —— 注册 gif 插件时不付出体积，
  * 仅在真正导出 GIF 时才加载（与 @mce/mp4 的按需策略一致）。
  */
-export function createGifEncoder(config: { width: number, height: number, workerUrl?: string }): Encoder {
+export function createGifEncoder(config: { width: number, height: number, workerUrl?: string, looped?: boolean }): Encoder {
   let { workerUrl } = config
-  if (!workerUrl) {
+  if (typeof Worker === 'undefined') {
+    workerUrl = undefined
+  }
+  else if (!workerUrl) {
     // 默认自带 modern-gif 的 worker：`new URL(..., import.meta.url)` 是打包器通用写法，
     // 构建时把 worker 作为 asset 内联进本（异步）chunk，消费方零配置即可 off-thread。
     // 解析失败时退回 undefined，modern-gif 会回退主线程编码。
@@ -18,5 +21,5 @@ export function createGifEncoder(config: { width: number, height: number, worker
       workerUrl = undefined
     }
   }
-  return new Encoder({ width: config.width, height: config.height, workerUrl })
+  return new Encoder({ ...config, workerUrl, looped: config.looped ?? true })
 }

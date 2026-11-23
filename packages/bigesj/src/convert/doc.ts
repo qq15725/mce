@@ -5,6 +5,7 @@ import { convertLayout } from './layout'
 export interface ConvertDocOptions {
   gap?: number
   included?: number[]
+  firstFrameName?: string
 }
 
 export async function convertDoc(
@@ -38,6 +39,12 @@ export async function convertDoc(
   if (Number(version) > 1) {
     if (included && data.children) {
       data.children = data.children.filter((_: any, index: number) => included.includes(index))
+    }
+    if (options.firstFrameName && Array.isArray(data.children)) {
+      const frames = data.children.filter(child => child.meta?.inEditorIs === 'Frame')
+      const first = frames.find(child => /^画板\s*1$/.test(child.name)) ?? frames.at(-1)
+      if (first && (!first.name || /^画板\s*1$/.test(first.name)))
+        data.children = data.children.map(child => child === first ? { ...child, name: options.firstFrameName } : child)
     }
     return data as NormalizedDocument
   }
@@ -80,7 +87,7 @@ export async function convertDoc(
         element.style.top = top
         top += Number(element.style.height) + gap
       }
-      element.name = `画板 ${v.index + 1}`
+      element.name = v.index === 0 && options.firstFrameName ? options.firstFrameName : `画板 ${v.index + 1}`
       return element
     })
     .reverse()
